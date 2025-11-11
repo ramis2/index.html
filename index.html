@@ -1,99 +1,199 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <header>
-    <div class="header-container">
-        <nav>
-            <ul class="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="aboutus.html">About</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#contact">Contact</a></li>   
-            </ul>
-        </nav>
-    </div>
-</header>
+<meta charset="UTF-8">
+<title>IT Data-Entry Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --green:#10b981;          /* emerald-500 */
+    --greenDark:#047857;      /* emerald-700 */
+    --greenLight:#d1fae5;     /* emerald-100 */
+    --textDark:#111827;
+    --textLight:#f9fafb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Arial,sans-serif}
+  body{display:flex;flex-direction:column;min-height:100vh;background:#f3f4f6;color:var(--textDark)}
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Furda news page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-        video {
-            width: 100%;
-            margin-top: 20px;
-        }
-    </style>
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:.5rem 1rem;background:var(--textLight);border-bottom:1px solid #e5e7eb;
+  }
+  .topbar .logo{font-size:1.25rem;font-weight:700;color:var(--greenDark);}
+  .topbar .cmdBtn{
+    background:var(--green);color:#fff;border:none;padding:.5rem 1.25rem;
+    border-radius:.375rem;cursor:pointer;font-weight:600;
+  }
+  .topbar .cmdBtn:hover{background:var(--greenDark);}
+
+  /* ---------- TOP MENU ---------- */
+  .topMenu{
+    display:flex;align-items:center;background:var(--green);
+    color:#fff;padding:0 1rem;box-shadow:0 2px 4px rgba(0,0,0,.1);
+  }
+  .topMenu a{
+    padding:.75rem 1rem;color:#fff;text-decoration:none;font-weight:500;
+  }
+  .topMenu a:hover{background:rgba(0,0,0,.1);}
+  .hamburger{display:none;font-siz\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\e:1.5rem;cursor:pointer;color:#fff;margin-left:auto;}
+  @media(max-width:768px){.hamburger{display:block;}}
+
+  /* ---------- WRAPPER FOR SIDE + MAIN ---------- */
+  .wrapper{display:flex;flex:1;}
+
+  /* ---------- SIDE MENU ---------- */
+  .sideMenu{
+    width:220px;background:var(--greenLight);padding:1rem;
+    border-right:1px solid #e5e7eb;transition:transform .3s;
+  }
+  .sideMenu h3{margin-bottom:.5rem;color:var(--greenDark);}
+  .sideMenu ul{list-style:none;}
+  .sideMenu li{margin:.25rem 0;}
+  .sideMenu a{
+    display:block;padding:.5rem .75rem;border-radius:.375rem;
+    text-decoration:none;color:var(--textDark);
+  }
+  .sideMenu a:hover{background:var(--green);color:#fff;}
+  @media(max-width:768px){
+    .sideMenu{position:absolute;top:0;left:0;height:100%;transform:translateX(-100%);z-index:10;}
+    .sideMenu.open{transform:translateX(0);}
+  }
+
+  /* ---------- MAIN CONTENT ---------- */
+  main{flex:1;padding:2rem;}
+  h1{margin-bottom:1rem;color:var(--greenDark);}
+  .formCard{
+    max-width:480px;background:#fff;border:1px solid #e5e7eb;
+    border-radius:.5rem;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .formCard label{display:block;margin:.75rem 0 .25rem;font-weight:600;}
+  .formCard input, .formCard select{
+    width:100%;padding:.5rem;border:1px solid #d1d5db;border-radius:.375rem;
+  }
+  .saveBtn{
+    margin-top:1.25rem;background:var(--green);color:#fff;border:none;
+    padding:.6rem 1.5rem;border-radius:.375rem;font-size:1rem;cursor:pointer;
+  }
+  .saveBtn:hover{background:var(--greenDark);}
+  #feedback{margin-top:1rem;color:var(--greenDark);font-weight:600;}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    text-align:center;padding:1rem;font-size:.875rem;
+    border-top:1px solid #e5e7eb;background:#fff;color:#6b7280;
+  }
+</style>
 </head>
 <body>
 
-    <h1>Welcome to Furda news, coming soon!</h1>
+<!-- ========== TOP BAR ========== -->
+<header class="topbar">
+  <div class=""hunde\dist\data\ITLOGO.png"">IT&nbsp;Logo</div>
+  <button class="cmdBtn" onclick="alert('Command executed')">Command</button>
+</header>
 
-    <h2>Images</h2>
-    <img src="ethhailinowu.png">
-    <img src="https://via.placeholder.com/600x400" alt="Sample Image 2">
+<!-- ========== TOP MENU ========== -->
+<nav class="topMenu">
+  <a href="#">Home</a>
+  <a href="#">Search</a>
+  <a href="#">Data Connect</a>
+  <a href="#">Libra-Cal</a>
+  <a href="#">Save Form</a>
+  <span class="hamburger" onclick="toggleSide()">☰</span>
+</nav>
 
-    <h2>Video</h2>
-    <video controls>
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+<!-- ========== WRAPPER ========== -->
+<div class="wrapper">
 
-    <h2>Our News Journalist Name</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Years in services</th>
-                <th>City</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Jim Jimma</td>
-                <td>30</td>
-                <td>Qarsara</td>
-            </tr>
-            <tr>
-                <td>Sagal Smith</td>
-                <td>25</td>
-                <td>Dire-Dawaa</td>
-            </tr>
-            <tr>
-                <td>Abdi Sanikim</td>
-                <td>22</td>
-                <td>Calanqorraa</td>
-            </tr>
-        </tbody>
-    </table>
+  <!-- side menu -->
+  <aside class="sideMenu" id="sideMenu">
+    <h3>Quick Links</h3>
+    <ul>
+      <li><a href="Test1.html">Dashboard</a></li>
+      <li><a href="#">Reports</a></li>
+      <li><a href="#">Settings</a></li>
+    </ul>
+  </aside>
 
+  <!-- main -->
+  <main>
+    <h1>Data Entry Form</h1>
+
+    <div class="formCard">
+      <label>Name</label>
+      <input type="text" id="inpName" placeholder="e.g. Maya Patel">
+
+      <label>E-mail</label>
+      <input type="email" id="inpEmail" placeholder="e.g. maya@example.com">
+
+      <label>Telephone</label>
+      <input type="tel" id="inpTel" placeholder="e.g. +1-555-123-4567">
+
+      <label>Date</label>
+      <select id="ddDay"></select>
+
+      <label>Month</label>
+      <select id="ddMonth"></select>
+
+      <label>Year</label>
+      <select id="ddYear"></select>
+
+      <button class="saveBtn" onclick="saveForm()">Save to Libra-Cal</button>
+    </div>
+
+    <div id="feedback"></div>
+  </main>
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer>IT Data-Entry Portal © <span id="yr"></span></footer>
+
+<script>
+/* ========== LIBRA-CAL STORAGE ========== */
+window.libraCal = window.libraCal || [];   // <-- replace with real API later
+
+/* ========== POPULATE DATE DROPDOWNS ========== */
+const day   = document.getElementById('ddDay');
+const month = document.getElementById('ddMonth');
+const year  = document.getElementById('ddYear');
+
+for(let d=1;d<=31;d++){let o=document.createElement('option');o.value=d;o.text=d;day.appendChild(o);}
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+months.forEach((m,i)=>{let o=document.createElement('option');o.value=i+1;o.text=m;month.appendChild(o);});
+const yNow=new Date().getFullYear();
+for(let y=yNow-10;y<=yNow+10;y++){let o=document.createElement('option');o.value=y;o.text=y;year.appendChild(o);}
+day.value  = new Date().getDate();
+month.value= new Date().getMonth()+1;
+year.value = yNow;
+
+/* ========== SAVE ROUTINE ========== */
+function saveForm(){
+  const entry = {
+    name:  document.getElementById('inpName').value.trim(),
+    email: document.getElementById('inpEmail').value.trim(),
+    tel:   document.getElementById('inpTel').value.trim(),
+    date:  `${day.value.padStart(2,'0')}-${month.value.padStart(2,'0')}-${year.value}`
+  };
+
+  /* basic validation */
+  if(!entry.name || !entry.email){ alert('Name and e-mail are required.'); return; }
+
+  /* push to Libra-Cal */
+  window.libraCal.push(entry);
+
+  /* visual feedback */
+  document.getElementById('feedback').textContent =
+    `Saved “${entry.name}” on ${entry.date}  (total entries: ${libraCal.length})`;
+}
+
+/* ========== SMALL-SCREEN SIDE TOGGLE ========== */
+function toggleSide(){
+  document.getElementById('sideMenu').classList.toggle('open');
+}
+
+/* ========== FOOTER YEAR ========== */
+document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
 </body>
-</html>
 </html>
