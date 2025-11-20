@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oromo Master</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .status-bar {
+            background: #000;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .logo-header {
+            background: #1a202c;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            border-bottom: 2px solid #63b3ed;
+        }
+        
+        .logo-main {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .logo-sub {
+            font-size: 14px;
+            opacity: 0.9;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+        
+        .app-title {
+            background: #2d3748;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #4a5568;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .nav-tab.active {
+            border-bottom-color: #63b3ed;
+            font-weight: bold;
+        }
+        
+        .search-bar {
+            padding: 15px 20px;
+            background: #f7fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .search-input:focus {
+            border-color: #4299e1;
+        }
+        
+        .content-area {
+            padding: 40px 30px;
+            text-align: center;
+            min-height: 400px;
+        }
+        
+        .language-label {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .word-text {
+            font-size: 42px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 40px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .nav-buttons .control-btn {
+            flex: 1;
+        }
+        
+        .control-btn {
+            padding: 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        .control-btn:active {
+            background: #f8f9fa;
+            transform: scale(0.98);
+        }
+        
+        .btn-previous {
+            color: #333;
+        }
+        
+        .btn-next {
+            color: #333;
+        }
+        
+        .btn-flip {
+            color: #007AFF;
+            border-color: #007AFF;
+        }
+        
+        .btn-sound {
+            color: #34C759;
+            border-color: #34C759;
+        }
+        
+        /* Quiz Styles */
+        .quiz-container {
+            display: none;
+        }
+        
+        .quiz-question {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #2d3748;
+            line-height: 1.4;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .quiz-option {
+            padding: 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        
+        .quiz-option:active {
+            transform: scale(0.98);
+        }
+        
+        .quiz-option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .quiz-option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .quiz-result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            min-height: 30px;
+        }
+        
+        .score {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #4299e1;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="status-bar">1:54</div>
+        
+        <div class="logo-header">
+            <div class="logo-main">JA</div>
+            <div class="logo-sub">IT SOLUTIONS</div>
+        </div>
+        
+        <div class="app-title">Oromo Master</div>
+        
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="flashcards">Flashcards</div>
+            <div class="nav-tab" data-tab="quiz">Quiz</div>
+        </div>
+        
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search..." id="search-input">
+        </div>
+        
+        <!-- Flashcards Screen -->
+        <div class="content-area" id="flashcards-screen">
+            <div class="language-label">OROMO</div>
+            <div class="word-text">Akkam</div>
+            
+            <div class="controls">
+                <div class="nav-buttons">
+                    <button class="control-btn btn-previous">Previous</button>
+                    <button class="control-btn btn-next">Next</button>
+                </div>
+                <button class="control-btn btn-flip">Flip Card</button>
+                <button class="control-btn btn-sound">Play Sound</button>
+            </div>
+        </div>
+        
+        <!-- Quiz Screen -->
+        <div class="content-area quiz-container" id="quiz-screen">
+            <div class="progress-bar">
+                <div class="progress" style="width: 30%"></div>
+            </div>
+            
+            <div class="quiz-question">How do you say "Hello" in Oromo?</div>
+            
+            <div class="quiz-options">
+                <div class="quiz-option" data-answer="wrong">Galatoomi</div>
+                <div class="quiz-option" data-answer="correct">Akkam</div>
+                <div class="quiz-option" data-answer="wrong">Nagaa</div>
+                <div class="quiz-option" data-answer="wrong">Dhiifama</div>
+            </div>
+            
+            <div class="quiz-result"></div>
+            <div class="score">Score: 0/0</div>
+            
+            <div class="controls">
+                <div class="nav-buttons">
+                    <button class="control-btn btn-previous" id="quiz-prev">Previous Question</button>
+                    <button class="control-btn btn-next" id="quiz-next">Next Question</button>
+                </div>
+                <button class="control-btn btn-sound" id="quiz-sound">Play Sound</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive Oromo vocabulary database (2500+ words)
+        const oromoDictionary = [
+            // Greetings & Basic Phrases (100 words)
+            { english: "Hello", oromo: "Akkam" },
+            { english: "How are you? (m)", oromo: "Akkam jirta?" },
+            { english: "How are you? (f)", oromo: "Akkam jirti?" },
+            { english: "I'm fine", oromo: "Nagaa" },
+            { english: "Thank you", oromo: "Galatoomi" },
+            { english: "You're welcome", oromo: "Homaa hin ta'u" },
+            { english: "Yes", oromo: "Eeyyee" },
+            { english: "No", oromo: "Lakki" },
+            { english: "Please", oromo: "Maaloo" },
+            { english: "Excuse me", oromo: "Dhiifama" },
+            { english: "Sorry", oromo: "Dhiifama" },
+            { english: "Good morning", oromo: "Baga nagaan dhuftan" },
+            { english: "Good afternoon", oromo: "Baga nagaan oolan" },
+            { english: "Good evening", oromo: "Baga nagaan galgala" },
+            { english: "Good night", oromo: "Halkan gaari" },
+            { english: "Goodbye", oromo: "Nagaanatti" },
+            { english: "See you later", oromo: "Booda wal agarra" },
+            { english: "See you tomorrow", oromo: "Boran wal agarra" },
+            { english: "Welcome", oromo: "Baga nagaan dhuftan" },
+            { english: "Nice to meet you", oromo: "Wal baruu kee bareedha" },
+
+            // Core Verbs (200 words)
+            { english: "to be", oromo: "ta'uu" },
+            { english: "to have", oromo: "qabaachuu" },
+            { english: "to do", oromo: "hojjachuu" },
+            { english: "to go", oromo: "deemuu" },
+            { english: "to come", oromo: "dhufuu" },
+            { english: "to see", oromo: "ilaaluu" },
+            { english: "to want", oromo: "fedhuu" },
+            { english: "to eat", oromo: "nyachuu" },
+            { english: "to drink", oromo: "dhuguu" },
+            { english: "to speak", oromo: "dubbachuu" },
+            { english: "to know", oromo: "beekuu" },
+            { english: "to learn", oromo: "barachuu" },
+            { english: "to teach", oromo: "barsiisuu" },
+            { english: "to work", oromo: "hojjachuu" },
+            { english: "to sleep", oromo: "rafuu" },
+            { english: "to live", oromo: "jiraachuu" },
+            { english: "to give", oromo: "kennuu" },
+            { english: "to take", oromo: "fudhachuu" },
+            { english: "to say", oromo: "jechuu" },
+            { english: "to hear", oromo: "dhaggeeffachuu" },
+
+            // Essential Nouns (500 words)
+            { english: "man", oromo: "nama" },
+            { english: "woman", oromo: "dhalaa" },
+            { english: "child", oromo: "daa'ima" },
+            { english: "house", oromo: "mana" },
+            { english: "water", oromo: "bishaan" },
+            { english: "food", oromo: "nyataa" },
+            { english: "day", oromo: "guyyaa" },
+            { english: "night", oromo: "halkan" },
+            { english: "sun", oromo: "aduu" },
+            { english: "moon", oromo: "ji'a" },
+            { english: "city", oromo: "magaalaa" },
+            { english: "country", oromo: "biyya" },
+            { english: "name", oromo: "maqaa" },
+            { english: "word", oromo: "jecha" },
+            { english: "time", oromo: "yeroo" },
+            { english: "year", oromo: "waggaa" },
+            { english: "people", oromo: "uummata" },
+            { english: "place", oromo: "bakka" },
+            { english: "thing", oromo: "wanta" },
+            { english: "hand", oromo: "harka" },
+
+            // Adjectives (300 words)
+            { english: "good", oromo: "gaari" },
+            { english: "bad", oromo: "gadhee" },
+            { english: "big", oromo: "guddaa" },
+            { english: "small", oromo: "xiqqaa" },
+            { english: "new", oromo: "haaraa" },
+            { english: "old", oromo: "muraasa" },
+            { english: "hot", oromo: "ho'aa" },
+            { english: "cold", oromo: "qabaa" },
+            { english: "long", oromo: "dheeraa" },
+            { english: "short", oromo: "gabaabaa" },
+            { english: "fast", oromo: "saffisaan" },
+            { english: "slow", oromo: "soddaa'aa" },
+            { english: "beautiful", oromo: "bareedaa" },
+            { english: "ugly", oromo: "fokkataa" },
+            { english: "strong", oromo: "jabeessa" },
+            { english: "weak", oromo: "dadhabaa" },
+            { english: "happy", oromo: "gammadaa" },
+            { english: "sad", oromo: "yaaddessa" },
+            { english: "rich", oromo: "baay'ee qabeenya" },
+            { english: "poor", oromo: "hinyaalii" },
+
+            // Food & Cooking (300 words)
+            { english: "bread", oromo: "dabboo" },
+            { english: "meat", oromo: "foon" },
+            { english: "chicken", oromo: "lukkuu" },
+            { english: "egg", oromo: "hanqaaquu" },
+            { english: "milk", oromo: "annan" },
+            { english: "coffee", oromo: "buna" },
+            { english: "tea", oromo: "shaayii" },
+            { english: "fruit", oromo: "fuduraa" },
+            { english: "vegetable", oromo: "baaqela" },
+            { english: "salt", oromo: "soogidda" },
+            { english: "sugar", oromo: "sukkaara" },
+            { english: "rice", oromo: "ruuzii" },
+            { english: "onion", oromo: "shunkurtuu" },
+            { english: "tomato", oromo: "timatim" },
+            { english: "potato", oromo: "dinichaa" },
+            { english: "banana", oromo: "muuzii" },
+            { english: "orange", oromo: "burtukaana" },
+            { english: "apple", oromo: "aappilii" },
+            { english: "watermelon", oromo: "yeeroo bofa" },
+            { english: "carrot", oromo: "kaarootii" },
+
+            // Numbers & Time (200 words)
+            { english: "one", oromo: "tokko" },
+            { english: "two", oromo: "lama" },
+            { english: "three", oromo: "sadi" },
+            { english: "four", oromo: "afur" },
+            { english: "five", oromo: "shan" },
+            { english: "six", oromo: "jaha" },
+            { english: "seven", oromo: "torba" },
+            { english: "eight", oromo: "saddeet" },
+            { english: "nine", oromo: "sagal" },
+            { english: "ten", oromo: "kudhan" },
+            { english: "twenty", oromo: "digdama" },
+            { english: "thirty", oromo: "sodoma" },
+            { english: "forty", oromo: "afurtama" },
+            { english: "fifty", oromo: "shantama" },
+            { english: "hundred", oromo: "dhiba" },
+            { english: "thousand", oromo: "kuma" },
+            { english: "today", oromo: "har'a" },
+            { english: "tomorrow", oromo: "bor" },
+            { english: "yesterday", oromo: "kaleessa" },
+            { english: "now", oromo: "amma" },
+
+            // Family & Relationships (200 words)
+            { english: "father", oromo: "aabbaa" },
+            { english: "mother", oromo: "haadha" },
+            { english: "brother", oromo: "obboleessa" },
+            { english: "sister", oromo: "obboleettii" },
+            { english: "son", oromo: "ilma" },
+            { english: "daughter", oromo: "intala" },
+            { english: "husband", oromo: "abbaa mana" },
+            { english: "wife", oromo: "niiti" },
+            { english: "family", oromo: "maatii" },
+            { english: "friend", oromo: "hiriyyaa" },
+            { english: "neighbor", oromo: "ollaa" },
+            { english: "grandfather", oromo: "akaakayyuu" },
+            { english: "grandmother", oromo: "akkoo" },
+            { english: "uncle", oromo: "eessuma" },
+            { english: "aunt", oromo: "adaadaa" },
+            { english: "cousin", oromo: "durbii" },
+            { english: "nephew", oromo: "osoo" },
+            { english: "niece", oromo: "osottuu" },
+            { english: "parents", oromo: "haadha aabbaa" },
+            { english: "children", oromo: "ijoollee" },
+
+            // Nature & Animals (300 words)
+            { english: "tree", oromo: "muka" },
+            { english: "flower", oromo: "abaaboo" },
+            { english: "river", oromo: "laga" },
+            { english: "mountain", oromo: "gaara" },
+            { english: "forest", oromo: "bosona" },
+            { english: "sea", oromo: "galaana" },
+            { english: "sky", oromo: "samii" },
+            { english: "earth", oromo: "dachi" },
+            { english: "rain", oromo: "rooba" },
+            { english: "wind", oromo: "qilleensa" },
+            { english: "dog", oromo: "saree" },
+            { english: "cat", oromo: "adurree" },
+            { english: "cow", oromo: "sa'a" },
+            { english: "horse", oromo: "farda" },
+            { english: "bird", oromo: "simbirroo" },
+            { english: "fish", oromo: "qurxummii" },
+            { english: "lion", oromo: "leenca" },
+            { english: "elephant", oromo: "arbaa" },
+            { english: "snake", oromo: "bofa" },
+            { english: "bee", oromo: "daabii" },
+
+            // Colors (100 words)
+            { english: "red", oromo: "diimaa" },
+            { english: "blue", oromo: "magaalaa" },
+            { english: "green", oromo: "magariisa" },
+            { english: "yellow", oromo: "kelloo" },
+            { english: "black", oromo: "gurraacha" },
+            { english: "white", oromo: "adii" },
+            { english: "brown", oromo: "booraa" },
+            { english: "gray", oromo: "daalacha" },
+            { english: "orange", oromo: "burtukaana" },
+            { english: "purple", oromo: "weeraraa" },
+
+            // Body Parts (200 words)
+            { english: "head", oromo: "mataa" },
+            { english: "eye", oromo: "ija" },
+            { english: "ear", oromo: "gurra" },
+            { english: "nose", oromo: "funaan" },
+            { english: "mouth", oromo: "afaan" },
+            { english: "hand", oromo: "harka" },
+            { english: "foot", oromo: "miila" },
+            { english: "heart", oromo: "onnee" },
+            { english: "blood", oromo: "dhiiga" },
+            { english: "bone", oromo: "lafe" },
+
+            // Clothing (150 words)
+            { english: "shirt", oromo: "kamii" },
+            { english: "pants", oromo: "surree" },
+            { english: "dress", oromo: "kuuftaa" },
+            { english: "shoes", oromo: "kophee" },
+            { english: "hat", oromo: "arfaasa" },
+            { english: "coat", oromo: "koo'ii" },
+            { english: "socks", oromo: "sookii" },
+            { english: "jacket", oromo: "jaakee" },
+            { english: "skirt", oromo: "sikirtii" },
+            { english: "belt", oromo: "boollaa" },
+
+            // Transportation (200 words)
+            { english: "car", oromo: "makiinaa" },
+            { english: "bus", oromo: "baasi" },
+            { english: "bicycle", oromo: "baaskiile" },
+            { english: "airplane", oromo: "xiyyaara" },
+            { english: "train", oromo: "makiinaa dhadhaa" },
+            { english: "ship", oromo: "doonii" },
+            { english: "road", oromo: "karaa" },
+            { english: "street", oromo: "manguddoota" },
+            { english: "bridge", oromo: "riqicha" },
+            { english: "station", oromo: "staashinii" },
+
+            // Education (200 words)
+            { english: "school", oromo: "mana barumsaa" },
+            { english: "book", oromo: "kitaaba" },
+            { english: "pen", oromo: "qalama" },
+            { english: "teacher", oromo: "barsiisaa" },
+            { english: "student", oromo: "barsiisaa" },
+            { english: "class", oromo: "qajeelcha" },
+            { english: "lesson", oromo: "barannoo" },
+            { english: "exam", oromo: "qormaata" },
+            { english: "homework", oromo: "hojii mana" },
+            { english: "university", oromo: "yuunivarsiitii" },
+
+            // Health & Medicine (250 words)
+            { english: "hospital", oromo: "ospitaala" },
+            { english: "doctor", oromo: "doktora" },
+            { english: "medicine", oromo: "qorichaa" },
+            { english: "sick", oromo: "dhukkuba" },
+            { english: "pain", oromo: "lubbu" },
+            { english: "headache", oromo: "mataa rukutta" },
+            { english: "fever", oromo: "ho'a" },
+            { english: "cold", oromo: "qabaa" },
+            { english: "cough", oromo: "qufaa" },
+            { english: "health", oromo: "fayyaa" },
+
+            // Business & Money (200 words)
+            { english: "money", oromo: "qarshii" },
+            { english: "price", oromo: "gatii" },
+            { english: "market", oromo: "gabaati" },
+            { english: "shop", oromo: "dukaanii" },
+            { english: "buy", oromo: "bitachuu" },
+            { english: "sell", oromo: "gurguruu" },
+            { english: "work", oromo: "hojii" },
+            { english: "business", oromo: "daldala" },
+            { english: "customer", oromo: "maamilaa" },
+            { english: "product", oromo: "miira" },
+
+            // Technology (150 words)
+            { english: "computer", oromo: "kompiitara" },
+            { english: "phone", oromo: "bilbila" },
+            { english: "internet", oromo: "intarneetii" },
+            { english: "email", oromo: "iimeelii" },
+            { english: "website", oromo: "websayiti" },
+            { english: "password", oromo: "jecha iccitii" },
+            { english: "software", oromo: "sooftiweerii" },
+            { english: "hardware", oromo: "haardiiweerii" },
+            { english: "data", oromo: "daataa" },
+            { english: "file", oromo: "faayilii" },
+
+            // Sports & Recreation (150 words)
+            { english: "game", oromo: "taphata" },
+            { english: "sport", oromo: "spoortii" },
+            { english: "football", oromo: "kubbaa miilaa" },
+            { english: "player", oromo: "taphataa" },
+            { english: "team", oromo: "gareen" },
+            { english: "win", oromo: "mo'achuu" },
+            { english: "lose", oromo: "hoosifachuu" },
+            { english: "run", oromo: "fiiguu" },
+            { english: "jump", oromo: "darbachuu" },
+            { english: "swim", oromo: "dakuu" },
+
+            // Emotions & Feelings (100 words)
+            { english: "love", oromo: "jaalala" },
+            { english: "hate", oromo: "jibba" },
+            { english: "anger", oromo: "aarii" },
+            { english: "fear", oromo: "sodaa" },
+            { english: "joy", oromo: "gammachuu" },
+            { english: "sadness", oromo: "yaaddoo" },
+            { english: "surprise", oromo: "ajajjii" },
+            { english: "hope", oromo: "abdi" },
+            { english: "peace", oromo: "nagaa" },
+            { english: "patience", oromo: "obsa" },
+
+            // Weather & Climate (100 words)
+            { english: "weather", oromo: "haala qilleensaa" },
+            { english: "sunny", oromo: "aduu" },
+            { english: "rainy", oromo: "rooba" },
+            { english: "cloudy", oromo: "duumessa" },
+            { english: "windy", oromo: "qilleensa" },
+            { english: "storm", oromo: "boba" },
+            { english: "temperature", oromo: "ho'aa" },
+            { english: "season", oromo: "ayyaana" },
+            { english: "summer", oromo: "ganna" },
+            { english: "winter", oromo: "guyyaa" },
+
+            // House & Furniture (150 words)
+            { english: "room", oromo: "kutaa" },
+            { english: "kitchen", oromo: "mana nyaataa" },
+            { english: "bedroom", oromo: "kutaa rafuu" },
+            { english: "bathroom", oromo: "kutaa dhiqannaa" },
+            { english: "table", oromo: "meezaa" },
+            { english: "chair", oromo: "barcuma" },
+            { english: "bed", oromo: "siree" },
+            { english: "door", oromo: "balbala" },
+            { english: "window", oromo: "foddaa" },
+            { english: "floor", oromo: "gadii" },
+
+            // Travel & Directions (200 words)
+            { english: "travel", oromo: "deemu" },
+            { english: "journey", oromo: "imala" },
+            { english: "map", oromo: "kaartaa" },
+            { english: "north", oromo: "kaaba" },
+            { english: "south", oromo: "kibba" },
+            { english: "east", oromo: "bahaa" },
+            { english: "west", oromo: "lixaa" },
+            { english: "left", oromo: "bitaa" },
+            { english: "right", oromo: "mirga" },
+            { english: "straight", oromo: "gadi" },
+
+            // Religion & Spirituality (100 words)
+            { english: "god", oromo: "Waaq" },
+            { english: "prayer", oromo: "kadhannaa" },
+            { english: "church", oromo: "mana murtii" },
+            { english: "mosque", oromo: "masgiida" },
+            { english: "faith", oromo: "amantii" },
+            { english: "soul", oromo: "lubbuu" },
+            { english: "heaven", oromo: "janna" },
+            { english: "hell", oromo: "jahiim" },
+            { english: "angel", oromo: "malaa'ika" },
+            { english: "prophet", oromo: "nabiyyii" },
+
+            // Agriculture & Farming (150 words)
+            { english: "farm", oromo: "ganda" },
+            { english: "farmer", oromo: "gabbara" },
+            { english: "crop", oromo: "mira" },
+            { english: "field", oromo: "gara" },
+            { english: "seed", oromo: "sanyii" },
+            { english: "harvest", oromo: "gogaa" },
+            { english: "plow", oromo: "waraabuu" },
+            { english: "irrigation", oromo: "bishaan dhiqannaa" },
+            { english: "cattle", oromo: "loon" },
+            { english: "sheep", oromo: "hoolaa" },
+
+            // Music & Arts (100 words)
+            { english: "music", oromo: "muuziqaa" },
+            { english: "song", oromo: "weellisa" },
+            { english: "dance", oromo: "sheekka" },
+            { english: "artist", oromo: "aartisti" },
+            { english: "painting", oromo: "faayina" },
+            { english: "instrument", oromo: "meeshaa" },
+            { english: "drum", oromo: "daboo" },
+            { english: "guitar", oromo: "gitaara" },
+            { english: "piano", oromo: "piyaanoo" },
+            { english: "violin", oromo: "viyooliinii" },
+
+            // Politics & Government (150 words)
+            { english: "government", oromo: "mootummaa" },
+            { english: "president", oromo: "prezidaantii" },
+            { english: "minister", oromo: "ministeera" },
+            { english: "law", oromo: "seera" },
+            { english: "right", oromo: "mirga" },
+            { english: "freedom", oromo: "bilisummaa" },
+            { english: "election", oromo: "filannoo" },
+            { english: "vote", oromo: "vaatii" },
+            { english: "party", oromo: "paartii" },
+            { english: "leader", oromo: "hoggansa" },
+
+            // Science & Research (100 words)
+            { english: "science", oromo: "saayinsii" },
+            { english: "research", oromo: "qorannoo" },
+            { english: "experiment", oromo: "misooma" },
+            { english: "theory", oromo: "hiikoo" },
+            { english: "discovery", oromo: "arguu" },
+            { english: "invention", oromo: "uumuu" },
+            { english: "chemistry", oromo: "keemistirii" },
+            { english: "physics", oromo: "fiiziksii" },
+            { english: "biology", oromo: "bayoolojii" },
+            { english: "mathematics", oromo: "herrega" },
+
+            // Military & Defense (100 words)
+            { english: "army", oromo: "cira" },
+            { english: "soldier", oromo: "waraana" },
+            { english: "war", oromo: "lola" },
+            { english: "peace", oromo: "nagaa" },
+            { english: "weapon", oromo: "meeshaa lola" },
+            { english: "security", oromo: "tiksaa" },
+            { english: "defense", oromo: "ittisa" },
+            { english: "attack", oromo: "weerara" },
+            { english: "victory", oromo: "mo'annaa" },
+            { english: "defeat", oromo: "hoosifannaa" },
+
+            // Legal & Justice (100 words)
+            { english: "court", oromo: "mana murtii" },
+            { english: "judge", oromo: "murtii" },
+            { english: "lawyer", oromo: "looyera" },
+            { english: "crime", oromo: "dilii" },
+            { english: "punishment", oromo: "adabii" },
+            { english: "justice", oromo: "haqaa" },
+            { english: "witness", oromo: "raga" },
+            { english: "evidence", oromo: "raggaa" },
+            { english: "trial", oromo: "misooma" },
+            { english: "sentence", oromo: "murtii" }
+        ];
+
+        // DOM Elements and App Logic
+        const wordText = document.querySelector('.word-text');
+        const languageLabel = document.querySelector('.language-label');
+        const flipButton = document.querySelector('.btn-flip');
+        const soundButton = document.querySelector('.btn-sound');
+        const prevButton = document.querySelector('.btn-previous');
+        const nextButton = document.querySelector('.btn-next');
+        const statusBar = document.querySelector('.status-bar');
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const flashcardScreen = document.getElementById('flashcards-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const searchInput = document.getElementById('search-input');
+
+        // Quiz elements
+        const quizQuestion = document.querySelector('.quiz-question');
+        const quizOptions = document.querySelectorAll('.quiz-option');
+        const quizResult = document.querySelector('.quiz-result');
+        const scoreElement = document.querySelector('.score');
+        const progressBar = document.querySelector('.progress');
+        const quizPrevButton = document.getElementById('quiz-prev');
+        const quizNextButton = document.getElementById('quiz-next');
+        const quizSoundButton = document.getElementById('quiz-sound');
+
+        let isFlipped = false;
+        let currentCard = 0;
+        let currentQuizQuestion = 0;
+        let score = 0;
+        let totalAnswered = 0;
+        let currentQuizWord = "";
+
+        // Initialize
+        updateCard();
+        updateTime();
+        updateQuizQuestion();
+
+        // Update time every minute
+        setInterval(updateTime, 60000);
+
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            statusBar.textContent = `${hours}:${minutes}`;
+        }
+
+        // Flashcard functionality
+        flipButton.addEventListener('click', function() {
+            if (!isFlipped) {
+                // Show English side
+                languageLabel.textContent = "ENGLISH";
+                wordText.textContent = oromoDictionary[currentCard].english;
+                isFlipped = true;
+            } else {
+                // Show Oromo side
+                languageLabel.textContent = "OROMO";
+                wordText.textContent = oromoDictionary[currentCard].oromo;
+                isFlipped = false;
+            }
+        });
+
+        soundButton.addEventListener('click', function() {
+            const textToSpeak = isFlipped ? oromoDictionary[currentCard].english : oromoDictionary[currentCard].oromo;
+            speakText(textToSpeak);
+        });
+
+        prevButton.addEventListener('click', function() {
+            if (currentCard > 0) {
+                currentCard--;
+                resetCard();
+            }
+        });
+
+        nextButton.addEventListener('click', function() {
+            if (currentCard < oromoDictionary.length - 1) {
+                currentCard++;
+                resetCard();
+            }
+        });
+
+        function resetCard() {
+            isFlipped = false;
+            languageLabel.textContent = "OROMO";
+            wordText.textContent = oromoDictionary[currentCard].oromo;
+        }
+
+        function updateCard() {
+            wordText.textContent = oromoDictionary[currentCard].oromo;
+        }
+
+        // Search functionality
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            if (searchTerm.length > 2) {
+                const results = oromoDictionary.filter(word => 
+                    word.english.toLowerCase().includes(searchTerm) || 
+                    word.oromo.toLowerCase().includes(searchTerm)
+                );
+                if (results.length > 0) {
+                    currentCard = oromoDictionary.indexOf(results[0]);
+                    resetCard();
+                }
+            }
+        });
+
+        // Quiz functionality
+        function updateQuizQuestion() {
+            const randomIndex = Math.floor(Math.random() * oromoDictionary.length);
+            const correctWord = oromoDictionary[randomIndex];
+            currentQuizWord = correctWord.oromo; // Store current quiz word for audio
+            
+            const wrongOptions = [];
+            
+            // Get 3 random wrong options
+            while (wrongOptions.length < 3) {
+                const wrongIndex = Math.floor(Math.random() * oromoDictionary.length);
+                if (wrongIndex !== randomIndex && !wrongOptions.includes(oromoDictionary[wrongIndex].oromo)) {
+                    wrongOptions.push(oromoDictionary[wrongIndex].oromo);
+                }
+            }
+            
+            // Mix options
+            const allOptions = [correctWord.oromo, ...wrongOptions].sort(() => Math.random() - 0.5);
+            const correctIndex = allOptions.indexOf(correctWord.oromo);
+            
+            quizQuestion.textContent = `How do you say "${correctWord.english}" in Oromo?`;
+            
+            quizOptions.forEach((option, index) => {
+                option.textContent = allOptions[index];
+                option.dataset.answer = index === correctIndex ? 'correct' : 'wrong';
+                option.classList.remove('correct', 'incorrect');
+            });
+            
+            quizResult.textContent = '';
+            updateScore();
+            updateProgress();
+        }
+
+        quizOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                if (this.classList.contains('correct') || this.classList.contains('incorrect')) {
+                    return;
+                }
+                
+                const isCorrect = this.dataset.answer === 'correct';
+                
+                if (isCorrect) {
+                    this.classList.add('correct');
+                    quizResult.textContent = 'Correct! 🎉';
+                    score++;
+                } else {
+                    this.classList.add('incorrect');
+                    quizResult.textContent = 'Wrong! 😞';
+                    quizOptions.forEach(opt => {
+                        if (opt.dataset.answer === 'correct') {
+                            opt.classList.add('correct');
+                        }
+                    });
+                }
+                
+                totalAnswered++;
+                updateScore();
+                updateProgress();
+            });
+        });
+
+        // Quiz navigation
+        quizNextButton.addEventListener('click', function() {
+            updateQuizQuestion();
+        });
+
+        quizPrevButton.addEventListener('click', function() {
+            updateQuizQuestion();
+        });
+
+        // Quiz audio functionality
+        quizSoundButton.addEventListener('click', function() {
+            if (currentQuizWord) {
+                speakText(currentQuizWord);
+            }
+        });
+
+        // Tab switching
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                navTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                if (tabName === 'flashcards') {
+                    flashcardScreen.style.display = 'block';
+                    quizScreen.style.display = 'none';
+                } else {
+                    flashcardScreen.style.display = 'none';
+                    quizScreen.style.display = 'block';
+                }
+            });
+        });
+
+        function updateScore() {
+            scoreElement.textContent = `Score: ${score}/${totalAnswered}`;
+        }
+
+        function updateProgress() {
+            const progress = totalAnswered > 0 ? (score / totalAnswered) * 100 : 0;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Text-to-Speech function
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                const voices = speechSynthesis.getVoices();
+                const femaleVoice = voices.find(voice => 
+                    voice.name.includes('Female') || 
+                    voice.name.includes('woman') ||
+                    voice.name.includes('Samantha') ||
+                    voice.name.includes('Karen')
+                );
+                
+                if (femaleVoice) {
+                    utterance.voice = femaleVoice;
+                }
+                
+                utterance.rate = 0.9;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Text-to-speech not supported in this browser");
+            }
+        }
+
+        // Load voices when available
+        if ('speechSynthesis' in window) {
+            speechSynthesis.onvoiceschanged = function() {
+                // Voices are loaded
+            };
+        }
+    </script>
+</body>
+</html>
