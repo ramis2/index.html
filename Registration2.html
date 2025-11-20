@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oromo Master - Learn Oromo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #667eea;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .app-container {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background: white;
+            color: #2c3e50;
+        }
+
+        .section {
+            display: none;
+            padding: 30px 20px;
+            min-height: 400px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section.active {
+            display: flex;
+        }
+
+        .flashcard {
+            border: 2px solid #4a6491;
+            border-radius: 15px;
+            padding: 40px 20px;
+            margin: 20px 0;
+            text-align: center;
+            min-height: 200px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .flashcard[data-side="front"] {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #4a6491;
+        }
+
+        .flashcard[data-side="back"] {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            color: white;
+            border-color: #e67e22;
+        }
+
+        .side-indicator {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        #card-content {
+            position: relative;
+            width: 100%;
+        }
+
+        #card-front-text, #card-back-text {
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .pronunciation {
+            font-style: italic;
+            color: rgba(255,255,255,0.9);
+            margin-top: 15px;
+            font-size: 16px;
+        }
+
+        .flashcard-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .flashcard-controls button {
+            padding: 12px 20px;
+            border: none;
+            background: #4a6491;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            min-width: 100px;
+            font-weight: bold;
+        }
+
+        #audio-btn {
+            background: #e67e22;
+        }
+
+        #audio-btn.playing {
+            background: #27ae60;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .quiz-container {
+            width: 100%;
+            text-align: center;
+        }
+
+        #quiz-progress {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        #quiz-question {
+            font-size: 20px;
+            margin-bottom: 25px;
+            font-weight: bold;
+            color: #2c3e50;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .quiz-option {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            background: #e9ecef;
+            border-color: #4a6491;
+        }
+
+        .quiz-option.selected {
+            background: #4a6491;
+            color: white;
+            border-color: #2c3e50;
+        }
+
+        .quiz-option.correct {
+            background: #27ae60;
+            color: white;
+            border-color: #219653;
+        }
+
+        .quiz-option.incorrect {
+            background: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+
+        #submit-answer {
+            padding: 15px 30px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: bold;
+            width: 200px;
+        }
+
+        #submit-answer:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #quiz-feedback {
+            font-size: 18px;
+            margin-bottom: 15px;
+            min-height: 24px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .correct-feedback {
+            color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .incorrect-feedback {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        #quiz-score {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        #next-question {
+            padding: 15px 30px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: none;
+            font-weight: bold;
+            width: 200px;
+        }
+
+        /* Registration Form Styles */
+        .registration-form {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .register-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .register-btn:hover {
+            background: #219653;
+        }
+
+        .register-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .form-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .success-message {
+            background: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .download-section {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .download-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        .download-btn:hover {
+            background: #2980b9;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            80% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Oromo Master</h1>
+            <nav>
+                <button id="nav-flashcards" class="nav-btn active">Flashcards</button>
+                <button id="nav-quiz" class="nav-btn">Quiz</button>
+                <button id="nav-download" class="nav-btn">Download</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Flashcard Section -->
+            <section id="flashcard-section" class="section active">
+                <div class="flashcard" id="flashcard" data-side="front">
+                    <div id="card-content">
+                        <div class="side-indicator" id="side-indicator">ENGLISH</div>
+                        <div id="card-front">
+                            <p id="card-front-text">Click Next to Start</p>
+                        </div>
+                        <div id="card-back" style="display: none;">
+                            <p id="card-back-text"></p>
+                            <p id="card-pronunciation" class="pronunciation"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flashcard-controls">
+                    <button id="prev-btn">Previous</button>
+                    <button id="flip-btn">Flip Card</button>
+                    <button id="audio-btn">🔊 Play Sound</button>
+                    <button id="next-btn">Next</button>
+                </div>
+            </section>
+
+            <!-- Quiz Section -->
+            <section id="quiz-section" class="section">
+                <div class="quiz-container">
+                    <p id="quiz-progress">Question 1 of 10</p>
+                    <p id="quiz-question">What is the Oromo word for: "Hello"?</p>
+                    <div id="quiz-options" class="quiz-options"></div>
+                    <button id="submit-answer" disabled>Submit Answer</button>
+                    <p id="quiz-feedback"></p>
+                    <p id="quiz-score">Score: 0/0</p>
+                    <button id="next-question">Next Question</button>
+                </div>
+            </section>
+
+            <!-- Download Section -->
+            <section id="download-section" class="section">
+                <div class="registration-form">
+                    <h2>Download Oromo Master</h2>
+                    <p>Register to download the app file</p>
+                    
+                    <form id="registrationForm">
+                        <div class="form-group">
+                            <label for="userName">Full Name *</label>
+                            <input type="text" id="userName" name="name" required placeholder="Enter your full name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="userEmail">Email Address *</label>
+                            <input type="email" id="userEmail" name="email" required placeholder="Enter your email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="userCountry">Country *</label>
+                            <input type="text" id="userCountry" name="country" required placeholder="Enter your country">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="userInterest">How did you hear about us?</label>
+                            <input type="text" id="userInterest" name="interest" placeholder="Friend, Social Media, Search, etc.">
+                        </div>
+
+                        <button type="submit" class="register-btn" id="registerBtn">
+                            Register & Download
+                        </button>
+                    </form>
+
+                    <div id="formMessage" class="form-message" style="display: none;"></div>
+
+                    <div class="download-section" id="downloadSection">
+                        <h3>✅ Registration Successful!</h3>
+                        <p>Thank you for registering! You can now download the app.</p>
+                        <button class="download-btn" onclick="downloadApp()">
+                            📥 Download Oromo Master App
+                        </button>
+                        <p style="font-size: 14px; margin-top: 10px; color: #666;">
+                            File will be saved as "Oromo-Master-App.html"
+                        </p>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 15px; background: #e8f4fd; border-radius: 8px;">
+                        <h4>📋 Why Register?</h4>
+                        <p style="font-size: 14px; margin: 5px 0;">• Get updates on new features</p>
+                        <p style="font-size: 14px; margin: 5px 0;">• Access to future Oromo learning resources</p>
+                        <p style="font-size: 14px; margin: 5px 0;">• Join the Oromo learning community</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Oromo Data - KEEP YOUR EXISTING 2500 WORDS HERE!
+        const oromoData = [
+            // YOUR EXISTING 2500 WORDS STAY HERE - DON'T TOUCH THIS ARRAY!
+            { english: "Hello", oromo: "Akkam", pronunciation: "Ah-kahm" },
+            { english: "Thank you", oromo: "Galatoomaa", pronunciation: "Gah-lah-toh-mah" },
+            { english: "How are you?", oromo: "Akkam jirta?", pronunciation: "Ah-kahm jeer-tah?" },
+            { english: "I am fine", oromo: "Nagaa", pronunciation: "Nah-gah" },
+            { english: "Goodbye", oromo: "Nagaatti", pronunciation: "Nah-gah-tee" },
+            { english: "Yes", oromo: "Eeyyee", pronunciation: "Ay-yay" },
+            { english: "No", oromo: "Lakki", pronunciation: "Lah-kee" },
+            { english: "Water", oromo: "Bishaan", pronunciation: "Bee-shahn" },
+            { english: "Food", oromo: "Nyataa", pronunciation: "Nyah-tah" }
+            // ... ALL YOUR 2500 WORDS ...
+        ];
+
+        let currentCardIndex = 0;
+        let isFlipped = false;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        const quizLength = 10;
+
+        // Initialize the app
+        function initApp() {
+            updateCard();
+            console.log("Oromo Master loaded with", oromoData.length, "words");
+        }
+
+        // Flashcard functions
+        function updateCard() {
+            const card = oromoData[currentCardIndex];
+            const flashcard = document.getElementById('flashcard');
+            const sideIndicator = document.getElementById('side-indicator');
+            
+            document.getElementById('card-front-text').textContent = card.english;
+            document.getElementById('card-back-text').textContent = card.oromo;
+            document.getElementById('card-pronunciation').textContent = card.pronunciation;
+            
+            document.getElementById('card-front').style.display = 'block';
+            document.getElementById('card-back').style.display = 'none';
+            flashcard.setAttribute('data-side', 'front');
+            sideIndicator.textContent = 'ENGLISH';
+            isFlipped = false;
+        }
+
+        document.getElementById('flip-btn').onclick = function() {
+            const flashcard = document.getElementById('flashcard');
+            const sideIndicator = document.getElementById('side-indicator');
+            
+            if (isFlipped) {
+                document.getElementById('card-front').style.display = 'block';
+                document.getElementById('card-back').style.display = 'none';
+                flashcard.setAttribute('data-side', 'front');
+                sideIndicator.textContent = 'ENGLISH';
+            } else {
+                document.getElementById('card-front').style.display = 'none';
+                document.getElementById('card-back').style.display = 'block';
+                flashcard.setAttribute('data-side', 'back');
+                sideIndicator.textContent = 'OROMO';
+            }
+            isFlipped = !isFlipped;
+        };
+
+        document.getElementById('prev-btn').onclick = function() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateCard();
+            }
+        };
+
+        document.getElementById('next-btn').onclick = function() {
+            if (currentCardIndex < oromoData.length - 1) {
+                currentCardIndex++;
+                updateCard();
+            }
+        };
+
+        document.getElementById('audio-btn').onclick = function() {
+            const audioBtn = this;
+            const currentCard = oromoData[currentCardIndex];
+            
+            audioBtn.classList.add('playing');
+            audioBtn.textContent = "🔊 Playing...";
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(currentCard.oromo);
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+                
+                setTimeout(() => {
+                    audioBtn.classList.remove('playing');
+                    audioBtn.textContent = "🔊 Play Sound";
+                }, 2000);
+            } else {
+                alert("🔊 " + currentCard.oromo + "\n\nPronunciation: " + currentCard.pronunciation);
+                audioBtn.classList.remove('playing');
+                audioBtn.textContent = "🔊 Play Sound";
+            }
+        };
+
+        // QUIZ FUNCTIONS
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedOption = null;
+            updateQuizProgress();
+            showQuestion();
+            updateScore();
+            document.getElementById('submit-answer').style.display = 'block';
+            document.getElementById('next-question').style.display = 'none';
+            document.getElementById('quiz-feedback').textContent = '';
+            document.getElementById('quiz-score').style.display = 'block';
+        }
+
+        function showQuestion() {
+            selectedOption = null;
+            document.getElementById('submit-answer').disabled = true;
+            document.getElementById('quiz-feedback').textContent = '';
+            document.getElementById('quiz-feedback').className = '';
+            document.getElementById('next-question').style.display = 'none';
+            
+            const questionIndex = Math.floor(Math.random() * oromoData.length);
+            const questionData = oromoData[questionIndex];
+            
+            document.getElementById('quiz-question').textContent = `What is the Oromo word for: "${questionData.english}"?`;
+            document.getElementById('quiz-question').setAttribute('data-correct-answer', questionData.oromo);
+            
+            const options = [questionData.oromo];
+            while (options.length < 4) {
+                const randomIndex = Math.floor(Math.random() * oromoData.length);
+                const randomOromo = oromoData[randomIndex].oromo;
+                if (!options.includes(randomOromo)) {
+                    options.push(randomOromo);
+                }
+            }
+            
+            shuffleArray(options);
+            
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'quiz-option';
+                button.textContent = option;
+                button.onclick = function() {
+                    document.querySelectorAll('.quiz-option').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    selectedOption = option;
+                    document.getElementById('submit-answer').disabled = false;
+                };
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        document.getElementById('submit-answer').onclick = function() {
+            if (!selectedOption) return;
+            
+            const correctAnswer = document.getElementById('quiz-question').getAttribute('data-correct-answer');
+            const isCorrect = selectedOption === correctAnswer;
+            
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                if (option.textContent === correctAnswer) {
+                    option.classList.add('correct');
+                } else if (option.textContent === selectedOption && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            if (isCorrect) {
+                score++;
+                document.getElementById('quiz-feedback').textContent = 'Correct! 🎉';
+                document.getElementById('quiz-feedback').className = 'correct-feedback';
+                celebrate();
+            } else {
+                document.getElementById('quiz-feedback').textContent = `Incorrect. Correct answer: ${correctAnswer}`;
+                document.getElementById('quiz-feedback').className = 'incorrect-feedback';
+            }
+            
+            updateScore();
+            document.getElementById('submit-answer').disabled = true;
+            document.getElementById('next-question').style.display = 'block';
+        };
+
+        document.getElementById('next-question').onclick = function() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizLength) {
+                updateQuizProgress();
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        };
+
+        function endQuiz() {
+            document.getElementById('quiz-question').textContent = 'Quiz Complete!';
+            document.getElementById('quiz-options').innerHTML = '';
+            document.getElementById('submit-answer').style.display = 'none';
+            document.getElementById('next-question').style.display = 'none';
+            document.getElementById('quiz-feedback').textContent = `Final Score: ${score}/${quizLength}`;
+        }
+
+        function updateQuizProgress() {
+            document.getElementById('quiz-progress').textContent = `Question ${currentQuestionIndex + 1} of ${quizLength}`;
+        }
+
+        function updateScore() {
+            document.getElementById('quiz-score').textContent = `Score: ${score}/${currentQuestionIndex + 1}`;
+        }
+
+        function celebrate() {
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.style.animation = 'bounce 0.5s ease-in-out';
+            setTimeout(() => {
+                feedback.style.animation = '';
+            }, 500);
+        }
+
+        // REGISTRATION AND DOWNLOAD FUNCTIONS
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const registerBtn = document.getElementById('registerBtn');
+            const formMessage = document.getElementById('formMessage');
+            
+            // Get form data
+            const formData = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                country: document.getElementById('userCountry').value,
+                interest: document.getElementById('userInterest').value || 'Not specified',
+                timestamp: new Date().toLocaleString(),
+                page: 'Oromo Master App Download'
+            };
+            
+            // Validate required fields
+            if (!formData.name || !formData.email || !formData.country) {
+                formMessage.textContent = '❌ Please fill all required fields.';
+                formMessage.className = 'form-message error-message';
+                formMessage.style.display = 'block';
+                return;
+            }
+            
+            // Show loading
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'Sending Registration...';
+            formMessage.style.display = 'none';
+            
+            // Send registration email
+            sendRegistrationEmail(formData);
+        });
+
+        function sendRegistrationEmail(formData) {
+            // Simulate email sending - shows details in console
+            setTimeout(() => {
+                // Show what would be emailed in console
+                console.log('📧 REGISTRATION DETAILS FOR hundehumna@yahoo.com:');
+                console.log('=========================================');
+                console.log('Name:', formData.name);
+                console.log('Email:', formData.email);
+                console.log('Country:', formData.country);
+                console.log('How they heard:', formData.interest);
+                console.log('Timestamp:', formData.timestamp);
+                console.log('=========================================');
+                
+                // Show success to user
+                showSuccessMessage(formData);
+                
+            }, 1500);
+        }
+
+        function showSuccessMessage(formData) {
+            const formMessage = document.getElementById('formMessage');
+            const downloadSection = document.getElementById('downloadSection');
+            const registerBtn = document.getElementById('registerBtn');
+            
+            // Show success message
+            formMessage.innerHTML = '✅ Registration successful!<br>Download link activated.';
+            formMessage.className = 'form-message success-message';
+            formMessage.style.display = 'block';
+            
+            // Show download section
+            downloadSection.style.display = 'block';
+            
+            // Reset button
+            registerBtn.disabled = false;
+            registerBtn.textContent = 'Register & Download';
+            
+            alert('Registration received! You can now download the Oromo Master app.');
+        }
+
+        function downloadApp() {
+            const htmlContent = `<!DOCTYPE html>${document.documentElement.outerHTML}`;
+            const blob = new Blob([htmlContent], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Oromo-Master-App.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Oromo Master app downloaded! Share the Oromo language with friends and family.');
+        }
+
+        // Navigation
+        document.getElementById('nav-flashcards').onclick = function() {
+            showSection('flashcard-section', 'nav-flashcards');
+        };
+
+        document.getElementById('nav-quiz').onclick = function() {
+            showSection('quiz-section', 'nav-quiz');
+            startQuiz();
+        };
+
+        document.getElementById('nav-download').onclick = function() {
+            showSection('download-section', 'nav-download');
+        };
+
+        function showSection(sectionId, navId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            document.getElementById(navId).classList.add('active');
+        }
+
+        // Initialize the app when page loads
+        window.onload = initApp;
+    </script>
+</body>
+</html>
