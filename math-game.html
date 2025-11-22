@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Master Pro - Educational Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .difficulty-btn {
+            background: #4CAF50;
+            padding: 12px 25px;
+            margin: 5px;
+        }
+
+        .operation-btn {
+            background: #FF9800;
+            padding: 12px 20px;
+            margin: 5px;
+            font-size: 1em;
+        }
+
+        .answer-btn {
+            background: #2196F3;
+            padding: 15px 20px;
+            margin: 8px;
+            min-width: 80px;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .problem {
+            font-size: 3em;
+            margin: 30px 0;
+            color: #333;
+        }
+
+        .feedback {
+            font-size: 1.5em;
+            margin: 20px 0;
+            min-height: 40px;
+        }
+
+        .correct {
+            color: #4CAF50;
+        }
+
+        .incorrect {
+            color: #f44336;
+        }
+
+        .score-display {
+            font-size: 4em;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        .level-badge {
+            background: #FF9800;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .high-scores {
+            margin: 20px 0;
+        }
+
+        .high-score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .problem {
+                font-size: 2.5em;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="screen active">
+            <h1>🎮 Math Master Pro By Jamal Ahmed For Kids Age 3-12</h1>
+            <p class="subtitle">The ultimate math challenge with division and sounds!</p>
+            <button class="btn" onclick="showScreen('difficultyScreen')">Start Game</button>
+            <button class="btn" onclick="showScreen('operationsScreen')">Choose Operations</button>
+            <button class="btn" onclick="showScreen('settingsScreen')">Settings</button>
+            <button class="btn" onclick="showScreen('highScoresScreen')">High Scores</button>
+            <button class="btn" onclick="showScreen('instructionsScreen')">How to Play</button>
+        </div>
+
+        <!-- Operations Screen -->
+        <div id="operationsScreen" class="screen">
+            <h2>Choose Math Operations</h2>
+            <p>Select which operations you want to practice:</p>
+            <div style="margin: 20px 0;">
+                <button class="btn operation-btn" id="addBtn" onclick="toggleOperation('addition')">➕ Addition</button>
+                <button class="btn operation-btn" id="subBtn" onclick="toggleOperation('subtraction')">➖ Subtraction</button>
+                <button class="btn operation-btn" id="mulBtn" onclick="toggleOperation('multiplication')">✖️ Multiplication</button>
+                <button class="btn operation-btn" id="divBtn" onclick="toggleOperation('division')">➗ Division</button>
+            </div>
+            <button class="btn" onclick="showScreen('welcomeScreen')">Back</button>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settingsScreen" class="screen">
+            <h2>Game Settings</h2>
+            <div class="settings-row">
+                <span>Sound Effects:</span>
+                <label class="switch">
+                    <input type="checkbox" id="soundToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="settings-row">
+                <span>Game Time (seconds):</span>
+                <select id="gameTime">
+                    <option value="30">30</option>
+                    <option value="60" selected>60</option>
+                    <option value="90">90</option>
+                    <option value="120">120</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <span>Negative Answers:</span>
+                <label class="switch">
+                    <input type="checkbox" id="negativeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button class="btn" onclick="saveSettings()">Save Settings</button>
+            <button class="btn" onclick="showScreen('welcomeScreen')">Back</button>
+        </div>
+
+        <!-- High Scores Screen -->
+        <div id="highScoresScreen" class="screen">
+            <h2>High Scores</h2>
+            <div class="high-scores" id="highScoresList">
+                <!-- High scores will be loaded here -->
+            </div>
+            <button class="btn" onclick="clearHighScores()">Clear Scores</button>
+            <button class="btn" onclick="showScreen('welcomeScreen')">Back</button>
+        </div>
+
+        <!-- Instructions Screen -->
+        <div id="instructionsScreen" class="screen">
+            <h2>How to Play</h2>
+            <div style="text-align: left; margin: 20px 0; line-height: 1.6;">
+                <p>🎯 <strong>Objective:</strong> Solve math problems as quickly and accurately as possible!</p>
+                <p>⭐ <strong>Scoring:</strong> +10 points for correct answers, -5 for wrong answers</p>
+                <p>⚡ <strong>Time Bonus:</strong> Faster answers earn more points!</p>
+                <p>🏆 <strong>Levels:</strong> Easy → Medium → Hard → Expert</p>
+                <p>➗ <strong>Division:</strong> Now with division problems (whole number answers only)</p>
+                <p>🔊 <strong>Sounds:</strong> Toggle sound effects in settings</p>
+                <p>💡 <strong>Tip:</strong> Practice daily to improve your speed and accuracy!</p>
+            </div>
+            <button class="btn" onclick="showScreen('welcomeScreen')">Back</button>
+        </div>
+
+        <!-- Difficulty Screen -->
+        <div id="difficultyScreen" class="screen">
+            <h2>Choose Difficulty</h2>
+            <button class="btn difficulty-btn" onclick="startGame('easy')">Easy (1-10)</button>
+            <button class="btn difficulty-btn" onclick="startGame('medium')">Medium (1-20)</button>
+            <button class="btn difficulty-btn" onclick="startGame('hard')">Hard (1-50)</button>
+            <button class="btn difficulty-btn" onclick="startGame('expert')">Expert (1-100)</button>
+            <br>
+            <button class="btn" onclick="showScreen('welcomeScreen')">Back</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen">
+            <div class="game-stats">
+                <div>Score: <span id="score">0</span></div>
+                <div>Time: <span id="timer">60</span>s</div>
+                <div>Level: <span id="level">1</span></div>
+            </div>
+            
+            <div class="problem" id="mathProblem">5 + 3 = ?</div>
+            
+            <div class="feedback" id="feedback"></div>
+            
+            <div class="options" id="answerOptions">
+                <!-- Answer buttons will be generated here -->
+            </div>
+            
+            <button class="btn" onclick="endGame()">End Game</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="screen">
+            <h2>Game Over!</h2>
+            <div class="score-display" id="finalScore">0</div>
+            <p>Problems Solved: <span id="problemsSolved">0</span></p>
+            <p>Correct Answers: <span id="correctAnswers">0</span></p>
+            <p>Accuracy: <span id="accuracy">0%</span></p>
+            <p id="performanceMessage">Keep practicing!</p>
+            <div id="newHighScore" style="display: none; color: gold; font-weight: bold; font-size: 1.2em;">
+                🏆 New High Score! 🏆
+            </div>
+            <button class="btn" onclick="showScreen('difficultyScreen')">Play Again</button>
+            <button class="btn" onclick="showScreen('welcomeScreen')">Main Menu</button>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let score = 0;
+        let timeLeft = 60;
+        let timer;
+        let currentLevel = 1;
+        let correctAnswers = 0;
+        let totalProblems = 0;
+        let currentDifficulty = 'easy';
+        let currentProblem = {};
+        let enabledOperations = ['addition', 'subtraction', 'multiplication', 'division'];
+        let soundEnabled = true;
+        let allowNegativeAnswers = false;
+        let gameTime = 60;
+        let highScores = JSON.parse(localStorage.getItem('mathGameHighScores')) || [];
+
+        // Sound functions
+        function playSound(type) {
+            if (!soundEnabled) return;
+            
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            switch(type) {
+                case 'correct':
+                    playBeep(audioContext, 523.25, 0.3); // C5
+                    break;
+                case 'wrong':
+                    playBeep(audioContext, 220, 0.3); // A3
+                    break;
+                case 'levelup':
+                    playBeep(audioContext, 659.25, 0.2); // E5
+                    setTimeout(() => playBeep(audioContext, 783.99, 0.2), 200); // G5
+                    break;
+                case 'gameover':
+                    playBeep(audioContext, 392, 0.5); // G4
+                    break;
+                case 'highscore':
+                    playBeep(audioContext, 523.25, 0.2); // C5
+                    setTimeout(() => playBeep(audioContext, 659.25, 0.2), 200); // E5
+                    setTimeout(() => playBeep(audioContext, 783.99, 0.5), 400); // G5
+                    break;
+            }
+        }
+
+        function playBeep(audioContext, frequency, duration) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        // Screen management
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            
+            if (screenId === 'highScoresScreen') {
+                loadHighScores();
+            }
+        }
+
+        // Operation selection
+        function toggleOperation(operation) {
+            const index = enabledOperations.indexOf(operation);
+            const button = document.getElementById(operation.substring(0, 3) + 'Btn');
+            
+            if (index > -1) {
+                enabledOperations.splice(index, 1);
+                button.style.opacity = '0.5';
+            } else {
+                enabledOperations.push(operation);
+                button.style.opacity = '1';
+            }
+            
+            // Ensure at least one operation is selected
+            if (enabledOperations.length === 0) {
+                enabledOperations.push('addition');
+                document.getElementById('addBtn').style.opacity = '1';
+            }
+        }
+
+        // Settings
+        function saveSettings() {
+            soundEnabled = document.getElementById('soundToggle').checked;
+            gameTime = parseInt(document.getElementById('gameTime').value);
+            allowNegativeAnswers = document.getElementById('negativeToggle').checked;
+            
+            // Save to localStorage
+            localStorage.setItem('mathGameSettings', JSON.stringify({
+                soundEnabled,
+                gameTime,
+                allowNegativeAnswers,
+                enabledOperations
+            }));
+            
+            alert('Settings saved!');
+            showScreen('welcomeScreen');
+        }
+
+        function loadSettings() {
+            const savedSettings = JSON.parse(localStorage.getItem('mathGameSettings'));
+            if (savedSettings) {
+                soundEnabled = savedSettings.soundEnabled !== undefined ? savedSettings.soundEnabled : true;
+                gameTime = savedSettings.gameTime || 60;
+                allowNegativeAnswers = savedSettings.allowNegativeAnswers || false;
+                enabledOperations = savedSettings.enabledOperations || ['addition', 'subtraction', 'multiplication', 'division'];
+                
+                // Update UI
+                document.getElementById('soundToggle').checked = soundEnabled;
+                document.getElementById('gameTime').value = gameTime;
+                document.getElementById('negativeToggle').checked = allowNegativeAnswers;
+                
+                // Update operation buttons
+                document.querySelectorAll('.operation-btn').forEach(btn => {
+                    btn.style.opacity = '0.5';
+                });
+                
+                enabledOperations.forEach(op => {
+                    document.getElementById(op.substring(0, 3) + 'Btn').style.opacity = '1';
+                });
+            }
+        }
+
+        // High scores
+        function loadHighScores() {
+            const highScoresList = document.getElementById('highScoresList');
+            highScoresList.innerHTML = '';
+            
+            if (highScores.length === 0) {
+                highScoresList.innerHTML = '<p>No high scores yet. Play a game to set one!</p>';
+                return;
+            }
+            
+            // Sort scores from highest to lowest
+            highScores.sort((a, b) => b.score - a.score);
+            
+            // Display top 10 scores
+            highScores.slice(0, 10).forEach((score, index) => {
+                const scoreElement = document.createElement('div');
+                scoreElement.className = 'high-score-item';
+                scoreElement.innerHTML = `
+                    <span>${index + 1}. ${score.difficulty} - ${score.operations.join(', ')}</span>
+                    <span>${score.score} points</span>
+                `;
+                highScoresList.appendChild(scoreElement);
+            });
+        }
+
+        function saveHighScore() {
+            const newScore = {
+                score: score,
+                difficulty: currentDifficulty,
+                operations: enabledOperations,
+                date: new Date().toLocaleDateString()
+            };
+            
+            highScores.push(newScore);
+            localStorage.setItem('mathGameHighScores', JSON.stringify(highScores));
+            
+            // Check if this is a new high score
+            const sortedScores = [...highScores].sort((a, b) => b.score - a.score);
+            if (sortedScores[0].score === score) {
+                document.getElementById('newHighScore').style.display = 'block';
+                playSound('highscore');
+            }
+        }
+
+        function clearHighScores() {
+            if (confirm('Are you sure you want to clear all high scores?')) {
+                highScores = [];
+                localStorage.setItem('mathGameHighScores', JSON.stringify(highScores));
+                loadHighScores();
+            }
+        }
+
+        // Game initialization
+        function startGame(difficulty) {
+            currentDifficulty = difficulty;
+            score = 0;
+            timeLeft = gameTime;
+            currentLevel = 1;
+            correctAnswers = 0;
+            totalProblems = 0;
+            
+            updateDisplay();
+            showScreen('gameScreen');
+            generateProblem();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function generateProblem() {
+            let num1, num2, operation, answer;
+            
+            // Set number ranges based on difficulty
+            let maxNumber;
+            switch(currentDifficulty) {
+                case 'easy': maxNumber = 10; break;
+                case 'medium': maxNumber = 20; break;
+                case 'hard': maxNumber = 50; break;
+                case 'expert': maxNumber = 100; break;
+                default: maxNumber = 10;
+            }
+            
+            // Select a random operation from enabled operations
+            const operationTypes = [];
+            if (enabledOperations.includes('addition')) operationTypes.push('+');
+            if (enabledOperations.includes('subtraction')) operationTypes.push('-');
+            if (enabledOperations.includes('multiplication')) operationTypes.push('*');
+            if (enabledOperations.includes('division')) operationTypes.push('/');
+            
+            const operationType = operationTypes[Math.floor(Math.random() * operationTypes.length)];
+            
+            switch(operationType) {
+                case '+':
+                    num1 = Math.floor(Math.random() * maxNumber) + 1;
+                    num2 = Math.floor(Math.random() * maxNumber) + 1;
+                    answer = num1 + num2;
+                    break;
+                case '-':
+                    num1 = Math.floor(Math.random() * maxNumber) + 1;
+                    if (allowNegativeAnswers) {
+                        num2 = Math.floor(Math.random() * maxNumber) + 1;
+                    } else {
+                        num2 = Math.floor(Math.random() * num1) + 1;
+                    }
+                    answer = num1 - num2;
+                    break;
+                case '*':
+                    num1 = Math.floor(Math.random() * (maxNumber/5)) + 1;
+                    num2 = Math.floor(Math.random() * (maxNumber/5)) + 1;
+                    answer = num1 * num2;
+                    break;
+                case '/':
+                    // For division, ensure whole number results
+                    answer = Math.floor(Math.random() * (maxNumber/5)) + 1;
+                    num2 = Math.floor(Math.random() * (maxNumber/5)) + 1;
+                    num1 = answer * num2;
+                    break;
+            }
+            
+            currentProblem = {
+                num1: num1,
+                num2: num2,
+                operation: operationType,
+                answer: answer
+            };
+            
+            displayProblem();
+        }
+
+        function displayProblem() {
+            const problemElement = document.getElementById('mathProblem');
+            let displayOperation = currentProblem.operation;
+            if (displayOperation === '*') displayOperation = '×';
+            if (displayOperation === '/') displayOperation = '÷';
+            
+            problemElement.textContent = `${currentProblem.num1} ${displayOperation} ${currentProblem.num2} = ?`;
+            
+            generateAnswerOptions();
+        }
+
+        function generateAnswerOptions() {
+            const optionsContainer = document.getElementById('answerOptions');
+            optionsContainer.innerHTML = '';
+            
+            const correctAnswer = currentProblem.answer;
+            let options = [correctAnswer];
+            
+            // Generate wrong answers
+            while (options.length < 4) {
+                let wrongAnswer;
+                const variation = Math.floor(Math.random() * 5) + 1;
+                const shouldAdd = Math.random() > 0.5;
+                
+                if (shouldAdd) {
+                    wrongAnswer = correctAnswer + variation;
+                } else {
+                    wrongAnswer = correctAnswer - variation;
+                }
+                
+                // Ensure wrong answer is unique and positive (unless negatives allowed)
+                if (!options.includes(wrongAnswer) && (allowNegativeAnswers || wrongAnswer > 0)) {
+                    options.push(wrongAnswer);
+                }
+            }
+            
+            // Shuffle options
+            options = options.sort(() => Math.random() - 0.5);
+            
+            // Create buttons for each option
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'btn answer-btn';
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedAnswer) {
+            totalProblems++;
+            const feedbackElement = document.getElementById('feedback');
+            
+            if (selectedAnswer === currentProblem.answer) {
+                // Correct answer
+                let points = 10;
+                
+                // Time bonus (faster answers get more points)
+                if (timeLeft > gameTime * 0.75) points += 5;
+                else if (timeLeft > gameTime * 0.5) points += 3;
+                else if (timeLeft > gameTime * 0.25) points += 1;
+                
+                score += points;
+                correctAnswers++;
+                feedbackElement.textContent = `✅ Correct! +${points} points`;
+                feedbackElement.className = 'feedback correct';
+                playSound('correct');
+            } else {
+                // Wrong answer
+                score = Math.max(0, score - 5);
+                feedbackElement.textContent = `❌ Wrong! Correct answer: ${currentProblem.answer}`;
+                feedbackElement.className = 'feedback incorrect';
+                playSound('wrong');
+            }
+            
+            updateDisplay();
+            
+            // Level progression
+            if (correctAnswers >= currentLevel * 5) {
+                currentLevel++;
+                feedbackElement.textContent += ` 🎉 Level Up! Level ${currentLevel}`;
+                playSound('levelup');
+            }
+            
+            // Next problem after short delay
+            setTimeout(() => {
+                feedbackElement.textContent = '';
+                feedbackElement.className = 'feedback';
+                generateProblem();
+            }, 1500);
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = currentLevel;
+            document.getElementById('timer').textContent = timeLeft;
+        }
+
+        function endGame() {
+            clearInterval(timer);
+            playSound('gameover');
+            
+            const accuracy = totalProblems > 0 ? Math.round((correctAnswers / totalProblems) * 100) : 0;
+            
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('problemsSolved').textContent = totalProblems;
+            document.getElementById('correctAnswers').textContent = correctAnswers;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+            
+            // Performance message
+            const performanceElement = document.getElementById('performanceMessage');
+            if (score >= 200) {
+                performanceElement.textContent = "🏆 Math Wizard! Amazing performance!";
+            } else if (score >= 100) {
+                performanceElement.textContent = "⭐ Excellent work! You're a math star!";
+            } else if (score >= 50) {
+                performanceElement.textContent = "👍 Good job! Keep practicing!";
+            } else {
+                performanceElement.textContent = "💪 Keep practicing! You'll get better!";
+            }
+            
+            // Save high score
+            saveHighScore();
+            
+            showScreen('resultsScreen');
+        }
+
+        // Initialize the game
+        function initGame() {
+            loadSettings();
+            showScreen('welcomeScreen');
+        }
+
+        // Start the game when page loads
+        window.onload = initGame;
+    </script>
+</body>
+</html>
