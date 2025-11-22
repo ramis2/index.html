@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="utf-8">
+  <title>Artist Ali Birra – Yaadannoo 3ffaa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --primary:#005e54;
+      --accent:#f0c808;
+      --bg:#ffffff;
+      --card:#f7f7f7;
+      --text:#222;
+      --radius:14px;
+      --trans:.35s ease;
+    }
+    [data-theme="dark"]{
+      --primary:#00a693;
+      --accent:#ffd93d;
+      --bg:#121212;
+      --card:#1e1e1e;
+      --text:#e4e4e4;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.7;
+      transition:background var(--trans),color var(--trans);
+    }
+    nav{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(255,255,255,.08);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(255,255,255,.15);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:.6rem 1.2rem;
+    }
+    .nav-links{display:flex;gap:.8rem}
+    .nav-links a{
+      color:#fff;
+      text-decoration:none;
+      padding:.4rem .9rem;
+      border-radius:20px;
+      background:rgba(255,255,255,.15);
+      font-size:.95rem;
+      transition:background var(--trans);
+    }
+    .nav-links a:hover{background:var(--accent);color:var(--primary)}
+    header{
+      position:relative;
+      height:60vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      color:#fff;
+      overflow:hidden;
+    }
+    header::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%23005e54"/><stop offset="100%" stop-color="%2300a693"/></linearGradient></defs><rect width="1200" height="600" fill="url(%23g)"/></svg>') center/cover;
+      filter:brightness(.85);
+      z-index:-2;
+    }
+    .hero-content{z-index:2;padding:1rem}
+    .hero-content h1{font-size:clamp(2.2rem,5vw,3.5rem)}
+    .hero-content p{font-size:1.2rem;margin-top:.5rem;opacity:.9}
+    .theme-switch{
+      background:rgba(255,255,255,.15);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.25);
+      color:#fff;
+      width:38px;height:38px;
+      border-radius:50%;
+      cursor:pointer;
+      display:grid;place-items:center;
+      font-size:1.1rem;
+    }
+    main{max-width:900px;margin:-4rem auto 0;padding:0 1rem 4rem}
+    section{background:var(--card);border-radius:var(--radius);padding:2rem;margin-bottom:2rem;box-shadow:0 8px 30px rgba(0,0,0,.05);transition:transform var(--trans)}
+    section:hover{transform:translateY(-4px)}
+    h2{color:var(--primary);margin-bottom:1rem;font-size:1.5rem}
+    .projects{display:grid;gap:1.2rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+    .card{
+      background:var(--bg);
+      border-left:4px solid var(--accent);
+      padding:1.2rem 1.4rem;
+      border-radius:var(--radius);
+      transition:box-shadow var(--trans);
+    }
+    .card:hover{box-shadow:0 6px 22px rgba(0,0,0,.1)}
+    .card strong{display:block;margin-bottom:.3rem;font-size:1.05rem}
+    footer{
+      text-align:center;padding:2.5rem 1rem 3rem;font-size:.9rem;opacity:.7
+    }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:0}}
+    section{animation:fadeUp .8s backwards}
+    section:nth-child(2){animation-delay:.1s}
+    section:nth-child(3){animation-delay:.2s}
+    section:nth-child(4){animation-delay:.3s}
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="nav-links">
+      <a href="ali-birra.html">English</a>
+      <a class="active">Afaan Oromoo</a>
+    </div>
+    <button class="theme-switch" aria-label="Toggle theme" onclick="toggleTheme()">🌗</button>
+  </nav>
+
+  <header>
+    <div class="hero-content">
+      <h1>Artist Ali Birra</h1>
+      <p>Yaadannoo Waggaa 3ffaa – Fakkeenya Dhaloota Itti aanuuf</p>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div style="background:var(--primary);color:#fff;padding:1.2rem 1.5rem;border-radius:var(--radius)">
+        Sirna yaadannoo waggaa 3ffaa Artist Alii Birraa cimsinee itti fufsiisuuf ni cimnna!
+      </div>
+      <p style="margin-top:1.2rem">
+        Artist Dr. Ali Birra 6 November 2022 addunyaa irraa dabran. Waggaan waggaan yaadannoo isaanii gochuu irratti
+        bara 2025 sirna 3ffaa isaanii sababeeffachuuf hojii jahaa 5 karoorfanne jirra:
+      </p>
+    </section>
+
+    <section>
+      <h2>Hojilee Yaadannoo 5</h2>
+      <div class="projects">
+        <div class="card"><strong>1. Uffata &amp; Meeshaalee Barnootaa</strong> Da'iimaan 17 tahan hadhaa ykn abbaa dhaban uffata fi meeshaalee barnootaa kennu.</div>
+        <div class="card"><strong>2. Sochii Sportii</strong> Gareelee addaa addaa jiddutti tapha michooma gaggeessuun tokkumsa cimsu.</div>
+        <div class="card"><strong>3. Guyyaa Dr. Ali Birraa</strong> Da'iimaan 10 hir’ina qama umamaa qaban walitti qabuun hamileen jaraan godhu.</div>
+        <div class="card"><strong>4. Gargaarsa Manguddoota</strong> Umriin 60 ol tahan rakkoo fayyaa qaban jajjabeeysuuf gargaaru.</div>
+        <div class="card"><strong>5. Sirna Cufinsaa</strong> Waltajjii guddaa ummata Oromoo hunda hirmaachise galmaa keessatti rawwachuun xumuru.</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Waamicha Keenya</h2>
+      <p>Hojilee kanaan kayyoo Dr. Ali Birra galma gahuuf carraaqnee jirra. Isaan lafa jala ture hojii ummataaf gochaa turan; nutis dhaloota arraaf fakkeenyaa isaanii dabarsuuf dirqama keenya baana. Hawaasa Oromoo magaalaa Kaayroo irraa ka’anii hojii kana bifa jabaan qopheessaa jirra.</p>
+    </section>
+
+    <section>
+      <h2>Hubachiisa</h2>
+      <p>Sirna yaadannoo kana rawwachuuf hayyama Addee Ilillii Birraa fi Faawundeeshinii Alii Birraa irraa arganne jirra.</p>
+    </section>
+
+    <section>
+      <h2>Maal Gochu Dandeessa?</h2>
+      <p>Wantoota tarreesse hundi gatii warqee barbaadu. Meeshaa barnootaa tokko illee kennitanis sirna kana jabeessitan ta’a. Maal gootaan ispoonsorra <a href="#sponsor">nu cinaa dhaabbadhaa</a>.</p>
+    </section>
+  </main>
+
+  <footer>
+    &copy; <span id="yr"></span> Global Oromo Memorial Initiative | Designed with &hearts; for Ali Birra
+  </footer>
+
+  <script>
+    const html=document.documentElement;
+    const toggleTheme=()=>{
+      html.dataset.theme=html.dataset.theme==="dark"?"light":"dark";
+      localStorage.setItem("theme",html.dataset.theme);
+    };
+    (()=>{
+      const saved=localStorage.getItem("theme");
+      const prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if(saved==="dark"||(!saved&&prefersDark))html.dataset.theme="dark";
+      document.getElementById('yr').textContent=new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>
+
