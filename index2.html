@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Game Hub - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .logo p {
+            color: rgba(255,255,255,0.9);
+            font-size: 16px;
+            margin-top: 8px;
+        }
+
+        .auth-form {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            color: #333;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 16px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .demo-accounts {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .demo-accounts h3 {
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .demo-account {
+            margin: 6px 0;
+            color: #666;
+            padding: 4px 0;
+        }
+
+        .back-to-main {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .back-to-main a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-main a:hover {
+            background: rgba(255,255,255,0.3);
+            text-decoration: none;
+        }
+
+        .reset-steps {
+            background: #e8f4fd;
+            border: 1px solid #b6d7f7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 13px;
+            color: #2c5aa0;
+        }
+
+        .reset-steps ol {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .reset-steps li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🎮 Math Game Hub</h1>
+            <p>Login to Download Math Master Pro</p>
+        </div>
+
+        <div class="auth-form">
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('login')">Sign in</div>
+                <div class="tab" onclick="showTab('signup')">Sign up</div>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="form-section active">
+                <div class="form-group">
+                    <label for="loginEmail">Email address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                    <div id="loginEmailError" class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                    <div id="loginPasswordError" class="error-message"></div>
+                </div>
+
+                <button class="btn" onclick="login()">Sign in</button>
+                <div id="loginSuccess" class="success-message"></div>
+
+                <div class="forgot-password">
+                    <a href="#" onclick="showTab('forgot')">Forgot password?</a>
+                </div>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signupForm" class="form-section">
+                <div class="form-group">
+                    <label for="signupUsername">Username</label>
+                    <input type="text" id="signupUsername" placeholder="Choose a username">
+                    <div id="signupUsernameError" class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupEmail">Email address</label>
+                    <input type="email" id="signupEmail" placeholder="Enter your email">
+                    <div id="signupEmailError" class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" placeholder="Create a password">
+                    <div id="signupPasswordError" class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password">
+                    <div id="confirmPasswordError" class="error-message"></div>
+                </div>
+
+                <button class="btn" onclick="signup()">Create account</button>
+                <div id="signupSuccess" class="success-message"></div>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <div id="forgotForm" class="form-section">
+                <div class="form-group">
+                    <label for="forgotEmail">Enter your email address</label>
+                    <input type="email" id="forgotEmail" placeholder="Your registered email">
+                    <div id="forgotEmailError" class="error-message"></div>
+                    <div id="forgotSuccess" class="success-message"></div>
+                </div>
+
+                <div class="reset-steps">
+                    <strong>🔒 Password Reset Process:</strong>
+                    <ol>
+                        <li>Enter your email address above</li>
+                        <li>We'll check if you have an account</li>
+                        <li>Reset your password to a temporary one</li>
+                        <li>You can change it after logging in</li>
+                    </ol>
+                </div>
+
+                <button class="btn" onclick="sendResetEmail()">Reset Password</button>
+                
+                <div class="forgot-password">
+                    <a href="#" onclick="showTab('login')">← Back to Login</a>
+                </div>
+            </div>
+
+            <!-- Reset Password Form -->
+            <div id="resetForm" class="form-section">
+                <div class="form-group">
+                    <label for="resetEmail">Email address</label>
+                    <input type="email" id="resetEmail" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" placeholder="Enter new password">
+                    <div id="newPasswordError" class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
+                    <div id="confirmNewPasswordError" class="error-message"></div>
+                </div>
+
+                <button class="btn" onclick="resetPassword()">Update Password</button>
+                <div id="resetSuccess" class="success-message"></div>
+                
+                <div class="forgot-password">
+                    <a href="#" onclick="showTab('login')">← Back to Login</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-accounts">
+            <h3>Demo Accounts (for testing):</h3>
+            <div class="demo-account">📧 Email: student@mathhub.com | 🔐 Password: math123</div>
+            <div class="demo-account">📧 Email: teacher@mathhub.com | 🔐 Password: teach456</div>
+            <div class="demo-account">✨ Or create your own account!</div>
+        </div>
+
+        <div class="back-to-main">
+            <a href="index.html">← Back to Main Math Game</a>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function showTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Only show tabs for login and signup, not for forgot/reset
+            if (tabName === 'login' || tabName === 'signup') {
+                event.target.classList.add('active');
+            }
+
+            // Update forms
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabName + 'Form').classList.add('active');
+
+            // Clear messages
+            clearMessages();
+        }
+
+        // Clear all error/success messages
+        function clearMessages() {
+            document.querySelectorAll('.error-message, .success-message').forEach(msg => {
+                msg.style.display = 'none';
+                msg.textContent = '';
+            });
+        }
+
+        // Sign up function
+        function signup() {
+            clearMessages();
+            
+            const username = document.getElementById('signupUsername').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            let isValid = true;
+
+            // Validation
+            if (!username) {
+                showError('signupUsernameError', 'Username is required');
+                isValid = false;
+            }
+
+            if (!email) {
+                showError('signupEmailError', 'Email is required');
+                isValid = false;
+            } else if (!isValidEmail(email)) {
+                showError('signupEmailError', 'Please enter a valid email address');
+                isValid = false;
+            }
+
+            if (!password) {
+                showError('signupPasswordError', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showError('signupPasswordError', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+
+            if (password !== confirmPassword) {
+                showError('confirmPasswordError', 'Passwords do not match');
+                isValid = false;
+            }
+
+            if (isValid) {
+                // Check if user already exists
+                const users = JSON.parse(localStorage.getItem('mathHubUsers')) || [];
+                const userExists = users.find(user => user.email === email);
+                
+                if (userExists) {
+                    showError('signupEmailError', 'An account with this email already exists');
+                    return;
+                }
+
+                // Create new user
+                const newUser = {
+                    id: Date.now(),
+                    username: username,
+                    email: email,
+                    password: password,
+                    createdAt: new Date().toISOString()
+                };
+
+                users.push(newUser);
+                localStorage.setItem('mathHubUsers', JSON.stringify(users));
+                localStorage.setItem('currentUser', JSON.stringify(newUser));
+
+                showSuccess('signupSuccess', 'Account created successfully! Redirecting...');
+                
+                setTimeout(() => {
+                    window.location.href = 'download.html';
+                }, 1500);
+            }
+        }
+
+        // Login function
+        function login() {
+            clearMessages();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            let isValid = true;
+
+            if (!email) {
+                showError('loginEmailError', 'Email is required');
+                isValid = false;
+            }
+
+            if (!password) {
+                showError('loginPasswordError', 'Password is required');
+                isValid = false;
+            }
+
+            if (isValid) {
+                const users = JSON.parse(localStorage.getItem('mathHubUsers')) || [];
+                const user = users.find(u => u.email === email && u.password === password);
+
+                if (user) {
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    showSuccess('loginSuccess', 'Login successful! Redirecting...');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'download.html';
+                    }, 1500);
+                } else {
+                    showError('loginPasswordError', 'Invalid email or password');
+                }
+            }
+        }
+
+        // Forgot Password - Send Reset Email
+        function sendResetEmail() {
+            clearMessages();
+            
+            const email = document.getElementById('forgotEmail').value;
+
+            if (!email) {
+                showError('forgotEmailError', 'Please enter your email address');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showError('forgotEmailError', 'Please enter a valid email address');
+                return;
+            }
+
+            // Check if user exists
+            const users = JSON.parse(localStorage.getItem('mathHubUsers')) || [];
+            const userExists = users.find(user => user.email === email);
+
+            if (!userExists) {
+                showError('forgotEmailError', 'No account found with this email address');
+                return;
+            }
+
+            // Store the email for password reset
+            localStorage.setItem('resetEmail', email);
+            
+            // Show reset password form
+            document.getElementById('resetEmail').value = email;
+            showTab('reset');
+        }
+
+        // Reset Password
+        function resetPassword() {
+            clearMessages();
+            
+            const email = document.getElementById('resetEmail').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            let isValid = true;
+
+            if (!newPassword) {
+                showError('newPasswordError', 'New password is required');
+                isValid = false;
+            } else if (newPassword.length < 6) {
+                showError('newPasswordError', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                showError('confirmNewPasswordError', 'Passwords do not match');
+                isValid = false;
+            }
+
+            if (isValid) {
+                // Update user's password
+                const users = JSON.parse(localStorage.getItem('mathHubUsers')) || [];
+                const userIndex = users.findIndex(user => user.email === email);
+                
+                if (userIndex !== -1) {
+                    users[userIndex].password = newPassword;
+                    localStorage.setItem('mathHubUsers', JSON.stringify(users));
+                    
+                    // Clear reset email
+                    localStorage.removeItem('resetEmail');
+                    
+                    showSuccess('resetSuccess', 'Password updated successfully! You can now login with your new password.');
+                    
+                    setTimeout(() => {
+                        showTab('login');
+                        // Pre-fill the email in login form
+                        document.getElementById('loginEmail').value = email;
+                    }, 2000);
+                }
+            }
+        }
+
+        // Helper functions
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+
+        function showSuccess(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Check if user is already logged in
+        window.onload = function() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                window.location.href = 'download.html';
+            }
+
+            // Pre-fill demo accounts for testing
+            const demoUsers = [
+                { username: 'student', email: 'student@mathhub.com', password: 'math123' },
+                { username: 'teacher', email: 'teacher@mathhub.com', password: 'teach456' }
+            ];
+            
+            const existingUsers = JSON.parse(localStorage.getItem('mathHubUsers')) || [];
+            const newUsers = demoUsers.filter(demo => 
+                !existingUsers.find(existing => existing.email === demo.email)
+            );
+            
+            if (newUsers.length > 0) {
+                localStorage.setItem('mathHubUsers', JSON.stringify([...existingUsers, ...newUsers]));
+            }
+
+            // Check if there's a pending password reset
+            const resetEmail = localStorage.getItem('resetEmail');
+            if (resetEmail) {
+                document.getElementById('resetEmail').value = resetEmail;
+                showTab('reset');
+            }
+        };
+    </script>
+</body>
+</html>
