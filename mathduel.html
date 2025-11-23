@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Math Duel – pick your time</title>
+<style>
+  *{box-sizing:border-box;font-family:system-ui,Arial,Helvetica,sans-serif}
+  html,body{margin:0;height:100%;background:#f5f7fa;color:#222;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  #card{width:90%;max-width:420px;background:#fff;border-radius:14px;padding:22px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.15)}
+  h1{margin:0 0 10px;font-size:1.7rem}
+  #sum{font-size:2.3rem;margin:15px 0}
+  input[type=number]{width:100%;font-size:2rem;text-align:center;border:2px solid #ccd;border-radius:8px;padding:10px}
+  button{width:100%;font-size:1.25rem;padding:12px;margin-top:10px;border:none;border-radius:8px;background:#0077ff;color:#fff;cursor:pointer}
+  button:disabled{background:#aabbcc}
+  #bar{width:100%;height:10px;background:#e0e0e0;border-radius:5px;margin:12px 0;overflow:hidden}
+  #bar div{height:100%;background:#00c853;width:100%;transition:width 1s linear}
+  #score{font-size:1.25rem;margin-top:8px}
+  #endscreen,#gamescreen{display:none}
+  #extra{display:none;margin-top:8px}
+</style>
+</head>
+<body>
+<div id="card">
+  <h1>Math Duel</h1>
+
+  <!-- setup -->
+  <div id="setup">
+    <p>Choose minutes:</p>
+    <input id="minSel" type="number" min="1" max="10" value="2" style="width:100px;font-size:1.4rem">
+    <br><br>
+    <button onclick="initGame()">START GAME</button>
+  </div>
+
+  <!-- game -->
+  <div id="gamescreen">
+    <div id="bar"><div id="fill"></div></div>
+    <div id="score">Score: <span id="scr">0</span></div>
+    <div id="sum">get ready…</div>
+    <input id="ans" type="number" inputmode="numeric" autocomplete="off">
+    <button id="extra" onclick="addExtra()">+30 s extra time</button>
+  </div>
+
+  <!-- end -->
+  <div id="endscreen">
+    <h2>Time up!</h2>
+    <p>Final score: <b id="final">0</b></p>
+    <button onclick="location.reload()">Play again</button>
+  </div>
+</div>
+
+<script>
+const ops=[
+  {sign:'+',fn:(a,b)=>a+b},
+  {sign:'−',fn:(a,b)=>a-b},
+  {sign:'×',fn:(a,b)=>a*b},
+  {sign:'÷',fn:(a,b)=>a/b}
+];
+let score=0,answ,totalSec,leftSec,timerId,barId;
+const beep=new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQAAAAA=');
+const buzz=new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQAAAAA=');
+
+function playBeep(){beep.volume=0.4;beep.play().catch(()=>{});}
+function playBuzz(){buzz.volume=0.4;buzz.play().catch(()=>{});}
+
+function rand(n){return Math.floor(Math.random()*n)+1}
+
+function newQ(){
+  const op=ops[rand(4)-1];
+  let a,b;
+  if(op.sign==='÷'){
+    b=rand(12);
+    answ=rand(12);
+    a=b*answ;                 // exact division
+  }else if(op.sign==='×'){
+    a=rand(12);b=rand(12);
+    answ=a*b;
+  }else if(op.sign==='−'){
+    a=rand(30);b=rand(a);
+    answ=a-b;
+  }else{
+    a=rand(50);b=rand(50);
+    answ=a+b;
+  }
+  document.getElementById('sum').textContent=`${a} ${op.sign} ${b}`;
+  document.getElementById('ans').value='';
+  document.getElementById('ans').focus();
+}
+
+function check(){
+  if(Number(document.getElementById('ans').value)===answ){
+    score++;playBeep();
+    document.getElementById('scr').textContent=score;
+    newQ();
+  }else{
+    playBuzz();
+  }
+}
+
+function updateBar(){
+  leftSec--;
+  if(leftSec<=15) document.getElementById('extra').style.display='block';
+  if(leftSec<=0){endGame();return;}
+  const pct=(leftSec/totalSec)*100;
+  document.getElementById('fill').style.width=pct+'%';
+}
+
+function addExtra(){
+  leftSec+=30;
+  const pct=(leftSec/totalSec)*100;
+  document.getElementById('fill').style.width=pct+'%';
+}
+
+function initGame(){
+  const m=Math.max(1,Math.min(10,Number(document.getElementById('minSel').value)));
+  totalSec=leftSec=m*60;
+  document.getElementById('setup').style.display='none';
+  document.getElementById('gamescreen').style.display='block';
+  newQ();
+  timerId=setInterval(updateBar,1000);
+}
+
+function endGame(){
+  clearInterval(timerId);
+  document.getElementById('gamescreen').style.display='none';
+  document.getElementById('endscreen').style.display='block';
+  document.getElementById('final').textContent=score;
+}
+
+document.getElementById('ans').addEventListener('keyup',e=>{
+  if(e.key==='Enter')check();
+});
+</script>
+</body>
+</html>
+
