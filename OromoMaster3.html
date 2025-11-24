@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oromo Master - Accessible Language Learning</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --text: #333;
+            --text-light: #7f8c8d;
+            --card-bg: #fff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --focus-ring: 0 0 0 3px rgba(52, 152, 219, 0.5);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Skip to main content for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--secondary);
+            color: white;
+            padding: 8px;
+            z-index: 1000;
+            text-decoration: none;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--secondary);
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo span {
+            color: var(--secondary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        nav ul li a:focus {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        /* Download Button */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--success) 0%, #27ae60 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
+        }
+
+        .download-btn:focus {
+            outline: none;
+            box-shadow: var(--focus-ring), 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .download-btn.hidden {
+            display: none;
+        }
+
+        /* Download Success Message */
+        .download-success {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--success) 0%, #27ae60 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .download-success.show {
+            display: inline-flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Accessibility Controls */
+        .accessibility-bar {
+            background-color: var(--dark);
+            color: white;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .accessibility-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .accessibility-btn {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .accessibility-btn:hover, .accessibility-btn:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        /* Main Content */
+        .dashboard {
+            margin: 30px 0;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, var(--secondary) 0%, #2980b9 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .welcome-text h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .welcome-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .word-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .word-count .number {
+            font-size: 36px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .word-count .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .feature-card:hover, .feature-card:focus {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            outline: none;
+        }
+
+        .feature-card i {
+            font-size: 40px;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .progress-item {
+            text-align: center;
+            padding: 15px;
+            background-color: var(--light);
+            border-radius: 10px;
+        }
+
+        .progress-item .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--secondary);
+            display: block;
+        }
+
+        .progress-item .label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        /* Flashcard Preview */
+        .flashcard-preview {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .flashcard-container {
+            perspective: 1000px;
+            margin: 20px auto;
+            max-width: 500px;
+            height: 300px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, var(--secondary) 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, var(--success) 0%, #27ae60 100%);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .word {
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .translation {
+            font-size: 28px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .example {
+            font-style: italic;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 15px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        /* Audio Controls */
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .audio-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .audio-btn:hover, .audio-btn:focus {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        /* Categories Section */
+        .categories-section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-card:hover, .category-card:focus {
+            background-color: var(--secondary);
+            color: white;
+            transform: translateY(-3px);
+            outline: none;
+        }
+
+        .category-card i {
+            font-size: 30px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .category-card .count {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .category-card:hover .count, .category-card:focus .count {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .copyright {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Telephone Accessibility */
+        .telephone-access {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .telephone-access h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .telephone-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 15px 0;
+        }
+
+        .telephone-instructions {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .welcome-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .welcome-actions {
+                width: 100%;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .accessibility-controls {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .flashcard-container {
+                height: 250px;
+            }
+            
+            .word {
+                font-size: 32px;
+            }
+            
+            .translation {
+                font-size: 22px;
+            }
+        }
+
+        /* Animation for buttons */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn:hover, .btn:focus {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .btn-outline:hover, .btn-outline:focus {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* High contrast mode */
+        .high-contrast {
+            --primary: #000000;
+            --secondary: #ffffff;
+            --accent: #ffff00;
+            --light: #f0f0f0;
+            --dark: #000000;
+            --success: #00ff00;
+            --warning: #ffa500;
+            --text: #000000;
+            --text-light: #333333;
+            --card-bg: #ffffff;
+            --shadow: 0 0 0 2px #000000;
+        }
+
+        /* Large text mode */
+        .large-text {
+            font-size: 125%;
+        }
+
+        .large-text .word {
+            font-size: 48px;
+        }
+
+        .large-text .translation {
+            font-size: 32px;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="accessibility-bar">
+        <div class="container">
+            <div class="accessibility-controls">
+                <button class="accessibility-btn" id="high-contrast-btn" aria-label="Toggle high contrast mode">
+                    <i class="fas fa-adjust"></i> High Contrast
+                </button>
+                <button class="accessibility-btn" id="large-text-btn" aria-label="Toggle large text mode">
+                    <i class="fas fa-text-height"></i> Large Text
+                </button>
+                <button class="accessibility-btn" id="read-page-btn" aria-label="Read page content">
+                    <i class="fas fa-volume-up"></i> Read Page
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-language"></i>
+                    <h1>Oromo <span>Master</span></h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#"><i class="fas fa-layer-group"></i> Flashcards</a></li>
+                        <li><a href="#"><i class="fas fa-question-circle"></i> Quiz</a></li>
+                        <li><a href="#"><i class="fas fa-phone"></i> Telephone Access</a></li>
+                        <li><a href="#"><i class="fas fa-chart-line"></i> Progress</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <main id="main-content">
+            <section class="dashboard">
+                <div class="welcome-card">
+                    <div class="welcome-text">
+                        <h2>Akkam, Oromo Learner!</h2>
+                        <p>Master the Oromo language with our accessible platform featuring audio pronunciation and telephone access</p>
+                    </div>
+                    <div class="welcome-actions">
+                        <div class="word-count">
+                            <span class="number">25,000+</span>
+                            <span class="label">Oromo Words</span>
+                        </div>
+                        <a href="https://ramis2.github.io/index.html/OromoMaster1.html" class="download-btn" id="downloadLink">
+                            <i class="fas fa-download"></i> Download Oromo Master
+                        </a>
+                        <div class="download-success" id="downloadSuccess">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Download Complete! File saved as OromoMaster1.html</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="telephone-access">
+                    <h2>Telephone Access</h2>
+                    <p class="telephone-instructions">Learn Oromo anytime, anywhere using your telephone</p>
+                    <div class="telephone-number">
+                        <i class="fas fa-phone"></i> 1-800-OROMO-LEARN
+                    </div>
+                    <p>Call to access flashcards, quizzes, and pronunciation guides using your phone keypad</p>
+                    <div class="btn-group">
+                        <button class="btn" id="call-demo-btn">
+                            <i class="fas fa-phone"></i> Try Telephone Demo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card" tabindex="0">
+                        <i class="fas fa-layer-group"></i>
+                        <h3>Audio Flashcards</h3>
+                        <p>Learn with interactive flashcards featuring Oromo and English audio pronunciation</p>
+                    </div>
+                    <div class="feature-card" tabindex="0">
+                        <i class="fas fa-question-circle"></i>
+                        <h3>Spoken Quizzes</h3>
+                        <p>Audio-based quizzes that test your listening and pronunciation skills</p>
+                    </div>
+                    <div class="feature-card" tabindex="0">
+                        <i class="fas fa-phone"></i>
+                        <h3>Telephone Access</h3>
+                        <p>Access all learning materials through any telephone - no smartphone required</p>
+                    </div>
+                    <div class="feature-card" tabindex="0">
+                        <i class="fas fa-universal-access"></i>
+                        <h3>Full Accessibility</h3>
+                        <p>Designed for users with visual, hearing, or mobility impairments</p>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="section-header">
+                        <h2>Your Learning Progress</h2>
+                        <a href="#" class="btn btn-outline">View Details</a>
+                    </div>
+                    <div class="progress-stats">
+                        <div class="progress-item">
+                            <span class="value">1,247</span>
+                            <span class="label">Words Mastered</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="value">84%</span>
+                            <span class="label">Quiz Accuracy</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="value">36</span>
+                            <span class="label">Learning Streak</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="value">12</span>
+                            <span class="label">Categories Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flashcard-preview">
+                    <div class="section-header">
+                        <h2>Interactive Flashcard with Audio</h2>
+                        <div class="btn-group">
+                            <button class="btn"><i class="fas fa-arrow-left"></i> Previous</button>
+                            <button class="btn" id="flip-btn">Flip Card</button>
+                            <button class="btn">Next <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="flashcard-container">
+                        <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="Flashcard, click to flip">
+                            <div class="flashcard-front">
+                                <div class="word">Akkam</div>
+                                <div class="hint">Click or press spacebar to flip the card</div>
+                            </div>
+                            <div class="flashcard-back">
+                                <div class="translation">Hello / How are you?</div>
+                                <div class="example">Akkam bulte? - How are you?</div>
+                                <div class="hint">Click or press spacebar to flip back</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="audio-controls">
+                        <button class="audio-btn" id="play-oromo" aria-label="Play Oromo pronunciation">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <button class="audio-btn" id="play-english" aria-label="Play English translation">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <button class="audio-btn" id="play-example" aria-label="Play example sentence">
+                            <i class="fas fa-play-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="categories-section">
+                    <div class="section-header">
+                        <h2>Word Categories with Audio</h2>
+                        <a href="#" class="btn btn-outline">View All Categories</a>
+                    </div>
+                    <div class="categories-grid">
+                        <div class="category-card" tabindex="0">
+                            <i class="fas fa-utensils"></i>
+                            <div>Food & Dining</div>
+                            <div class="count">1,245 words</div>
+                        </div>
+                        <div class="category-card" tabindex="0">
+                            <i class="fas fa-home"></i>
+                            <div>Family & Home</div>
+                            <div class="count">892 words</div>
+                        </div>
+                        <div class="category-card" tabindex="0">
+                            <i class="fas fa-briefcase"></i>
+                            <div>Business</div>
+                            <div class="count">756 words</div>
+                        </div>
+                        <div class="category-card" tabindex="0">
+                            <i class="fas fa-plane"></i>
+                            <div>Travel</div>
+                            <div class="count">1,034 words</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    © 2023 Oromo Master - JA IT Solutions
+                </div>
+                <div class="footer-links">
+                    <a href="#">Accessibility Statement</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Flashcard functionality
+        const flashcard = document.getElementById('flashcard');
+        const flipBtn = document.getElementById('flip-btn');
+        
+        flashcard.addEventListener('click', function() {
+            this.classList.toggle('flipped');
+        });
+        
+        flashcard.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                this.classList.toggle('flipped');
+            }
+        });
+        
+        flipBtn.addEventListener('click', function() {
+            flashcard.classList.toggle('flipped');
+        });
+
+        // Audio functionality
+        const playOromo = document.getElementById('play-oromo');
+        const playEnglish = document.getElementById('play-english');
+        const playExample = document.getElementById('play-example');
+        
+        // For demo purposes, we'll use the Web Speech API
+        function speakText(text, lang) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 0.8;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Your browser doesn't support text-to-speech. For full audio functionality, please use Chrome, Edge, or Safari.");
+            }
+        }
+        
+        playOromo.addEventListener('click', function() {
+            speakText('Akkam', 'om-ET');
+        });
+        
+        playEnglish.addEventListener('click', function() {
+            speakText('Hello, how are you?', 'en-US');
+        });
+        
+        playExample.addEventListener('click', function() {
+            speakText('Akkam bulte? How are you?', 'en-US');
+        });
+
+        // Accessibility features
+        const highContrastBtn = document.getElementById('high-contrast-btn');
+        const largeTextBtn = document.getElementById('large-text-btn');
+        const readPageBtn = document.getElementById('read-page-btn');
+        const callDemoBtn = document.getElementById('call-demo-btn');
+        const downloadLink = document.getElementById('downloadLink');
+        const downloadSuccess = document.getElementById('downloadSuccess');
+        
+        highContrastBtn.addEventListener('click', function() {
+            document.body.classList.toggle('high-contrast');
+            this.setAttribute('aria-pressed', 
+                document.body.classList.contains('high-contrast'));
+        });
+        
+        largeTextBtn.addEventListener('click', function() {
+            document.body.classList.toggle('large-text');
+            this.setAttribute('aria-pressed', 
+                document.body.classList.contains('large-text'));
+        });
+        
+        readPageBtn.addEventListener('click', function() {
+            const pageTitle = document.querySelector('h1').textContent;
+            const welcomeText = document.querySelector('.welcome-text h2').textContent + '. ' + 
+                               document.querySelector('.welcome-text p').textContent;
+            speakText('Oromo Master. ' + welcomeText, 'en-US');
+        });
+        
+        callDemoBtn.addEventListener('click', function() {
+            alert("In a real implementation, this would connect to a telephone system that provides interactive Oromo lessons. For now, imagine calling 1-800-OROMO-LEARN to access the lessons!");
+        });
+
+        // Download link functionality - makes button disappear after download
+        downloadLink.addEventListener('click', function(e) {
+            // Prevent default link behavior
+            e.preventDefault();
+            
+            // Speak download confirmation
+            speakText('Downloading Oromo Master application. The file will be saved as Oromo Master 1 dot html', 'en-US');
+            
+            // Hide download button and show success message
+            downloadLink.classList.add('hidden');
+            downloadSuccess.classList.add('show');
+            
+            // Announce to screen readers
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = 'Download complete. Oromo Master file has been saved.';
+            document.body.appendChild(announcement);
+            
+            // Remove announcement after screen reader reads it
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 3000);
+            
+            // In a real implementation, this would actually download the file
+            // For now, we'll simulate the download
+            console.log('Downloading: https://ramis2.github.io/index.html/OromoMaster1.html');
+            
+            // Optional: Actually trigger the download after a delay
+            setTimeout(() => {
+                // Uncomment the line below to actually trigger the download
+                // window.location.href = 'https://ramis2.github.io/index.html/OromoMaster1.html';
+            }, 2000);
+        });
+
+        // Feature card interactions
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const feature = this.querySelector('h3').textContent;
+                alert(`Opening ${feature} feature...`);
+            });
+            
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    const feature = this.querySelector('h3').textContent;
+                    alert(`Opening ${feature} feature...`);
+                }
+            });
+        });
+
+        // Category card interactions
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const category = this.querySelector('div').textContent;
+                speakText(`Opening ${category} category`, 'en-US');
+            });
+            
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    const category = this.querySelector('div').textContent;
+                    speakText(`Opening ${category} category`, 'en-US');
+                }
+            });
+        });
+
+        // Screen reader only class for accessibility
+        const style = document.createElement('style');
+        style.textContent = `
+            .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
