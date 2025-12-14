@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound Quiz Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .question-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.4rem;
+            line-height: 1.5;
+        }
+        
+        .answers-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .answer-btn {
+            background: linear-gradient(45deg, #3a0ca3, #4361ee);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .answer-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(45deg, #4361ee, #4cc9f0);
+        }
+        
+        .answer-btn.correct {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            animation: pulse 0.5s;
+        }
+        
+        .answer-btn.wrong {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            animation: shake 0.5s;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .control-btn {
+            background: linear-gradient(45deg, #f72585, #b5179e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+        }
+        
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .sound-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .feedback {
+            text-align: center;
+            min-height: 30px;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4cc9f0, #4361ee);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        @media (max-width: 600px) {
+            .answers-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="sound-toggle" id="soundToggle">🔊</button>
+    
+    <div class="game-container">
+        <div class="header">
+            <h1>🎮Jamal Adeero's Quiz Challenge 🎮</h1>
+            <p>Test your knowledge with random questions!</p>
+        </div>
+        
+        <div class="score-board">
+            <div>Score: <span id="score">0</span></div>
+            <div>Question: <span id="questionNumber">1</span>/10</div>
+            <div>Time: <span id="timer">30</span>s</div>
+        </div>
+        
+        <div class="question-container">
+            <div id="question">Loading question...</div>
+        </div>
+        
+        <div class="answers-container" id="answersContainer">
+            <!-- Answer buttons will be generated here -->
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="nextBtn">
+                Next Question →
+            </button>
+            <button class="control-btn" id="restartBtn">
+                ↻ Restart Game
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game Variables
+        let score = 0;
+        let currentQuestionIndex = 0;
+        let questions = [];
+        let timer = 30;
+        let timerInterval;
+        let soundEnabled = true;
+        let audioContext;
+        let currentAudio;
+
+        // Sound Effects Functions using Web Audio API
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                console.log("Audio context initialized");
+            } catch (e) {
+                console.log("Web Audio API not supported:", e);
+                soundEnabled = false;
+                document.getElementById('soundToggle').textContent = '🔇';
+            }
+        }
+
+        function playSound(frequency, duration, type = 'sine', volume = 0.3) {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+                gainNode.gain.value = volume;
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log("Sound error:", e);
+            }
+        }
+
+        function playCorrectSound() {
+            playSound(523.25, 0.5); // C5
+            playSound(659.25, 0.5, 'sine', 0.2); // E5 (after delay)
+            setTimeout(() => playSound(783.99, 0.3), 100); // G5
+        }
+
+        function playWrongSound() {
+            playSound(261.63, 0.8, 'sawtooth'); // C4
+            playSound(196.00, 0.8, 'sawtooth', 0.2); // G3
+        }
+
+        function playClickSound() {
+            playSound(800, 0.1, 'square', 0.1);
+        }
+
+        function playGameOverSound() {
+            playSound(392.00, 0.3); // G4
+            setTimeout(() => playSound(349.23, 0.3), 200); // F4
+            setTimeout(() => playSound(293.66, 0.5), 400); // D4
+        }
+
+        function playStartSound() {
+            playSound(523.25, 0.2); // C5
+            setTimeout(() => playSound(659.25, 0.2), 100); // E5
+            setTimeout(() => playSound(783.99, 0.2), 200); // G5
+            setTimeout(() => playSound(1046.50, 0.4), 300); // C6
+        }
+
+        // Question Database
+        const questionDatabase = [
+            {
+                question: "What is the capital of France?",
+                answers: ["Berlin", "Madrid", "Paris", "Rome"],
+                correct: 2
+            },
+            {
+                question: "Which planet is known as the Red Planet?",
+                answers: ["Venus", "Mars", "Jupiter", "Saturn"],
+                correct: 1
+            },
+            {
+                question: "What is the largest mammal in the world?",
+                answers: ["Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
+                correct: 1
+            },
+            {
+                question: "Who painted the Mona Lisa?",
+                answers: ["Van Gogh", "Picasso", "Da Vinci", "Michelangelo"],
+                correct: 2
+            },
+            {
+                question: "What is the chemical symbol for gold?",
+                answers: ["Go", "Gd", "Au", "Ag"],
+                correct: 2
+            },
+            {
+                question: "How many continents are there?",
+                answers: ["5", "6", "7", "8"],
+                correct: 2
+            },
+            {
+                question: "What is the speed of light in vacuum?",
+                answers: ["300,000 km/s", "150,000 km/s", "1 million km/s", "3,000 km/s"],
+                correct: 0
+            },
+            {
+                question: "Who wrote 'Romeo and Juliet'?",
+                answers: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+                correct: 1
+            },
+            {
+                question: "What is the hardest natural substance on Earth?",
+                answers: ["Gold", "Iron", "Diamond", "Platinum"],
+                correct: 2
+            },
+            {
+                question: "How many colors are in a rainbow?",
+                answers: ["5", "6", "7", "8"],
+                correct: 2
+            }
+        ];
+
+        // Game Functions
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initializeGame() {
+            score = 0;
+            currentQuestionIndex = 0;
+            questions = shuffleArray([...questionDatabase]);
+            updateScore();
+            updateQuestionNumber();
+            loadQuestion();
+            startTimer();
+            playStartSound();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+
+            const question = questions[currentQuestionIndex];
+            const questionElement = document.getElementById('question');
+            const answersContainer = document.getElementById('answersContainer');
+            const feedbackElement = document.getElementById('feedback');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            questionElement.textContent = question.question;
+            feedbackElement.textContent = '';
+            feedbackElement.style.color = 'white';
+            nextBtn.disabled = true;
+            
+            // Clear previous answers
+            answersContainer.innerHTML = '';
+            
+            // Shuffle answers
+            const shuffledAnswers = shuffleArray([...question.answers]);
+            const correctAnswerIndex = shuffledAnswers.indexOf(question.answers[question.correct]);
+            
+            // Create answer buttons
+            shuffledAnswers.forEach((answer, index) => {
+                const button = document.createElement('button');
+                button.className = 'answer-btn';
+                button.textContent = answer;
+                button.onclick = () => checkAnswer(index, correctAnswerIndex);
+                answersContainer.appendChild(button);
+            });
+            
+            updateProgressBar();
+            resetTimer();
+        }
+
+        function checkAnswer(selectedIndex, correctIndex) {
+            if (soundEnabled) playClickSound();
+            
+            const buttons = document.querySelectorAll('.answer-btn');
+            const feedbackElement = document.getElementById('feedback');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            // Disable all buttons
+            buttons.forEach(btn => btn.disabled = true);
+            
+            // Mark correct and wrong answers
+            buttons.forEach((btn, index) => {
+                if (index === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (index === selectedIndex && index !== correctIndex) {
+                    btn.classList.add('wrong');
+                }
+            });
+            
+            // Check answer
+            if (selectedIndex === correctIndex) {
+                score += 10;
+                if (soundEnabled) playCorrectSound();
+                feedbackElement.textContent = "🎉 Correct! +10 points";
+                feedbackElement.style.color = "#2ecc71";
+            } else {
+                if (soundEnabled) playWrongSound();
+                feedbackElement.textContent = `❌ Wrong! The correct answer was: ${questions[currentQuestionIndex].answers[questions[currentQuestionIndex].correct]}`;
+                feedbackElement.style.color = "#e74c3c";
+            }
+            
+            updateScore();
+            nextBtn.disabled = false;
+            clearInterval(timerInterval);
+        }
+
+        function nextQuestion() {
+            if (soundEnabled) playClickSound();
+            currentQuestionIndex++;
+            updateQuestionNumber();
+            loadQuestion();
+            startTimer();
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function updateQuestionNumber() {
+            document.getElementById('questionNumber').textContent = currentQuestionIndex + 1;
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timer = 30;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timer--;
+                updateTimerDisplay();
+                
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            timer = 30;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timer').textContent = timer;
+            
+            // Change color when time is running out
+            const timerElement = document.getElementById('timer');
+            if (timer <= 10) {
+                timerElement.style.color = '#e74c3c';
+                timerElement.style.animation = 'pulse 1s infinite';
+            } else {
+                timerElement.style.color = 'white';
+                timerElement.style.animation = 'none';
+            }
+        }
+
+        function timeUp() {
+            const feedbackElement = document.getElementById('feedback');
+            const nextBtn = document.getElementById('nextBtn');
+            const buttons = document.querySelectorAll('.answer-btn');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            feedbackElement.textContent = "⏰ Time's up! Moving to next question...";
+            feedbackElement.style.color = "#f39c12";
+            nextBtn.disabled = false;
+            
+            if (soundEnabled) playWrongSound();
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            const questionElement = document.getElementById('question');
+            const answersContainer = document.getElementById('answersContainer');
+            const feedbackElement = document.getElementById('feedback');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            questionElement.textContent = "Game Over!";
+            answersContainer.innerHTML = '';
+            feedbackElement.textContent = `🎮 Final Score: ${score}/${questions.length * 10}`;
+            feedbackElement.style.color = "#9b59b6";
+            nextBtn.disabled = true;
+            
+            if (soundEnabled) playGameOverSound();
+            
+            setTimeout(() => {
+                if (confirm(`Game Over! Your score: ${score}\n\nPlay again?`)) {
+                    initializeGame();
+                }
+            }, 1000);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const soundToggle = document.getElementById('soundToggle');
+            soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+            
+            if (soundEnabled && !audioContext) {
+                initAudio();
+            }
+            
+            if (soundEnabled) playClickSound();
+        }
+
+        // Event Listeners
+        document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+        document.getElementById('restartBtn').addEventListener('click', initializeGame);
+        document.getElementById('soundToggle').addEventListener('click', toggleSound);
+
+        // Initialize game on load
+        window.addEventListener('load', () => {
+            initAudio();
+            initializeGame();
+        });
+
+        // Initialize audio on first user interaction (required by browsers)
+        document.addEventListener('click', function initAudioOnClick() {
+            if (!audioContext) {
+                initAudio();
+            }
+            document.removeEventListener('click', initAudioOnClick);
+        });
+    </script>
+</body>
+</html>

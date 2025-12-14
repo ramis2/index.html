@@ -1,0 +1,96 @@
+
+<!-- Add this button to your game -->
+<button class="control-btn" id="addQuestionsBtn" style="background: #1abc9c;">
+    + Add Questions
+</button>
+
+<!-- Add this modal at the end of body -->
+<div id="questionEditor" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; padding: 20px; overflow-y: auto;">
+    <div style="background: white; color: #333; max-width: 600px; margin: 50px auto; padding: 30px; border-radius: 15px;">
+        <h2 style="color: #2c3e50;">Add Custom Questions</h2>
+        
+        <div style="margin: 20px 0;">
+            <label>Question Text:</label>
+            <input type="text" id="customQuestion" style="width: 100%; padding: 10px; margin: 5px 0; border: 2px solid #ddd; border-radius: 5px;">
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <label>Correct Answer:</label>
+            <input type="text" id="customAnswer" style="width: 100%; padding: 10px; margin: 5px 0; border: 2px solid #ddd; border-radius: 5px;">
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <label>Difficulty:</label>
+            <select id="customDifficulty" style="width: 100%; padding: 10px; margin: 5px 0; border: 2px solid #ddd; border-radius: 5px;">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        
+        <button onclick="saveCustomQuestion()" style="background: #3498db; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+            Save Question
+        </button>
+        
+        <button onclick="closeEditor()" style="background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer;">
+            Close
+        </button>
+        
+        <div id="customQuestionsList" style="margin-top: 30px; max-height: 300px; overflow-y: auto;">
+            <h3>Your Custom Questions</h3>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add to your existing JavaScript
+document.getElementById('addQuestionsBtn').addEventListener('click', () => {
+    document.getElementById('questionEditor').style.display = 'block';
+    loadCustomQuestions();
+});
+
+function saveCustomQuestion() {
+    const question = document.getElementById('customQuestion').value;
+    const answer = document.getElementById('customAnswer').value;
+    const difficulty = document.getElementById('customDifficulty').value;
+    
+    if (question && answer) {
+        const customQuestions = JSON.parse(localStorage.getItem('fractionCustomQuestions') || '[]');
+        customQuestions.push({ question, correct: answer, difficulty });
+        localStorage.setItem('fractionCustomQuestions', JSON.stringify(customQuestions));
+        
+        alert('Question saved!');
+        document.getElementById('customQuestion').value = '';
+        document.getElementById('customAnswer').value = '';
+        loadCustomQuestions();
+    }
+}
+
+function loadCustomQuestions() {
+    const customQuestions = JSON.parse(localStorage.getItem('fractionCustomQuestions') || '[]');
+    const listDiv = document.getElementById('customQuestionsList');
+    
+    if (customQuestions.length === 0) {
+        listDiv.innerHTML = '<p>No custom questions yet.</p>';
+        return;
+    }
+    
+    listDiv.innerHTML = '<h3>Your Custom Questions (' + customQuestions.length + ')</h3>';
+    customQuestions.forEach((q, i) => {
+        listDiv.innerHTML += `
+            <div style="background: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 5px;">
+                <strong>${i+1}. ${q.question}</strong><br>
+                Answer: ${q.correct} | Difficulty: ${q.difficulty}
+                <button onclick="deleteQuestion(${i})" style="float: right; background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+                    Delete
+                </button>
+            </div>
+        `;
+    });
+}
+
+function closeEditor() {
+    document.getElementById('questionEditor').style.display = 'none';
+}
+</script>
+
