@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> By JA 0598 Algebraic Square Root Challenge</title>
+    <title>Algebraic Square Root Challenge</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
@@ -264,6 +264,28 @@
             transition: width 0.5s ease;
         }
         
+        .hint-box {
+            background-color: rgba(33, 150, 243, 0.2);
+            border: 2px solid #2196F3;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .hint-box h3 {
+            color: #90CAF9;
+            margin-bottom: 10px;
+        }
+        
+        .hint-example {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -300,12 +322,20 @@
             margin-top: 10px;
             font-style: italic;
         }
+        
+        .example {
+            background-color: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #FFD700;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>By JA 0598 Algebraic Square Root Challenge</h1>
-        <div class="subtitle">Test your algebra skills with 50+ square root problems!</div>
+        <h1>Algebraic Square Root Challenge</h1>
+        <div class="subtitle">Math fun for kids! 50+ square root problems with helpful hints!</div>
     </header>
     
     <div class="container">
@@ -314,19 +344,26 @@
             <div id="instructions">
                 <h2>How to Play</h2>
                 <ul>
-                    <li>You will be presented with 50+ algebraic problems involving square roots</li>
-                    <li>Solve each problem and enter your answer in the provided field</li>
-                    <li>Answers can be integers, simplified square roots, or expressions</li>
-                    <li>For square roots, use "sqrt()" notation (e.g., sqrt(2) for √2)</li>
-                    <li>You have 3 lives - incorrect answers will cost you a life</li>
-                    <li>Your score increases with each correct answer</li>
-                    <li>Complete all questions to get your final grade</li>
+                    <li>Solve 50+ fun algebra problems with square roots!</li>
+                    <li>Type your answer and click Submit</li>
+                    <li>Use "sqrt()" for square roots (Example: sqrt(2) for √2)</li>
+                    <li>You get 3 lives - be careful!</li>
+                    <li>Score 10 points for each correct answer</li>
+                    <li>Use the Hint button for helpful examples</li>
+                    <li>Complete all questions to get your grade</li>
                 </ul>
-                <p class="hint">Tip: Simplify square roots when possible (e.g., √8 = 2√2)</p>
+                
+                <div class="example">
+                    <strong>Examples for Kids:</strong><br>
+                    • √9 = 3 (because 3 × 3 = 9)<br>
+                    • √16 = 4 (because 4 × 4 = 16)<br>
+                    • √25 = 5 (because 5 × 5 = 25)<br>
+                    • √8 = 2√2 (because 8 = 4 × 2, and √4 = 2)
+                </div>
             </div>
             <div class="center">
                 <button id="start-btn" class="btn">Start Game</button>
-                <button id="toggle-audio-btn" class="btn btn-secondary">Enable Sound</button>
+                <button id="toggle-audio-btn" class="btn btn-secondary">Enable Sound 🔊</button>
             </div>
         </section>
         
@@ -362,26 +399,33 @@
                     <button id="submit-btn" class="btn">Submit Answer</button>
                 </div>
                 <div class="hint" id="hint-text"></div>
+                
+                <div class="hint-box" id="hint-box">
+                    <h3>Helpful Hint with Examples:</h3>
+                    <div id="hint-content"></div>
+                    <div class="hint-example" id="hint-example"></div>
+                </div>
             </div>
             
             <div id="feedback" class="feedback"></div>
             
             <div class="center">
-                <button id="hint-btn" class="btn btn-secondary">Get Hint</button>
+                <button id="hint-btn" class="btn btn-secondary">Get Hint with Examples</button>
                 <button id="quit-btn" class="btn btn-danger">Quit Game</button>
             </div>
             
             <div class="audio-controls">
-                <button id="correct-sound-btn" class="audio-btn">✓</button>
-                <button id="incorrect-sound-btn" class="audio-btn">✗</button>
-                <button id="toggle-game-audio-btn" class="audio-btn">🔊</button>
+                <button id="test-correct-sound" class="audio-btn">✓</button>
+                <button id="test-incorrect-sound" class="audio-btn">✗</button>
+                <button id="toggle-game-music" class="audio-btn">🎵</button>
+                <div style="color: #aaa; font-size: 0.8rem; margin-left: 10px;">Click to test sounds</div>
             </div>
         </section>
         
         <!-- Results Screen -->
         <section id="results-screen" class="game-section">
             <div class="results-container">
-                <h2 class="center">Game Complete!</h2>
+                <h2 class="center">Great Job! Game Complete! 🎉</h2>
                 <div class="grade" id="final-grade">A</div>
                 <div class="stats">
                     <div class="stat-item">
@@ -410,17 +454,6 @@
         </section>
     </div>
 
-    <!-- Audio Elements -->
-    <audio id="correct-sound" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="incorrect-sound" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="game-music" loop preload="auto">
-        <source src="https://assets.mixkit.co/music/preview/mixkit-game-level-music-689.mp3" type="audio/mpeg">
-    </audio>
-
     <script>
         // Game variables
         let currentQuestion = 0;
@@ -446,20 +479,123 @@
         const livesElement = document.getElementById('lives');
         const timeElement = document.getElementById('time');
         const progressBar = document.getElementById('progress-bar');
-        const hintText = document.getElementById('hint-text');
+        const hintBox = document.getElementById('hint-box');
+        const hintContent = document.getElementById('hint-content');
+        const hintExample = document.getElementById('hint-example');
         
-        // Audio elements
-        const correctSound = document.getElementById('correct-sound');
-        const incorrectSound = document.getElementById('incorrect-sound');
-        const gameMusic = document.getElementById('game-music');
+        // Audio context for better sound control
+        let audioContext;
+        let gainNode;
+        
+        // Initialize audio
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                gainNode = audioContext.createGain();
+                gainNode.connect(audioContext.destination);
+                gainNode.gain.value = 0.5; // Set volume to 50%
+                
+                // Create sounds manually since some browsers block external audio
+                createSounds();
+                
+                console.log("Audio initialized successfully");
+                return true;
+            } catch (e) {
+                console.log("Web Audio API not supported:", e);
+                // Fallback to HTML5 audio
+                return false;
+            }
+        }
+        
+        // Create synthetic sounds
+        function createSounds() {
+            // Correct answer sound (happy beep)
+            window.correctSound = function() {
+                if (!audioEnabled || !audioContext) return;
+                
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                oscillator.connect(gain);
+                gain.connect(gainNode);
+                
+                oscillator.frequency.value = 880;
+                oscillator.type = 'sine';
+                
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            };
+            
+            // Incorrect answer sound (sad beep)
+            window.incorrectSound = function() {
+                if (!audioEnabled || !audioContext) return;
+                
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                oscillator.connect(gain);
+                gain.connect(gainNode);
+                
+                oscillator.frequency.value = 220;
+                oscillator.type = 'sawtooth';
+                
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.8);
+            };
+            
+            // Game music (simple tune)
+            window.playGameMusic = function() {
+                if (!audioEnabled || !audioContext || !gameMusicEnabled) return;
+                
+                // Create a simple repeating tune
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                let currentNote = 0;
+                
+                function playNote() {
+                    if (!gameMusicEnabled) return;
+                    
+                    const oscillator = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    
+                    oscillator.connect(gain);
+                    gain.connect(gainNode);
+                    
+                    oscillator.frequency.value = notes[currentNote];
+                    oscillator.type = 'sine';
+                    
+                    gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                    
+                    currentNote = (currentNote + 1) % notes.length;
+                    
+                    // Schedule next note
+                    setTimeout(playNote, 500);
+                }
+                
+                playNote();
+            };
+            
+            window.stopGameMusic = function() {
+                gameMusicEnabled = false;
+            };
+        }
         
         // Generate algebraic square root questions
         function generateQuestions() {
             questions = [];
             
-            // Question types: Simplify square roots, solve equations, evaluate expressions
+            // Question types with kid-friendly examples
             for (let i = 1; i <= 50; i++) {
-                let question, answer, hint;
+                let question, answer, hint, example;
                 
                 // Generate different types of questions
                 const questionType = i % 10;
@@ -472,18 +608,21 @@
                     question = `Simplify √${inside}`;
                     answer = `${b}√${a}`;
                     hint = `Find the largest perfect square that divides ${inside}`;
+                    example = `Example: √12 = √(4×3) = 2√3 because √4=2`;
                 } else if (questionType === 1) {
                     // Solve for x: √x = value
                     const value = Math.floor(Math.random() * 10) + 2;
                     question = `Solve for x: √x = ${value}`;
                     answer = value * value;
                     hint = `Square both sides of the equation`;
+                    example = `Example: √x = 5 means x = 5×5 = 25`;
                 } else if (questionType === 2) {
                     // Square root of a perfect square
                     const value = Math.floor(Math.random() * 15) + 1;
                     question = `√${value * value}`;
                     answer = value;
                     hint = `This is a perfect square`;
+                    example = `Example: √25 = 5 because 5×5=25`;
                 } else if (questionType === 3) {
                     // Add square roots
                     const a = Math.floor(Math.random() * 5) + 1;
@@ -492,6 +631,7 @@
                     question = `${a}√${b} + ${c}√${b}`;
                     answer = `${a + c}√${b}`;
                     hint = `Combine like terms (both terms have √${b})`;
+                    example = `Example: 2√3 + 3√3 = 5√3, just like 2 apples + 3 apples = 5 apples`;
                 } else if (questionType === 4) {
                     // Multiply square roots
                     const a = Math.floor(Math.random() * 5) + 1;
@@ -499,6 +639,7 @@
                     question = `√${a} × √${b}`;
                     answer = `√${a * b}`;
                     hint = `Multiply the numbers inside the square roots`;
+                    example = `Example: √2 × √3 = √(2×3) = √6`;
                 } else if (questionType === 5) {
                     // Square root equation
                     const a = Math.floor(Math.random() * 5) + 2;
@@ -506,6 +647,7 @@
                     question = `√(x + ${b}) = ${a}`;
                     answer = a * a - b;
                     hint = `Square both sides, then subtract ${b}`;
+                    example = `Example: √(x+3)=4 → x+3=16 → x=13`;
                 } else if (questionType === 6) {
                     // Square root fraction
                     const num = Math.floor(Math.random() * 5) + 2;
@@ -513,18 +655,21 @@
                     question = `√(${num}/${den})`;
                     answer = `√${num}/√${den}`;
                     hint = `Square root of a fraction = square root of numerator divided by square root of denominator`;
+                    example = `Example: √(4/9) = √4/√9 = 2/3`;
                 } else if (questionType === 7) {
                     // Nested square root
                     const a = Math.floor(Math.random() * 5) + 2;
                     question = `√(${a}√${a * a})`;
                     answer = a;
                     hint = `Simplify the expression inside the square root first`;
+                    example = `Example: √(2√4) = √(2×2) = √4 = 2`;
                 } else if (questionType === 8) {
                     // Square root with exponent
                     const a = Math.floor(Math.random() * 5) + 2;
                     question = `(√${a})²`;
                     answer = a;
                     hint = `Squaring a square root cancels them out`;
+                    example = `Example: (√5)² = √5 × √5 = 5`;
                 } else {
                     // Mixed expression
                     const a = Math.floor(Math.random() * 5) + 2;
@@ -532,22 +677,24 @@
                     question = `${a}√${b} × √${b}`;
                     answer = a * b;
                     hint = `√${b} × √${b} = ${b}`;
+                    example = `Example: 3√2 × √2 = 3 × (√2×√2) = 3×2 = 6`;
                 }
                 
                 questions.push({
                     question: question,
                     answer: answer.toString(),
-                    hint: hint
+                    hint: hint,
+                    example: example
                 });
             }
             
-            // Add a few bonus questions
+            // Add bonus questions with kid-friendly numbers
             questions.push(
-                {question: "√50", answer: "5√2", hint: "50 = 25 × 2"},
-                {question: "√72", answer: "6√2", hint: "72 = 36 × 2"},
-                {question: "Solve: √(2x) = 6", answer: "18", hint: "Square both sides: 2x = 36"},
-                {question: "√18 + √8", answer: "5√2", hint: "Simplify: √18 = 3√2, √8 = 2√2"},
-                {question: "√12 × √3", answer: "6", hint: "√12 × √3 = √36 = 6"}
+                {question: "√36", answer: "6", hint: "Find what number times itself equals 36", example: "Example: √36 = 6 because 6×6=36"},
+                {question: "√100", answer: "10", hint: "10 times 10 equals what?", example: "Example: √100 = 10 because 10×10=100"},
+                {question: "√49", answer: "7", hint: "What number squared equals 49?", example: "Example: √49 = 7 because 7×7=49"},
+                {question: "√64", answer: "8", hint: "8 times 8 equals?", example: "Example: √64 = 8 because 8×8=64"},
+                {question: "√81", answer: "9", hint: "9 squared equals 81", example: "Example: √81 = 9 because 9×9=81"}
             );
         }
         
@@ -567,6 +714,7 @@
             timeElement.textContent = timeLeft;
             questionCountElement.textContent = `1/${questions.length}`;
             progressBar.style.width = '0%';
+            hintBox.style.display = 'none';
             
             // Show first question
             showQuestion();
@@ -575,9 +723,9 @@
             clearInterval(timer);
             timer = setInterval(updateTimer, 1000);
             
-            // Play music if enabled
-            if (gameMusicEnabled) {
-                gameMusic.play().catch(e => console.log("Audio play failed:", e));
+            // Start music if enabled
+            if (gameMusicEnabled && audioEnabled) {
+                window.playGameMusic();
             }
         }
         
@@ -590,10 +738,10 @@
             
             const question = questions[currentQuestion];
             questionElement.textContent = question.question;
-            hintText.textContent = "";
             answerInput.value = "";
             answerInput.focus();
             feedbackElement.style.display = "none";
+            hintBox.style.display = "none";
             
             // Update progress
             const progress = (currentQuestion / questions.length) * 100;
@@ -609,24 +757,24 @@
             const correctAnswer = questions[currentQuestion].answer.toLowerCase();
             
             // Normalize answers for comparison
-            const normalizedUserAnswer = userAnswer.replace(/\s+/g, '');
-            const normalizedCorrectAnswer = correctAnswer.replace(/\s+/g, '');
+            const normalizedUserAnswer = userAnswer.replace(/\s+/g, '').replace(/√/g, 'sqrt');
+            const normalizedCorrectAnswer = correctAnswer.replace(/\s+/g, '').replace(/√/g, 'sqrt');
             
-            if (normalizedUserAnswer === normalizedCorrectAnswer) {
+            if (normalizedUserAnswer === normalizedCorrectAnswer || 
+                userAnswer === correctAnswer) {
                 // Correct answer
                 score += 10;
                 correctAnswers++;
                 
                 // Update UI
                 scoreElement.textContent = score;
-                feedbackElement.textContent = "Correct! +10 points";
+                feedbackElement.textContent = "Correct! 🎉 +10 points";
                 feedbackElement.className = "feedback correct";
                 feedbackElement.style.display = "block";
                 
                 // Play sound if enabled
                 if (audioEnabled) {
-                    correctSound.currentTime = 0;
-                    correctSound.play().catch(e => console.log("Audio play failed:", e));
+                    window.correctSound();
                 }
             } else {
                 // Incorrect answer
@@ -634,19 +782,18 @@
                 
                 // Update UI
                 livesElement.textContent = lives;
-                feedbackElement.textContent = `Incorrect! The correct answer is: ${questions[currentQuestion].answer}`;
+                feedbackElement.textContent = `Not quite! The answer is: ${questions[currentQuestion].answer}`;
                 feedbackElement.className = "feedback incorrect";
                 feedbackElement.style.display = "block";
                 
                 // Play sound if enabled
                 if (audioEnabled) {
-                    incorrectSound.currentTime = 0;
-                    incorrectSound.play().catch(e => console.log("Audio play failed:", e));
+                    window.incorrectSound();
                 }
                 
                 // Check if game over
                 if (lives <= 0) {
-                    endGame();
+                    setTimeout(endGame, 1500);
                     return;
                 }
             }
@@ -658,7 +805,7 @@
             if (currentQuestion < questions.length && lives > 0) {
                 setTimeout(showQuestion, 1500);
             } else {
-                endGame();
+                setTimeout(endGame, 1500);
             }
         }
         
@@ -677,67 +824,79 @@
             clearInterval(timer);
             
             // Stop music
-            gameMusic.pause();
-            gameMusic.currentTime = 0;
+            window.stopGameMusic();
             
             // Calculate grade
             const accuracy = Math.round((correctAnswers / questions.length) * 100);
             let grade = "F";
+            let gradeEmoji = "😢";
             
-            if (accuracy >= 90) grade = "A";
-            else if (accuracy >= 80) grade = "B";
-            else if (accuracy >= 70) grade = "C";
-            else if (accuracy >= 60) grade = "D";
+            if (accuracy >= 90) { grade = "A"; gradeEmoji = "🏆"; }
+            else if (accuracy >= 80) { grade = "B"; gradeEmoji = "🌟"; }
+            else if (accuracy >= 70) { grade = "C"; gradeEmoji = "👍"; }
+            else if (accuracy >= 60) { grade = "D"; gradeEmoji = "🙂"; }
             
             // Update results screen
             document.getElementById('final-score').textContent = score;
             document.getElementById('correct-count').textContent = correctAnswers;
             document.getElementById('total-questions').textContent = questions.length;
             document.getElementById('accuracy').textContent = `${accuracy}%`;
-            document.getElementById('final-grade').textContent = grade;
+            document.getElementById('final-grade').textContent = `${grade} ${gradeEmoji}`;
             
             // Switch to results screen
             gameScreen.classList.remove('active');
             resultsScreen.classList.add('active');
         }
         
-        // Show hint for current question
+        // Show hint with examples for current question
         function showHint() {
-            hintText.textContent = `Hint: ${questions[currentQuestion].hint}`;
+            const question = questions[currentQuestion];
+            hintContent.textContent = question.hint;
+            hintExample.textContent = question.example;
+            hintBox.style.display = 'block';
+            
+            // Scroll hint into view on mobile
+            hintBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
         // Toggle audio
         function toggleAudio() {
             audioEnabled = !audioEnabled;
             const button = document.getElementById('toggle-audio-btn');
-            const gameButton = document.getElementById('toggle-game-audio-btn');
             
             if (audioEnabled) {
-                button.textContent = "Disable Sound";
-                gameButton.textContent = "🔊";
+                // Initialize audio if not already done
+                if (!audioContext) {
+                    initAudio();
+                }
+                button.textContent = "Disable Sound 🔈";
+                button.style.background = "linear-gradient(to right, #FF9800, #FF5722)";
             } else {
-                button.textContent = "Enable Sound";
-                gameButton.textContent = "🔈";
+                button.textContent = "Enable Sound 🔊";
+                button.style.background = "linear-gradient(to right, #2196F3, #0D47A1)";
                 gameMusicEnabled = false;
-                gameMusic.pause();
-                gameMusic.currentTime = 0;
+                window.stopGameMusic();
             }
         }
         
         // Toggle game music
         function toggleGameMusic() {
-            if (!audioEnabled) return;
+            if (!audioEnabled) {
+                alert("Please enable sound first!");
+                return;
+            }
             
             gameMusicEnabled = !gameMusicEnabled;
-            const button = document.getElementById('toggle-game-audio-btn');
+            const button = document.getElementById('toggle-game-music');
             
             if (gameMusicEnabled) {
-                button.textContent = "🔊";
-                gameMusic.play().catch(e => console.log("Audio play failed:", e));
+                button.textContent = "🎵 On";
+                button.style.backgroundColor = "rgba(76, 175, 80, 0.5)";
+                window.playGameMusic();
             } else {
-                button.textContent = "🔈";
-                gameMusic.pause();
-                gameMusic.currentTime = 0;
+                button.textContent = "🎵";
+                button.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                window.stopGameMusic();
             }
         }
         
@@ -750,16 +909,22 @@
         
         document.getElementById('toggle-audio-btn').addEventListener('click', toggleAudio);
         
-        document.getElementById('toggle-game-audio-btn').addEventListener('click', toggleGameMusic);
+        document.getElementById('toggle-game-music').addEventListener('click', toggleGameMusic);
         
-        document.getElementById('correct-sound-btn').addEventListener('click', function() {
-            correctSound.currentTime = 0;
-            correctSound.play().catch(e => console.log("Audio play failed:", e));
+        document.getElementById('test-correct-sound').addEventListener('click', function() {
+            if (audioEnabled && window.correctSound) {
+                window.correctSound();
+            } else {
+                alert("Enable sound first!");
+            }
         });
         
-        document.getElementById('incorrect-sound-btn').addEventListener('click', function() {
-            incorrectSound.currentTime = 0;
-            incorrectSound.play().catch(e => console.log("Audio play failed:", e));
+        document.getElementById('test-incorrect-sound').addEventListener('click', function() {
+            if (audioEnabled && window.incorrectSound) {
+                window.incorrectSound();
+            } else {
+                alert("Enable sound first!");
+            }
         });
         
         submitButton.addEventListener('click', checkAnswer);
@@ -789,10 +954,13 @@
             startScreen.classList.add('active');
         });
         
-        // Initialize
+        // Initialize audio system on page load
+        window.addEventListener('load', function() {
+            initAudio();
+        });
+        
+        // Generate initial questions
         generateQuestions();
     </script>
 </body>
 </html>
-
-
