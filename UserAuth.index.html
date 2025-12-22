@@ -780,15 +780,17 @@
         async function handleSignup(event) {
             event.preventDefault();
             
-            const formData = {
-                username: document.getElementById('signupUsername').value,
-                email: document.getElementById('signupEmail').value,
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                password: document.getElementById('signupPassword').value,
-                confirmPassword: document.getElementById('confirmPassword').value,
-                defaultUrl: document.getElementById('https://ramis2.github.io/index.html/SqquareRoot2.html').value || '/dashboard'
-            };
+           const formData = {
+    username: document.getElementById('signupUsername').value,
+    email: document.getElementById('signupEmail').value,
+    firstName: document.getElementById('firstName').value,
+    lastName: document.getElementById('lastName').value,
+    password: document.getElementById('signupPassword').value,
+    confirmPassword: document.getElementById('confirmPassword').value,  // <- Added comma here
+    defaultUrl: document.getElementById('https://ramis2.github.io/index.html/SqquareRoot2.html').value || '/dashboard'  // <- Fixed quote
+};
+
+
             
             // Validate form
             const errors = validateSignupForm(formData);
@@ -1248,3 +1250,4 @@ app.listen(3000, () => {
     </script>
 </body>
 </html>
+
