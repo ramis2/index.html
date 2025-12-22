@@ -3,1167 +3,997 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algebraic Square Root Challenge</title>
+    <title>By JA 0598 Math Answer System - Numerical Answers Only</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .container {
-            max-width: 800px;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            margin-top: 20px;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        h1 {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, #ff7e5f, #feb47b);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            color: #ccc;
-            margin-bottom: 20px;
-        }
-        
-        .game-section {
-            display: none;
-        }
-        
-        .active {
-            display: block;
-        }
-        
-        #instructions {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            border-left: 5px solid #4CAF50;
-        }
-        
-        #instructions h2 {
-            color: #4CAF50;
-            margin-bottom: 15px;
-        }
-        
-        #instructions ul {
-            padding-left: 20px;
-            margin-bottom: 15px;
-        }
-        
-        #instructions li {
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-        
-        .btn {
-            background: linear-gradient(to right, #4CAF50, #2E7D32);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 10px 5px;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
-        
-        .btn:active {
-            transform: translateY(1px);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(to right, #2196F3, #0D47A1);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(to right, #f44336, #b71c1c);
-        }
-        
-        .center {
-            text-align: center;
-        }
-        
-        .question-container {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 15px;
-            margin: 25px 0;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .question-text {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: #FFD700;
-            text-align: center;
-        }
-        
-        .input-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        input[type="text"] {
-            padding: 15px;
-            font-size: 1.5rem;
-            width: 200px;
-            border-radius: 10px;
-            border: none;
-            text-align: center;
-            margin-right: 15px;
-            background-color: rgba(255, 255, 255, 0.9);
             color: #333;
         }
         
-        .stats {
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .section h2 i {
+            color: #667eea;
+        }
+        
+        .problem-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .problem-card.active {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+        
+        .problem-header {
             display: flex;
             justify-content: space-between;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
         }
         
-        .stat-item {
-            text-align: center;
-            flex: 1;
-            min-width: 120px;
-            margin: 5px;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
+        .problem-number {
+            background: #667eea;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: bold;
-            color: #4CAF50;
+            font-size: 1.1rem;
         }
         
-        .stat-label {
+        .problem-type {
+            background: #e9ecef;
+            padding: 5px 15px;
+            border-radius: 20px;
             font-size: 0.9rem;
-            color: #aaa;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .problem-statement {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            min-height: 80px;
+        }
+        
+        .problem-statement .math-expr {
+            font-family: 'Cambria Math', serif;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            font-family: monospace;
+            text-align: center;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .input-hint {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 8px;
+            font-style: italic;
         }
         
         .feedback {
             padding: 15px;
             border-radius: 10px;
-            margin: 15px 0;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
+            margin-top: 15px;
+            font-weight: 600;
             display: none;
+            animation: fadeIn 0.5s ease;
         }
         
-        .correct {
-            background-color: rgba(76, 175, 80, 0.3);
-            border: 2px solid #4CAF50;
-            color: #C8E6C9;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        .incorrect {
-            background-color: rgba(244, 67, 54, 0.3);
-            border: 2px solid #f44336;
-            color: #FFCDD2;
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
         }
         
-        .results-container {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            margin-top: 20px;
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
         }
         
-        .grade {
-            font-size: 4rem;
-            text-align: center;
-            margin: 20px 0;
+        .feedback .correct-answer {
             font-weight: bold;
-            color: #FFD700;
+            color: #155724;
+            font-family: monospace;
+            font-size: 1.1rem;
         }
         
-        .audio-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .audio-btn {
-            background-color: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            margin: 5px;
-            cursor: pointer;
-            font-size: 1.5rem;
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            gap: 10px;
+            width: 100%;
         }
         
-        .audio-btn:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #38b000 0%, #2dc653 100%);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ffbe0b 0%, #ff9100 100%);
+        }
+        
+        .stats-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
         }
         
         .progress-bar {
-            width: 100%;
             height: 10px;
-            background-color: rgba(255, 255, 255, 0.2);
+            background: #e9ecef;
             border-radius: 5px;
             margin-top: 20px;
             overflow: hidden;
         }
         
-        .progress {
+        .progress-fill {
             height: 100%;
-            background: linear-gradient(to right, #4CAF50, #8BC34A);
-            width: 0%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 5px;
             transition: width 0.5s ease;
         }
         
-        .hint-box {
-            background-color: rgba(33, 150, 243, 0.2);
-            border: 2px solid #2196F3;
+        .instructions {
+            background: #fff8e6;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            color: #856404;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .example-box {
+            background: white;
+            border: 2px solid #dee2e6;
             border-radius: 10px;
             padding: 15px;
             margin-top: 15px;
-            display: none;
+            font-family: monospace;
         }
         
-        .hint-box h3 {
-            color: #90CAF9;
-            margin-bottom: 10px;
-        }
-        
-        .hint-example {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .mistakes-container {
-            background-color: rgba(255, 87, 34, 0.2);
-            border: 2px solid #FF5722;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            display: none;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .mistakes-container h3 {
-            color: #FFAB91;
-            margin-bottom: 10px;
-        }
-        
-        .mistake-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 4px solid #FF5722;
-        }
-        
-        .time-settings {
-            background-color: rgba(255, 193, 7, 0.2);
-            border: 2px solid #FFC107;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-        
-        .time-settings h3 {
-            color: #FFE082;
-            margin-bottom: 10px;
-        }
-        
-        .time-slider {
-            width: 100%;
-            margin: 15px 0;
-        }
-        
-        .time-display {
-            text-align: center;
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 2.2rem;
-            }
-            
-            .question-text {
-                font-size: 1.5rem;
-            }
-            
-            input[type="text"] {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 15px;
-            }
-            
-            .input-container {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                margin: 5px 0;
-            }
-        }
-        
-        .hint {
-            font-size: 0.9rem;
-            color: #aaa;
-            text-align: center;
-            margin-top: 10px;
-            font-style: italic;
-        }
-        
-        .example {
-            background-color: rgba(255, 215, 0, 0.1);
-            border-left: 4px solid #FFD700;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .audio-status {
-            color: #4CAF50;
+        .example-box .correct {
+            color: #38b000;
             font-weight: bold;
-            margin-left: 10px;
         }
         
-        .review-section {
-            background-color: rgba(156, 39, 176, 0.2);
-            border: 2px solid #9C27B0;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-        
-        .review-section h3 {
-            color: #E1BEE7;
-            margin-bottom: 10px;
+        .example-box .incorrect {
+            color: #ff006e;
+            text-decoration: line-through;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <h1>Algebraic Square Root Challenge</h1>
-        <div class="subtitle">Math fun for kids! 50+ square root problems with helpful hints!</div>
-    </header>
-    
     <div class="container">
-        <!-- Start Screen -->
-        <section id="start-screen" class="game-section active">
-            <div id="instructions">
-                <h2>How to Play</h2>
-                <ul>
-                    <li>Solve 50+ fun algebra problems with square roots!</li>
-                    <li>Type your answer and click Submit</li>
-                    <li>Use "sqrt()" for square roots (Example: sqrt(2) for √2)</li>
-                    <li>You get 3 lives - be careful!</li>
-                    <li>Score 10 points for each correct answer</li>
-                    <li>Use the Hint button for helpful examples</li>
-                    <li>Review mistakes at the end to learn more!</li>
-                </ul>
-                
-                <div class="example">
-                    <strong>Examples for Kids:</strong><br>
-                    • √9 = 3 (because 3 × 3 = 9)<br>
-                    • √16 = 4 (because 4 × 4 = 16)<br>
-                    • √25 = 5 (because 5 × 5 = 25)<br>
-                    • √8 = 2√2 (because 8 = 4 × 2, and √4 = 2)
-                </div>
-                
-                <div class="time-settings">
-                    <h3>⏰ Set Your Time Limit:</h3>
-                    <div class="time-display" id="time-display">120 seconds per question</div>
-                    <input type="range" min="30" max="300" value="120" class="time-slider" id="time-slider">
-                    <div style="display: flex; justify-content: space-between; color: #aaa; font-size: 0.9rem;">
-                        <span>Fast (30s)</span>
-                        <span>Normal (120s)</span>
-                        <span>Relaxed (300s)</span>
-                    </div>
-                </div>
-                
-                <div class="review-section">
-                    <h3>📚 Learning Feature:</h3>
-                    <p>All your mistakes will be saved and shown at the end with detailed explanations so you can learn from them!</p>
-                </div>
-            </div>
-            <div class="center">
-                <button id="start-btn" class="btn">Start Game</button>
-                <button id="toggle-audio-btn" class="btn btn-secondary">Enable Sound 🔊</button>
-                <div class="audio-status" id="audio-status">Sound: OFF</div>
-            </div>
-            <div class="center" style="margin-top: 20px;">
-                <button id="test-correct" class="audio-btn">✓</button>
-                <button id="test-incorrect" class="audio-btn">✗</button>
-                <button id="test-music" class="audio-btn">🎵</button>
-                <div style="color: #aaa; font-size: 0.9rem; margin-top: 5px;">Test sounds here first</div>
-            </div>
-        </section>
+        <div class="header">
+            <h1><i class="fas fa-calculator"></i> Numerical Answers System</h1>
+            <p>Enter decimal answers only - No symbols like √, π, or fractions required</p>
+        </div>
         
-        <!-- Game Screen -->
-        <section id="game-screen" class="game-section">
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="score">0</div>
-                    <div class="stat-label">Score</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="question-count">1/50</div>
-                    <div class="stat-label">Question</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="lives">3</div>
-                    <div class="stat-label">Lives</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="time">120</div>
-                    <div class="stat-label">Seconds Left</div>
+        <div class="content">
+            <!-- Left Column: Problems -->
+            <div class="left-column">
+                <div class="section">
+                    <h2><i class="fas fa-list-ol"></i> Math Problems</h2>
+                    
+                    <div class="instructions">
+                        <h3><i class="fas fa-info-circle"></i> How to Answer:</h3>
+                        <ul>
+                            <li>Enter <strong>decimal numbers only</strong></li>
+                            <li><strong>Do NOT use symbols</strong> like √, π, or fractions</li>
+                            <li>Round to <strong>2 decimal places</strong> unless specified</li>
+                            <li>Use <strong>negative signs</strong> for negative answers</li>
+                        </ul>
+                        
+                        <div class="example-box">
+                            <p><strong>Examples:</strong></p>
+                            <p>Question: √25 = ? → Answer: <span class="correct">5</span> (not "√25" or "5√1")</p>
+                            <p>Question: 3π ≈ ? → Answer: <span class="correct">9.42</span> (not "3π" or "3*pi")</p>
+                            <p>Question: ½ = ? → Answer: <span class="correct">0.5</span> (not "1/2")</p>
+                        </div>
+                    </div>
+                    
+                    <div id="problemsContainer">
+                        <!-- Problems will be loaded here -->
+                    </div>
+                    
+                    <div class="stats-panel">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="score">0</div>
+                                <div class="stat-label">Score</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="correctCount">0</div>
+                                <div class="stat-label">Correct</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalAttempts">0</div>
+                                <div class="stat-label">Attempts</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="progress-bar">
-                <div class="progress" id="progress-bar"></div>
-            </div>
-            
-            <div class="question-container">
-                <div class="question-text" id="question"></div>
-                <div class="input-container">
-                    <input type="text" id="answer-input" placeholder="Your answer" autocomplete="off">
-                    <button id="submit-btn" class="btn">Submit Answer</button>
+            <!-- Right Column: Answer Checker & Tools -->
+            <div class="right-column">
+                <div class="section">
+                    <h2><i class="fas fa-check-circle"></i> Answer Checker</h2>
+                    
+                    <div class="problem-card active">
+                        <div class="problem-header">
+                            <div class="problem-number" id="currentProblemNum">1</div>
+                            <div class="problem-type" id="currentProblemType">Square Root</div>
+                        </div>
+                        
+                        <div class="problem-statement" id="currentProblem">
+                            What is √16?
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Your Answer (decimal number):</label>
+                            <input 
+                                type="text" 
+                                id="answerInput" 
+                                class="answer-input" 
+                                placeholder="Enter number only..."
+                                autocomplete="off"
+                            >
+                            <div class="input-hint">
+                                Enter only numbers and decimal point. Example: 4.56
+                            </div>
+                        </div>
+                        
+                        <button id="checkAnswer" class="btn">
+                            <i class="fas fa-check"></i> Check Answer
+                        </button>
+                        
+                        <div id="feedback" class="feedback"></div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button id="prevProblem" class="btn btn-warning">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button id="nextProblem" class="btn">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 25px;">
+                        <button id="generateProblems" class="btn">
+                            <i class="fas fa-redo"></i> Generate New Problems
+                        </button>
+                    </div>
                 </div>
-                <div class="hint" id="hint-text"></div>
                 
-                <div class="hint-box" id="hint-box">
-                    <h3>Helpful Hint with Examples:</h3>
-                    <div id="hint-content"></div>
-                    <div class="hint-example" id="hint-example"></div>
+                <div class="section" style="margin-top: 20px;">
+                    <h2><i class="fas fa-tools"></i> Calculator Tools</h2>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+                        <button class="calc-btn" data-value="√">√</button>
+                        <button class="calc-btn" data-value="π">π</button>
+                        <button class="calc-btn" data-value="½">½</button>
+                        <button class="calc-btn" data-value="÷">÷</button>
+                        <button class="calc-btn" data-value="7">7</button>
+                        <button class="calc-btn" data-value="8">8</button>
+                        <button class="calc-btn" data-value="9">9</button>
+                        <button class="calc-btn" data-value="×">×</button>
+                        <button class="calc-btn" data-value="4">4</button>
+                        <button class="calc-btn" data-value="5">5</button>
+                        <button class="calc-btn" data-value="6">6</button>
+                        <button class="calc-btn" data-value="-">-</button>
+                        <button class="calc-btn" data-value="1">1</button>
+                        <button class="calc-btn" data-value="2">2</button>
+                        <button class="calc-btn" data-value="3">3</button>
+                        <button class="calc-btn" data-value="+">+</button>
+                        <button class="calc-btn" data-value="0">0</button>
+                        <button class="calc-btn" data-value=".">.</button>
+                        <button class="calc-btn" data-value="-">(-)</button>
+                        <button id="clearCalc" style="background: #ff006e; color: white;">C</button>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Calculator Result:</label>
+                        <input 
+                            type="text" 
+                            id="calcResult" 
+                            class="answer-input" 
+                            readonly
+                            placeholder="Use buttons above to calculate..."
+                        >
+                    </div>
+                    
+                    <button id="useCalcResult" class="btn btn-success" style="margin-top: 15px;">
+                        <i class="fas fa-arrow-right"></i> Use This as Answer
+                    </button>
                 </div>
             </div>
-            
-            <div id="feedback" class="feedback"></div>
-            
-            <div class="center">
-                <button id="hint-btn" class="btn btn-secondary">Get Hint with Examples</button>
-                <button id="quit-btn" class="btn btn-danger">Quit Game</button>
-            </div>
-            
-            <div class="audio-controls">
-                <button id="correct-sound-btn" class="audio-btn">✓</button>
-                <button id="incorrect-sound-btn" class="audio-btn">✗</button>
-                <button id="music-toggle-btn" class="audio-btn">🎵</button>
-                <div class="audio-status" id="game-audio-status">Sound: ON</div>
-            </div>
-        </section>
-        
-        <!-- Results Screen -->
-        <section id="results-screen" class="game-section">
-            <div class="results-container">
-                <h2 class="center">Great Job! Game Complete! 🎉</h2>
-                <div class="grade" id="final-grade">A</div>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-value" id="final-score">0</div>
-                        <div class="stat-label">Final Score</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="correct-count">0</div>
-                        <div class="stat-label">Correct Answers</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="total-questions">50</div>
-                        <div class="stat-label">Total Questions</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="accuracy">0%</div>
-                        <div class="stat-label">Accuracy</div>
-                    </div>
-                </div>
-                
-                <div class="mistakes-container" id="mistakes-container">
-                    <h3>📝 Mistakes to Learn From:</h3>
-                    <div id="mistakes-list"></div>
-                </div>
-                
-                <div class="center" style="margin-top: 30px;">
-                    <button id="play-again-btn" class="btn">Play Again</button>
-                    <button id="back-to-menu-btn" class="btn btn-secondary">Back to Menu</button>
-                </div>
-            </div>
-        </section>
+        </div>
     </div>
 
     <script>
-        // Game variables
-        let currentQuestion = 0;
-        let score = 0;
-        let lives = 3;
-        let timeLeft = 120; // Increased from 60 to 120 seconds
-        let timer;
-        let questions = [];
-        let correctAnswers = 0;
-        let audioEnabled = false;
-        let musicEnabled = false;
-        let audioInitialized = false;
-        let userTimeLimit = 120; // Default time limit
-        let mistakes = []; // Store mistakes for review
-        
-        // DOM elements
-        const startScreen = document.getElementById('start-screen');
-        const gameScreen = document.getElementById('game-screen');
-        const resultsScreen = document.getElementById('results-screen');
-        const questionElement = document.getElementById('question');
-        const answerInput = document.getElementById('answer-input');
-        const submitButton = document.getElementById('submit-btn');
-        const feedbackElement = document.getElementById('feedback');
-        const scoreElement = document.getElementById('score');
-        const questionCountElement = document.getElementById('question-count');
-        const livesElement = document.getElementById('lives');
-        const timeElement = document.getElementById('time');
-        const progressBar = document.getElementById('progress-bar');
-        const hintBox = document.getElementById('hint-box');
-        const hintContent = document.getElementById('hint-content');
-        const hintExample = document.getElementById('hint-example');
-        const audioStatus = document.getElementById('audio-status');
-        const gameAudioStatus = document.getElementById('game-audio-status');
-        const timeSlider = document.getElementById('time-slider');
-        const timeDisplay = document.getElementById('time-display');
-        const mistakesContainer = document.getElementById('mistakes-container');
-        const mistakesList = document.getElementById('mistakes-list');
-        
-        // Time limit slider
-        timeSlider.addEventListener('input', function() {
-            userTimeLimit = parseInt(this.value);
-            timeDisplay.textContent = `${userTimeLimit} seconds per question`;
-        });
-        
-        // Audio functions
-        function createBeepSound(frequency, duration, type = 'sine') {
-            return function() {
-                if (!audioEnabled) return;
-                
-                try {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    if (!window.audioContext) {
-                        window.audioContext = new AudioContext();
+        // Math Answer System Configuration
+        const mathSystem = {
+            currentProblemIndex: 0,
+            problems: [],
+            userAnswers: {},
+            score: 0,
+            correctCount: 0,
+            totalAttempts: 0,
+            
+            // Problem categories and generators
+            problemTypes: [
+                {
+                    name: "Square Roots",
+                    generator: () => {
+                        const num = Math.floor(Math.random() * 100) + 1;
+                        const answer = Math.sqrt(num).toFixed(2);
+                        return {
+                            question: `What is √${num}?`,
+                            answer: parseFloat(answer),
+                            type: "Square Root"
+                        };
                     }
-                    
-                    const oscillator = window.audioContext.createOscillator();
-                    const gainNode = window.audioContext.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(window.audioContext.destination);
-                    
-                    oscillator.frequency.value = frequency;
-                    oscillator.type = type;
-                    
-                    gainNode.gain.setValueAtTime(0.3, window.audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, window.audioContext.currentTime + duration);
-                    
-                    oscillator.start(window.audioContext.currentTime);
-                    oscillator.stop(window.audioContext.currentTime + duration);
-                } catch (e) {
-                    console.log("Audio error:", e);
+                },
+                {
+                    name: "Pi Multiples",
+                    generator: () => {
+                        const multiplier = Math.floor(Math.random() * 10) + 1;
+                        const answer = (multiplier * Math.PI).toFixed(2);
+                        return {
+                            question: `What is ${multiplier}π? (Approximate to 2 decimal places)`,
+                            answer: parseFloat(answer),
+                            type: "Pi Multiple"
+                        };
+                    }
+                },
+                {
+                    name: "Fractions to Decimals",
+                    generator: () => {
+                        const numerator = Math.floor(Math.random() * 10) + 1;
+                        const denominator = Math.floor(Math.random() * 10) + 1;
+                        const answer = (numerator / denominator).toFixed(2);
+                        return {
+                            question: `Convert ${numerator}/${denominator} to a decimal`,
+                            answer: parseFloat(answer),
+                            type: "Fraction Conversion"
+                        };
+                    }
+                },
+                {
+                    name: "Simple Equations",
+                    generator: () => {
+                        const a = Math.floor(Math.random() * 10) + 1;
+                        const b = Math.floor(Math.random() * 10) + 1;
+                        const op = Math.random() > 0.5 ? '+' : '-';
+                        const question = op === '+' 
+                            ? `Solve for x: x + ${a} = ${a + b}`
+                            : `Solve for x: x - ${a} = ${b}`;
+                        return {
+                            question: question,
+                            answer: b,
+                            type: "Equation"
+                        };
+                    }
+                },
+                {
+                    name: "Area Calculations",
+                    generator: () => {
+                        const side = Math.floor(Math.random() * 10) + 1;
+                        const answer = (side * side).toFixed(2);
+                        return {
+                            question: `What is the area of a square with side length ${side}?`,
+                            answer: parseFloat(answer),
+                            type: "Area"
+                        };
+                    }
                 }
-            };
-        }
-        
-        // Simple music
-        let musicInterval;
-        function playSimpleMusic() {
-            if (!audioEnabled || !musicEnabled) return;
+            ]
+        };
+
+        // DOM Elements
+        const elements = {
+            problemsContainer: document.getElementById('problemsContainer'),
+            currentProblemNum: document.getElementById('currentProblemNum'),
+            currentProblemType: document.getElementById('currentProblemType'),
+            currentProblem: document.getElementById('currentProblem'),
+            answerInput: document.getElementById('answerInput'),
+            checkAnswerBtn: document.getElementById('checkAnswer'),
+            feedback: document.getElementById('feedback'),
+            prevProblemBtn: document.getElementById('prevProblem'),
+            nextProblemBtn: document.getElementById('nextProblem'),
+            generateProblemsBtn: document.getElementById('generateProblems'),
+            scoreElement: document.getElementById('score'),
+            correctCountElement: document.getElementById('correctCount'),
+            totalAttemptsElement: document.getElementById('totalAttempts'),
+            progressFill: document.getElementById('progressFill'),
+            calcResult: document.getElementById('calcResult'),
+            useCalcResultBtn: document.getElementById('useCalcResult'),
+            clearCalcBtn: document.getElementById('clearCalc')
+        };
+
+        // Initialize the system
+        document.addEventListener('DOMContentLoaded', function() {
+            generateProblems();
+            setupEventListeners();
+            setupCalculator();
+            updateUI();
+        });
+
+        // Generate random problems
+        function generateProblems() {
+            mathSystem.problems = [];
+            mathSystem.userAnswers = {};
+            mathSystem.currentProblemIndex = 0;
+            mathSystem.score = 0;
+            mathSystem.correctCount = 0;
+            mathSystem.totalAttempts = 0;
             
-            const notes = [523.25, 659.25, 783.99, 1046.50];
-            let noteIndex = 0;
-            
-            musicInterval = setInterval(() => {
-                if (!musicEnabled) {
-                    clearInterval(musicInterval);
-                    return;
-                }
-                createBeepSound(notes[noteIndex], 0.3)();
-                noteIndex = (noteIndex + 1) % notes.length;
-            }, 500);
-        }
-        
-        function stopMusic() {
-            musicEnabled = false;
-            if (musicInterval) {
-                clearInterval(musicInterval);
+            // Generate 8 random problems
+            for (let i = 0; i < 8; i++) {
+                const typeIndex = Math.floor(Math.random() * mathSystem.problemTypes.length);
+                const problem = mathSystem.problemTypes[typeIndex].generator();
+                problem.id = i + 1;
+                mathSystem.problems.push(problem);
             }
-        }
-        
-        // Initialize audio
-        function initAudio() {
-            if (audioInitialized) return;
             
-            try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                window.audioContext = new AudioContext();
-                
-                if (window.audioContext.state === 'suspended') {
-                    window.audioContext.resume();
+            renderProblems();
+            updateUI();
+        }
+
+        // Render all problems in the left column
+        function renderProblems() {
+            elements.problemsContainer.innerHTML = '';
+            
+            mathSystem.problems.forEach((problem, index) => {
+                const problemCard = document.createElement('div');
+                problemCard.className = 'problem-card';
+                if (index === mathSystem.currentProblemIndex) {
+                    problemCard.classList.add('active');
                 }
                 
-                audioInitialized = true;
-                return true;
-            } catch (e) {
-                console.log("Audio context not supported:", e);
-                return false;
-            }
-        }
-        
-        // Generate algebraic square root questions
-        function generateQuestions() {
-            questions = [];
-            
-            for (let i = 1; i <= 50; i++) {
-                let question, answer, hint, example, explanation;
+                problemCard.innerHTML = `
+                    <div class="problem-header">
+                        <div class="problem-number">${problem.id}</div>
+                        <div class="problem-type">${problem.type}</div>
+                    </div>
+                    <div class="problem-statement">
+                        <span class="math-expr">${problem.question}</span>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            class="answer-input problem-input" 
+                            data-problem-id="${problem.id}"
+                            placeholder="Your answer..."
+                            value="${mathSystem.userAnswers[problem.id]?.answer || ''}"
+                        >
+                    </div>
+                    ${mathSystem.userAnswers[problem.id] ? `
+                        <div class="feedback ${mathSystem.userAnswers[problem.id].correct ? 'correct' : 'incorrect'}">
+                            ${mathSystem.userAnswers[problem.id].correct ? 
+                                '<i class="fas fa-check-circle"></i> Correct!' : 
+                                '<i class="fas fa-times-circle"></i> Try again!'}
+                        </div>
+                    ` : ''}
+                `;
                 
-                const questionType = i % 10;
+                elements.problemsContainer.appendChild(problemCard);
                 
-                if (questionType === 0) {
-                    const a = Math.floor(Math.random() * 10) + 2;
-                    const b = Math.floor(Math.random() * 5) + 2;
-                    const inside = a * b * b;
-                    question = `Simplify √${inside}`;
-                    answer = `${b}√${a}`;
-                    hint = `Find the largest perfect square that divides ${inside}`;
-                    example = `Example: √12 = √(4×3) = 2√3 because √4=2`;
-                    explanation = `√${inside} = √(${b}² × ${a}) = ${b}√${a}`;
-                } else if (questionType === 1) {
-                    const value = Math.floor(Math.random() * 10) + 2;
-                    question = `Solve for x: √x = ${value}`;
-                    answer = value * value;
-                    hint = `Square both sides of the equation`;
-                    example = `Example: √x = 5 means x = 5×5 = 25`;
-                    explanation = `If √x = ${value}, then x = ${value}² = ${value * value}`;
-                } else if (questionType === 2) {
-                    const value = Math.floor(Math.random() * 15) + 1;
-                    question = `√${value * value}`;
-                    answer = value;
-                    hint = `This is a perfect square`;
-                    example = `Example: √25 = 5 because 5×5=25`;
-                    explanation = `√${value * value} = ${value} because ${value} × ${value} = ${value * value}`;
-                } else if (questionType === 3) {
-                    const a = Math.floor(Math.random() * 5) + 1;
-                    const b = Math.floor(Math.random() * 5) + 1;
-                    const c = Math.floor(Math.random() * 5) + 1;
-                    question = `${a}√${b} + ${c}√${b}`;
-                    answer = `${a + c}√${b}`;
-                    hint = `Combine like terms (both terms have √${b})`;
-                    example = `Example: 2√3 + 3√3 = 5√3, just like 2 apples + 3 apples = 5 apples`;
-                    explanation = `${a}√${b} + ${c}√${b} = (${a} + ${c})√${b} = ${a + c}√${b}`;
-                } else if (questionType === 4) {
-                    const a = Math.floor(Math.random() * 5) + 1;
-                    const b = Math.floor(Math.random() * 5) + 1;
-                    question = `√${a} × √${b}`;
-                    answer = `√${a * b}`;
-                    hint = `Multiply the numbers inside the square roots`;
-                    example = `Example: √2 × √3 = √(2×3) = √6`;
-                    explanation = `√${a} × √${b} = √(${a} × ${b}) = √${a * b}`;
-                } else if (questionType === 5) {
-                    const a = Math.floor(Math.random() * 5) + 2;
-                    const b = Math.floor(Math.random() * 10) + 1;
-                    question = `√(x + ${b}) = ${a}`;
-                    answer = a * a - b;
-                    hint = `Square both sides, then subtract ${b}`;
-                    example = `Example: √(x+3)=4 → x+3=16 → x=13`;
-                    explanation = `√(x + ${b}) = ${a} → x + ${b} = ${a}² → x + ${b} = ${a * a} → x = ${a * a} - ${b} = ${a * a - b}`;
-                } else if (questionType === 6) {
-                    const num = Math.floor(Math.random() * 5) + 2;
-                    const den = Math.floor(Math.random() * 5) + 2;
-                    question = `√(${num}/${den})`;
-                    answer = `√${num}/√${den}`;
-                    hint = `Square root of a fraction = square root of numerator divided by square root of denominator`;
-                    example = `Example: √(4/9) = √4/√9 = 2/3`;
-                    explanation = `√(${num}/${den}) = √${num}/√${den}`;
-                } else if (questionType === 7) {
-                    const a = Math.floor(Math.random() * 5) + 2;
-                    question = `√(${a}√${a * a})`;
-                    answer = a;
-                    hint = `Simplify the expression inside the square root first`;
-                    example = `Example: √(2√4) = √(2×2) = √4 = 2`;
-                    explanation = `√(${a}√${a * a}) = √(${a} × ${a}) = √${a * a} = ${a}`;
-                } else if (questionType === 8) {
-                    const a = Math.floor(Math.random() * 5) + 2;
-                    question = `(√${a})²`;
-                    answer = a;
-                    hint = `Squaring a square root cancels them out`;
-                    example = `Example: (√5)² = √5 × √5 = 5`;
-                    explanation = `(√${a})² = √${a} × √${a} = ${a}`;
-                } else {
-                    const a = Math.floor(Math.random() * 5) + 2;
-                    const b = Math.floor(Math.random() * 5) + 2;
-                    question = `${a}√${b} × √${b}`;
-                    answer = a * b;
-                    hint = `√${b} × √${b} = ${b}`;
-                    example = `Example: 3√2 × √2 = 3 × (√2×√2) = 3×2 = 6`;
-                    explanation = `${a}√${b} × √${b} = ${a} × (√${b} × √${b}) = ${a} × ${b} = ${a * b}`;
-                }
-                
-                questions.push({
-                    question: question,
-                    answer: answer.toString(),
-                    hint: hint,
-                    example: example,
-                    explanation: explanation
+                // Add event listener to problem input
+                const input = problemCard.querySelector('.problem-input');
+                input.addEventListener('focus', () => {
+                    setCurrentProblem(index);
                 });
+                
+                input.addEventListener('input', (e) => {
+                    const value = e.target.value.trim();
+                    if (value) {
+                        // Check answer on input
+                        const problemId = parseInt(e.target.dataset.problemId);
+                        const problem = mathSystem.problems.find(p => p.id === problemId);
+                        if (problem) {
+                            checkProblemAnswer(problemId, value);
+                        }
+                    }
+                });
+            });
+            
+            // Update current problem display
+            updateCurrentProblem();
+        }
+
+        // Set current problem
+        function setCurrentProblem(index) {
+            mathSystem.currentProblemIndex = index;
+            updateCurrentProblem();
+            renderProblems();
+        }
+
+        // Update current problem display
+        function updateCurrentProblem() {
+            const problem = mathSystem.problems[mathSystem.currentProblemIndex];
+            if (!problem) return;
+            
+            elements.currentProblemNum.textContent = problem.id;
+            elements.currentProblemType.textContent = problem.type;
+            elements.currentProblem.innerHTML = `<span class="math-expr">${problem.question}</span>`;
+            elements.answerInput.value = mathSystem.userAnswers[problem.id]?.answer || '';
+            elements.answerInput.focus();
+            
+            // Update feedback
+            if (mathSystem.userAnswers[problem.id]) {
+                showFeedback(
+                    mathSystem.userAnswers[problem.id].correct,
+                    mathSystem.userAnswers[problem.id].answer,
+                    problem.answer
+                );
+            } else {
+                elements.feedback.className = 'feedback';
+                elements.feedback.style.display = 'none';
+            }
+        }
+
+        // Check answer for current problem
+        function checkAnswer() {
+            const answer = elements.answerInput.value.trim();
+            const problem = mathSystem.problems[mathSystem.currentProblemIndex];
+            
+            if (!answer) {
+                elements.feedback.className = 'feedback incorrect';
+                elements.feedback.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter an answer';
+                elements.feedback.style.display = 'block';
+                return;
             }
             
-            // Add bonus questions
-            questions.push(
-                {question: "√36", answer: "6", hint: "Find what number times itself equals 36", example: "Example: √36 = 6 because 6×6=36", explanation: "√36 = 6 because 6 × 6 = 36"},
-                {question: "√100", answer: "10", hint: "10 times 10 equals what?", example: "Example: √100 = 10 because 10×10=100", explanation: "√100 = 10 because 10 × 10 = 100"},
-                {question: "√49", answer: "7", hint: "What number squared equals 49?", example: "Example: √49 = 7 because 7×7=49", explanation: "√49 = 7 because 7 × 7 = 49"},
-                {question: "√64", answer: "8", hint: "8 times 8 equals?", example: "Example: √64 = 8 because 8×8=64", explanation: "√64 = 8 because 8 × 8 = 64"},
-                {question: "√81", answer: "9", hint: "9 squared equals 81", example: "Example: √81 = 9 because 9×9=81", explanation: "√81 = 9 because 9 × 9 = 81"}
-            );
-        }
-        
-        // Initialize the game
-        function initGame() {
-            currentQuestion = 0;
-            score = 0;
-            lives = 3;
-            timeLeft = userTimeLimit; // Use user-selected time
-            correctAnswers = 0;
-            mistakes = []; // Reset mistakes
+            // Clean the answer input
+            const cleanedAnswer = cleanAnswerInput(answer);
             
-            generateQuestions();
+            if (cleanedAnswer === null) {
+                elements.feedback.className = 'feedback incorrect';
+                elements.feedback.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i> 
+                    Invalid input. Please enter only numbers and decimal point.
+                `;
+                elements.feedback.style.display = 'block';
+                return;
+            }
+            
+            // Check the answer
+            checkProblemAnswer(problem.id, cleanedAnswer);
+        }
+
+        // Check problem answer
+        function checkProblemAnswer(problemId, userAnswer) {
+            const problem = mathSystem.problems.find(p => p.id === problemId);
+            if (!problem) return;
+            
+            const userNum = parseFloat(userAnswer);
+            const correctNum = parseFloat(problem.answer);
+            
+            // Calculate tolerance based on problem type
+            const tolerance = getTolerance(problem.type);
+            const isCorrect = Math.abs(userNum - correctNum) <= tolerance;
+            
+            // Store user answer
+            mathSystem.userAnswers[problemId] = {
+                answer: userAnswer,
+                correct: isCorrect
+            };
+            
+            // Update statistics
+            if (isCorrect && !mathSystem.userAnswers[problemId].previouslyCorrect) {
+                mathSystem.score += 10;
+                mathSystem.correctCount++;
+            }
+            mathSystem.totalAttempts++;
             
             // Update UI
-            scoreElement.textContent = score;
-            livesElement.textContent = lives;
-            timeElement.textContent = timeLeft;
-            questionCountElement.textContent = `1/${questions.length}`;
-            progressBar.style.width = '0%';
-            hintBox.style.display = 'none';
+            updateUI();
+            renderProblems();
             
-            // Show first question
-            showQuestion();
+            // Show feedback
+            if (problemId === mathSystem.problems[mathSystem.currentProblemIndex].id) {
+                showFeedback(isCorrect, userAnswer, correctNum);
+            }
             
-            // Start timer
-            clearInterval(timer);
-            timer = setInterval(updateTimer, 1000);
-            
-            // Start music if enabled
-            if (musicEnabled) {
-                playSimpleMusic();
+            // Mark as previously correct
+            if (isCorrect) {
+                mathSystem.userAnswers[problemId].previouslyCorrect = true;
             }
         }
-        
-        // Show current question
-        function showQuestion() {
-            if (currentQuestion >= questions.length) {
-                endGame();
-                return;
+
+        // Show feedback
+        function showFeedback(isCorrect, userAnswer, correctAnswer) {
+            if (isCorrect) {
+                elements.feedback.className = 'feedback correct';
+                elements.feedback.innerHTML = `
+                    <i class="fas fa-check-circle"></i> 
+                    Correct! 
+                    <span style="display: block; margin-top: 10px; font-size: 0.9rem; font-weight: normal;">
+                        You answered: <strong>${userAnswer}</strong>
+                    </span>
+                `;
+            } else {
+                elements.feedback.className = 'feedback incorrect';
+                elements.feedback.innerHTML = `
+                    <i class="fas fa-times-circle"></i> 
+                    Incorrect. 
+                    <span style="display: block; margin-top: 10px; font-size: 0.9rem; font-weight: normal;">
+                        You answered: <strong>${userAnswer}</strong><br>
+                        Correct answer: <span class="correct-answer">${correctAnswer}</span>
+                    </span>
+                `;
+            }
+            elements.feedback.style.display = 'block';
+        }
+
+        // Clean answer input - remove symbols, convert to number
+        function cleanAnswerInput(input) {
+            // Remove any non-numeric characters except decimal point and minus sign
+            const cleaned = input.replace(/[^0-9.-]/g, '');
+            
+            // Check if it's a valid number
+            if (!cleaned || isNaN(parseFloat(cleaned))) {
+                return null;
             }
             
-            const question = questions[currentQuestion];
-            questionElement.textContent = question.question;
-            answerInput.value = "";
-            answerInput.focus();
-            feedbackElement.style.display = "none";
-            hintBox.style.display = "none";
-            
-            // Reset timer for this question
-            timeLeft = userTimeLimit;
-            timeElement.textContent = timeLeft;
+            // Parse as float and round to 2 decimal places
+            const num = parseFloat(cleaned);
+            return Math.round(num * 100) / 100;
+        }
+
+        // Get tolerance for different problem types
+        function getTolerance(problemType) {
+            switch(problemType) {
+                case 'Square Root':
+                case 'Area':
+                    return 0.01; // More precise
+                case 'Pi Multiple':
+                    return 0.05; // Approximation of π
+                case 'Fraction Conversion':
+                    return 0.01;
+                case 'Equation':
+                    return 0; // Exact for equations
+                default:
+                    return 0.01;
+            }
+        }
+
+        // Update UI elements
+        function updateUI() {
+            elements.scoreElement.textContent = mathSystem.score;
+            elements.correctCountElement.textContent = mathSystem.correctCount;
+            elements.totalAttemptsElement.textContent = mathSystem.totalAttempts;
             
             // Update progress
-            const progress = (currentQuestion / questions.length) * 100;
-            progressBar.style.width = `${progress}%`;
+            const totalProblems = mathSystem.problems.length;
+            const answeredProblems = Object.keys(mathSystem.userAnswers).length;
+            const progress = totalProblems > 0 ? (answeredProblems / totalProblems) * 100 : 0;
+            elements.progressFill.style.width = `${progress}%`;
             
-            // Update question counter
-            questionCountElement.textContent = `${currentQuestion + 1}/${questions.length}`;
+            // Update button states
+            elements.prevProblemBtn.disabled = mathSystem.currentProblemIndex === 0;
+            elements.nextProblemBtn.disabled = mathSystem.currentProblemIndex === mathSystem.problems.length - 1;
         }
-        
-        // Create sound functions
-        let playCorrectSound, playIncorrectSound;
-        
-        // Check the answer
-        function checkAnswer() {
-            const userAnswer = answerInput.value.trim().toLowerCase();
-            const correctAnswer = questions[currentQuestion].answer.toLowerCase();
-            const question = questions[currentQuestion];
-            
-            // Normalize answers for comparison
-            const normalizedUserAnswer = userAnswer.replace(/\s+/g, '').replace(/√/g, 'sqrt');
-            const normalizedCorrectAnswer = correctAnswer.replace(/\s+/g, '').replace(/√/g, 'sqrt');
-            
-            if (normalizedUserAnswer === normalizedCorrectAnswer || 
-                userAnswer === correctAnswer) {
-                // Correct answer
-                score += 10;
-                correctAnswers++;
-                
-                // Update UI
-                scoreElement.textContent = score;
-                feedbackElement.textContent = "Correct! 🎉 +10 points";
-                feedbackElement.className = "feedback correct";
-                feedbackElement.style.display = "block";
-                
-                // Play sound if enabled
-                if (audioEnabled && playCorrectSound) {
-                    playCorrectSound();
-                }
-            } else {
-                // Incorrect answer - store mistake
-                mistakes.push({
-                    question: question.question,
-                    userAnswer: userAnswer || "(no answer)",
-                    correctAnswer: question.answer,
-                    explanation: question.explanation,
-                    hint: question.hint,
-                    example: question.example
+
+        // Setup calculator
+        function setupCalculator() {
+            // Calculator buttons
+            document.querySelectorAll('.calc-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const value = this.dataset.value;
+                    let current = elements.calcResult.value;
+                    
+                    switch(value) {
+                        case '√':
+                            elements.calcResult.value = 'sqrt(';
+                            break;
+                        case 'π':
+                            elements.calcResult.value += Math.PI.toFixed(5);
+                            break;
+                        case '½':
+                            elements.calcResult.value += '0.5';
+                            break;
+                        case '÷':
+                            elements.calcResult.value += '/';
+                            break;
+                        case '×':
+                            elements.calcResult.value += '*';
+                            break;
+                        case '(-)':
+                            if (current.startsWith('-')) {
+                                elements.calcResult.value = current.slice(1);
+                            } else {
+                                elements.calcResult.value = '-' + current;
+                            }
+                            break;
+                        default:
+                            elements.calcResult.value += value;
+                    }
                 });
-                
-                lives--;
-                
-                // Update UI
-                livesElement.textContent = lives;
-                feedbackElement.textContent = `Not quite! The answer is: ${question.answer}`;
-                feedbackElement.className = "feedback incorrect";
-                feedbackElement.style.display = "block";
-                
-                // Show explanation for mistake
-                setTimeout(() => {
-                    feedbackElement.innerHTML += `<br><small>${question.explanation}</small>`;
-                }, 500);
-                
-                // Play sound if enabled
-                if (audioEnabled && playIncorrectSound) {
-                    playIncorrectSound();
-                }
-                
-                // Check if game over
-                if (lives <= 0) {
-                    setTimeout(endGame, 2000);
-                    return;
-                }
-            }
-            
-            // Move to next question
-            currentQuestion++;
-            
-            // Show next question or end game
-            if (currentQuestion < questions.length && lives > 0) {
-                setTimeout(showQuestion, 2000); // Increased delay for reading feedback
-            } else {
-                setTimeout(endGame, 2000);
-            }
-        }
-        
-        // Update timer
-        function updateTimer() {
-            timeLeft--;
-            timeElement.textContent = timeLeft;
-            
-            // Visual warning when time is running low
-            if (timeLeft <= 10) {
-                timeElement.style.color = "#f44336";
-                timeElement.style.animation = "pulse 1s infinite";
-            } else {
-                timeElement.style.color = "#4CAF50";
-                timeElement.style.animation = "none";
-            }
-            
-            if (timeLeft <= 0) {
-                // Time's up - mark as mistake
-                const question = questions[currentQuestion];
-                mistakes.push({
-                    question: question.question,
-                    userAnswer: "Time's up!",
-                    correctAnswer: question.answer,
-                    explanation: question.explanation,
-                    hint: question.hint,
-                    example: question.example
-                });
-                
-                lives--;
-                livesElement.textContent = lives;
-                
-                feedbackElement.textContent = `⏰ Time's up! The answer was: ${question.answer}`;
-                feedbackElement.className = "feedback incorrect";
-                feedbackElement.style.display = "block";
-                
-                currentQuestion++;
-                
-                if (currentQuestion < questions.length && lives > 0) {
-                    setTimeout(showQuestion, 2000);
-                } else {
-                    setTimeout(endGame, 2000);
-                }
-            }
-        }
-        
-        // End the game
-        function endGame() {
-            clearInterval(timer);
-            
-            // Stop music
-            stopMusic();
-            
-            // Calculate grade
-            const accuracy = Math.round((correctAnswers / questions.length) * 100);
-            let grade = "F";
-            let gradeEmoji = "😢";
-            
-            if (accuracy >= 90) { grade = "A"; gradeEmoji = "🏆"; }
-            else if (accuracy >= 80) { grade = "B"; gradeEmoji = "🌟"; }
-            else if (accuracy >= 70) { grade = "C"; gradeEmoji = "👍"; }
-            else if (accuracy >= 60) { grade = "D"; gradeEmoji = "🙂"; }
-            
-            // Update results screen
-            document.getElementById('final-score').textContent = score;
-            document.getElementById('correct-count').textContent = correctAnswers;
-            document.getElementById('total-questions').textContent = questions.length;
-            document.getElementById('accuracy').textContent = `${accuracy}%`;
-            document.getElementById('final-grade').textContent = `${grade} ${gradeEmoji}`;
-            
-            // Show mistakes if any
-            if (mistakes.length > 0) {
-                mistakesContainer.style.display = 'block';
-                mistakesList.innerHTML = '';
-                
-                mistakes.forEach((mistake, index) => {
-                    const mistakeItem = document.createElement('div');
-                    mistakeItem.className = 'mistake-item';
-                    mistakeItem.innerHTML = `
-                        <strong>Question ${index + 1}:</strong> ${mistake.question}<br>
-                        <strong>Your answer:</strong> ${mistake.userAnswer}<br>
-                        <strong>Correct answer:</strong> ${mistake.correctAnswer}<br>
-                        <strong>Explanation:</strong> ${mistake.explanation}<br>
-                        <strong>Tip:</strong> ${mistake.hint}
-                    `;
-                    mistakesList.appendChild(mistakeItem);
-                });
-            } else {
-                mistakesContainer.style.display = 'none';
-            }
-            
-            // Switch to results screen
-            gameScreen.classList.remove('active');
-            resultsScreen.classList.add('active');
-        }
-        
-        // Show hint with examples
-        function showHint() {
-            const question = questions[currentQuestion];
-            hintContent.textContent = question.hint;
-            hintExample.textContent = question.example;
-            hintBox.style.display = 'block';
-            
-            hintBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        
-        // Toggle audio
-        function toggleAudio() {
-            if (!audioInitialized) {
-                initAudio();
-            }
-            
-            audioEnabled = !audioEnabled;
-            const button = document.getElementById('toggle-audio-btn');
-            
-            if (audioEnabled) {
-                button.textContent = "Sound: ON 🔊";
-                button.style.background = "linear-gradient(to right, #FF9800, #FF5722)";
-                audioStatus.textContent = "Sound: ON";
-                audioStatus.style.color = "#4CAF50";
-                
-                playCorrectSound = createBeepSound(880, 0.5, 'sine');
-                playIncorrectSound = createBeepSound(220, 0.8, 'sawtooth');
-                
-                setTimeout(() => {
-                    if (playCorrectSound) playCorrectSound();
-                }, 100);
-            } else {
-                button.textContent = "Enable Sound 🔊";
-                button.style.background = "linear-gradient(to right, #2196F3, #0D47A1)";
-                audioStatus.textContent = "Sound: OFF";
-                audioStatus.style.color = "#f44336";
-                musicEnabled = false;
-                stopMusic();
-            }
-        }
-        
-        // Toggle music
-        function toggleMusic() {
-            if (!audioEnabled) {
-                alert("Please enable sound first!");
-                return;
-            }
-            
-            musicEnabled = !musicEnabled;
-            const button = document.getElementById('music-toggle-btn');
-            
-            if (musicEnabled) {
-                button.textContent = "🎵 ON";
-                button.style.backgroundColor = "rgba(76, 175, 80, 0.5)";
-                gameAudioStatus.textContent = "Music: ON";
-                playSimpleMusic();
-            } else {
-                button.textContent = "🎵";
-                button.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-                gameAudioStatus.textContent = "Music: OFF";
-                stopMusic();
-            }
-        }
-        
-        // Event Listeners
-        document.getElementById('start-btn').addEventListener('click', function() {
-            startScreen.classList.remove('active');
-            gameScreen.classList.add('active');
-            initGame();
-        });
-        
-        document.getElementById('toggle-audio-btn').addEventListener('click', toggleAudio);
-        document.getElementById('music-toggle-btn').addEventListener('click', toggleMusic);
-        
-        // Test buttons
-        document.getElementById('test-correct').addEventListener('click', function() {
-            if (!audioEnabled) {
-                alert("Click 'Enable Sound' first, then test the sounds!");
-                return;
-            }
-            if (!audioInitialized) initAudio();
-            const testSound = createBeepSound(880, 0.5, 'sine');
-            testSound();
-        });
-        
-        document.getElementById('test-incorrect').addEventListener('click', function() {
-            if (!audioEnabled) {
-                alert("Click 'Enable Sound' first, then test the sounds!");
-                return;
-            }
-            if (!audioInitialized) initAudio();
-            const testSound = createBeepSound(220, 0.8, 'sawtooth');
-            testSound();
-        });
-        
-        document.getElementById('test-music').addEventListener('click', function() {
-            if (!audioEnabled) {
-                alert("Click 'Enable Sound' first, then test the sounds!");
-                return;
-            }
-            if (!audioInitialized) initAudio();
-            const notes = [523.25, 659.25, 783.99];
-            notes.forEach((note, index) => {
-                setTimeout(() => {
-                    const testSound = createBeepSound(note, 0.3, 'sine');
-                    testSound();
-                }, index * 300);
             });
-        });
-        
-        // Game sound buttons
-        document.getElementById('correct-sound-btn').addEventListener('click', function() {
-            if (audioEnabled && playCorrectSound) {
-                playCorrectSound();
-            }
-        });
-        
-        document.getElementById('incorrect-sound-btn').addEventListener('click', function() {
-            if (audioEnabled && playIncorrectSound) {
-                playIncorrectSound();
-            }
-        });
-        
-        submitButton.addEventListener('click', checkAnswer);
-        
-        answerInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkAnswer();
-            }
-        });
-        
-        document.getElementById('hint-btn').addEventListener('click', showHint);
-        
-        document.getElementById('quit-btn').addEventListener('click', function() {
-            if (confirm("Are you sure you want to quit? Your progress will be lost.")) {
-                endGame();
-            }
-        });
-        
-        document.getElementById('play-again-btn').addEventListener('click', function() {
-            resultsScreen.classList.remove('active');
-            gameScreen.classList.add('active');
-            initGame();
-        });
-        
-        document.getElementById('back-to-menu-btn').addEventListener('click', function() {
-            resultsScreen.classList.remove('active');
-            startScreen.classList.add('active');
-        });
-        
-        // Generate initial questions
-        generateQuestions();
-        
-        // Add CSS animation for time warning
+            
+            // Clear calculator
+            elements.clearCalcBtn.addEventListener('click', () => {
+                elements.calcResult.value = '';
+            });
+            
+            // Use calculator result as answer
+            elements.useCalcResultBtn.addEventListener('click', () => {
+                try {
+                    let expression = elements.calcResult.value;
+                    
+                    // Replace symbols with JavaScript equivalents
+                    expression = expression
+                        .replace(/sqrt\(/g, 'Math.sqrt(')
+                        .replace(/π/g, Math.PI.toString())
+                        .replace(/÷/g, '/')
+                        .replace(/×/g, '*');
+                    
+                    // Evaluate the expression
+                    const result = eval(expression);
+                    
+                    if (typeof result === 'number' && !isNaN(result)) {
+                        elements.answerInput.value = Math.round(result * 100) / 100;
+                        elements.calcResult.value = '';
+                    } else {
+                        alert('Invalid calculation. Please check your expression.');
+                    }
+                } catch (error) {
+                    alert('Error in calculation. Please check your expression.');
+                }
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Check answer button
+            elements.checkAnswerBtn.addEventListener('click', checkAnswer);
+            
+            // Enter key to check answer
+            elements.answerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkAnswer();
+                }
+            });
+            
+            // Navigation buttons
+            elements.prevProblemBtn.addEventListener('click', () => {
+                if (mathSystem.currentProblemIndex > 0) {
+                    setCurrentProblem(mathSystem.currentProblemIndex - 1);
+                }
+            });
+            
+            elements.nextProblemBtn.addEventListener('click', () => {
+                if (mathSystem.currentProblemIndex < mathSystem.problems.length - 1) {
+                    setCurrentProblem(mathSystem.currentProblemIndex + 1);
+                }
+            });
+            
+            // Generate new problems
+            elements.generateProblemsBtn.addEventListener('click', generateProblems);
+        }
+
+        // Add custom CSS for calculator buttons
         const style = document.createElement('style');
         style.textContent = `
-            @keyframes pulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.1); }
-                100% { transform: scale(1); }
+            .calc-btn {
+                padding: 15px;
+                border: 2px solid #dee2e6;
+                background: white;
+                border-radius: 8px;
+                font-size: 1.2rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .calc-btn:hover {
+                background: #667eea;
+                color: white;
+                border-color: #667eea;
+                transform: translateY(-2px);
+            }
+            
+            .calc-btn[data-value="√"],
+            .calc-btn[data-value="π"],
+            .calc-btn[data-value="½"] {
+                background: #e3f2fd;
+                color: #1565c0;
+            }
+            
+            .calc-btn[data-value="÷"],
+            .calc-btn[data-value="×"],
+            .calc-btn[data-value="-"],
+            .calc-btn[data-value="+"] {
+                background: #fff3e0;
+                color: #ef6c00;
             }
         `;
         document.head.appendChild(style);
