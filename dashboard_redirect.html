@@ -1,32 +1,165 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User Dashboard</title>
+    <title>Dashboard Redirect</title>
     <style>
-        body { font-family: Arial; padding: 20px; }
-        .dashboard { background: #f8f9fa; padding: 30px; border-radius: 10px; }
-        .user-info { background: white; padding: 20px; border-radius: 5px; margin: 20px 0; }
-        button { background: #dc3545; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+        body { font-family: Arial; padding: 40px; text-align: center; }
+        .container { max-width: 500px; margin: 0 auto; }
+        input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background: #28a745; color: white; border: none; padding: 12px 24px; cursor: pointer; }
+        .url-input { font-family: monospace; }
+        .info { background: #e9ecef; padding: 15px; border-radius: 5px; margin: 20px 0; }
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <h1>👤 User Dashboard</h1>
-        <div class="user-info" id="user-info">
-            <p>Loading user information...</p>
+    <div class="container">
+        <h1>🔐 Custom Dashboard Redirect</h1>
+        
+        <div class="info">
+            <p><strong>Current Users:</strong></p>
+            <ul id="users-list"></ul>
         </div>
-        <button onclick="logout()">Logout</button>
+        
+        <div class="form">
+            <h2>Sign Up with Custom URL</h2>
+            <input id="signup-username" placeholder="Username" value="jamal2025">
+            <input id="signup-email" placeholder="Email" value="jamal@example.com">
+            <input id="signup-password" type="password" placeholder="Password" value="Test123!">
+            <input id="signup-url" class="url-input" placeholder="Default URL after login" 
+                   value="/dashboardamis2.github.io/index.html/Squartd8f2xfa025">
+            <button onclick="signup()">Sign Up & Redirect</button>
+            <div id="signup-result"></div>
+        </div>
+        
+        <div class="form">
+            <h2>Login with Redirect</h2>
+            <input id="login-email" placeholder="Email" value="demo@example.com">
+            <input id="login-password" type="password" placeholder="Password" value="demo123">
+            <button onclick="login()">Login & Redirect</button>
+            <div id="login-result"></div>
+        </div>
+        
+        <div class="form">
+            <h2>Test Current User's URL</h2>
+            <button onclick="testRedirect()">Test My Redirect URL</button>
+            <div id="test-result"></div>
+        </div>
     </div>
     
     <script>
         const API_URL = 'http://localhost:5000/api/auth';
-        const token = localStorage.getItem('token');
+        let currentUser = null;
         
-        if (!token) {
-            window.location.href = 'dashboard_redirect.html';
+        // Load users on page load
+        window.onload = loadUsers;
+        
+        async function loadUsers() {
+            try {
+                const response = await fetch('http://localhost:5000/');
+                const data = await response.json();
+                
+                const list = document.getElementById('users-list');
+                list.innerHTML = '';
+                
+                if (data.users_count > 0) {
+                    list.innerHTML = `<li>👤 demo@example.com → ${data.demo_url || '/dashboard'}</li>`;
+                }
+            } catch (error) {
+                console.log('Could not load users');
+            }
         }
         
-        async function loadUserProfile() {
+        async function signup() {
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const defaultUrl = document.getElementById('signup-url').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, defaultUrl })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Store token and user
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Show success and redirect
+                    document.getElementById('signup-result').innerHTML = 
+                        `<div style="color:green; padding:10px;">
+                            ✅ Account created!<br>
+                            Redirecting to: <strong>${data.redirectUrl}</strong>
+                        </div>`;
+                    
+                    // Redirect after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = data.redirectUrl;
+                    }, 2000);
+                    
+                    loadUsers(); // Refresh user list
+                } else {
+                    document.getElementById('signup-result').innerHTML = 
+                        `<div style="color:red;">❌ ${data.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('signup-result').innerHTML = 
+                    `<div style="color:red;">❌ Connection error</div>`;
+            }
+        }
+        
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Store token and user
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    currentUser = data.user;
+                    
+                    // Show success and redirect
+                    document.getElementById('login-result').innerHTML = 
+                        `<div style="color:green; padding:10px;">
+                            ✅ Welcome ${data.user.username}!<br>
+                            Redirecting to: <strong>${data.redirectUrl}</strong>
+                        </div>`;
+                    
+                    // Redirect after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = data.redirectUrl;
+                    }, 2000);
+                } else {
+                    document.getElementById('login-result').innerHTML = 
+                        `<div style="color:red;">❌ ${data.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('login-result').innerHTML = 
+                    `<div style="color:red;">❌ Connection error</div>`;
+            }
+        }
+        
+        async function testRedirect() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('test-result').innerHTML = 
+                    `<div style="color:orange;">⚠️ Not logged in</div>`;
+                return;
+            }
+            
             try {
                 const response = await fetch(`${API_URL}/profile`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -35,30 +168,23 @@
                 const user = await response.json();
                 
                 if (response.ok) {
-                    document.getElementById('user-info').innerHTML = `
-                        <h2>Welcome, ${user.username}!</h2>
-                        <p><strong>Email:</strong> ${user.email}</p>
-                        <p><strong>Account Created:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
-                        <p><strong>Default URL:</strong> ${user.defaultUrl}</p>
-                        <p><strong>Your Token:</strong> ${token.substring(0, 20)}...</p>
-                    `;
+                    document.getElementById('test-result').innerHTML = 
+                        `<div style="color:green; padding:10px;">
+                            ✅ Logged in as: ${user.username}<br>
+                            Your default URL: <strong>${user.defaultUrl}</strong><br>
+                            <button onclick="window.location.href='${user.defaultUrl}'">
+                                Go to My Dashboard
+                            </button>
+                        </div>`;
                 } else {
-                    document.getElementById('user-info').innerHTML = 
-                        `<p style="color:red;">Error: ${user.error}</p>`;
+                    document.getElementById('test-result').innerHTML = 
+                        `<div style="color:red;">❌ ${user.error}</div>`;
                 }
             } catch (error) {
-                document.getElementById('user-info').innerHTML = 
-                    `<p style="color:red;">Connection error</p>`;
+                document.getElementById('test-result').innerHTML = 
+                    `<div style="color:red;">❌ Error fetching profile</div>`;
             }
         }
-        
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = 'dashboard_redirect.html';
-        }
-        
-        loadUserProfile();
     </script>
 </body>
 </html>
