@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Dashboard</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .dashboard { background: #f8f9fa; padding: 30px; border-radius: 10px; }
+        .user-info { background: white; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        button { background: #dc3545; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>👤 User Dashboard</h1>
+        <div class="user-info" id="user-info">
+            <p>Loading user information...</p>
+        </div>
+        <button onclick="logout()">Logout</button>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:5000/api/auth';
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            window.location.href = 'dashboard_redirect.html';
+        }
+        
+        async function loadUserProfile() {
+            try {
+                const response = await fetch(`${API_URL}/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const user = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('user-info').innerHTML = `
+                        <h2>Welcome, ${user.username}!</h2>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>Account Created:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
+                        <p><strong>Default URL:</strong> ${user.defaultUrl}</p>
+                        <p><strong>Your Token:</strong> ${token.substring(0, 20)}...</p>
+                    `;
+                } else {
+                    document.getElementById('user-info').innerHTML = 
+                        `<p style="color:red;">Error: ${user.error}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('user-info').innerHTML = 
+                    `<p style="color:red;">Connection error</p>`;
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'dashboard_redirect.html';
+        }
+        
+        loadUserProfile();
+    </script>
+</body>
+</html>
