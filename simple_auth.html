@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Working Auth Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .form { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        input { display: block; margin: 10px 0; padding: 10px; width: 300px; }
+        button { padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; }
+        .success { color: green; padding: 10px; background: #d4edda; }
+        .error { color: red; padding: 10px; background: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>✅ Working Auth Test</h1>
+    
+    <div class="form">
+        <h2>1. First Check Server Connection:</h2>
+        <button onclick="checkServer()">Test Server Connection</button>
+        <div id="server-status"></div>
+    </div>
+    
+    <div class="form">
+        <h2>2. Sign Up (Works with any email)</h2>
+        <input id="signup-username" placeholder="Username" value="testuser">
+        <input id="signup-email" placeholder="Email (any email works)" value="test@gmail.com">
+        <input id="signup-password" type="password" placeholder="Password" value="Test123!">
+        <button onclick="signup()">Create Account</button>
+        <div id="signup-result"></div>
+    </div>
+    
+    <div class="form">
+        <h2>3. Login</h2>
+        <input id="login-email" placeholder="Email" value="demo@example.com">
+        <input id="login-password" type="password" placeholder="Password" value="demo123">
+        <button onclick="login()">Login</button>
+        <div id="login-result"></div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:5000/api/auth';
+        
+        async function checkServer() {
+            try {
+                const response = await fetch('http://localhost:5000/');
+                const data = await response.json();
+                document.getElementById('server-status').innerHTML = 
+                    `<div class="success">✅ Server is running!<br>${JSON.stringify(data)}</div>`;
+            } catch (error) {
+                document.getElementById('server-status').innerHTML = 
+                    `<div class="error">❌ Server connection failed: ${error.message}<br>
+                     Make sure: 1) Node.js server is running, 2) Port 5000 is not blocked</div>`;
+            }
+        }
+        
+        async function signup() {
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                
+                const data = await response.json();
+                document.getElementById('signup-result').innerHTML = 
+                    response.ok ? 
+                    `<div class="success">✅ User created!<br>Username: ${data.user.username}<br>Email: ${data.user.email}</div>` :
+                    `<div class="error">❌ Error: ${data.error}</div>`;
+            } catch (error) {
+                document.getElementById('signup-result').innerHTML = 
+                    `<div class="error">❌ Connection error: ${error.message}<br>
+                     Try: 1) Click "Test Server Connection" above, 2) Make sure backend is running</div>`;
+            }
+        }
+        
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                document.getElementById('login-result').innerHTML = 
+                    response.ok ? 
+                    `<div class="success">✅ Logged in!<br>Welcome ${data.user.username}</div>` :
+                    `<div class="error">❌ Error: ${data.error}</div>`;
+            } catch (error) {
+                document.getElementById('login-result').innerHTML = 
+                    `<div class="error">❌ Connection error: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-check server on page load
+        window.onload = checkServer;
+    </script>
+</body>
+</html>
