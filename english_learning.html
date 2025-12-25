@@ -133,6 +133,7 @@
             justify-content: center;
             align-items: center;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         
         .audio-btn {
@@ -143,7 +144,7 @@
             color: white;
             border: none;
             font-size: 1.5rem;
-            margin: 0 10px;
+            margin: 5px 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -152,6 +153,13 @@
         .audio-btn:hover {
             transform: scale(1.1);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .audio-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .lesson-content {
@@ -283,6 +291,26 @@
             transition: width 0.5s ease;
         }
         
+        .audio-status {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            min-height: 20px;
+        }
+        
+        .speakable {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .speakable:hover {
+            background-color: #e3f2fd;
+            transform: scale(1.02);
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -332,12 +360,20 @@
             background-color: #bbdefb;
             transform: scale(1.05);
         }
+        
+        .voice-select {
+            margin-top: 15px;
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <header>
-            <h1> Jamal Adeero English Learning App</h1>
+            <h1> Jamal Adeero's English Learning App</h1>
             <p class="subtitle">Interactive English lessons for students in grades 3 to 9</p>
         </header>
         
@@ -363,10 +399,19 @@
                 
                 <h3>Audio Controls</h3>
                 <div class="audio-controls">
-                    <button class="audio-btn" id="play-audio"><i class="fas fa-play"></i></button>
-                    <button class="audio-btn" id="pause-audio"><i class="fas fa-pause"></i></button>
-                    <button class="audio-btn" id="repeat-audio"><i class="fas fa-redo"></i></button>
-                    <input type="range" min="0" max="100" value="70" class="volume-slider" id="volume-slider">
+                    <button class="audio-btn" id="play-audio" title="Play Lesson Audio"><i class="fas fa-play"></i></button>
+                    <button class="audio-btn" id="pause-audio" title="Pause Audio" disabled><i class="fas fa-pause"></i></button>
+                    <button class="audio-btn" id="stop-audio" title="Stop Audio" disabled><i class="fas fa-stop"></i></button>
+                    <button class="audio-btn" id="repeat-audio" title="Repeat Audio"><i class="fas fa-redo"></i></button>
+                    <input type="range" min="0" max="100" value="70" class="volume-slider" id="volume-slider" title="Volume Control">
+                </div>
+                
+                <select class="voice-select" id="voice-select">
+                    <option value="">Select Voice</option>
+                </select>
+                
+                <div class="audio-status" id="audio-status">
+                    Audio ready. Click play to start.
                 </div>
                 
                 <div class="progress-container">
@@ -383,34 +428,34 @@
                     </div>
                     
                     <div class="lesson-text" id="lesson-text">
-                        <p><span class="highlight">Pronouns</span> are words that take the place of nouns in a sentence. They help us avoid repeating the same nouns over and over again.</p>
+                        <p><span class="highlight speakable" data-text="Pronouns are words that take the place of nouns in a sentence.">Pronouns</span> are words that take the place of nouns in a sentence. They help us avoid repeating the same nouns over and over again.</p>
                         
-                        <p>For example, instead of saying: "<span class="highlight">Maria</span> is a student. <span class="highlight">Maria</span> studies English. <span class="highlight">Maria</span> likes to read books."</p>
+                        <p>For example, instead of saying: "<span class="highlight speakable" data-text="Maria is a student. Maria studies English. Maria likes to read books.">Maria</span> is a student. <span class="highlight">Maria</span> studies English. <span class="highlight">Maria</span> likes to read books."</p>
                         
-                        <p>We can say: "<span class="highlight">Maria</span> is a student. <span class="highlight">She</span> studies English. <span class="highlight">She</span> likes to read books."</p>
+                        <p>We can say: "<span class="highlight speakable" data-text="Maria is a student. She studies English. She likes to read books.">Maria</span> is a student. <span class="highlight speakable" data-text="She studies English.">She</span> studies English. <span class="highlight speakable" data-text="She likes to read books.">She</span> likes to read books."</p>
                         
                         <div class="examples">
                             <h3>Common Pronouns:</h3>
                             <div class="example-item">
-                                <strong>I</strong> - Used by a person to refer to themselves. Example: <em>"I am learning English."</em>
+                                <strong class="speakable" data-text="I">I</strong> - Used by a person to refer to themselves. Example: <em class="speakable" data-text="I am learning English.">"I am learning English."</em>
                             </div>
                             <div class="example-item">
-                                <strong>You</strong> - Used to refer to the person or people being spoken to. Example: <em>"You are a good student."</em>
+                                <strong class="speakable" data-text="You">You</strong> - Used to refer to the person or people being spoken to. Example: <em class="speakable" data-text="You are a good student.">"You are a good student."</em>
                             </div>
                             <div class="example-item">
-                                <strong>He</strong> - Used to refer to a male person or animal. Example: <em>"He is my brother."</em>
+                                <strong class="speakable" data-text="He">He</strong> - Used to refer to a male person or animal. Example: <em class="speakable" data-text="He is my brother.">"He is my brother."</em>
                             </div>
                             <div class="example-item">
-                                <strong>She</strong> - Used to refer to a female person or animal. Example: <em>"She is my teacher."</em>
+                                <strong class="speakable" data-text="She">She</strong> - Used to refer to a female person or animal. Example: <em class="speakable" data-text="She is my teacher.">"She is my teacher."</em>
                             </div>
                             <div class="example-item">
-                                <strong>It</strong> - Used to refer to a thing, animal, or idea. Example: <em>"It is a beautiful day."</em>
+                                <strong class="speakable" data-text="It">It</strong> - Used to refer to a thing, animal, or idea. Example: <em class="speakable" data-text="It is a beautiful day.">"It is a beautiful day."</em>
                             </div>
                             <div class="example-item">
-                                <strong>We</strong> - Used by a person to refer to themselves and others. Example: <em>"We are classmates."</em>
+                                <strong class="speakable" data-text="We">We</strong> - Used by a person to refer to themselves and others. Example: <em class="speakable" data-text="We are classmates.">"We are classmates."</em>
                             </div>
                             <div class="example-item">
-                                <strong>They</strong> - Used to refer to two or more people, animals, or things. Example: <em>"They are playing outside."</em>
+                                <strong class="speakable" data-text="They">They</strong> - Used to refer to two or more people, animals, or things. Example: <em class="speakable" data-text="They are playing outside.">"They are playing outside."</em>
                             </div>
                         </div>
                     </div>
@@ -435,248 +480,566 @@
         </div>
         
         <footer>
-            <p>English Learning App &copy; 2023 | Designed for students in grades 3 to 9 | Over 2500 words and sentences</p>
+            <p>JA English Learning App &copy; 2025 | Designed for students in grades 3 to 9 | Over 2500 words and sentences</p>
             <p>Audio reading functionality included for all lessons and vocabulary</p>
         </footer>
     </div>
 
     <script>
-        // App data
+        // App data - Now with ALL 8 lessons
         const lessons = {
             pronouns: {
                 title: "Pronouns",
                 difficulty: "Grade 3-4",
-                content: `<p><span class="highlight">Pronouns</span> are words that take the place of nouns in a sentence. They help us avoid repeating the same nouns over and over again.</p>
+                audioText: "Pronouns are words that take the place of nouns in a sentence. They help us avoid repeating the same nouns over and over again. For example, instead of saying Maria is a student. Maria studies English. Maria likes to read books. We can say Maria is a student. She studies English. She likes to read books. Common pronouns are: I, you, he, she, it, we, and they.",
+                content: `<p><span class="highlight speakable" data-text="Pronouns are words that take the place of nouns in a sentence.">Pronouns</span> are words that take the place of nouns in a sentence. They help us avoid repeating the same nouns over and over again.</p>
                 
-                <p>For example, instead of saying: "<span class="highlight">Maria</span> is a student. <span class="highlight">Maria</span> studies English. <span class="highlight">Maria</span> likes to read books."</p>
+                <p>For example, instead of saying: "<span class="highlight speakable" data-text="Maria is a student. Maria studies English. Maria likes to read books.">Maria</span> is a student. <span class="highlight">Maria</span> studies English. <span class="highlight">Maria</span> likes to read books."</p>
                 
-                <p>We can say: "<span class="highlight">Maria</span> is a student. <span class="highlight">She</span> studies English. <span class="highlight">She</span> likes to read books."</p>
+                <p>We can say: "<span class="highlight speakable" data-text="Maria is a student. She studies English. She likes to read books.">Maria</span> is a student. <span class="highlight speakable" data-text="She studies English.">She</span> studies English. <span class="highlight speakable" data-text="She likes to read books.">She</span> likes to read books."</p>
                 
                 <div class="examples">
                     <h3>Common Pronouns:</h3>
                     <div class="example-item">
-                        <strong>I</strong> - Used by a person to refer to themselves. Example: <em>"I am learning English."</em>
+                        <strong class="speakable" data-text="I">I</strong> - Used by a person to refer to themselves. Example: <em class="speakable" data-text="I am learning English.">"I am learning English."</em>
                     </div>
                     <div class="example-item">
-                        <strong>You</strong> - Used to refer to the person or people being spoken to. Example: <em>"You are a good student."</em>
+                        <strong class="speakable" data-text="You">You</strong> - Used to refer to the person or people being spoken to. Example: <em class="speakable" data-text="You are a good student.">"You are a good student."</em>
                     </div>
                     <div class="example-item">
-                        <strong>He</strong> - Used to refer to a male person or animal. Example: <em>"He is my brother."</em>
+                        <strong class="speakable" data-text="He">He</strong> - Used to refer to a male person or animal. Example: <em class="speakable" data-text="He is my brother.">"He is my brother."</em>
                     </div>
                     <div class="example-item">
-                        <strong>She</strong> - Used to refer to a female person or animal. Example: <em>"She is my teacher."</em>
+                        <strong class="speakable" data-text="She">She</strong> - Used to refer to a female person or animal. Example: <em class="speakable" data-text="She is my teacher.">"She is my teacher."</em>
                     </div>
                     <div class="example-item">
-                        <strong>It</strong> - Used to refer to a thing, animal, or idea. Example: <em>"It is a beautiful day."</em>
+                        <strong class="speakable" data-text="It">It</strong> - Used to refer to a thing, animal, or idea. Example: <em class="speakable" data-text="It is a beautiful day.">"It is a beautiful day."</em>
                     </div>
                     <div class="example-item">
-                        <strong>We</strong> - Used by a person to refer to themselves and others. Example: <em>"We are classmates."</em>
+                        <strong class="speakable" data-text="We">We</strong> - Used by a person to refer to themselves and others. Example: <em class="speakable" data-text="We are classmates.">"We are classmates."</em>
                     </div>
                     <div class="example-item">
-                        <strong>They</strong> - Used to refer to two or more people, animals, or things. Example: <em>"They are playing outside."</em>
+                        <strong class="speakable" data-text="They">They</strong> - Used to refer to two or more people, animals, or things. Example: <em class="speakable" data-text="They are playing outside.">"They are playing outside."</em>
                     </div>
                 </div>`,
                 practiceQuestions: [
                     {
                         question: "______ is my best friend. (referring to Maria)",
                         options: ["She", "He", "It", "They"],
-                        correct: "She"
+                        correct: "She",
+                        audioText: "She is my best friend."
                     },
                     {
                         question: "My brother and I play soccer. ______ are on the same team.",
                         options: ["We", "They", "You", "He"],
-                        correct: "We"
+                        correct: "We",
+                        audioText: "We are on the same team."
                     },
                     {
                         question: "Look at that dog! ______ is so cute.",
                         options: ["It", "He", "She", "They"],
-                        correct: "It"
+                        correct: "It",
+                        audioText: "It is so cute."
                     },
                     {
                         question: "Tom and Sarah are students. ______ study together.",
                         options: ["They", "We", "You", "He"],
-                        correct: "They"
+                        correct: "They",
+                        audioText: "They study together."
                     },
                     {
                         question: "______ am going to the store. (referring to yourself)",
                         options: ["I", "You", "He", "She"],
-                        correct: "I"
+                        correct: "I",
+                        audioText: "I am going to the store."
                     }
                 ]
             },
             "verbs-to-be": {
                 title: "Verbs To Be",
                 difficulty: "Grade 3-5",
-                content: `<p>The <span class="highlight">verb 'to be'</span> is one of the most important verbs in English. It is used to describe states of being, identity, and qualities.</p>
+                audioText: "The verb 'to be' is one of the most important verbs in English. It is used to describe states of being, identity, and qualities. The forms of the verb 'to be' are: am, is, are, was, were, being, been. For example: I am a student. You are my friend. She is happy. We are here. They are at school.",
+                content: `<p>The <span class="highlight speakable" data-text="The verb 'to be' is one of the most important verbs in English.">verb 'to be'</span> is one of the most important verbs in English. It is used to describe states of being, identity, and qualities.</p>
                 
                 <p>The forms of the verb 'to be' are: <span class="highlight">am, is, are, was, were, being, been</span>.</p>
                 
                 <div class="examples">
                     <h3>Present Tense:</h3>
                     <div class="example-item">
-                        <strong>I am</strong> - Example: <em>"I am a student."</em>
+                        <strong class="speakable" data-text="I am">I am</strong> - Example: <em class="speakable" data-text="I am a student.">"I am a student."</em>
                     </div>
                     <div class="example-item">
-                        <strong>You are</strong> - Example: <em>"You are my friend."</em>
+                        <strong class="speakable" data-text="You are">You are</strong> - Example: <em class="speakable" data-text="You are my friend.">"You are my friend."</em>
                     </div>
                     <div class="example-item">
-                        <strong>He/She/It is</strong> - Example: <em>"She is happy."</em>
+                        <strong class="speakable" data-text="He is">He is</strong> - Example: <em class="speakable" data-text="He is happy.">"He is happy."</em>
                     </div>
                     <div class="example-item">
-                        <strong>We are</strong> - Example: <em>"We are here."</em>
+                        <strong class="speakable" data-text="She is">She is</strong> - Example: <em class="speakable" data-text="She is at school.">"She is at school."</em>
                     </div>
                     <div class="example-item">
-                        <strong>They are</strong> - Example: <em>"They are at school."</em>
-                    </div>
-                    
-                    <h3>Past Tense:</h3>
-                    <div class="example-item">
-                        <strong>I was</strong> - Example: <em>"I was at home yesterday."</em>
+                        <strong class="speakable" data-text="It is">It is</strong> - Example: <em class="speakable" data-text="It is a beautiful day.">"It is a beautiful day."</em>
                     </div>
                     <div class="example-item">
-                        <strong>You were</strong> - Example: <em>"You were late to class."</em>
+                        <strong class="speakable" data-text="We are">We are</strong> - Example: <em class="speakable" data-text="We are here.">"We are here."</em>
                     </div>
                     <div class="example-item">
-                        <strong>He/She/It was</strong> - Example: <em>"He was tired last night."</em>
-                    </div>
-                    <div class="example-item">
-                        <strong>We were</strong> - Example: <em>"We were at the park."</em>
-                    </div>
-                    <div class="example-item">
-                        <strong>They were</strong> - Example: <em>"They were happy with their grades."</em>
+                        <strong class="speakable" data-text="They are">They are</strong> - Example: <em class="speakable" data-text="They are at the park.">"They are at the park."</em>
                     </div>
                 </div>`,
                 practiceQuestions: [
-
-
-                    {
-                        question: "I have already ______ my lunch.",
-                        options: ["am", "eaten", "are", "were"],
-                        correct: "eaten"
-                    },
-                    
-                    
                     {
                         question: "I ______ a student in grade 5.",
                         options: ["am", "is", "are", "were"],
-                        correct: "am"
+                        correct: "am",
+                        audioText: "I am a student in grade 5."
                     },
                     {
                         question: "She ______ my English teacher last year.",
                         options: ["was", "is", "are", "am"],
-                        correct: "was"
+                        correct: "was",
+                        audioText: "She was my English teacher last year."
                     },
                     {
                         question: "They ______ playing soccer in the field.",
                         options: ["are", "is", "am", "was"],
-                        correct: "are"
+                        correct: "are",
+                        audioText: "They are playing soccer in the field."
                     },
                     {
                         question: "We ______ at the library yesterday.",
                         options: ["were", "was", "are", "is"],
-                        correct: "were"
+                        correct: "were",
+                        audioText: "We were at the library yesterday."
                     },
                     {
                         question: "It ______ a sunny day today.",
                         options: ["is", "are", "were", "am"],
-                        correct: "is"
+                        correct: "is",
+                        audioText: "It is a sunny day today."
                     }
                 ]
             },
             "basic-vocabulary": {
                 title: "Basic Vocabulary",
                 difficulty: "Grade 3-4",
+                audioText: "Let's learn some basic English vocabulary. Common words include: book, pen, chair, table, teacher, student, school, home, mother, father, brother, sister. Colors: red, blue, green, yellow, orange, purple. Numbers: one, two, three, four, five, six, seven, eight, nine, ten.",
                 content: `<p>Building a strong vocabulary is essential for learning English. Here are some common words organized by category.</p>
                 
                 <div class="examples">
                     <h3>Everyday Objects:</h3>
                     <div class="example-item">
-                        <strong>Book</strong> - Something you read. Example: <em>"I read a book every day."</em>
+                        <strong class="speakable" data-text="Book">Book</strong> - Something you read. Example: <em class="speakable" data-text="I read a book every day.">"I read a book every day."</em>
                     </div>
                     <div class="example-item">
-                        <strong>Pen</strong> - Something you write with. Example: <em>"Use a pen to write your name."</em>
+                        <strong class="speakable" data-text="Pen">Pen</strong> - Something you write with. Example: <em class="speakable" data-text="Use a pen to write your name.">"Use a pen to write your name."</em>
                     </div>
                     <div class="example-item">
-                        <strong>Chair</strong> - Something you sit on. Example: <em>"Please sit on the chair."</em>
+                        <strong class="speakable" data-text="Chair">Chair</strong> - Something you sit on. Example: <em class="speakable" data-text="Please sit on the chair.">"Please sit on the chair."</em>
                     </div>
                     
                     <h3>Colors:</h3>
                     <div class="example-item">
-                        <strong>Red</strong> - The color of apples. Example: <em>"The apple is red."</em>
+                        <strong class="speakable" data-text="Red">Red</strong> - The color of apples. Example: <em class="speakable" data-text="The apple is red.">"The apple is red."</em>
                     </div>
                     <div class="example-item">
-                        <strong>Blue</strong> - The color of the sky. Example: <em>"The sky is blue."</em>
+                        <strong class="speakable" data-text="Blue">Blue</strong> - The color of the sky. Example: <em class="speakable" data-text="The sky is blue.">"The sky is blue."</em>
                     </div>
                     <div class="example-item">
-                        <strong>Green</strong> - The color of grass. Example: <em>"Grass is green."</em>
+                        <strong class="speakable" data-text="Green">Green</strong> - The color of grass. Example: <em class="speakable" data-text="Grass is green.">"Grass is green."</em>
                     </div>
                     
                     <h3>Numbers (1-10):</h3>
                     <div class="example-item">
                         <strong>One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten</strong>
+                        <div style="margin-top: 10px;">
+                            <button class="speakable practice-btn" data-text="One, two, three, four, five, six, seven, eight, nine, ten" style="font-size: 0.9rem;">Say Numbers 1-10</button>
+                        </div>
                     </div>
                 </div>`,
                 practiceQuestions: [
                     {
                         question: "What do you use to write on paper?",
                         options: ["Pen", "Book", "Chair", "Apple"],
-                        correct: "Pen"
+                        correct: "Pen",
+                        audioText: "You use a pen to write on paper."
                     },
                     {
                         question: "What color is grass?",
                         options: ["Green", "Red", "Blue", "Yellow"],
-                        correct: "Green"
+                        correct: "Green",
+                        audioText: "Grass is green."
                     },
                     {
                         question: "What comes after the number seven?",
                         options: ["Eight", "Six", "Nine", "Ten"],
-                        correct: "Eight"
+                        correct: "Eight",
+                        audioText: "Eight comes after the number seven."
                     }
                 ]
             },
             "sentence-structure": {
                 title: "Sentence Structure",
                 difficulty: "Grade 4-6",
-                content: `<p>English sentences typically follow a <span class="highlight">subject + verb + object</span> structure. Understanding this pattern helps you create correct sentences.</p>
+                audioText: "English sentences typically follow a subject plus verb plus object structure. Understanding this pattern helps you create correct sentences. For example: The cat drinks milk. Subject: The cat. Verb: drinks. Object: milk. Another example: I eat an apple. Subject: I. Verb: eat. Object: an apple.",
+                content: `<p>English sentences typically follow a <span class="highlight speakable" data-text="English sentences typically follow a subject plus verb plus object structure.">subject + verb + object</span> structure. Understanding this pattern helps you create correct sentences.</p>
                 
                 <div class="examples">
                     <h3>Basic Sentence Structure:</h3>
                     <div class="example-item">
-                        <strong>Subject</strong> - The person or thing doing the action. Example: <em>"The cat"</em> (in "The cat drinks milk.")
+                        <strong class="speakable" data-text="Subject">Subject</strong> - The person or thing doing the action. Example: <em class="speakable" data-text="The cat">"The cat"</em> (in "The cat drinks milk.")
                     </div>
                     <div class="example-item">
-                        <strong>Verb</strong> - The action word. Example: <em>"drinks"</em> (in "The cat drinks milk.")
+                        <strong class="speakable" data-text="Verb">Verb</strong> - The action word. Example: <em class="speakable" data-text="drinks">"drinks"</em> (in "The cat drinks milk.")
                     </div>
                     <div class="example-item">
-                        <strong>Object</strong> - The person or thing receiving the action. Example: <em>"milk"</em> (in "The cat drinks milk.")
+                        <strong class="speakable" data-text="Object">Object</strong> - The person or thing receiving the action. Example: <em class="speakable" data-text="milk">"milk"</em> (in "The cat drinks milk.")
                     </div>
                     
                     <h3>Example Sentences:</h3>
                     <div class="example-item">
-                        <em>"I eat an apple."</em> (Subject: I, Verb: eat, Object: an apple)
+                        <em class="speakable" data-text="I eat an apple.">"I eat an apple."</em> (Subject: I, Verb: eat, Object: an apple)
                     </div>
                     <div class="example-item">
-                        <em>"She reads a book."</em> (Subject: She, Verb: reads, Object: a book)
+                        <em class="speakable" data-text="She reads a book.">"She reads a book."</em> (Subject: She, Verb: reads, Object: a book)
                     </div>
                     <div class="example-item">
-                        <em>"They play soccer."</em> (Subject: They, Verb: play, Object: soccer)
+                        <em class="speakable" data-text="They play soccer.">"They play soccer."</em> (Subject: They, Verb: play, Object: soccer)
                     </div>
                 </div>`,
                 practiceQuestions: [
                     {
                         question: "Identify the subject in: 'The dog chases the ball.'",
                         options: ["The dog", "chases", "the ball", "dog chases"],
-                        correct: "The dog"
+                        correct: "The dog",
+                        audioText: "The subject is 'The dog'."
                     },
                     {
                         question: "Identify the verb in: 'My sister sings a song.'",
                         options: ["sings", "My sister", "a song", "sister sings"],
-                        correct: "sings"
+                        correct: "sings",
+                        audioText: "The verb is 'sings'."
                     },
                     {
                         question: "Complete the sentence: 'The teacher ______ the lesson.'",
                         options: ["teaches", "teacher", "lesson", "the"],
-                        correct: "teaches"
+                        correct: "teaches",
+                        audioText: "The teacher teaches the lesson."
+                    }
+                ]
+            },
+            "greetings": {
+                title: "Greetings",
+                difficulty: "Grade 3-4",
+                audioText: "Greetings are words we use when we meet people. Common greetings include: Hello, Hi, Good morning, Good afternoon, Good evening. We also say: How are you? I'm fine, thank you. And you? Nice to meet you. Goodbye, See you later, Have a nice day.",
+                content: `<p><span class="highlight speakable" data-text="Greetings are words we use when we meet people.">Greetings</span> are words we use when we meet people. They help us start conversations politely.</p>
+                
+                <div class="examples">
+                    <h3>Common Greetings:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Hello">Hello</strong> - Used any time of day. Example: <em class="speakable" data-text="Hello, how are you?">"Hello, how are you?"</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Hi">Hi</strong> - Informal greeting. Example: <em class="speakable" data-text="Hi, my name is John.">"Hi, my name is John."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Good morning">Good morning</strong> - Used before noon. Example: <em class="speakable" data-text="Good morning, teacher!">"Good morning, teacher!"</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Good afternoon">Good afternoon</strong> - Used from noon until about 5 PM. Example: <em class="speakable" data-text="Good afternoon, class.">"Good afternoon, class."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Good evening">Good evening</strong> - Used after 5 PM. Example: <em class="speakable" data-text="Good evening, everyone.">"Good evening, everyone."</em>
+                    </div>
+                    
+                    <h3>Responses:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="How are you?">How are you?</strong> - Asking about someone's well-being.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="I'm fine, thank you.">I'm fine, thank you.</strong> - Common response.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Nice to meet you.">Nice to meet you.</strong> - When meeting someone for the first time.
+                    </div>
+                    
+                    <h3>Farewells (Goodbye):</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Goodbye">Goodbye</strong> - Standard farewell.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="See you later">See you later</strong> - Informal farewell.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Have a nice day">Have a nice day</strong> - Polite farewell.
+                    </div>
+                </div>`,
+                practiceQuestions: [
+                    {
+                        question: "What do you say when you meet someone in the morning?",
+                        options: ["Good morning", "Good evening", "Good night", "Goodbye"],
+                        correct: "Good morning",
+                        audioText: "You say Good morning."
+                    },
+                    {
+                        question: "How do you respond when someone says 'How are you?'",
+                        options: ["I'm fine, thank you", "Hello", "Goodbye", "Nice to meet you"],
+                        correct: "I'm fine, thank you",
+                        audioText: "I'm fine, thank you."
+                    },
+                    {
+                        question: "What do you say when leaving a friend?",
+                        options: ["Goodbye", "Hello", "Good morning", "How are you?"],
+                        correct: "Goodbye",
+                        audioText: "You say Goodbye."
+                    }
+                ]
+            },
+            "family": {
+                title: "Family Members",
+                difficulty: "Grade 3-4",
+                audioText: "Family members are the people in our family. Immediate family includes: mother, father, brother, sister, son, daughter. Extended family includes: grandmother, grandfather, aunt, uncle, cousin. We also say: parents for mother and father, siblings for brothers and sisters, grandparents for grandmother and grandfather.",
+                content: `<p><span class="highlight speakable" data-text="Family members are the people in our family.">Family members</span> are the people in our family. Let's learn the names of family members in English.</p>
+                
+                <div class="examples">
+                    <h3>Immediate Family:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Mother">Mother</strong> (Mom) - Female parent. Example: <em class="speakable" data-text="My mother is a teacher.">"My mother is a teacher."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Father">Father</strong> (Dad) - Male parent. Example: <em class="speakable" data-text="My father works in an office.">"My father works in an office."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Brother">Brother</strong> - Male sibling. Example: <em class="speakable" data-text="I have one brother.">"I have one brother."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Sister">Sister</strong> - Female sibling. Example: <em class="speakable" data-text="My sister is older than me.">"My sister is older than me."</em>
+                    </div>
+                    
+                    <h3>Extended Family:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Grandmother">Grandmother</strong> (Grandma) - Mother of your parent.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Grandfather">Grandfather</strong> (Grandpa) - Father of your parent.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Aunt">Aunt</strong> - Sister of your parent.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Uncle">Uncle</strong> - Brother of your parent.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Cousin">Cousin</strong> - Child of your aunt or uncle.
+                    </div>
+                    
+                    <h3>Family Terms:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Parents">Parents</strong> - Mother and father together.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Children">Children</strong> - Sons and daughters.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Siblings">Siblings</strong> - Brothers and sisters.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Grandparents">Grandparents</strong> - Grandmother and grandfather.
+                    </div>
+                </div>`,
+                practiceQuestions: [
+                    {
+                        question: "Who is your father's sister?",
+                        options: ["Aunt", "Uncle", "Cousin", "Grandmother"],
+                        correct: "Aunt",
+                        audioText: "Your father's sister is your aunt."
+                    },
+                    {
+                        question: "Your mother and father are your ______.",
+                        options: ["Parents", "Children", "Siblings", "Cousins"],
+                        correct: "Parents",
+                        audioText: "Your mother and father are your parents."
+                    },
+                    {
+                        question: "Who is your mother's mother?",
+                        options: ["Grandmother", "Aunt", "Sister", "Mother"],
+                        correct: "Grandmother",
+                        audioText: "Your mother's mother is your grandmother."
+                    }
+                ]
+            },
+            "animals": {
+                title: "Animals",
+                difficulty: "Grade 3-5",
+                audioText: "Animals come in many types. Farm animals include: cow, pig, sheep, chicken, horse. Wild animals include: lion, tiger, elephant, monkey, giraffe. Pets include: dog, cat, rabbit, fish, bird. Sea animals include: fish, whale, dolphin, shark, octopus.",
+                content: `<p><span class="highlight speakable" data-text="Animals come in many types.">Animals</span> come in many types. Let's learn the names of different animals in English.</p>
+                
+                <div class="examples">
+                    <h3>Farm Animals:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Cow">Cow</strong> - Gives us milk. Example: <em class="speakable" data-text="The cow eats grass.">"The cow eats grass."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Pig">Pig</strong> - Farm animal that says "oink". Example: <em class="speakable" data-text="The pig is pink.">"The pig is pink."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Sheep">Sheep</strong> - Gives us wool. Example: <em class="speakable" data-text="Sheep say baa.">"Sheep say baa."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Chicken">Chicken</strong> - Gives us eggs. Example: <em class="speakable" data-text="The chicken lays eggs.">"The chicken lays eggs."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Horse">Horse</strong> - Animal you can ride. Example: <em class="speakable" data-text="The horse runs fast.">"The horse runs fast."</em>
+                    </div>
+                    
+                    <h3>Wild Animals:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Lion">Lion</strong> - King of the jungle.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Elephant">Elephant</strong> - Has a long trunk.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Monkey">Monkey</strong> - Climbs trees.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Giraffe">Giraffe</strong> - Has a long neck.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Tiger">Tiger</strong> - Has stripes.
+                    </div>
+                    
+                    <h3>Pets:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Dog">Dog</strong> - Says "woof".
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Cat">Cat</strong> - Says "meow".
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Rabbit">Rabbit</strong> - Has long ears.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Fish">Fish</strong> - Lives in water.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Bird">Bird</strong> - Can fly.
+                    </div>
+                </div>`,
+                practiceQuestions: [
+                    {
+                        question: "Which animal gives us milk?",
+                        options: ["Cow", "Chicken", "Sheep", "Pig"],
+                        correct: "Cow",
+                        audioText: "The cow gives us milk."
+                    },
+                    {
+                        question: "Which animal says 'meow'?",
+                        options: ["Cat", "Dog", "Cow", "Lion"],
+                        correct: "Cat",
+                        audioText: "The cat says meow."
+                    },
+                    {
+                        question: "Which animal has a long trunk?",
+                        options: ["Elephant", "Giraffe", "Monkey", "Tiger"],
+                        correct: "Elephant",
+                        audioText: "The elephant has a long trunk."
+                    }
+                ]
+            },
+            "food": {
+                title: "Food & Drinks",
+                difficulty: "Grade 3-5",
+                audioText: "Food and drinks are what we eat and drink. Common foods include: bread, rice, pasta, vegetables, fruits, meat, fish, eggs. Fruits include: apple, banana, orange, grape, strawberry. Vegetables include: carrot, potato, tomato, onion, lettuce. Drinks include: water, milk, juice, tea, coffee.",
+                content: `<p><span class="highlight speakable" data-text="Food and drinks are what we eat and drink.">Food & Drinks</span> are what we eat and drink. Let's learn the names of common foods and drinks in English.</p>
+                
+                <div class="examples">
+                    <h3>Common Foods:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Bread">Bread</strong> - Made from flour. Example: <em class="speakable" data-text="I eat bread for breakfast.">"I eat bread for breakfast."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Rice">Rice</strong> - Common grain food. Example: <em class="speakable" data-text="We eat rice with dinner.">"We eat rice with dinner."</em>
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Pasta">Pasta</strong> - Like spaghetti or macaroni.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Meat">Meat</strong> - From animals like chicken, beef, pork.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Fish">Fish</strong> - From the sea or rivers.
+                    </div>
+                    
+                    <h3>Fruits:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Apple">Apple</strong> - Red or green fruit.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Banana">Banana</strong> - Yellow curved fruit.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Orange">Orange</strong> - Citrus fruit, color orange.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Grapes">Grapes</strong> - Small round fruits in bunches.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Strawberry">Strawberry</strong> - Red fruit with seeds on outside.
+                    </div>
+                    
+                    <h3>Vegetables:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Carrot">Carrot</strong> - Orange vegetable, good for eyes.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Potato">Potato</strong> - Brown vegetable, can be baked or fried.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Tomato">Tomato</strong> - Red, can be vegetable or fruit.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Onion">Onion</strong> - Makes you cry when you cut it.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Lettuce">Lettuce</strong> - Green leaves for salads.
+                    </div>
+                    
+                    <h3>Drinks:</h3>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Water">Water</strong> - Essential for life.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Milk">Milk</strong> - From cows, good for bones.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Juice">Juice</strong> - From fruits like orange or apple.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Tea">Tea</strong> - Hot drink, can be black or green.
+                    </div>
+                    <div class="example-item">
+                        <strong class="speakable" data-text="Coffee">Coffee</strong> - Hot drink, adults often drink it.
+                    </div>
+                </div>`,
+                practiceQuestions: [
+                    {
+                        question: "Which food is a yellow curved fruit?",
+                        options: ["Banana", "Apple", "Orange", "Carrot"],
+                        correct: "Banana",
+                        audioText: "The banana is a yellow curved fruit."
+                    },
+                    {
+                        question: "What do we drink that comes from cows?",
+                        options: ["Milk", "Juice", "Water", "Coffee"],
+                        correct: "Milk",
+                        audioText: "We drink milk from cows."
+                    },
+                    {
+                        question: "Which vegetable is orange and good for eyes?",
+                        options: ["Carrot", "Potato", "Tomato", "Onion"],
+                        correct: "Carrot",
+                        audioText: "The carrot is orange and good for eyes."
                     }
                 ]
             }
@@ -686,7 +1049,13 @@
         let currentLesson = 'pronouns';
         let currentQuestionIndex = 0;
         let score = 0;
-        let audioEnabled = true;
+        
+        // Speech Synthesis
+        let speech = null;
+        let voices = [];
+        let selectedVoice = null;
+        let isSpeaking = false;
+        let currentUtterance = null;
         
         // DOM elements
         const lessonButtons = document.querySelectorAll('.lesson-btn');
@@ -699,16 +1068,25 @@
         const nextQuestionBtn = document.getElementById('next-question');
         const playAudioBtn = document.getElementById('play-audio');
         const pauseAudioBtn = document.getElementById('pause-audio');
+        const stopAudioBtn = document.getElementById('stop-audio');
         const repeatAudioBtn = document.getElementById('repeat-audio');
         const volumeSlider = document.getElementById('volume-slider');
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
+        const audioStatus = document.getElementById('audio-status');
+        const voiceSelect = document.getElementById('voice-select');
         
         // Initialize the app
         function initApp() {
+            // Initialize speech synthesis
+            initSpeechSynthesis();
+            
             // Set up lesson buttons
             lessonButtons.forEach(button => {
                 button.addEventListener('click', function() {
+                    // Stop any current speech
+                    stopSpeech();
+                    
                     // Remove active class from all buttons
                     lessonButtons.forEach(btn => btn.classList.remove('active'));
                     // Add active class to clicked button
@@ -731,13 +1109,161 @@
             
             // Set up audio controls
             playAudioBtn.addEventListener('click', playLessonAudio);
-            pauseAudioBtn.addEventListener('click', pauseLessonAudio);
+            pauseAudioBtn.addEventListener('click', pauseSpeech);
+            stopAudioBtn.addEventListener('click', stopSpeech);
             repeatAudioBtn.addEventListener('click', repeatLessonAudio);
             volumeSlider.addEventListener('input', adjustVolume);
             
             // Load the initial lesson
             loadLesson(currentLesson);
             updateProgress();
+            
+            // Set up click-to-speak elements
+            setupSpeakableElements();
+        }
+        
+        // Initialize speech synthesis
+        function initSpeechSynthesis() {
+            if ('speechSynthesis' in window) {
+                speech = window.speechSynthesis;
+                
+                // Load available voices
+                speech.onvoiceschanged = function() {
+                    voices = speech.getVoices();
+                    populateVoiceList();
+                    
+                    // Select a default English voice
+                    selectedVoice = voices.find(voice => 
+                        voice.lang.startsWith('en') && 
+                        voice.name.includes('Female')
+                    ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+                    
+                    if (selectedVoice) {
+                        voiceSelect.value = selectedVoice.name;
+                    }
+                    
+                    audioStatus.textContent = "Audio ready. " + voices.length + " voices available.";
+                };
+                
+                // Handle speech end
+                speech.onend = function() {
+                    isSpeaking = false;
+                    updateAudioControls();
+                    audioStatus.textContent = "Audio finished.";
+                };
+                
+                // Handle speech error
+                speech.onerror = function(event) {
+                    isSpeaking = false;
+                    updateAudioControls();
+                    audioStatus.textContent = "Audio error: " + event.error;
+                };
+                
+            } else {
+                audioStatus.textContent = "Sorry, your browser doesn't support text-to-speech. Try Chrome or Edge.";
+                playAudioBtn.disabled = true;
+                pauseAudioBtn.disabled = true;
+                stopAudioBtn.disabled = true;
+                repeatAudioBtn.disabled = true;
+            }
+        }
+        
+        // Populate voice selection dropdown
+        function populateVoiceList() {
+            voiceSelect.innerHTML = '<option value="">Select Voice</option>';
+            
+            voices.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.name;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                voiceSelect.appendChild(option);
+            });
+            
+            voiceSelect.addEventListener('change', function() {
+                const voiceName = this.value;
+                selectedVoice = voices.find(voice => voice.name === voiceName);
+                audioStatus.textContent = "Voice changed to: " + voiceName;
+            });
+        }
+        
+        // Speak text using Web Speech API
+        function speakText(text, rate = 0.9, pitch = 1) {
+            if (!speech || !selectedVoice) {
+                audioStatus.textContent = "Speech synthesis not available.";
+                return;
+            }
+            
+            // Cancel any ongoing speech
+            stopSpeech();
+            
+            // Create new utterance
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.voice = selectedVoice;
+            currentUtterance.rate = rate;
+            currentUtterance.pitch = pitch;
+            currentUtterance.volume = volumeSlider.value / 100;
+            
+            // Start speaking
+            speech.speak(currentUtterance);
+            isSpeaking = true;
+            updateAudioControls();
+            audioStatus.textContent = "Speaking: " + (text.length > 50 ? text.substring(0, 50) + "..." : text);
+        }
+        
+        // Pause speech
+        function pauseSpeech() {
+            if (speech && isSpeaking) {
+                speech.pause();
+                isSpeaking = false;
+                updateAudioControls();
+                audioStatus.textContent = "Audio paused.";
+            }
+        }
+        
+        // Resume speech
+        function resumeSpeech() {
+            if (speech && speech.paused) {
+                speech.resume();
+                isSpeaking = true;
+                updateAudioControls();
+                audioStatus.textContent = "Audio resumed.";
+            }
+        }
+        
+        // Stop speech completely
+        function stopSpeech() {
+            if (speech) {
+                speech.cancel();
+                isSpeaking = false;
+                updateAudioControls();
+                audioStatus.textContent = "Audio stopped.";
+            }
+        }
+        
+        // Update audio control buttons state
+        function updateAudioControls() {
+            if (isSpeaking) {
+                playAudioBtn.disabled = true;
+                pauseAudioBtn.disabled = false;
+                stopAudioBtn.disabled = false;
+                repeatAudioBtn.disabled = true;
+            } else {
+                playAudioBtn.disabled = false;
+                pauseAudioBtn.disabled = true;
+                stopAudioBtn.disabled = true;
+                repeatAudioBtn.disabled = false;
+            }
+        }
+        
+        // Adjust volume
+        function adjustVolume() {
+            const volume = volumeSlider.value;
+            audioStatus.textContent = `Volume set to ${volume}%`;
+            
+            // If currently speaking, update the volume
+            if (currentUtterance && speech && isSpeaking) {
+                currentUtterance.volume = volume / 100;
+            }
         }
         
         // Load a lesson
@@ -755,10 +1281,42 @@
             score = 0;
             loadPracticeQuestion();
             
-            // Play lesson audio if enabled
-            if (audioEnabled) {
-                playLessonAudio();
-            }
+            // Set up speakable elements for the new content
+            setTimeout(setupSpeakableElements, 100);
+            
+            // Update audio status
+            audioStatus.textContent = "Loaded lesson: " + lesson.title;
+        }
+        
+        // Set up click-to-speak elements
+        function setupSpeakableElements() {
+            // Remove existing event listeners
+            const speakables = document.querySelectorAll('.speakable');
+            speakables.forEach(element => {
+                element.replaceWith(element.cloneNode(true));
+            });
+            
+            // Add new event listeners
+            const newSpeakables = document.querySelectorAll('.speakable');
+            newSpeakables.forEach(element => {
+                element.addEventListener('click', function() {
+                    const textToSpeak = this.getAttribute('data-text') || this.textContent;
+                    speakText(textToSpeak, 0.8);
+                });
+            });
+        }
+        
+        // Play lesson audio
+        function playLessonAudio() {
+            const lesson = lessons[currentLesson];
+            if (!lesson) return;
+            
+            speakText(lesson.audioText || lesson.title);
+        }
+        
+        // Repeat lesson audio
+        function repeatLessonAudio() {
+            playLessonAudio();
         }
         
         // Load a practice question
@@ -793,6 +1351,11 @@
             const lesson = lessons[currentLesson];
             const question = lesson.practiceQuestions[currentQuestionIndex];
             const correctAnswer = question.correct;
+            
+            // Speak the correct sentence
+            if (question.audioText) {
+                speakText(question.audioText, 0.8);
+            }
             
             // Disable all buttons
             practiceButtons.forEach(button => {
@@ -838,6 +1401,9 @@
                 const percentage = Math.round((score / lesson.practiceQuestions.length) * 100);
                 practiceQuestion.textContent = `Practice completed! You scored ${score} out of ${lesson.practiceQuestions.length} (${percentage}%).`;
                 
+                // Speak the result
+                speakText(`Practice completed. You scored ${score} out of ${lesson.practiceQuestions.length}.`);
+                
                 // Hide buttons
                 practiceButtons.forEach(button => {
                     button.style.display = 'none';
@@ -857,58 +1423,6 @@
                     nextQuestionBtn.textContent = "Next Question";
                 };
             }
-        }
-        
-        // Audio functions
-        function playLessonAudio() {
-            // In a real app, this would play actual audio files
-            // For this demo, we'll simulate audio playback
-            feedback.textContent = "Playing lesson audio...";
-            feedback.style.color = "#2575fc";
-            
-            // After 3 seconds, clear the message
-            setTimeout(() => {
-                if (feedback.textContent === "Playing lesson audio...") {
-                    feedback.textContent = "";
-                }
-            }, 3000);
-        }
-        
-        function pauseLessonAudio() {
-            feedback.textContent = "Audio paused";
-            feedback.style.color = "#ff9800";
-            
-            // After 2 seconds, clear the message
-            setTimeout(() => {
-                if (feedback.textContent === "Audio paused") {
-                    feedback.textContent = "";
-                }
-            }, 2000);
-        }
-        
-        function repeatLessonAudio() {
-            feedback.textContent = "Replaying lesson audio...";
-            feedback.style.color = "#2575fc";
-            
-            // After 3 seconds, clear the message
-            setTimeout(() => {
-                if (feedback.textContent === "Replaying lesson audio...") {
-                    feedback.textContent = "";
-                }
-            }, 3000);
-        }
-        
-        function adjustVolume() {
-            const volume = volumeSlider.value;
-            feedback.textContent = `Volume set to ${volume}%`;
-            feedback.style.color = "#2575fc";
-            
-            // After 1.5 seconds, clear the message
-            setTimeout(() => {
-                if (feedback.textContent === `Volume set to ${volume}%`) {
-                    feedback.textContent = "";
-                }
-            }, 1500);
         }
         
         // Update progress bar
