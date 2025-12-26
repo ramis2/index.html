@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Jamal Adeero’s Oromo Game with SOUNDS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .game-box {
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #4a90e2;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 700px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .word-display {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .word-display.correct {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            transform: scale(1.05);
+        }
+        
+        .word-display.wrong {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .game-area {
+            background: #f8f9fa;
+            border: 3px solid #3498db;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 150px;
+        }
+        
+        .spider-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 20px 35px;
+            margin: 10px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .spider-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .spider-btn:active {
+            transform: translateY(0) scale(0.95);
+        }
+        
+        .spider-btn.correct {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            animation: bounce 0.6s ease;
+        }
+        
+        .spider-btn.wrong {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            animation: wobble 0.6s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        @keyframes wobble {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        .main-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            margin: 10px;
+            border-radius: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .main-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .main-btn:active {
+            transform: translateY(0);
+        }
+        
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .sound-icon {
+            font-size: 30px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sound-icon:hover {
+            transform: scale(1.2);
+        }
+        
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .feedback.show {
+            display: block;
+            animation: feedbackPop 0.5s ease;
+        }
+        
+        @keyframes feedbackPop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        .correct-feedback {
+            color: #27ae60;
+        }
+        
+        .wrong-feedback {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-box">
+        <h1>🕷️Jamal Adeero's Oromo Game with Sounds!</h1>
+        
+        <div class="sound-icon" onclick="toggleSound()" id="soundIcon">🔊</div>
+        
+        <div class="word-display" id="wordDisplay">Click START to play with sounds!</div>
+        
+        <div class="game-area" id="gameArea">
+            <p>Game buttons with sounds will appear here...</p>
+        </div>
+        
+        <div>
+            <button class="main-btn" onclick="startGame()">🎵 START GAME</button>
+            <button class="main-btn" onclick="resetGame()">🔄 RESET</button>
+        </div>
+        
+        <div class="score">
+            🏆 Score: <span id="score">0</span> | 
+            ✅ Correct: <span id="correct">0</span> | 
+            ❌ Wrong: <span id="wrong">0</span>
+        </div>
+    </div>
+
+    <div class="feedback" id="feedback">
+        <div id="feedbackContent"></div>
+    </div>
+
+    <!-- Audio elements for sounds -->
+    <audio id="clickSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+    </audio>
+    
+    <audio id="correctSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+    </audio>
+    
+    <audio id="wrongSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+    </audio>
+
+    <script>
+        // Simple Oromo words data
+        const words = [
+            { oromo: "Abbaa", english: "Father", emoji: "👨" },
+            { oromo: "Haadha", english: "Mother", emoji: "👩" },
+            { oromo: "Ilma", english: "Son", emoji: "👶" },
+            { oromo: "Intala", english: "Daughter", emoji: "👧" },
+            { oromo: "Saree", english: "Dog", emoji: "🐕" },
+            { oromo: "Adurree", english: "Cat", emoji: "🐱" },
+            { oromo: "Diimaa", english: "Red", emoji: "🔴" },
+            { oromo: "Magariisa", english: "Green", emoji: "🟢" },
+            { oromo: "Baluu", english: "Blue", emoji: "🔵" },
+            { oromo: "Tokko", english: "One", emoji: "1️⃣" }
+        ];
+        
+        let score = 0;
+        let correct = 0;
+        let wrong = 0;
+        let currentWord = 0;
+        let gameStarted = false;
+        let soundEnabled = true;
+        
+        // Sound functions using Web Audio API (works offline!)
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playClickSound() {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+        
+        function playCorrectSound() {
+            if (!soundEnabled) return;
+            
+            // Play a happy melody
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C, E, G, C
+            notes.forEach((freq, index) => {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                }, index * 100);
+            });
+        }
+        
+        function playWrongSound() {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(150, audioContext.currentTime + 0.3);
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+        
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled) {
+                playClickSound(); // Test sound
+            }
+        }
+        
+        function startGame() {
+            playClickSound();
+            gameStarted = true;
+            score = 0;
+            correct = 0;
+            wrong = 0;
+            updateScore();
+            nextWord();
+        }
+        
+        function resetGame() {
+            playClickSound();
+            gameStarted = false;
+            score = 0;
+            correct = 0;
+            wrong = 0;
+            updateScore();
+            document.getElementById('wordDisplay').innerHTML = '🎵 Click START to play with sounds!';
+            document.getElementById('wordDisplay').className = 'word-display';
+            document.getElementById('gameArea').innerHTML = '<p>Game buttons with sounds will appear here...</p>';
+        }
+        
+        function nextWord() {
+            currentWord = Math.floor(Math.random() * words.length);
+            const word = words[currentWord];
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = `${word.emoji} ${word.english} - Find: ${word.oromo}`;
+            display.className = 'word-display';
+            createButtons();
+        }
+        
+        function createButtons() {
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = '';
+            
+            const correctPos = Math.floor(Math.random() * 4);
+            const usedWords = [];
+            
+            for (let i = 0; i < 4; i++) {
+                const button = document.createElement('button');
+                button.className = 'spider-btn';
+                button.innerHTML = '🕷️<br>';
+                
+                let wordIndex;
+                if (i === correctPos) {
+                    wordIndex = currentWord;
+                } else {
+                    do {
+                        wordIndex = Math.floor(Math.random() * words.length);
+                    } while (usedWords.includes(wordIndex) || wordIndex === currentWord);
+                }
+                
+                usedWords.push(wordIndex);
+                button.innerHTML += words[wordIndex].oromo;
+                
+                button.onclick = function() {
+                    playClickSound();
+                    if (i === correctPos) {
+                        handleCorrect();
+                    } else {
+                        handleWrong();
+                    }
+                };
+                
+                gameArea.appendChild(button);
+            }
+        }
+        
+        function handleCorrect() {
+            playCorrectSound();
+            score += 10;
+            correct++;
+            updateScore();
+            
+            const display = document.getElementById('wordDisplay');
+            display.className = 'word-display correct';
+            showFeedback('🎉 Excellent!', 'correct-feedback');
+            
+            setTimeout(nextWord, 1500);
+        }
+        
+        function handleWrong() {
+            playWrongSound();
+            score = Math.max(0, score - 5);
+            wrong++;
+            updateScore();
+            
+            const display = document.getElementById('wordDisplay');
+            display.className = 'word-display wrong';
+            showFeedback('😞 Try again!', 'wrong-feedback');
+        }
+        
+        function showFeedback(message, className) {
+            const feedback = document.getElementById('feedback');
+            const content = document.getElementById('feedbackContent');
+            content.innerHTML = `<div class="${className}">${message}</div>`;
+            feedback.className = 'feedback show';
+            
+            setTimeout(() => {
+                feedback.className = 'feedback';
+            }, 1000);
+        }
+        
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('correct').textContent = correct;
+            document.getElementById('wrong').textContent = wrong;
+        }
+        
+        // Initialize audio context on first user interaction
+        document.addEventListener('click', function() {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
+

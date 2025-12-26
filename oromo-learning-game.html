@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Oromo Game - Extended Learning</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .main-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+        
+        .game-box {
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #4a90e2;
+            border-radius: 20px;
+            padding: 30px;
+            flex: 2;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        
+        .translation-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #27ae60;
+            border-radius: 20px;
+            padding: 25px;
+            flex: 1;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .word-display {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            font-size: 26px;
+            font-weight: bold;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .word-display.correct {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            transform: scale(1.05);
+        }
+        
+        .word-display.wrong {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .game-area {
+            background: #f8f9fa;
+            border: 3px solid #3498db;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            min-height: 150px;
+        }
+        
+        .spider-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            margin: 8px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .spider-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .spider-btn:active {
+            transform: translateY(0);
+        }
+        
+        .spider-btn.correct {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            animation: bounce 0.6s ease;
+        }
+        
+        .spider-btn.wrong {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            animation: wobble 0.6s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        @keyframes wobble {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        .main-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .main-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .score {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .translation-panel h2 {
+            color: #27ae60;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .word-list {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .word-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 16px;
+        }
+        
+        .word-item:last-child {
+            border-bottom: none;
+        }
+        
+        .oromo-word {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .english-word {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .emoji-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+        
+        .category {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0 10px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .sound-controls {
+            margin: 15px 0;
+        }
+        
+        .sound-icon {
+            font-size: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sound-icon:hover {
+            transform: scale(1.2);
+        }
+        
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .feedback.show {
+            display: block;
+            animation: feedbackPop 0.5s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .translation-panel {
+                max-height: 300px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .word-display {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="game-box">
+            <h1>🕷️Jamal Adeero's Oromo Learning Game</h1>
+            <p class="subtitle">Barachuuf Afaan Oromoo! | Learn Oromo Language!</p>
+            
+            <div class="sound-controls">
+                <span class="sound-icon" onclick="toggleSound()" id="soundIcon">🔊</span>
+                <span style="font-size: 14px; color: #7f8c8d;">Click to toggle sound</span>
+            </div>
+            
+            <div class="word-display" id="wordDisplay">🎯 Click START to begin learning!</div>
+            
+            <div class="game-area" id="gameArea">
+                <p>🕷️ Spider buttons will appear here...</p>
+            </div>
+            
+            <div>
+                <button class="main-btn" onclick="startGame()">🎮 START GAME</button>
+                <button class="main-btn" onclick="resetGame()">🔄 RESET</button>
+            </div>
+            
+            <div class="score">
+                🏆 Score: <span id="score">0</span> | 
+                ✅ Correct: <span id="correct">0</span> | 
+                ❌ Wrong: <span id="wrong">0</span>
+            </div>
+        </div>
+        
+        <div class="translation-panel">
+            <h2>📚 Word Bank</h2>
+            <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 15px;">
+                Learn these Oromo words with English translations
+            </p>
+            
+            <div id="wordBank">
+                <!-- Word list will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="feedback" id="feedback">
+        <div id="feedbackContent"></div>
+    </div>
+
+    <script>
+        // EXTENSIVE Oromo vocabulary with categories
+        const oromoVocabulary = {
+            family: [
+                { oromo: "Abbaa", english: "Father", emoji: "👨" },
+                { oromo: "Haadha", english: "Mother", emoji: "👩" },
+                { oromo: "Ilma", english: "Son", emoji: "👶" },
+                { oromo: "Intala", english: "Daughter", emoji: "👧" },
+                { oromo: "Obboleessa", english: "Brother", emoji: "👨" },
+                { oromo: "Obboleettii", english: "Sister", emoji: "👩" },
+                { oromo: "Akkaakayyuu", english: "Grandfather", emoji: "👴" },
+                { oromo: "Akkawoo", english: "Grandmother", emoji: "👵" },
+                { oromo: "Mucaa", english: "Child", emoji: "🧒" },
+                { oromo: "Dhiraa", english: "Man", emoji: "👨" },
+                { oromo: "Dubartii", english: "Woman", emoji: "👩" }
+            ],
+            animals: [
+                { oromo: "Saree", english: "Dog", emoji: "🐕" },
+                { oromo: "Adurree", english: "Cat", emoji: "🐱" },
+                { oromo: "Simbira", english: "Bird", emoji: "🐦" },
+                { oromo: "Saa", english: "Cow", emoji: "🐄" },
+                { oromo: "Farda", english: "Horse", emoji: "🐴" },
+                { oromo: "Arbaa", english: "Elephant", emoji: "🐘" },
+                { oromo: "Beeka", english: "Lion", emoji: "🦁" },
+                { oromo: "Hoolaa", english: "Tiger", emoji: "🐅" },
+                { oromo: "Antuuta", english: "Mouse", emoji: "🐭" },
+                { oromo: "Ariti", english: "Sun", emoji: "🐻" },
+                { oromo: "Qurxumme", english: "Rabbit", emoji: "🐰" }
+            ],
+            colors: [
+                { oromo: "Diimaa", english: "Red", emoji: "🔴" },
+                { oromo: "Magariisa", english: "Green", emoji: "🟢" },
+                { oromo: "Baluu", english: "Blue", emoji: "🔵" },
+                { oromo: "Adii", english: "White", emoji: "⚪" },
+                { oromo: "Gurraacha", english: "Black", emoji: "⚫" },
+                { oromo: "Boora", english: "Yellow", emoji: "🟡" },
+                { oromo: "Bildiimaa", english: "Purple", emoji: "🟣" },
+                { oromo: "Magaala", english: "Brown", emoji: "🟤" },
+                { oromo: "Daalacha", english: "Gray", emoji: "⚫" },
+                { oromo: "Dimmii", english: "Pink", emoji: "🩷" }
+            ],
+            numbers: [
+                { oromo: "Tokko", english: "One", emoji: "1️⃣" },
+                { oromo: "Lama", english: "Two", emoji: "2️⃣" },
+                { oromo: "Sadii", english: "Three", emoji: "3️⃣" },
+                { oromo: "Afur", english: "Four", emoji: "4️⃣" },
+                { oromo: "Shan", english: "Five", emoji: "5️⃣" },
+                { oromo: "Jaa'a", english: "Six", emoji: "6️⃣" },
+                { oromo: "Torba", english: "Seven", emoji: "7️⃣" },
+                { oromo: "Saddeet", english: "Eight", emoji: "8️⃣" },
+                { oromo: "Sagal", english: "Nine", emoji: "9️⃣" },
+                { oromo: "Kudhan", english: "Ten", emoji: "🔟" }
+            ],
+            food: [
+                { oromo: "Daabboo", english: "Bread", emoji: "🍞" },
+                { oromo: "Buna", english: "Coffee", emoji: "☕" },
+                { oromo: "Annachaa", english: "Milk", emoji: "🥛" },
+                { oromo: "Miilloo", english: "Apple", emoji: "🍎" },
+                { oromo: "Muuzii", english: "Banana", emoji: "🍌" },
+                { oromo: "Timaantima", english: "Tomato", emoji: "🍅" },
+                { oromo: "Dinnichaa", english: "Potato", emoji: "🥔" },
+                { oromo: "Shunkurtaa", english: "Onion", emoji: "🧅" },
+                { oromo: "Ciree", english: "Breakfast", emoji: "🍳" },
+                { oromo: "Dhiyaana", english: "Lunch", emoji: "🍽️" }
+            ],
+            body: [
+                { oromo: "Mataa", english: "Head", emoji: "🧠" },
+                { oromo: "Ija", english: "Eye", emoji: "👁️" },
+                { oromo: "Funyaan", english: "Nose", emoji: "👃" },
+                { oromo: "Afaan", english: "Mouth", emoji: "👄" },
+                { oromo: "Harka", english: "Hand", emoji: "✋" },
+                { oromo: "Miilla", english: "Foot", emoji: "🦶" },
+                { oromo: "Dabbasaa", english: "Hair", emoji: "💇" },
+                { oromo: "Garaa", english: "Stomach", emoji: "🫃" },
+                { oromo: "Mataa", english: "Head", emoji: "🗣️" }
+            ],
+            nature: [
+                { oromo: "Aduu", english: "Sun", emoji: "☀️" },
+                { oromo: "Umbaa", english: "Moon", emoji: "🌙" },
+                { oromo: "Roobaa", english: "Rain", emoji: "🌧️" },
+                { oromo: "Adii", english: "Cloud", emoji: "☁️" },
+                { oromo: "Bishaan", english: "Water", emoji: "💧" },
+                { oromo: "Dallii", english: "Flower", emoji: "🌸" },
+                { oromo: "Muka", english: "Tree", emoji: "🌳" },
+                { oromo: "Bosona", english: "Forest", emoji: "🌲" },
+                { oromo: "Laga", english: "River", emoji: "🏞️" },
+                { oromo: "Haroo", english: "Lake", emoji: "🏖️" }
+            ],
+            house: [
+                { oromo: "Mana", english: "House", emoji: "🏠" },
+                { oromo: "Kutaa siree", english: "Bedroom", emoji: "🛏️" },
+                { oromo: "Kushiinaa", english: "Kitchen", emoji: "🍳" },
+                { oromo: "Kutaa usoo", english: "Bathroom", emoji: "🚿" },
+                { oromo: "Xarapheezzaa", english: "Table", emoji: "🪑" },
+                { oromo: "Barcuma", english: "Chair", emoji: "🪑" },
+                { oromo: "Siree", english: "Bed", emoji: "🛏️" },
+                { oromo: "Firiijii", english: "Refrigerator", emoji: "❄️" },
+                { oromo: "Televijinii", english: "Television", emoji: "📺" },
+                { oromo: "Fooddaa", english: "Window", emoji: "🪟" }
+            ],
+            school: [
+                { oromo: "Barataa", english: "Student", emoji: "🎒" },
+                { oromo: "Barsiisaa", english: "Teacher", emoji: "👨‍🏫" },
+                { oromo: "Kitaaba", english: "Book", emoji: "📚" },
+                { oromo: "Iskiriibtoo", english: "Pen", emoji: "✏️" },
+                { oromo: "Irsaasa", english: "Pencil", emoji: "✏️" },
+                { oromo: "Deeskii", english: "Desk", emoji: "🪑" },
+                { oromo: "Fuula", english: "Page", emoji: "📄" },
+                { oromo: "Gaafii", english: "Question", emoji: "❓" },
+                { oromo: "Haala", english: "Answer", emoji: "✅" },
+                { oromo: "Manakitaabaa", english: "Library", emoji: "📖" }
+            ]
+        };
+        
+        let score = 0;
+        let correct = 0;
+        let wrong = 0;
+        let currentWord = null;
+        let gameStarted = false;
+        let soundEnabled = true;
+        let allWords = [];
+        let currentCategory = 'all';
+        
+        // Combine all categories into one array
+        function initializeWordList() {
+            allWords = [];
+            for (let category in oromoVocabulary) {
+                allWords = allWords.concat(oromoVocabulary[category]);
+            }
+            displayWordBank();
+        }
+        
+        // Display word bank in the translation panel
+        function displayWordBank() {
+            const wordBank = document.getElementById('wordBank');
+            wordBank.innerHTML = '';
+            
+            for (let category in oromoVocabulary) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                categoryDiv.innerHTML = `${getCategoryIcon(category)} ${getCategoryName(category)}`;
+                wordBank.appendChild(categoryDiv);
+                
+                const wordList = document.createElement('div');
+                wordList.className = 'word-list';
+                
+                oromoVocabulary[category].forEach(word => {
+                    const wordItem = document.createElement('div');
+                    wordItem.className = 'word-item';
+                    wordItem.innerHTML = `
+                        <span class="oromo-word">${word.emoji} ${word.oromo}</span>
+                        <span class="english-word">${word.english}</span>
+                    `;
+                    wordList.appendChild(wordItem);
+                });
+                
+                wordBank.appendChild(wordList);
+            }
+        }
+        
+        function getCategoryIcon(category) {
+            const icons = {
+                family: '👨‍👩‍👧‍👦',
+                animals: '🦁',
+                colors: '🎨',
+                numbers: '🔢',
+                food: '🍽️',
+                body: '🧍',
+                nature: '🌳',
+                house: '🏠',
+                school: '🎓'
+            };
+            return icons[category] || '📚';
+        }
+        
+        function getCategoryName(category) {
+            const names = {
+                family: 'Family & People',
+                animals: 'Animals',
+                colors: 'Colors',
+                numbers: 'Numbers',
+                food: 'Food & Drinks',
+                body: 'Body Parts',
+                nature: 'Nature',
+                house: 'House Items',
+                school: 'School'
+            };
+            return names[category] || category;
+        }
+        
+        // Audio functions (same as before, but enhanced)
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playClickSound() {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+        
+        function playCorrectSound() {
+            if (!soundEnabled) return;
+            
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((freq, index) => {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                }, index * 100);
+            });
+        }
+        
+        function playWrongSound() {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(150, audioContext.currentTime + 0.3);
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+        
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled) {
+                playClickSound();
+            }
+        }
+        
+        function startGame() {
+            playClickSound();
+            gameStarted = true;
+            score = 0;
+            correct = 0;
+            wrong = 0;
+            updateScore();
+            nextWord();
+        }
+        
+        function resetGame() {
+            playClickSound();
+            gameStarted = false;
+            score = 0;
+            correct = 0;
+            wrong = 0;
+            updateScore();
+            document.getElementById('wordDisplay').innerHTML = '🎯 Click START to begin learning!';
+            document.getElementById('wordDisplay').className = 'word-display';
+            document.getElementById('gameArea').innerHTML = '<p>🕷️ Spider buttons will appear here...</p>';
+        }
+        
+        function nextWord() {
+            if (allWords.length === 0) {
+                initializeWordList();
+            }
+            
+            currentWord = allWords[Math.floor(Math.random() * allWords.length)];
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = `${currentWord.emoji} ${currentWord.english} - Find: ${currentWord.oromo}`;
+            display.className = 'word-display';
+            createButtons();
+        }
+        
+        function createButtons() {
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = '';
+            
+            const correctPos = Math.floor(Math.random() * 4);
+            const usedWords = [];
+            
+            for (let i = 0; i < 4; i++) {
+                const button = document.createElement('button');
+                button.className = 'spider-btn';
+                button.innerHTML = '🕷️<br>';
+                
+                let word;
+                if (i === correctPos) {
+                    word = currentWord;
+                } else {
+                    do {
+                        word = allWords[Math.floor(Math.random() * allWords.length)];
+                    } while (usedWords.includes(word) || word === currentWord);
+                }
+                
+                usedWords.push(word);
+                button.innerHTML += word.oromo;
+                
+                button.onclick = function() {
+                    playClickSound();
+                    if (i === correctPos) {
+                        handleCorrect();
+                    } else {
+                        handleWrong();
+                    }
+                };
+                
+                gameArea.appendChild(button);
+            }
+        }
+        
+        function handleCorrect() {
+            playCorrectSound();
+            score += 10;
+            correct++;
+            updateScore();
+            
+            const display = document.getElementById('wordDisplay');
+            display.className = 'word-display correct';
+            showFeedback('🎉 Excellent! You found it!', true);
+            
+            setTimeout(nextWord, 1500);
+        }
+        
+        function handleWrong() {
+            playWrongSound();
+            score = Math.max(0, score - 5);
+            wrong++;
+            updateScore();
+            
+            const display = document.getElementById('wordDisplay');
+            display.className = 'word-display wrong';
+            showFeedback(`😞 Try again! Look for "${currentWord.oromo}"`, false);
+        }
+        
+        function showFeedback(message, isCorrect) {
+            const feedback = document.getElementById('feedback');
+            const content = document.getElementById('feedbackContent');
+            content.innerHTML = message;
+            content.style.color = isCorrect ? '#27ae60' : '#e74c3c';
+            feedback.className = 'feedback show';
+            
+            setTimeout(() => {
+                feedback.className = 'feedback';
+            }, 1500);
+        }
+        
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('correct').textContent = correct;
+            document.getElementById('wrong').textContent = wrong;
+        }
+        
+        // Initialize everything when page loads
+        window.onload = function() {
+            initializeWordList();
+            
+            // Initialize audio context on first user interaction
+            document.addEventListener('click', function() {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            }, { once: true });
+        };
+    </script>
+</body>
+</html>
+
