@@ -1,0 +1,1481 @@
+[{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d93c"
+  },
+  "//": "const",
+  "MongoDB": "API_BASE_URL",
+  "API": "=",
+  "Configuration": "'http://localhost:5000/api';"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d93d"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d93e"
+  },
+  "//": "//",
+  "MongoDB": "API",
+  "API": "Functions"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d93f"
+  },
+  "//": "async",
+  "MongoDB": "function",
+  "API": "apiRequest(endpoint,",
+  "Configuration": "options"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d940"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d941"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d942"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d943"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d944"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d945"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d946"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d947"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d948"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d949"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d94a"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d94b"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d94c"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d94d"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d94e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d94f"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d950"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d951"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d952"
+  },
+  "//": "}"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d953"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d954"
+  },
+  "//": "//",
+  "MongoDB": "Get",
+  "API": "all",
+  "Configuration": "drivers"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d955"
+  },
+  "//": "async",
+  "MongoDB": "function",
+  "API": "getAllDrivers()",
+  "Configuration": "{"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d956"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d957"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d958"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d959"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d95a"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d95b"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d95c"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d95d"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d95e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d95f"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d960"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d961"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d962"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d963"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d964"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d965"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d966"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d967"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d968"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d969"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d96a"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d96b"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d96c"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d96d"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d96e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d96f"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d970"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d971"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d972"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d973"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d974"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d975"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d976"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d977"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d978"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d979"
+  },
+  "//": "}"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d97a"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d97b"
+  },
+  "//": "//",
+  "MongoDB": "Register",
+  "API": "new",
+  "Configuration": "driver"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d97c"
+  },
+  "//": "async",
+  "MongoDB": "function",
+  "API": "registerDriver(driverData)",
+  "Configuration": "{"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d97d"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d97e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d97f"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d980"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d981"
+  },
+  "//": "}"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d982"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d983"
+  },
+  "//": "//",
+  "MongoDB": "Update",
+  "API": "driver",
+  "Configuration": "status"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d984"
+  },
+  "//": "async",
+  "MongoDB": "function",
+  "API": "updateDriverStatus(driverId,",
+  "Configuration": "status)"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d985"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d986"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d987"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d988"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d989"
+  },
+  "//": "}"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d98a"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d98b"
+  },
+  "//": "//",
+  "MongoDB": "Update",
+  "API": "driver",
+  "Configuration": "panels"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d98c"
+  },
+  "//": "async",
+  "MongoDB": "function",
+  "API": "updateDriverPanels()",
+  "Configuration": "{"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d98d"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d98e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d98f"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d990"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d991"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d992"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d993"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d994"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d995"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d996"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d997"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d998"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d999"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d99a"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d99b"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d99c"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d99d"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d99e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d99f"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9a0"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9a1"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9a2"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9a3"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9a4"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9a5"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9a6"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9a7"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9a8"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9a9"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9aa"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ab"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ac"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ad"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ae"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9af"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9b0"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9b1"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9b2"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9b3"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9b4"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9b5"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9b6"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9b7"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9b8"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9b9"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ba"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9bb"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9bc"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9bd"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9be"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9bf"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9c0"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9c1"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9c2"
+  },
+  "//": "}"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9c3"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9c4"
+  },
+  "//": "//",
+  "MongoDB": "Enhanced",
+  "API": "form",
+  "Configuration": "submission"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9c5"
+  },
+  "//": "newDriverForm.addEventListener('submit',",
+  "MongoDB": "async",
+  "API": "(e)",
+  "Configuration": "=>"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9c6"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9c7"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9c8"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9c9"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ca"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9cb"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9cc"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9cd"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ce"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9cf"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9d0"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9d1"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9d2"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9d3"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9d4"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9d5"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9d6"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9d7"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9d8"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9d9"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9da"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9db"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9dc"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9dd"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9de"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9df"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9e0"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9e1"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9e2"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9e3"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9e4"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9e5"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9e6"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9e7"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9e8"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9e9"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ea"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9eb"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ec"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ed"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ee"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ef"
+  },
+  "//": "});"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9f0"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9f1"
+  },
+  "//": "//",
+  "MongoDB": "Refresh",
+  "API": "map",
+  "Configuration": "drivers"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9f2"
+  },
+  "//": "async",
+  "MongoDB": "function",
+  "API": "refreshMapDrivers()",
+  "Configuration": "{"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9f3"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9f4"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9f5"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9f6"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9f7"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9f8"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9f9"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9fa"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9fb"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9fc"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9fd"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9fe"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5d9ff"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da00"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da01"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da02"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da03"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da04"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da05"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da06"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da07"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da08"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da09"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da0a"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da0b"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da0c"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da0d"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da0e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da0f"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da10"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da11"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da12"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da13"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da14"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da15"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da16"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da17"
+  },
+  "//": "}"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da18"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da19"
+  },
+  "//": "//",
+  "MongoDB": "Helper",
+  "API": "function"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da1a"
+  },
+  "//": "function",
+  "MongoDB": "getVehicleTypeName(type)",
+  "API": "{"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da1b"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da1c"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da1d"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da1e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da1f"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da20"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da21"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da22"
+  },
+  "//": "}"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da23"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da24"
+  },
+  "//": "//",
+  "MongoDB": "Update",
+  "API": "map",
+  "Configuration": "initialization"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da25"
+  },
+  "//": "async",
+  "MongoDB": "function",
+  "API": "initializeMapWithDrivers()",
+  "Configuration": "{"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da26"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da27"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da28"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da29"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da2a"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da2b"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da2c"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da2d"
+  },
+  "//": "}"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da2e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da2f"
+  },
+  "//": "//",
+  "MongoDB": "Enhanced",
+  "API": "assign",
+  "Configuration": "driver"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da30"
+  },
+  "//": "window.assignDriver",
+  "MongoDB": "=",
+  "API": "async",
+  "Configuration": "function(rideId)"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da31"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da32"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da33"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da34"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da35"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da36"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da37"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da38"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da39"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da3a"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da3b"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da3c"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da3d"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da3e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da3f"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da40"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da41"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da42"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da43"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da44"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da45"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da46"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da47"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da48"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da49"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da4a"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da4b"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da4c"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da4d"
+  },
+  "//": "};"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da4e"
+  }
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da4f"
+  },
+  "//": "//",
+  "MongoDB": "Initialize",
+  "API": "when",
+  "Configuration": "page"
+},
+{
+  "_id": {
+    "$oid": "692be41c842be44f1be5da50"
+  },
+  "//": "updateDriverPanels();"
+}]
