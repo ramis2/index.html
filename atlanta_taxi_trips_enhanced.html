@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_4453d3690701260f3cc29b7f3c298d62 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+<div style="position: fixed;
+    top: 10px; left: 50px; width: 300px;
+    background-color: white; padding: 10px;
+    border: 2px solid grey; z-index: 9999; font-size: 14px">
+    <b>Atlanta Taxi Trips</b><br>
+    Green markers show taxi pickup locations
+</div>
+    
+            <div class="folium-map" id="map_4453d3690701260f3cc29b7f3c298d62" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_4453d3690701260f3cc29b7f3c298d62 = L.map(
+                "map_4453d3690701260f3cc29b7f3c298d62",
+                {
+                    center: [33.749, -84.388],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_4453d3690701260f3cc29b7f3c298d62);
+
+            
+
+        
+    
+            var tile_layer_e5bd5642190cd68b66996ec693535941 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e5bd5642190cd68b66996ec693535941.addTo(map_4453d3690701260f3cc29b7f3c298d62);
+        
+    
+            var marker_9ff8bd8f35f7915efeaac3d596d31a86 = L.marker(
+                [33.751, -84.389],
+                {
+}
+            ).addTo(map_4453d3690701260f3cc29b7f3c298d62);
+        
+    
+            var icon_1590b5cbf0fdf3ee95a40a49d4f3efec = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "taxi",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_71b8e5a88a6524908635d3fd7d9cbde0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d93040bb99f4b538adda4ab96b9061bd = $(`<div id="html_d93040bb99f4b538adda4ab96b9061bd" style="width: 100.0%; height: 100.0%;">Trip: T001<br>Fare: $12.5</div>`)[0];
+                popup_71b8e5a88a6524908635d3fd7d9cbde0.setContent(html_d93040bb99f4b538adda4ab96b9061bd);
+            
+        
+
+        marker_9ff8bd8f35f7915efeaac3d596d31a86.bindPopup(popup_71b8e5a88a6524908635d3fd7d9cbde0)
+        ;
+
+        
+    
+    
+            marker_9ff8bd8f35f7915efeaac3d596d31a86.bindTooltip(
+                `<div>
+                     Taxi Trip T001
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9ff8bd8f35f7915efeaac3d596d31a86.setIcon(icon_1590b5cbf0fdf3ee95a40a49d4f3efec);
+            
+    
+            var marker_9343dad3bb8057b9900bd21faa2b444e = L.marker(
+                [33.752, -84.39],
+                {
+}
+            ).addTo(map_4453d3690701260f3cc29b7f3c298d62);
+        
+    
+            var icon_d3ab5a4a3389fc29c32d5f2116e10743 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "taxi",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c9b32fd7f465ac4d8a519963ce3f29ce = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_57ec920361c007b0ecdeaf566713b866 = $(`<div id="html_57ec920361c007b0ecdeaf566713b866" style="width: 100.0%; height: 100.0%;">Trip: T002<br>Fare: $8.75</div>`)[0];
+                popup_c9b32fd7f465ac4d8a519963ce3f29ce.setContent(html_57ec920361c007b0ecdeaf566713b866);
+            
+        
+
+        marker_9343dad3bb8057b9900bd21faa2b444e.bindPopup(popup_c9b32fd7f465ac4d8a519963ce3f29ce)
+        ;
+
+        
+    
+    
+            marker_9343dad3bb8057b9900bd21faa2b444e.bindTooltip(
+                `<div>
+                     Taxi Trip T002
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9343dad3bb8057b9900bd21faa2b444e.setIcon(icon_d3ab5a4a3389fc29c32d5f2116e10743);
+            
+    
+            var marker_2e75615ad43e61df3328f267711633a5 = L.marker(
+                [33.753, -84.391],
+                {
+}
+            ).addTo(map_4453d3690701260f3cc29b7f3c298d62);
+        
+    
+            var icon_a2643e1f3d5f1c6de8b409585ad093d9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "taxi",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6ca05d56d1827758afceaaf73905ccbc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_637b0ad37e11a8320249eec579047633 = $(`<div id="html_637b0ad37e11a8320249eec579047633" style="width: 100.0%; height: 100.0%;">Trip: T003<br>Fare: $15.2</div>`)[0];
+                popup_6ca05d56d1827758afceaaf73905ccbc.setContent(html_637b0ad37e11a8320249eec579047633);
+            
+        
+
+        marker_2e75615ad43e61df3328f267711633a5.bindPopup(popup_6ca05d56d1827758afceaaf73905ccbc)
+        ;
+
+        
+    
+    
+            marker_2e75615ad43e61df3328f267711633a5.bindTooltip(
+                `<div>
+                     Taxi Trip T003
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2e75615ad43e61df3328f267711633a5.setIcon(icon_a2643e1f3d5f1c6de8b409585ad093d9);
+            
+</script>
+</html>
