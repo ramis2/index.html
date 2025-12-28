@@ -1,0 +1,4 @@
+Atlanta Taxi Dispatch Database
+Database: attaxidata
+Trips: 277 records
+Drivers: 3 records
