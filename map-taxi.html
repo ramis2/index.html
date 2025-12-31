@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Taxi Dispatch with Map</title>
+    <!-- Leaflet CSS - For the map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+        
+        .left-panel {
+            width: 350px;
+            background: white;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+        }
+        
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        #taxiMap {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .tab-btn.active {
+            border-bottom: 3px solid #3498db;
+            font-weight: bold;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .driver-card {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .driver-card:hover {
+            background: #e9ecef;
+        }
+        
+        .driver-card.active {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+        
+        .driver-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .driver-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .driver-status {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-ontrip {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .dispatch-notification {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .dispatch-info {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚕 Atlanta Taxi Dispatch System</h1>
+        <p>Real-time driver tracking on map</p>
+    </div>
+    
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showTab('register')">Register</button>
+                <button class="tab-btn" onclick="showTab('dispatch')">Dispatch</button>
+                <button class="tab-btn" onclick="showTab('drivers')">Drivers</button>
+            </div>
+            
+            <!-- Registration Tab -->
+            <div id="registerTab" class="tab-content">
+                <h3>Register New Driver</h3>
+                <form id="driverForm">
+                    <div class="form-group">
+                        <label>Driver Name:</label>
+                        <input type="text" id="driverName" placeholder="John Smith" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number:</label>
+                        <input type="tel" id="driverPhone" placeholder="(404) 555-0123" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Vehicle:</label>
+                        <input type="text" id="vehicleType" placeholder="Toyota Camry" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Color:</label>
+                        <input type="text" id="vehicleColor" placeholder="Blue" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tag Number:</label>
+                        <input type="text" id="tagNumber" placeholder="GA-ABC123" required>
+                    </div>
+                    <button type="submit">Register Driver</button>
+                </form>
+            </div>
+            
+            <!-- Dispatch Tab -->
+            <div id="dispatchTab" class="tab-content" style="display: none;">
+                <h3>Dispatch Driver</h3>
+                <div class="form-group">
+                    <label>Select Driver:</label>
+                    <select id="dispatchSelect">
+                        <option value="">-- Select Available Driver --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Pickup Address:</label>
+                    <input type="text" id="pickupAddress" placeholder="123 Main St, Atlanta">
+                </div>
+                <div class="form-group">
+                    <label>Destination:</label>
+                    <input type="text" id="destination" placeholder="Atlanta Airport">
+                </div>
+                <button onclick="dispatchSelectedDriver()">Dispatch Now</button>
+                
+                <div class="dispatch-notification" id="notification">
+                    <strong>🚕 Driver Dispatched!</strong>
+                    <p id="notificationText"></p>
+                    <p><small>Driver has been notified via SMS</small></p>
+                </div>
+                
+                <div class="dispatch-info" id="activeDispatch" style="display: none;">
+                    <strong>🔄 Active Dispatch:</strong>
+                    <p id="dispatchDetails"></p>
+                    <button onclick="completeTrip()" style="background: #27ae60;">Complete Trip</button>
+                </div>
+            </div>
+            
+            <!-- Drivers List Tab -->
+            <div id="driversTab" class="tab-content" style="display: none;">
+                <h3>Available Drivers</h3>
+                <div id="driversList">
+                    <!-- Drivers will be listed here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="taxiMap"></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // Initialize map
+        const map = L.map('taxiMap').setView([33.7490, -84.3880], 13); // Atlanta center
+        
+        // Add map tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Driver database
+        let drivers = JSON.parse(localStorage.getItem('atlantaDrivers')) || [];
+        let activeDispatch = JSON.parse(localStorage.getItem('activeDispatch')) || null;
+        let driverMarkers = [];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDrivers();
+            updateDispatchSelect();
+            updateDriversList();
+            
+            if (activeDispatch) {
+                showActiveDispatch();
+            }
+            
+            // Add Atlanta landmarks
+            addAtlantaLandmarks();
+        });
+        
+        // Show/hide tabs
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').style.display = 'block';
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Refresh data if needed
+            if (tabName === 'dispatch') {
+                updateDispatchSelect();
+            } else if (tabName === 'drivers') {
+                updateDriversList();
+            }
+        }
+        
+        // Register driver form
+        document.getElementById('driverForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Generate random Atlanta location
+            const lat = 33.7490 + (Math.random() - 0.5) * 0.05;
+            const lng = -84.3880 + (Math.random() - 0.5) * 0.05;
+            
+            const driver = {
+                id: 'D' + Date.now().toString().slice(-6),
+                name: document.getElementById('driverName').value,
+                phone: document.getElementById('driverPhone').value,
+                vehicle: document.getElementById('vehicleType').value,
+                color: document.getElementById('vehicleColor').value,
+                tag: document.getElementById('tagNumber').value,
+                status: 'available',
+                location: [lat, lng],
+                rating: (4 + Math.random()).toFixed(1)
+            };
+            
+            drivers.push(driver);
+            saveDrivers();
+            
+            alert(`Driver ${driver.name} registered successfully!`);
+            this.reset();
+            
+            // Update UI
+            updateDispatchSelect();
+            updateDriversList();
+            updateDriverMarkers();
+        });
+        
+        // Update driver select dropdown
+        function updateDispatchSelect() {
+            const select = document.getElementById('dispatchSelect');
+            select.innerHTML = '<option value="">-- Select Available Driver --</option>';
+            
+            drivers.forEach(driver => {
+                if (driver.status === 'available') {
+                    const option = document.createElement('option');
+                    option.value = driver.id;
+                    option.textContent = `${driver.name} - ${driver.vehicle} (${driver.tag})`;
+                    select.appendChild(option);
+                }
+            });
+        }
+        
+        // Dispatch selected driver
+        function dispatchSelectedDriver() {
+            const driverId = document.getElementById('dispatchSelect').value;
+            const pickup = document.getElementById('pickupAddress').value;
+            const destination = document.getElementById('destination').value;
+            
+            if (!driverId || !pickup || !destination) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            const driver = drivers.find(d => d.id === driverId);
+            if (!driver) {
+                alert('Driver not found');
+                return;
+            }
+            
+            // Update driver status
+            driver.status = 'ontrip';
+            driver.currentTrip = {
+                pickup: pickup,
+                destination: destination,
+                startTime: new Date().toISOString()
+            };
+            
+            // Create active dispatch
+            activeDispatch = {
+                driverId: driver.id,
+                driverName: driver.name,
+                pickup: pickup,
+                destination: destination,
+                startTime: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            saveDrivers();
+            localStorage.setItem('activeDispatch', JSON.stringify(activeDispatch));
+            
+            // Show notification
+            document.getElementById('notification').style.display = 'block';
+            document.getElementById('notificationText').textContent = 
+                `${driver.name} has been dispatched from ${pickup} to ${destination}`;
+            
+            // Show active dispatch info
+            showActiveDispatch();
+            
+            // Clear form
+            document.getElementById('pickupAddress').value = '';
+            document.getElementById('destination').value = '';
+            
+            // Update UI
+            updateDispatchSelect();
+            updateDriversList();
+            updateDriverMarkers();
+            
+            // Center map on driver
+            const driverMarker = driverMarkers.find(m => m.driverId === driver.id);
+            if (driverMarker) {
+                map.setView(driverMarker.marker.getLatLng(), 15);
+            }
+            
+            // Simulate SMS to driver
+            setTimeout(() => {
+                alert(`📱 SMS sent to ${driver.name} (${driver.phone}): "New dispatch: Pickup at ${pickup}, Destination: ${destination}"`);
+            }, 1000);
+        }
+        
+        // Show active dispatch info
+        function showActiveDispatch() {
+            if (activeDispatch) {
+                document.getElementById('activeDispatch').style.display = 'block';
+                document.getElementById('dispatchDetails').textContent = 
+                    `${activeDispatch.driverName} is en route from ${activeDispatch.pickup} to ${activeDispatch.destination}`;
+            }
+        }
+        
+        // Complete trip
+        function completeTrip() {
+            if (!activeDispatch) return;
+            
+            const driver = drivers.find(d => d.id === activeDispatch.driverId);
+            if (driver) {
+                driver.status = 'available';
+                delete driver.currentTrip;
+                
+                // Move driver to a new random location (simulating trip completion)
+                driver.location[0] = 33.7490 + (Math.random() - 0.5) * 0.05;
+                driver.location[1] = -84.3880 + (Math.random() - 0.5) * 0.05;
+                
+                // Clear active dispatch
+                activeDispatch = null;
+                localStorage.removeItem('activeDispatch');
+                
+                // Update UI
+                document.getElementById('activeDispatch').style.display = 'none';
+                updateDispatchSelect();
+                updateDriversList();
+                updateDriverMarkers();
+                
+                alert(`✅ Trip completed! ${driver.name} is now available for new dispatches.`);
+                
+                // Save changes
+                saveDrivers();
+            }
+        }
+        
+        // Update drivers list
+        function updateDriversList() {
+            const list = document.getElementById('driversList');
+            list.innerHTML = '';
+            
+            drivers.forEach(driver => {
+                const card = document.createElement('div');
+                card.className = `driver-card ${activeDispatch?.driverId === driver.id ? 'active' : ''}`;
+                card.innerHTML = `
+                    <div class="driver-info">
+                        <div>
+                            <div class="driver-name">${driver.name}</div>
+                            <div>${driver.vehicle} (${driver.color})</div>
+                            <div><small>${driver.tag}</small></div>
+                        </div>
+                        <div>
+                            <span class="driver-status status-${driver.status}">
+                                ${driver.status === 'available' ? '✅ Available' : '🚕 On Trip'}
+                            </span>
+                        </div>
+                    </div>
+                    ${driver.currentTrip ? 
+                        `<div style="margin-top: 10px; font-size: 12px; color: #666;">
+                            <div>To: ${driver.currentTrip.destination}</div>
+                            <div>Since: ${new Date(driver.currentTrip.startTime).toLocaleTimeString()}</div>
+                        </div>` : ''
+                    }
+                `;
+                
+                card.addEventListener('click', () => {
+                    // Center map on this driver
+                    const driverMarker = driverMarkers.find(m => m.driverId === driver.id);
+                    if (driverMarker) {
+                        map.setView(driverMarker.marker.getLatLng(), 16);
+                    }
+                });
+                
+                list.appendChild(card);
+            });
+        }
+        
+        // Update driver markers on map
+        function updateDriverMarkers() {
+            // Remove existing markers
+            driverMarkers.forEach(item => {
+                map.removeLayer(item.marker);
+            });
+            driverMarkers = [];
+            
+            // Add new markers
+            drivers.forEach(driver => {
+                const iconColor = driver.status === 'available' ? '#2ecc71' : '#e74c3c';
+                const iconHtml = `
+                    <div style="
+                        width: 40px;
+                        height: 40px;
+                        background: ${iconColor};
+                        border-radius: 50%;
+                        border: 3px solid white;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-size: 14px;
+                        font-weight: bold;
+                    ">🚕</div>
+                `;
+                
+                const icon = L.divIcon({
+                    html: iconHtml,
+                    className: 'taxi-icon',
+                    iconSize: [40, 40]
+                });
+                
+                const marker = L.marker(driver.location, { icon: icon }).addTo(map);
+                
+                const popupContent = `
+                    <div style="padding: 10px; min-width: 200px;">
+                        <h4 style="margin: 0 0 10px 0; color: #2c3e50;">${driver.name}</h4>
+                        <div><strong>Status:</strong> ${driver.status === 'available' ? '🟢 Available' : '🔴 On Trip'}</div>
+                        <div><strong>Vehicle:</strong> ${driver.vehicle}</div>
+                        <div><strong>Tag:</strong> ${driver.tag}</div>
+                        <div><strong>Phone:</strong> ${driver.phone}</div>
+                        <div><strong>Rating:</strong> ${driver.rating} ⭐</div>
+                        ${driver.currentTrip ? 
+                            `<div style="margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                                <strong>Current Trip:</strong><br>
+                                To: ${driver.currentTrip.destination}<br>
+                                Started: ${new Date(driver.currentTrip.startTime).toLocaleTimeString()}
+                            </div>` : ''
+                        }
+                        <div style="margin-top: 10px;">
+                            <button onclick="dispatchFromMap('${driver.id}')" 
+                                    style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;"
+                                    ${driver.status !== 'available' ? 'disabled' : ''}>
+                                Dispatch
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent);
+                
+                driverMarkers.push({
+                    driverId: driver.id,
+                    marker: marker
+                });
+            });
+        }
+        
+        // Dispatch from map popup
+        function dispatchFromMap(driverId) {
+            // Switch to dispatch tab
+            showTab('dispatch');
+            
+            // Select the driver
+            document.getElementById('dispatchSelect').value = driverId;
+            
+            // Focus on pickup address
+            document.getElementById('pickupAddress').focus();
+        }
+        
+        // Add Atlanta landmarks
+        function addAtlantaLandmarks() {
+            const landmarks = [
+                {name: "Airport", lat: 33.6407, lng: -84.4277},
+                {name: "Downtown", lat: 33.7555, lng: -84.4010},
+                {name: "Midtown", lat: 33.7838, lng: -84.3864},
+                {name: "Buckhead", lat: 33.8463, lng: -84.3650},
+                {name: "Georgia Tech", lat: 33.7756, lng: -84.3963}
+            ];
+            
+            landmarks.forEach(landmark => {
+                L.marker([landmark.lat, landmark.lng])
+                    .addTo(map)
+                    .bindPopup(`<b>${landmark.name}</b><br>Click to set as pickup`)
+                    .on('click', function() {
+                        document.getElementById('pickupAddress').value = landmark.name + ', Atlanta';
+                        showTab('dispatch');
+                    });
+            });
+        }
+        
+        // Save drivers to localStorage
+        function saveDrivers() {
+            localStorage.setItem('atlantaDrivers', JSON.stringify(drivers));
+        }
+        
+        // Load drivers from localStorage
+        function loadDrivers() {
+            updateDriverMarkers();
+        }
+        
+        // Sample data for testing
+        if (drivers.length === 0) {
+            drivers = [
+                {
+                    id: 'D001',
+                    name: 'John Wilson',
+                    phone: '(404) 555-0101',
+                    vehicle: 'Toyota Camry',
+                    color: 'Silver',
+                    tag: 'GA-ABC123',
+                    status: 'available',
+                    location: [33.7550, -84.3900],
+                    rating: '4.8'
+                },
+                {
+                    id: 'D002',
+                    name: 'Maria Garcia',
+                    phone: '(404) 555-0102',
+                    vehicle: 'Honda Accord',
+                    color: 'Blue',
+                    tag: 'GA-XYZ789',
+                    status: 'available',
+                    location: [33.7450, -84.3800],
+                    rating: '4.6'
+                },
+                {
+                    id: 'D003',
+                    name: 'Robert Brown',
+                    phone: '(404) 555-0103',
+                    vehicle: 'Ford Fusion',
+                    color: 'White',
+                    tag: 'GA-DEF456',
+                    status: 'available',
+                    location: [33.7650, -84.3950],
+                    rating: '4.9'
+                }
+            ];
+            saveDrivers();
+            updateDriverMarkers();
+        }
+    </script>
+</body>
+</html>
