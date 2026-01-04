@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic Wood Block Stacking Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Main Menu - Fixed with proper layering */
+        .main-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            pointer-events: auto; /* Ensure menu receives clicks */
+        }
+
+        .menu-title {
+            font-size: 4rem;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            margin-bottom: 3rem;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 3px 3px 6px rgba(0,0,0,0.7); }
+            to { text-shadow: 3px 3px 20px rgba(255,255,255,0.8); }
+        }
+
+        /* Fixed menu buttons with proper click handling */
+        .menu-button {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 1.5rem 3rem;
+            font-size: 1.5rem;
+            margin: 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+            pointer-events: auto; /* Ensure buttons receive clicks */
+            z-index: 1001; /* Above menu background */
+        }
+
+        .menu-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.4);
+        }
+
+        .menu-button:active {
+            transform: translateY(1px);
+        }
+
+        .menu-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .menu-button:hover::before {
+            left: 100%;
+        }
+
+        /* Game Container */
+        .game-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: none;
+            pointer-events: auto;
+        }
+
+        /* Game Canvas */
+        #gameCanvas {
+            display: block;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98D8E8 100%);
+            border: 3px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin: 20px auto;
+            pointer-events: auto;
+        }
+
+        /* UI Panels */
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            pointer-events: auto;
+        }
+
+        .score-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            pointer-events: auto;
+        }
+
+        .control-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .control-button:hover {
+            background: #2980b9;
+        }
+
+        /* Audio Settings Modal */
+        .audio-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 2000;
+            pointer-events: auto;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1999;
+            pointer-events: auto;
+        }
+
+        .volume-control {
+            margin: 15px 0;
+        }
+
+        .volume-control label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+
+        .volume-control input[type="range"] {
+            width: 200px;
+        }
+
+        /* Back button */
+        .back-button {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .back-button:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Menu - Fixed button click issues -->
+    <div class="main-menu" id="mainMenu">
+        <h1 class="menu-title">🪵 Wood Block Master 🪵</h1>
+        <button class="menu-button" id="classicModeBtn">🎯 Classic Mode</button>
+        <button class="menu-button" id="challengeModeBtn">⚡ Challenge Mode</button>
+        <button class="menu-button" id="multiplayerBtn">👥 Multiplayer</button>
+        <button class="menu-button" id="audioSettingsBtn">🔊 Audio Settings</button>
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container" id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <!-- Game UI -->
+        <div class="game-ui">
+            <div class="score-display">Score: <span id="score">0</span></div>
+            <div class="score-display">High Score: <span id="highScore">0</span></div>
+            <div class="score-display">Level: <span id="level">1</span></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="control-button" id="pauseBtn">⏸️ Pause</button>
+            <button class="control-button" id="resetBtn">🔄 Reset</button>
+            <button class="control-button" id="soundToggle">🔊 Sound</button>
+        </div>
+
+        <!-- Back to Menu Button -->
+        <button class="back-button" id="backToMenuBtn">📋 Back to Menu</button>
+    </div>
+
+    <!-- Audio Settings Modal -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="audio-modal" id="audioModal">
+        <h2>🔊 Audio Settings</h2>
+        <div class="volume-control">
+            <label>Master Volume:</label>
+            <input type="range" id="masterVolume" min="0" max="100" value="70">
+            <span id="masterVolumeValue">70%</span>
+        </div>
+        <div class="volume-control">
+            <label>Sound Effects:</label>
+            <input type="range" id="sfxVolume" min="0" max="100" value="80">
+            <span id="sfxVolumeValue">80%</span>
+        </div>
+        <div class="volume-control">
+            <label>Background Music:</label>
+            <input type="range" id="musicVolume" min="0" max="100" value="50">
+            <span id="musicVolumeValue">50%</span>
+        </div>
+        <button class="control-button" id="closeAudioSettings">Close</button>
+    </div>
+
+    <script>
+        // Global variables
+        let canvas, ctx;
+        let score = 0;
+        let highScore = localStorage.getItem('highScore') || 0;
+        let level = 1;
+        let gameRunning = false;
+        let blocks = [];
+        let currentBlock = null;
+        let blockSpeed = 2;
+        let direction = 1;
+        let soundEnabled = true;
+
+        // Initialize the game
+        function init() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Update high score display
+            document.getElementById('highScore').textContent = highScore;
+            
+            // Set up event listeners - Fixed with proper timing
+            setupEventListeners();
+            
+            console.log('Game initialized successfully');
+        }
+
+        // Fixed event listener setup
+        function setupEventListeners() {
+            // Main menu buttons - Using addEventListener for reliability
+            document.getElementById('classicModeBtn').addEventListener('click', function() {
+                console.log('Classic Mode clicked');
+                startGame('classic');
+            });
+            
+            document.getElementById('challengeModeBtn').addEventListener('click', function() {
+                console.log('Challenge Mode clicked');
+                startGame('challenge');
+            });
+            
+            document.getElementById('multiplayerBtn').addEventListener('click', function() {
+                console.log('Multiplayer clicked');
+                alert('Multiplayer mode coming soon! 🎮');
+            });
+            
+            document.getElementById('audioSettingsBtn').addEventListener('click', function() {
+                console.log('Audio Settings clicked');
+                showAudioSettings();
+            });
+
+            // Game control buttons
+            document.getElementById('pauseBtn').addEventListener('click', togglePause);
+            document.getElementById('resetBtn').addEventListener('click', resetGame);
+            document.getElementById('soundToggle').addEventListener('click', toggleSound);
+            document.getElementById('backToMenuBtn').addEventListener('click', backToMenu);
+
+            // Audio modal controls
+            document.getElementById('closeAudioSettings').addEventListener('click', hideAudioSettings);
+            document.getElementById('modalOverlay').addEventListener('click', hideAudioSettings);
+
+            // Volume controls
+            document.getElementById('masterVolume').addEventListener('input', updateVolume);
+            document.getElementById('sfxVolume').addEventListener('input', updateVolume);
+            document.getElementById('musicVolume').addEventListener('input', updateVolume);
+
+            // Keyboard controls
+            document.addEventListener('keydown', handleKeyPress);
+            document.addEventListener('keyup', handleKeyRelease);
+
+            // Canvas click for dropping blocks
+            canvas.addEventListener('click', dropBlock);
+
+            console.log('All event listeners attached successfully');
+        }
+
+        // Start the game
+        function startGame(mode) {
+            console.log('Starting game in mode:', mode);
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'block';
+            
+            gameRunning = true;
+            score = 0;
+            level = 1;
+            blocks = [];
+            
+            updateUI();
+            createNewBlock();
+            gameLoop();
+            
+            playSound('gameStart');
+        }
+
+        // Create a new moving block
+        function createNewBlock() {
+            const blockWidth = 100;
+            const blockHeight = 30;
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'];
+            
+            currentBlock = {
+                x: canvas.width / 2 - blockWidth / 2,
+                y: 50,
+                width: blockWidth,
+                height: blockHeight,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                moving: true
+            };
+        }
+
+        // Game loop
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background
+            drawBackground();
+            
+            // Move current block
+            if (currentBlock && currentBlock.moving) {
+                currentBlock.x += blockSpeed * direction;
+                
+                // Reverse direction at boundaries
+                if (currentBlock.x <= 0 || currentBlock.x + currentBlock.width >= canvas.width) {
+                    direction *= -1;
+                }
+            }
+            
+            // Draw blocks
+            drawBlocks();
+            
+            // Draw current block
+            if (currentBlock) {
+                drawBlock(currentBlock);
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Draw background
+        function drawBackground() {
+            // Sky gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#98D8E8');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Clouds
+            drawCloud(100, 50, 60);
+            drawCloud(300, 80, 80);
+            drawCloud(500, 40, 70);
+            drawCloud(700, 90, 50);
+        }
+
+        // Draw cloud
+        function drawCloud(x, y, size) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.arc(x + size, y, size * 0.8, 0, Math.PI * 2);
+            ctx.arc(x - size * 0.5, y, size * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw a single block
+        function drawBlock(block) {
+            ctx.fillStyle = block.color;
+            ctx.fillRect(block.x, block.y, block.width, block.height);
+            
+            // Add 3D effect
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.fillRect(block.x, block.y, block.width, 5);
+            ctx.fillRect(block.x, block.y, 5, block.height);
+            
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(block.x + block.width - 5, block.y, 5, block.height);
+            ctx.fillRect(block.x, block.y + block.height - 5, block.width, 5);
+        }
+
+        // Draw all stacked blocks
+        function drawBlocks() {
+            blocks.forEach(block => drawBlock(block));
+        }
+
+        // Drop the current block
+        function dropBlock() {
+            if (!gameRunning || !currentBlock || !currentBlock.moving) return;
+            
+            currentBlock.moving = false;
+            
+            // Check if block is properly placed
+            if (blocks.length === 0 || checkPlacement(currentBlock)) {
+                blocks.push(currentBlock);
+                score += 10 * level;
+                
+                // Check for perfect placement bonus
+                if (checkPerfectPlacement(currentBlock)) {
+                    score += 50;
+                    playSound('perfect');
+                } else {
+                    playSound('drop');
+                }
+                
+                updateUI();
+                
+                // Check if we should go to next level
+                if (blocks.length % 5 === 0) {
+                    level++;
+                    blockSpeed += 0.5;
+                }
+                
+                // Create new block
+                setTimeout(() => {
+                    createNewBlock();
+                }, 500);
+            } else {
+                // Game over
+                gameOver();
+            }
+        }
+
+        // Check if block placement is valid
+        function checkPlacement(block) {
+            if (blocks.length === 0) return true;
+            
+            const topBlock = blocks[blocks.length - 1];
+            const overlap = Math.min(block.x + block.width, topBlock.x + topBlock.width) - Math.max(block.x, topBlock.x);
+            
+            return overlap >= block.width * 0.7; // At least 70% overlap
+        }
+
+        // Check for perfect placement
+        function checkPerfectPlacement(block) {
+            if (blocks.length === 0) return false;
+            
+            const topBlock = blocks[blocks.length - 1];
+            return Math.abs(block.x - topBlock.x) < 5; // Within 5 pixels
+        }
+
+        // Game over
+        function gameOver() {
+            gameRunning = false;
+            
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('highScore', highScore);
+            }
+            
+            playSound('gameOver');
+            
+            setTimeout(() => {
+                alert(`Game Over! Your score: ${score}`);
+                backToMenu();
+            }, 1000);
+        }
+
+        // Update UI
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('highScore').textContent = highScore;
+            document.getElementById('level').textContent = level;
+        }
+
+        // Toggle pause
+        function togglePause() {
+            gameRunning = !gameRunning;
+            if (gameRunning) {
+                gameLoop();
+                document.getElementById('pauseBtn').textContent = '⏸️ Pause';
+            } else {
+                document.getElementById('pauseBtn').textContent = '▶️ Resume';
+            }
+        }
+
+        // Reset game
+        function resetGame() {
+            gameRunning = false;
+            score = 0;
+            level = 1;
+            blocks = [];
+            currentBlock = null;
+            blockSpeed = 2;
+            updateUI();
+            startGame('classic');
+        }
+
+        // Toggle sound
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundToggle').textContent = soundEnabled ? '🔊 Sound' : '🔇 Sound';
+        }
+
+        // Back to menu
+        function backToMenu() {
+            gameRunning = false;
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'flex';
+        }
+
+        // Show audio settings
+        function showAudioSettings() {
+            document.getElementById('modalOverlay').style.display = 'block';
+            document.getElementById('audioModal').style.display = 'block';
+        }
+
+        // Hide audio settings
+        function hideAudioSettings() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('audioModal').style.display = 'none';
+        }
+
+        // Update volume
+        function updateVolume() {
+            const masterVol = document.getElementById('masterVolume').value;
+            const sfxVol = document.getElementById('sfxVolume').value;
+            const musicVol = document.getElementById('musicVolume').value;
+            
+            document.getElementById('masterVolumeValue').textContent = masterVol + '%';
+            document.getElementById('sfxVolumeValue').textContent = sfxVol + '%';
+            document.getElementById('musicVolumeValue').textContent = musicVol + '%';
+        }
+
+        // Handle keyboard input
+        function handleKeyPress(e) {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                dropBlock();
+            }
+        }
+
+        function handleKeyRelease(e) {
+            // Handle key release if needed
+        }
+
+        // Sound effects (simulated)
+        function playSound(soundType) {
+            if (!soundEnabled) return;
+            
+            console.log('Playing sound:', soundType);
+            // In a real implementation, you would play actual audio files here
+            // For now, we'll just log the sound effect
+        }
+
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded - initializing game');
+            init();
+        });
+
+        // Additional safety check for older browsers
+        window.addEventListener('load', function() {
+            console.log('Window fully loaded');
+            if (typeof init === 'function') {
+                init();
+            }
+        });
+    </script>
+</body>
+</html>
+

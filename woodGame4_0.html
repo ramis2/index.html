@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic Wood Block Stacking Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: #000;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Epic Menu System */
+        #mainMenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .game-title {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FF6B6B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            margin-bottom: 50px;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 0 70px rgba(255, 215, 0, 0.4); }
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .menu-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .menu-card h3 {
+            color: #FFD700;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .menu-card p {
+            color: #fff;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .start-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* Game Container */
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+        }
+        
+        #gameCanvas {
+            display: block;
+            background: linear-gradient(to bottom, #87CEEB, #98D8E8);
+        }
+        
+        /* Epic HUD */
+        .hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            z-index: 100;
+            min-width: 200px;
+        }
+        
+        .hud-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 1.1rem;
+        }
+        
+        .hud-value {
+            color: #FFD700;
+            font-weight: 700;
+        }
+        
+        /* Control Panel */
+        .control-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #FFD700;
+            transform: translateY(-2px);
+        }
+        
+        /* Wood Type Selector */
+        .wood-selector {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 100;
+        }
+        
+        .wood-types {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .wood-type {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+        }
+        
+        .wood-type:hover {
+            transform: scale(1.1);
+        }
+        
+        .wood-type.active {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .wood-type::after {
+            content: attr(data-name);
+            position: absolute;
+            right: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .wood-type:hover::after {
+            opacity: 1;
+        }
+        
+        /* Epic Animations */
+        @keyframes blockSpawn {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(180deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1) rotate(360deg);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes epicFall {
+            0% {
+                transform: translateY(-100px) scale(1.2);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateY(50px) scale(0.9);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+        
+        /* Particle Effects Container */
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+        
+        /* Achievement Notification */
+        .achievement {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #8B0000;
+            padding: 40px;
+            border-radius: 25px;
+            font-size: 28px;
+            font-weight: 900;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .achievement.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Epic Main Menu -->
+    <div id="mainMenu">
+        <h1 class="game-title">WOOD MASTER</h1>
+        <div class="menu-grid">
+            <div class="menu-card" onclick="selectGameMode('classic')">
+                <h3>🪵 Classic Mode</h3>
+                <p>Traditional wood stacking with realistic physics</p>
+            </div>
+            <div class="menu-card" onclick="selectGameMode('challenge')">
+                <h3>⚡ Challenge Mode</h3>
+                <p>Time-limited stacking with special blocks</p>
+            </div>
+            <div class="menu-card" onclick="selectGameMode('multiplayer')">
+                <h3>👥 Multiplayer</h3>
+                <p>Compete against friends in real-time</p>
+            </div>
+            <div class="menu-card" onclick="showTutorial()">
+                <h3>📚 Tutorial</h3>
+                <p>Learn the basics of wood stacking</p>
+            </div>
+        </div>
+        <button class="start-button" onclick="startGame()">START GAME</button>
+    </div>
+
+    <!-- Game Container -->
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- Epic HUD -->
+        <div class="hud">
+            <h3 style="color: #FFD700; margin-bottom: 15px;">🏗️ WOOD MASTER</h3>
+            <div class="hud-item">
+                <span>Score:</span>
+                <span class="hud-value" id="score">0</span>
+            </div>
+            <div class="hud-item">
+                <span>Blocks:</span>
+                <span class="hud-value" id="blocks">0</span>
+            </div>
+            <div class="hud-item">
+                <span>Height:</span>
+                <span class="hud-value" id="height">0m</span>
+            </div>
+            <div class="hud-item">
+                <span>Stability:</span>
+                <span class="hud-value" id="stability">100%</span>
+            </div>
+        </div>
+
+        <!-- Wood Type Selector -->
+        <div class="wood-selector">
+            <div class="wood-types">
+                <div class="wood-type active" data-name="Oak" style="background: linear-gradient(45deg, #DEB887, #D2691E);" onclick="selectWoodType('oak')"></div>
+                <div class="wood-type" data-name="Pine" style="background: linear-gradient(45deg, #F4E4BC, #E6D3A3);" onclick="selectWoodType('pine')"></div>
+                <div class="wood-type" data-name="Mahogany" style="background: linear-gradient(45deg, #CD853F, #A0522D);" onclick="selectWoodType('mahogany')"></div>
+                <div class="wood-type" data-name="Walnut" style="background: linear-gradient(45deg, #8B4513, #654321);" onclick="selectWoodType('walnut')"></div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <button class="control-btn" onclick="addBlock()">🪵 Add Block</button>
+            <button class="control-btn" onclick="addSpecialBlock()">⭐ Special</button>
+            <button class="control-btn" onclick="toggleGravity()">🌍 Gravity</button>
+            <button class="control-btn" onclick="resetGame()">🔄 Reset</button>
+            <button class="control-btn" onclick="backToMenu()">📋 Menu</button>
+        </div>
+
+        <!-- Particle Effects -->
+        <div class="particle-container" id="particleContainer"></div>
+
+        <!-- Achievement Notification -->
+        <div id="achievement" class="achievement"></div>
+    </div>
+
+    <script>
+        // Matter.js setup
+        const Engine = Matter.Engine,
+              World = Matter.World,
+              Bodies = Matter.Bodies,
+              Body = Matter.Body,
+              Mouse = Matter.Mouse,
+              MouseConstraint = Matter.MouseConstraint;
+
+        // Game setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const engine = Engine.create();
+        engine.world.gravity.y = 0.6;
+
+        // Game variables
+        let score = 0;
+        let blocksCount = 0;
+        let maxHeight = 0;
+        let blocks = [];
+        let particles = [];
+        let currentWoodType = 'oak';
+        let gameMode = 'classic';
+        let specialBlocksAvailable = 3;
+
+        // Wood types with enhanced properties
+        const woodTypes = {
+            oak: { color: ['#DEB887', '#D2691E'], density: 0.001, friction: 0.9, name: 'Oak' },
+            pine: { color: ['#F4E4BC', '#E6D3A3'], density: 0.0008, friction: 0.7, name: 'Pine' },
+            mahogany: { color: ['#CD853F', '#A0522D'], density: 0.0012, friction: 0.95, name: 'Mahogany' },
+            walnut: { color: ['#8B4513', '#654321'], density: 0.0011, friction: 0.85, name: 'Walnut' }
+        };
+
+        // Epic particle system
+        class Particle {
+            constructor(x, y, type, color = null) {
+                this.x = x;
+                this.y = y;
+                this.type = type;
+                this.vx = (Math.random() - 0.5) * 8;
+                this.vy = Math.random() * -15 - 5;
+                this.life = 1;
+                this.decay = 0.02;
+                this.size = Math.random() * 8 + 4;
+                this.color = color || this.getColor();
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = (Math.random() - 0.5) * 20;
+            }
+
+            getColor() {
+                const colors = {
+                    wood: ['#DEB887', '#D2691E', '#8B4513'],
+                    special: ['#FFD700', '#FFA500', '#FF6B6B'],
+                    magic: ['#FF00FF', '#00FFFF', '#FFFF00']
+                };
+                const colorArray = colors[this.type] || colors.wood;
+                return colorArray[Math.floor(Math.random() * colorArray.length)];
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.5; // gravity
+                this.vx *= 0.98; // air resistance
+                this.life -= this.decay;
+                this.size *= 0.96;
+                this.rotation += this.rotationSpeed;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = this.life;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                
+                if (this.type === 'magic') {
+                    // Draw star shape
+                    this.drawStar(ctx, 0, 0, 5, this.size, this.size * 0.5);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                } else {
+                    // Draw glowing circle
+                    const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size);
+                    gradient.addColorStop(0, this.color);
+                    gradient.addColorStop(1, 'transparent');
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                ctx.restore();
+            }
+
+            drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+                let rot = Math.PI / 2 * 3;
+                let x = cx;
+                let y = cy;
+                const step = Math.PI / spikes;
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - outerRadius);
+                
+                for (let i = 0; i < spikes; i++) {
+                    x = cx + Math.cos(rot) * outerRadius;
+                    y = cy + Math.sin(rot) * outerRadius;
+                    ctx.lineTo(x, y);
+                    rot += step;
+
+                    x = cx + Math.cos(rot) * innerRadius;
+                    y = cy + Math.sin(rot) * innerRadius;
+                    ctx.lineTo(x, y);
+                    rot += step;
+                }
+                
+                ctx.lineTo(cx, cy - outerRadius);
+                ctx.closePath();
+            }
+        }
+
+        // Enhanced particle effects
+        function createEpicParticles(x, y, count, type) {
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(x, y, type));
+            }
+        }
+
+        // Epic block creation with spawn animation
+        function createEpicBlock(x, y, isSpecial = false) {
+            const wood = woodTypes[currentWoodType];
+            const width = isSpecial ? 100 : (70 + Math.random() * 30);
+            const height = isSpecial ? 30 : (25 + Math.random() * 10);
+            
+            const block = Bodies.rectangle(x, y, width, height, {
+                friction: 0.8,
+                frictionStatic: 1.0,
+                restitution: 0.2,
+                density: 0.001,
+                render: {
+                    fillStyle: isSpecial ? '#FFD700' : wood.color[0],
+                    strokeStyle: isSpecial ? '#FFA500' : wood.color[1],
+                    lineWidth: isSpecial ? 4 : 2
+                }
+            });
+
+            // Enhanced properties
+            block.blockType = isSpecial ? 'special' : 'wood';
+            block.woodType = currentWoodType;
+            block.originalWidth = width;
+            block.originalHeight = height;
+            block.isSpecial = isSpecial;
+            block.spawnTime = Date.now();
+            block.glowIntensity = 0;
+
+            return block;
+        }
+
+        // Epic block adding with spectacular effects
+        function addBlock() {
+            const x = canvas.width / 2 + (Math.random() - 0.5) * 300;
+            const y = -100; // Start above screen for dramatic fall
+            
+            const block = createEpicBlock(x, y);
+            blocks.push(block);
+            World.add(engine.world, block);
+            blocksCount++;
+            
+            // Create epic particle trail
+            createEpicParticles(x, y + 50, 30, 'wood');
+            
+            // Update score
+            score += 10;
+            updateUI();
+        }
+
+        // Special block with magical effects
+        function addSpecialBlock() {
+            if (specialBlocksAvailable <= 0) return;
+            
+            const x = canvas.width / 2 + (Math.random() - 0.5) * 200;
+            const y = -100;
+            
+            const block = createEpicBlock(x, y, true);
+            blocks.push(block);
+            World.add(engine.world, block);
+            blocksCount++;
+            specialBlocksAvailable--;
+            
+            // Create magical particle explosion
+            createEpicParticles(x, y + 50, 50, 'special');
+            
+            // Bonus points
+            score += 100;
+            updateUI();
+        }
+
+        // Update UI with epic styling
+        function updateUI() {
+            document.getElementById('score').textContent = score.toLocaleString();
+            document.getElementById('blocks').textContent = blocksCount;
+            
+            const height = calculateTowerHeight();
+            document.getElementById('height').textContent = height + 'm';
+            
+            // Calculate stability
+            let totalStability = 0;
+            let blockCount = 0;
+            blocks.forEach(block => {
+                const tilt = Math.abs(block.angle);
+                const stability = Math.max(0, 100 - (tilt * 100));
+                totalStability += stability;
+                blockCount++;
+            });
+            const overallStability = blockCount > 0 ? Math.round(totalStability / blockCount) : 100;
+            document.getElementById('stability').textContent = overallStability + '%';
+        }
+
+        // Calculate tower height
+        function calculateTowerHeight() {
+            if (blocks.length === 0) return 0;
+            let maxY = -Infinity;
+            blocks.forEach(block => {
+                maxY = Math.max(maxY, block.position.y);
+            });
+            return Math.max(0, (canvas.height - 50 - maxY) / 60).toFixed(1);
+        }
+
+        // Select wood type
+        function selectWoodType(type) {
+            currentWoodType = type;
+            document.querySelectorAll('.wood-type').forEach(wt => wt.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Game controls
+        function toggleGravity() {
+            engine.world.gravity.y = engine.world.gravity.y === 0 ? 0.6 : 0;
+        }
+
+        function resetGame() {
+            blocks.forEach(block => World.remove(engine.world, block));
+            blocks = [];
+            blocksCount = 0;
+            score = 0;
+            particles = [];
+            specialBlocksAvailable = 3;
+            updateUI();
+        }
+
+        function backToMenu() {
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'flex';
+        }
+
+        function startGame() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'block';
+            initGame();
+        }
+
+        function selectGameMode(mode) {
+            gameMode = mode;
+            document.querySelectorAll('.menu-card').forEach(card => card.style.border = 'none');
+            event.target.style.border = '2px solid #FFD700';
+        }
+
+        function showTutorial() {
+            alert('📚 TUTORIAL:\n\n🪵 Drag wood blocks to stack them perfectly\n⭐ Special golden blocks give bonus points\n🌍 Try different wood types for unique properties\n🏆 Build as high as possible without collapsing!\n\nClick START GAME when ready!');
+        }
+
+        function initGame() {
+            // Create ground
+            const ground = Bodies.rectangle(canvas.width / 2, canvas.height - 25, canvas.width, 50, {
+                isStatic: true,
+                render: { fillStyle: '#8B4513' }
+            });
+            World.add(engine.world, ground);
+
+            // Add mouse control
+            const mouse = Mouse.create(canvas);
+            const mouseConstraint = MouseConstraint.create(engine, {
+                mouse: mouse,
+                constraint: { stiffness: 0.2, render: { visible: false } }
+            });
+            World.add(engine.world, mouseConstraint);
+
+            // Start with a few blocks
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => addBlock(), i * 1000);
+            }
+            
+            updateUI();
+        }
+
+        // Epic game loop with enhanced visuals
+        function gameLoop() {
+            Engine.update(engine, 1000 / 60);
+            
+            // Clear canvas with gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#98D8E8');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw animated particles
+            particles = particles.filter(particle => {
+                particle.update();
+                if (particle.life > 0) {
+                    particle.draw(ctx);
+                    return true;
+                }
+                return false;
+            });
+            
+            // Draw blocks with enhanced visuals
+            blocks.forEach(block => {
+                ctx.save();
+                ctx.translate(block.position.x, block.position.y);
+                ctx.rotate(block.angle);
+                
+                const wood = woodTypes[block.woodType];
+                const width = block.originalWidth;
+                const height = block.originalHeight;
+                
+                // Create gradient
+                const blockGradient = ctx.createLinearGradient(-width/2, -height/2, width/2, height/2);
+                blockGradient.addColorStop(0, wood.color[0]);
+                blockGradient.addColorStop(1, wood.color[1]);
+                
+                // Shadow effect
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetY = 5;
+                
+                ctx.fillStyle = block.isSpecial ? '#FFD700' : blockGradient;
+                ctx.strokeStyle = block.isSpecial ? '#FFA500' : wood.color[1];
+                ctx.lineWidth = block.isSpecial ? 4 : 2;
+                
+                // Draw rounded rectangle
+                roundRect(ctx, -width/2, -height/2, width, height, 8);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Special block glow
+                if (block.isSpecial) {
+                    ctx.shadowColor = '#FFD700';
+                    ctx.shadowBlur = 20;
+                    ctx.strokeStyle = '#FFD700';
+                    ctx.lineWidth = 3;
+                    roundRect(ctx, -width/2 - 3, -height/2 - 3, width + 6, height + 6, 10);
+                    ctx.stroke();
+                }
+                
+                ctx.restore();
+            });
+            
+            // Draw ground
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+            
+            // Update height and score
+            const currentHeight = parseFloat(calculateTowerHeight());
+            if (currentHeight > maxHeight) {
+                score += Math.floor((currentHeight - maxHeight) * 25);
+                maxHeight = currentHeight;
+            }
+            
+            updateUI();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Helper function for rounded rectangles
+        function roundRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        // Initialize game
+        gameLoop();
+    </script>
+</body>
+</html>
+
