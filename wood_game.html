@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wood Block Stacking Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #8B4513, #D2691E);
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #gameCanvas {
+            border: 3px solid #654321;
+            background: linear-gradient(to bottom, #F4E4BC, #E6D3A3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #8B4513;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #A0522D;
+            transform: translateY(-2px);
+        }
+        
+        #instructions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 14px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui">
+            <div>Score: <span id="score">0</span></div>
+            <div>Blocks: <span id="blocks">0</span></div>
+            <div>Tower Height: <span id="height">0</span>m</div>
+        </div>
+        <div id="instructions">
+            <h3>How to Play:</h3>
+            <p>• Click and drag wood blocks to stack them</p>
+            <p>• Stack them as high as possible</p>
+            <p>• Imperfect stacking makes blocks sink</p>
+            <p>• Tower collapses when too unstable</p>
+        </div>
+        <div id="controls">
+            <button onclick="addBlock()">Add Block</button>
+            <button onclick="resetGame()">Reset Game</button>
+            <button onclick="toggleGravity()">Toggle Gravity</button>
+        </div>
+    </div>
+
+    <script>
+        // Matter.js setup
+        const Engine = Matter.Engine,
+              Render = Matter.Render,
+              World = Matter.World,
+              Bodies = Matter.Bodies,
+              Body = Matter.Body,
+              Events = Matter.Events,
+              Mouse = Matter.Mouse,
+              MouseConstraint = Matter.MouseConstraint,
+              Composite = Matter.Composite,
+              Composites = Matter.Composites;
+
+        // Canvas setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+
+        // Create engine
+        const engine = Engine.create();
+        engine.world.gravity.y = 0.8;
+
+        // Game variables
+        let score = 0;
+        let blocksCount = 0;
+        let maxHeight = 0;
+        let blocks = [];
+        let basePlatform;
+
+        // Wood texture pattern
+        function createWoodPattern() {
+            const patternCanvas = document.createElement('canvas');
+            patternCanvas.width = 40;
+            patternCanvas.height = 40;
+            const pctx = patternCanvas.getContext('2d');
+            
+            // Wood grain pattern
+            pctx.fillStyle = '#8B4513';
+            pctx.fillRect(0, 0, 40, 40);
+            
+            pctx.strokeStyle = '#654321';
+            pctx.lineWidth = 1;
+            for(let i = 0; i < 40; i += 4) {
+                pctx.beginPath();
+                pctx.moveTo(0, i);
+                pctx.lineTo(40, i + Math.sin(i) * 2);
+                pctx.stroke();
+            }
+            
+            return ctx.createPattern(patternCanvas, 'repeat');
+        }
+
+        // Create base platform
+        function createBase() {
+            basePlatform = Bodies.rectangle(400, 580, 200, 20, {
+                isStatic: true,
+                render: {
+                    fillStyle: '#4A4A4A'
+                }
+            });
+            World.add(engine.world, basePlatform);
+        }
+
+        // Create a wood block with realistic properties
+        function createWoodBlock(x, y) {
+            const width = 60 + Math.random() * 20; // Varying sizes like real Jenga
+            const height = 20 + Math.random() * 5;
+            const angle = (Math.random() - 0.5) * 0.1; // Slight imperfections
+            
+            const block = Bodies.rectangle(x, y, width, height, {
+                angle: angle,
+                friction: 0.8,
+                frictionStatic: 1.0,
+                restitution: 0.1,
+                density: 0.001,
+                render: {
+                    fillStyle: '#8B4513',
+                    strokeStyle: '#654321',
+                    lineWidth: 2
+                }
+            });
+            
+            // Add custom properties
+            block.blockType = 'wood';
+            block.originalWidth = width;
+            block.originalHeight = height;
+            block.sinking = false;
+            block.sinkStartTime = 0;
+            
+            return block;
+        }
+
+        // Add a new block to the game
+        function addBlock() {
+            const x = 400 + (Math.random() - 0.5) * 100;
+            const y = 50;
+            const block = createWoodBlock(x, y);
+            
+            blocks.push(block);
+            World.add(engine.world, block);
+            blocksCount++;
+            updateUI();
+        }
+
+        // Check block stability and make them sink if unstable
+        function checkBlockStability() {
+            const currentTime = Date.now();
+            
+            blocks.forEach(block => {
+                if (block.blockType !== 'wood') return;
+                
+                // Check if block is significantly tilted
+                const tilt = Math.abs(block.angle);
+                const velocity = Math.sqrt(block.velocity.x ** 2 + block.velocity.y ** 2);
+                
+                // If block is tilted beyond threshold and moving slowly, make it sink
+                if (tilt > 0.3 && velocity < 0.5 && !block.sinking) {
+                    block.sinking = true;
+                    block.sinkStartTime = currentTime;
+                }
+                
+                // Handle sinking animation
+                if (block.sinking) {
+                    const sinkDuration = 3000; // 3 seconds to sink
+                    const elapsed = currentTime - block.sinkStartTime;
+                    
+                    if (elapsed < sinkDuration) {
+                        // Gradually increase gravity for this block
+                        const sinkProgress = elapsed / sinkDuration;
+                        Body.applyForce(block, block.position, {
+                            x: 0,
+                            y: 0.001 * sinkProgress
+                        });
+                        
+                        // Make block slightly transparent as it sinks
+                        block.render.fillStyle = `rgba(139, 69, 19, ${1 - sinkProgress * 0.5})`;
+                    } else {
+                        // Remove sunk block
+                        World.remove(engine.world, block);
+                        blocks = blocks.filter(b => b !== block);
+                        blocksCount--;
+                        score = Math.max(0, score - 10);
+                        updateUI();
+                    }
+                }
+            });
+        }
+
+        // Calculate tower height
+        function calculateTowerHeight() {
+            if (blocks.length === 0) return 0;
+            
+            let minY = Infinity;
+            let maxY = -Infinity;
+            
+            blocks.forEach(block => {
+                const y = block.position.y;
+                minY = Math.min(minY, y);
+                maxY = Math.max(maxY, y);
+            });
+            
+            return Math.max(0, (580 - maxY) / 50).toFixed(1); // Convert to meters
+        }
+
+        // Update UI
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('blocks').textContent = blocksCount;
+            document.getElementById('height').textContent = calculateTowerHeight();
+        }
+
+        // Reset game
+        function resetGame() {
+            // Remove all blocks
+            blocks.forEach(block => {
+                World.remove(engine.world, block);
+            });
+            blocks = [];
+            blocksCount = 0;
+            score = 0;
+            maxHeight = 0;
+            
+            // Add some starter blocks
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => addBlock(), i * 500);
+            }
+            
+            updateUI();
+        }
+
+        // Toggle gravity
+        function toggleGravity() {
+            engine.world.gravity.y = engine.world.gravity.y === 0 ? 0.8 : 0;
+        }
+
+        // Custom rendering with wood texture
+        function customRender() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#F4E4BC');
+            gradient.addColorStop(1, '#E6D3A3');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Create wood pattern
+            const woodPattern = createWoodPattern();
+            
+            // Draw all bodies
+            const bodies = Composite.allBodies(engine.world);
+            
+            bodies.forEach(body => {
+                if (body === basePlatform) {
+                    // Draw base platform
+                    ctx.fillStyle = '#4A4A4A';
+                    ctx.fillRect(
+                        body.position.x - 100,
+                        body.position.y - 10,
+                        200,
+                        20
+                    );
+                } else if (body.blockType === 'wood') {
+                    // Draw wood block with texture
+                    ctx.save();
+                    ctx.translate(body.position.x, body.position.y);
+                    ctx.rotate(body.angle);
+                    
+                    ctx.fillStyle = woodPattern;
+                    ctx.strokeStyle = '#654321';
+                    ctx.lineWidth = 2;
+                    
+                    const width = body.originalWidth;
+                    const height = body.originalHeight;
+                    
+                    ctx.fillRect(-width/2, -height/2, width, height);
+                    ctx.strokeRect(-width/2, -height/2, width, height);
+                    
+                    // Add wood grain lines
+                    ctx.strokeStyle = '#5D4037';
+                    ctx.lineWidth = 1;
+                    for (let i = -height/2 + 3; i < height/2; i += 4) {
+                        ctx.beginPath();
+                        ctx.moveTo(-width/2, i);
+                        ctx.lineTo(width/2, i + Math.sin(i) * 1);
+                        ctx.stroke();
+                    }
+                    
+                    ctx.restore();
+                }
+            });
+        }
+
+        // Mouse interaction
+        const mouse = Mouse.create(canvas);
+        const mouseConstraint = MouseConstraint.create(engine, {
+            mouse: mouse,
+            constraint: {
+                stiffness: 0.2,
+                render: {
+                    visible: false
+                }
+            }
+        });
+        World.add(engine.world, mouseConstraint);
+
+        // Game loop
+        function gameLoop() {
+            Engine.update(engine, 1000 / 60);
+            
+            // Check block stability
+            checkBlockStability();
+            
+            // Custom rendering
+            customRender();
+            
+            // Update score based on tower height
+            const currentHeight = parseFloat(calculateTowerHeight());
+            if (currentHeight > maxHeight) {
+                score += Math.floor((currentHeight - maxHeight) * 10);
+                maxHeight = currentHeight;
+                updateUI();
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Initialize game
+        createBase();
+        
+        // Add some starter blocks
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => addBlock(), i * 500);
+        }
+        
+        updateUI();
+        gameLoop();
+
+        // Add some automatic block spawning
+        setInterval(() => {
+            if (blocksCount < 20 && Math.random() < 0.3) {
+                addBlock();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
+
