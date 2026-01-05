@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Payment App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            height: 60px;
+        }
+
+        .download-section {
+            padding: 15px;
+            background: #e8f5e8;
+            border-bottom: 2px solid #c3e6cb;
+            text-align: center;
+        }
+
+        .download-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 5px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .driver-selector {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .id-section {
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            display: none;
+        }
+
+        .photo-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #e9ecef;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid #dee2e6;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-icon {
+            font-size: 30px;
+            color: #6c757d;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .payment-section {
+            padding: 20px;
+            background: white;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .payment-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .payment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .payment-date {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .payment-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-unpaid {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .payment-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .payment-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .cpnc-section {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .balance-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .add-payment-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .add-payment-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .add-driver-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .add-driver-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .driver-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .driver-item {
+            background: white;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .driver-item:hover {
+            border-color: #667eea;
+            background: #f0f7ff;
+        }
+
+        .driver-item.active {
+            border-color: #667eea;
+            background: #e3f2fd;
+        }
+
+        .driver-info {
+            flex: 1;
+        }
+
+        .driver-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .driver-cpnc {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .driver-balance {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .balance-positive {
+            color: #dc3545;
+        }
+
+        .balance-negative {
+            color: #28a745;
+        }
+
+        .balance-zero {
+            color: #6c757d;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #cameraInput {
+            display: none;
+        }
+
+        .data-export {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #856404;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .app-container {
+                border-radius: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <!-- Intentionally blank - just colored bar -->
+        </div>
+
+        <!-- Download Section -->
+        <div class="download-section">
+            <button class="download-btn" onclick="downloadApp()">📥 Download App</button>
+            <button class="download-btn" onclick="exportData()">💾 Export Data</button>
+            <button class="download-btn" onclick="importData()">📤 Import Data</button>
+            <div class="data-export" id="dataStatus"></div>
+        </div>
+
+        <div class="driver-selector">
+            <div class="section-title">Select Driver</div>
+            <div class="driver-list" id="driverList">
+                <!-- Driver list will be populated here -->
+            </div>
+            <button class="add-driver-btn" onclick="addDriver()">+ Add New Driver</button>
+        </div>
+
+        <div class="id-section" id="idSection">
+            <div class="photo-container" onclick="takePhoto()">
+                <img id="driverPhoto" class="hidden" alt="Driver Photo">
+                <div id="cameraIcon" class="camera-icon">📷</div>
+            </div>
+            <input type="file" id="cameraInput" accept="image/*" capture="camera" onchange="handlePhoto(event)">
+            
+            <div class="input-group">
+                <label for="driverName">Driver Full Name</label>
+                <input type="text" id="driverName" placeholder="Enter full name">
+            </div>
+            
+            <div class="input-group">
+                <label for="companyName">Company Name</label>
+                <input type="text" id="companyName" placeholder="Enter company name">
+            </div>
+
+            <div class="input-group">
+                <label for="cpncNumber">Car CPNC #</label>
+                <input type="text" id="cpncNumber" placeholder="Enter CPNC number">
+            </div>
+
+            <button class="add-payment-btn" onclick="saveDriver()">Save Driver Info</button>
+        </div>
+
+        <div class="payment-section">
+            <h2 class="section-title">Payment Records</h2>
+            
+            <div id="paymentList">
+                <!-- Payment items will be added here -->
+            </div>
+            
+            <button class="add-payment-btn" onclick="addPayment()">+ Add Payment Record</button>
+        </div>
+
+        <div class="balance-section">
+            <div class="balance-amount" id="totalBalance">$0.00</div>
+            <div class="balance-label">Current Balance</div>
+        </div>
+    </div>
+
+    <script>
+        let drivers = [];
+        let currentDriver = null;
+        let driverIdCounter = 1;
+        let paymentIdCounter = 1;
+
+        // DOWNLOAD FUNCTIONS
+        function downloadApp() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'driver-payment-app.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showDataStatus('App downloaded successfully!');
+        }
+
+        function exportData() {
+            const data = {
+                drivers: drivers,
+                driverIdCounter: driverIdCounter,
+                paymentIdCounter: paymentIdCounter,
+                exportDate: new Date().toISOString()
+            };
+            
+            const jsonData = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'driver-data-backup.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showDataStatus('Data exported successfully!');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            drivers = data.drivers || [];
+                            driverIdCounter = data.driverIdCounter || 1;
+                            paymentIdCounter = data.paymentIdCounter || 1;
+                            
+                            currentDriver = null;
+                            renderDriverList();
+                            renderPayments();
+                            updateBalance();
+                            showDataStatus('Data imported successfully!');
+                        } catch (error) {
+                            alert('Error importing data. Please check the file format.');
+                            showDataStatus('Import failed - invalid file format');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function showDataStatus(message) {
+            const status = document.getElementById('dataStatus');
+            status.textContent = message;
+            setTimeout(() => {
+                status.textContent = '';
+            }, 3000);
+        }
+
+        // EXISTING FUNCTIONS (unchanged)
+        function takePhoto() {
+            document.getElementById('cameraInput').click();
+        }
+
+        function handlePhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const photo = document.getElementById('driverPhoto');
+                    photo.src = e.target.result;
+                    photo.classList.remove('hidden');
+                    document.getElementById('cameraIcon').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addDriver() {
+            const name = prompt('Driver Full Name:');
+            if (!name) return;
+
+            const cpnc = prompt('Car CPNC #:');
+            if (!cpnc) return;
+
+            const company = prompt('Company Name:');
+            if (!company) return;
+
+            const driver = {
+                id: driverIdCounter++,
+                name: name,
+                cpnc: cpnc,
+                company: company,
+                photo: null,
+                payments: []
+            };
+
+            drivers.push(driver);
+            renderDriverList();
+            selectDriver(driver.id);
+        }
+
+        function selectDriver(driverId) {
+            currentDriver = drivers.find(d => d.id === driverId);
+            if (currentDriver) {
+                document.getElementById('idSection').style.display = 'block';
+                document.getElementById('driverName').value = currentDriver.name;
+                document.getElementById('cpncNumber').value = currentDriver.cpnc;
+                document.getElementById('companyName').value = currentDriver.company;
+                
+                if (currentDriver.photo) {
+                    document.getElementById('driverPhoto').src = currentDriver.photo;
+                    document.getElementById('driverPhoto').classList.remove('hidden');
+                    document.getElementById('cameraIcon').classList.add('hidden');
+                } else {
+                    document.getElementById('driverPhoto').classList.add('hidden');
+                    document.getElementById('cameraIcon').classList.remove('hidden');
+                }
+                
+                renderPayments();
+                updateBalance();
+                renderDriverList();
+            }
+        }
+
+        function saveDriver() {
+            if (!currentDriver) return;
+
+            currentDriver.name = document.getElementById('driverName').value;
+            currentDriver.cpnc = document.getElementById('cpncNumber').value;
+            currentDriver.company = document.getElementById('companyName').value;
+            
+            const photo = document.getElementById('driverPhoto');
+            if (!photo.classList.contains('hidden')) {
+                currentDriver.photo = photo.src;
+            }
+
+            renderDriverList();
+            alert('Driver information saved!');
+        }
+
+        function renderDriverList() {
+            const driverList = document.getElementById('driverList');
+            driverList.innerHTML = '';
+
+            drivers.forEach(driver => {
+                const driverBalance = calculateDriverBalance(driver);
+                const balanceClass = driverBalance > 0 ? 'balance-positive' : 
+                                   driverBalance < 0 ? 'balance-negative' : 'balance-zero';
+                
+                const driverItem = document.createElement('div');
+                driverItem.className = `driver-item ${currentDriver && currentDriver.id === driver.id ? 'active' : ''}`;
+                driverItem.onclick = () => selectDriver(driver.id);
+                
+                driverItem.innerHTML = `
+                    <div class="driver-info">
+                        <div class="driver-name">${driver.name}</div>
+                        <div class="driver-cpnc">CPNC: ${driver.cpnc}</div>
+                    </div>
+                    <div class="driver-balance ${balanceClass}">
+                        $${Math.abs(driverBalance).toFixed(2)}
+                    </div>
+                `;
+                
+                driverList.appendChild(driverItem);
+            });
+        }
+
+        function calculateDriverBalance(driver) {
+            const totalPaid = driver.payments
+                .filter(p => p.status === 'paid')
+                .reduce((sum, p) => sum + p.amount, 0);
+            
+            const totalUnpaid = driver.payments
+                .filter(p => p.status === 'unpaid')
+                .reduce((sum, p) => sum + p.amount, 0);
+
+            return totalUnpaid - totalPaid;
+        }
+
+        function addPayment() {
+            if (!currentDriver) {
+                alert('Please select a driver first!');
+                return;
+            }
+
+            const paymentDate = prompt('Payment Date (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+            if (!paymentDate) return;
+
+            const paymentReason = prompt('Payment Reason:', '');
+            if (!paymentReason) return;
+
+            const amount = prompt('Amount ($):', '0');
+            if (!amount || isNaN(amount)) return;
+
+            const status = confirm('Is this payment paid?\nOK = Paid, Cancel = Unpaid') ? 'paid' : 'unpaid';
+
+            const payment = {
+                id: paymentIdCounter++,
+                date: paymentDate,
+                reason: paymentReason,
+                amount: parseFloat(amount),
+                status: status,
+                driverId: currentDriver.id
+            };
+
+            currentDriver.payments.push(payment);
+            renderPayments();
+            updateBalance();
+            renderDriverList();
+        }
+
+        function renderPayments() {
+            const paymentList = document.getElementById('paymentList');
+            paymentList.innerHTML = '';
+
+            if (!currentDriver) return;
+
+            currentDriver.payments.forEach(payment => {
+                const paymentItem = document.createElement('div');
+                paymentItem.className = 'payment-item';
+                
+                const cpncDisplay = `
+                    <div class="cpnc-section">
+                        <div class="detail-label">Car CPNC #</div>
+                        <div class="detail-value">${currentDriver.cpnc}</div>
+                    </div>
+                `;
+
+                paymentItem.innerHTML = `
+                    <div class="payment-header">
+                        <div class="payment-date">${payment.date}</div>
+                        <div class="payment-status status-${payment.status}">
+                            ${payment.status.toUpperCase()}
+                        </div>
+                    </div>
+                    <div class="payment-details">
+                        <div class="payment-detail">
+                            <div class="detail-label">Reason</div>
+                            <div class="detail-value">${payment.reason}</div>
+                        </div>
+                        <div class="payment-detail">
+                            <div class="detail-label">Amount</div>
+                            <div class="detail-value">$${payment.amount.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    ${cpncDisplay}
+                `;
+                paymentList.appendChild(paymentItem);
+            });
+        }
+
+        function updateBalance() {
+            if (!currentDriver) {
+                document.getElementById('totalBalance').textContent = '$0.00';
+                document.querySelector('.balance-label').textContent = 'Current Balance';
+                return;
+            }
+
+            const balance = calculateDriverBalance(currentDriver);
+            document.getElementById('totalBalance').textContent = `$${Math.abs(balance).toFixed(2)}`;
+            
+            const balanceLabel = document.querySelector('.balance-label');
+            if (balance > 0) {
+                balanceLabel.textContent = 'You Owe';
+            } else if (balance < 0) {
+                balanceLabel.textContent = 'Credit Balance';
+            } else {
+                balanceLabel.textContent = 'Current Balance';
+            }
+        }
+
+        // Initialize with sample data
+        window.onload = function() {
+            const sampleDriver = {
+                id: driverIdCounter++,
+                name: 'John Doe',
+                cpnc: 'CPNC-12345',
+                company: 'ABC Taxi',
+                photo: null,
+                payments: [
+                    {
+                        id: paymentIdCounter++,
+                        date: '2026-01-01',
+                        reason: 'Weekly Rental',
+                        amount: 250.00,
+                        status: 'paid'
+                    },
+                    {
+                        id: paymentIdCounter++,
+                        date: '2026-01-03',
+                        reason: 'Gas Fee',
+                        amount: 45.00,
+                        status: 'unpaid'
+                    }
+                ]
+            };
+
+            drivers.push(sampleDriver);
+            renderDriverList();
+            selectDriver(sampleDriver.id);
+        };
+    </script>
+</body>
+</html>
+
