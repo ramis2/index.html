@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wood Master - Audio Edition</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2c1810, #4a3728);
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background: linear-gradient(to bottom, #87CEEB, #98D8C8);
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(139, 69, 19, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        #addBlock {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        #addBlock:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        #resetGame {
+            background: #f44336;
+            color: white;
+        }
+        
+        #resetGame:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+        
+        #toggleGravity {
+            background: #2196F3;
+            color: white;
+        }
+        
+        #toggleGravity:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+        }
+        
+        #audioControls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+        }
+        
+        .audio-btn {
+            background: #FF9800;
+            color: white;
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .audio-btn:hover {
+            background: #F57C00;
+        }
+        
+        .audio-btn.muted {
+            background: #666;
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="ui">
+            <div>Tower Height: <span id="height">0</span>m</div>
+            <div>Blocks: <span id="blocks">0</span></div>
+            <div>Score: <span id="score">0</span></div>
+        </div>
+        
+        <div id="audioControls">
+            <div>Audio Controls</div>
+            <button id="toggleSFX" class="audio-btn">🔊 SFX</button>
+            <button id="toggleMusic" class="audio-btn">🎵 Music</button>
+            <button id="toggleAmbient" class="audio-btn">🌲 Ambient</button>
+        </div>
+        
+        <div id="controls">
+            <button id="addBlock">Add Block</button>
+            <button id="resetGame">Reset Game</button>
+            <button id="toggleGravity">Toggle Gravity</button>
+        </div>
+        
+        <div id="instructions">
+            Click "Add Block" to drop wood blocks. Stack them as high as possible!
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Audio context and sounds
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let sfxEnabled = true;
+        let musicEnabled = true;
+        let ambientEnabled = true;
+        
+        // Game variables
+        let blocks = [];
+        let gravity = 0.5;
+        let gravityEnabled = true;
+        let score = 0;
+        let gameHeight = 0;
+        
+        // Wood types with different properties
+        const woodTypes = [
+            { name: 'Oak', color: '#8B4513', density: 0.8 },
+            { name: 'Pine', color: '#DEB887', density: 0.6 },
+            { name: 'Walnut', color: '#5D4037', density: 0.9 },
+            { name: 'Cherry', color: '#A0522D', density: 0.7 }
+        ];
+        
+        // Block class
+        class Block {
+            constructor(x, y, width, height, woodType) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.woodType = woodType;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = 0;
+                this.rotation = 0;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.05;
+                this.settled = false;
+                this.opacity = 1;
+            }
+            
+            update() {
+                if (!this.settled && gravityEnabled) {
+                    this.vy += gravity * this.woodType.density;
+                    this.y += this.vy;
+                    this.x += this.vx;
+                    this.rotation += this.rotationSpeed;
+                    
+                    // Air resistance
+                    this.vx *= 0.99;
+                    
+                    // Ground collision
+                    if (this.y + this.height >= canvas.height - 50) {
+                        this.y = canvas.height - 50 - this.height;
+                        this.vy = 0;
+                        this.vx = 0;
+                        this.rotationSpeed = 0;
+                        this.settled = true;
+                        playSound('blockLand');
+                        updateScore();
+                    }
+                    
+                    // Block-to-block collision
+                    for (let block of blocks) {
+                        if (block !== this && block.settled && this.isColliding(block)) {
+                            this.y = block.y - this.height;
+                            this.vy = 0;
+                            this.vx *= 0.5;
+                            this.rotationSpeed *= 0.5;
+                            if (Math.abs(this.vx) < 0.1) {
+                                this.vx = 0;
+                                this.rotationSpeed = 0;
+                                this.settled = true;
+                                playSound('blockStack');
+                                updateScore();
+                            }
+                        }
+                    }
+                }
+            }
+            
+            isColliding(other) {
+                return this.x < other.x + other.width &&
+                       this.x + this.width > other.x &&
+                       this.y < other.y + other.height &&
+                       this.y + this.height > other.y;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x + this.width/2, this.y + this.height/2);
+                ctx.rotate(this.rotation);
+                
+                // Wood texture
+                const gradient = ctx.createLinearGradient(-this.width/2, -this.height/2, this.width/2, this.height/2);
+                gradient.addColorStop(0, this.woodType.color);
+                gradient.addColorStop(0.5, this.lightenColor(this.woodType.color, 20));
+                gradient.addColorStop(1, this.darkenColor(this.woodType.color, 20));
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                
+                // Wood grain
+                ctx.strokeStyle = this.darkenColor(this.woodType.color, 30);
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.5;
+                for (let i = 0; i < 3; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(-this.width/2, -this.height/2 + (i+1) * this.height/4);
+                    ctx.lineTo(this.width/2, -this.height/2 + (i+1) * this.height/4);
+                    ctx.stroke();
+                }
+                
+                ctx.restore();
+            }
+            
+            lightenColor(color, percent) {
+                const num = parseInt(color.replace("#",""), 16);
+                const amt = Math.round(2.55 * percent);
+                const R = (num >> 16) + amt;
+                const G = (num >> 8 & 0x00FF) + amt;
+                const B = (num & 0x0000FF) + amt;
+                return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                    (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                    (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+            }
+            
+            darkenColor(color, percent) {
+                return this.lightenColor(color, -percent);
+            }
+        }
+        
+        // Audio functions
+        function playSound(type) {
+            if (!sfxEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            switch(type) {
+                case 'blockDrop':
+                    oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    break;
+                case 'blockLand':
+                    oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.2);
+                    gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    break;
+                case 'blockStack':
+                    oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.15);
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                    break;
+                case 'gameReset':
+                    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    break;
+            }
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+        
+        // Background music
+        let musicInterval;
+        function startBackgroundMusic() {
+            if (!musicEnabled) return;
+            
+            musicInterval = setInterval(() => {
+                if (!musicEnabled) return;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(Math.random() * 200 + 100, audioContext.currentTime);
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 1);
+            }, 2000);
+        }
+        
+        // Ambient sounds
+        let ambientInterval;
+        function startAmbientSounds() {
+            if (!ambientEnabled) return;
+            
+            ambientInterval = setInterval(() => {
+                if (!ambientEnabled) return;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(Math.random() * 50 + 30, audioContext.currentTime);
+                oscillator.type = 'sawtooth';
+                gainNode.gain.setValueAtTime(0.02, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 2);
+            }, 5000);
+        }
+        
+        // Update score and height
+        function updateScore() {
+            score++;
+            document.getElementById('score').textContent = score;
+            
+            // Calculate tower height
+            let minY = canvas.height;
+            for (let block of blocks) {
+                if (block.settled && block.y < minY) {
+                    minY = block.y;
+                }
+            }
+            
+            if (minY < canvas.height) {
+                gameHeight = ((canvas.height - minY) / 100).toFixed(1);
+                document.getElementById('height').textContent = gameHeight;
+            }
+        }
+        
+        // Add new block
+        function addBlock() {
+            const woodType = woodTypes[Math.floor(Math.random() * woodTypes.length)];
+            const width = 60 + Math.random() * 40;
+            const height = 20 + Math.random() * 20;
+            const x = Math.random() * (canvas.width - width);
+            
+            blocks.push(new Block(x, 50, width, height, woodType));
+            document.getElementById('blocks').textContent = blocks.length;
+            
+            playSound('blockDrop');
+        }
+        
+        // Reset game
+        function resetGame() {
+            blocks = [];
+            score = 0;
+            gameHeight = 0;
+            document.getElementById('blocks').textContent = '0';
+            document.getElementById('score').textContent = '0';
+            document.getElementById('height').textContent = '0';
+            playSound('gameReset');
+        }
+        
+        // Draw background
+        function drawBackground() {
+            // Sky gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#98D8C8');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Ground
+            ctx.fillStyle = '#8B6914';
+            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+            
+            // Ground texture
+            ctx.strokeStyle = '#654321';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < canvas.width; i += 20) {
+                ctx.beginPath();
+                ctx.moveTo(i, canvas.height - 50);
+                ctx.lineTo(i + 10, canvas.height);
+                ctx.stroke();
+            }
+        }
+        
+        // Game loop
+        function gameLoop() {
+            drawBackground();
+            
+            // Update and draw blocks
+            for (let block of blocks) {
+                block.update();
+                block.draw();
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Event listeners
+        document.getElementById('addBlock').addEventListener('click', addBlock);
+        document.getElementById('resetGame').addEventListener('click', resetGame);
+        document.getElementById('toggleGravity').addEventListener('click', () => {
+            gravityEnabled = !gravityEnabled;
+            document.getElementById('toggleGravity').textContent = gravityEnabled ? 'Toggle Gravity' : 'Gravity Off';
+        });
+        
+        // Audio control listeners
+        document.getElementById('toggleSFX').addEventListener('click', function() {
+            sfxEnabled = !sfxEnabled;
+            this.textContent = sfxEnabled ? '🔊 SFX' : '🔇 SFX';
+            this.classList.toggle('muted', !sfxEnabled);
+        });
+        
+        document.getElementById('toggleMusic').addEventListener('click', function() {
+            musicEnabled = !musicEnabled;
+            this.textContent = musicEnabled ? '🎵 Music' : '🔇 Music';
+            this.classList.toggle('muted', !musicEnabled);
+            
+            if (musicEnabled) {
+                startBackgroundMusic();
+            } else {
+                clearInterval(musicInterval);
+            }
+        });
+        
+        document.getElementById('toggleAmbient').addEventListener('click', function() {
+            ambientEnabled = !ambientEnabled;
+            this.textContent = ambientEnabled ? '🌲 Ambient' : '🔇 Ambient';
+            this.classList.toggle('muted', !ambientEnabled);
+            
+            if (ambientEnabled) {
+                startAmbientSounds();
+            } else {
+                clearInterval(ambientInterval);
+            }
+        });
+        
+        // Initialize audio on first user interaction
+        document.addEventListener('click', function initAudio() {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            startBackgroundMusic();
+            startAmbientSounds();
+            document.removeEventListener('click', initAudio);
+        }, { once: true });
+        
+        // Start game
+        gameLoop();
+    </script>
+</body>
+</html>
+
