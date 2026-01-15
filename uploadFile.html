@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote File Upload - GitHub Hosted</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .upload-area {
+            padding: 40px;
+            text-align: center;
+        }
+        .drop-zone {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 60px 20px;
+            margin: 20px 0;
+            background: #fafafa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .drop-zone:hover {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+        }
+        .btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+        .result {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .link-display {
+            background: #f8f9fa;
+            border: 2px solid #4facfe;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        .copy-btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .github-link {
+            background: #24292e;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .github-link a {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .upload-status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .upload-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .upload-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .upload-progress {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 GitHub File Upload Portal</h1>
+            <p>Upload files remotely - no local storage needed!</p>
+            <div class="github-link">
+                <p>🔗 Host this on GitHub Pages for public access</p>
+                <p>📧 Upload notifications sent to your email</p>
+            </div>
+        </div>
+
+        <div class="upload-area">
+            <!-- Email notification setup -->
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                <h3>📧 Email Setup Required</h3>
+                <p><strong>Step 1:</strong> Get your Web3Forms access key from <a href="https://web3forms.com" target="_blank" style="color: #856404; font-weight: bold;">web3forms.com</a></p>
+                <p><strong>Step 2:</strong> Replace the access key in the JavaScript code below</p>
+                <p><strong>Step 3:</strong> Upload to GitHub Pages for public access</p>
+            </div>
+
+            <div class="drop-zone" id="dropZone">
+                <div style="font-size: 4rem; margin-bottom: 20px;">📁</div>
+                <h3>Drop files here or click to browse</h3>
+                <p>Files will be uploaded to cloud storage - you'll get a download link!</p>
+                <input type="file" id="fileInput" style="display: none;" accept="*/*">
+                <button type="button" class="btn" onclick="document.getElementById('fileInput').click()">
+                    Choose Files
+                </button>
+            </div>
+
+            <div id="uploadStatus"></div>
+
+            <button class="btn" id="uploadBtn" onclick="uploadFiles()">
+                Upload to Cloud
+            </button>
+
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFiles = [];
+        
+        // 🚨 REPLACE THIS WITH YOUR ACTUAL WEB3FORMS ACCESS KEY
+        const WEB3FORMS_ACCESS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY_HERE';
+        
+        // Email where you'll receive upload notifications
+        const YOUR_EMAIL = 'your-email@example.com';
+
+        // File input handler
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            selectedFiles = Array.from(e.target.files);
+            updateStatus(`Selected ${selectedFiles.length} file(s)`, 'info');
+        });
+
+        // Drag and drop
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#ff6b6b';
+            dropZone.style.background = '#fff5f5';
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#ddd';
+            dropZone.style.background = '#fafafa';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#ddd';
+            dropZone.style.background = '#fafafa';
+            
+            selectedFiles = Array.from(e.dataTransfer.files);
+            updateStatus(`Selected ${selectedFiles.length} file(s)`, 'info');
+        });
+
+        async function uploadFiles() {
+            if (selectedFiles.length === 0) {
+                updateStatus('Please select files first!', 'error');
+                return;
+            }
+
+            if (WEB3FORMS_ACCESS_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY_HERE') {
+                updateStatus('Please configure your Web3Forms access key first!', 'error');
+                return;
+            }
+
+            const uploadBtn = document.getElementById('uploadBtn');
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+
+            const results = [];
+
+            for (const file of selectedFiles) {
+                try {
+                    updateStatus(`Uploading ${file.name}...`, 'progress');
+                    
+                    // Upload to File.io (free, anonymous)
+                    const fileUrl = await uploadToFileIO(file);
+                    
+                    // Send notification via Web3Forms
+                    await sendUploadNotification(file.name, fileUrl);
+                    
+                    results.push({
+                        name: file.name,
+                        url: fileUrl,
+                        size: file.size
+                    });
+
+                } catch (error) {
+                    results.push({
+                        name: file.name,
+                        error: error.message
+                    });
+                }
+            }
+
+            displayResults(results);
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Upload to Cloud';
+            selectedFiles = [];
+        }
+
+        async function uploadToFileIO(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('https://file.io', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    return result.link;
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (error) {
+                // Fallback: Try CORS proxy
+                return await uploadToFileIOWithProxy(file);
+            }
+        }
+
+        async function uploadToFileIOWithProxy(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // CORS proxy servers
+            const proxies = [
+                'https://cors-anywhere.herokuapp.com/',
+                'https://api.allorigins.win/raw?url=',
+                'https://cors-proxy.htmldriven.com/?url='
+            ];
+
+            for (const proxy of proxies) {
+                try {
+                    const response = await fetch(proxy + 'https://file.io', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        return result.link;
+                    }
+                } catch (error) {
+                    continue; // Try next proxy
+                }
+            }
+            
+            throw new Error('All upload methods failed - please try again later');
+        }
+
+        async function sendUploadNotification(fileName, fileUrl) {
+            const formData = new FormData();
+            formData.append('access_key', WEB3FORMS_ACCESS_KEY);
+            formData.append('subject', 'New File Upload Notification');
+            formData.append('from_name', 'File Upload Portal');
+            formData.append('message', `
+                A new file has been uploaded to your file portal!
+                
+                File Name: ${fileName}
+                File Size: ${formatFileSize(selectedFiles[0].size)}
+                Upload Time: ${new Date().toLocaleString()}
+                Download Link: ${fileUrl}
+                
+                This link will expire after 1 download (File.io policy).
+            `);
+
+            const response = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send notification');
+            }
+        }
+
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('results');
+            
+            const successfulUploads = results.filter(r => r.url);
+            const failedUploads = results.filter(r => r.error);
+
+            let html = '';
+
+            if (successfulUploads.length > 0) {
+                html += `
+                    <div class="upload-status upload-success">
+                        <h3>✅ Successful Uploads</h3>
+                `;
+                
+                successfulUploads.forEach(file => {
+                    html += `
+                        <div class="link-display">
+                            <strong>${file.name}</strong> (${formatFileSize(file.size)})<br>
+                            <a href="${file.url}" target="_blank" style="color: #4facfe;">${file.url}</a>
+                            <button class="copy-btn" onclick="copyToClipboard('${file.url}')">Copy</button>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+
+            if (failedUploads.length > 0) {
+                html += `
+                    <div class="upload-status upload-error">
+                        <h3>❌ Failed Uploads</h3>
+                `;
+                
+                failedUploads.forEach(file => {
+                    html += `<p>${file.name}: ${file.error}</p>`;
+                });
+                
+                html += `</div>`;
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function updateStatus(message, type) {
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.className = `upload-status upload-${type}`;
+            statusDiv.innerHTML = message;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy link');
+            });
+        }
+
+        // Instructions for GitHub setup
+        console.log('🚀 GitHub File Upload Portal Loaded');
+        console.log('📋 Setup Instructions:');
+        console.log('1. Get Web3Forms access key from https://web3forms.com');
+        console.log('2. Replace WEB3FORMS_ACCESS_KEY in the JavaScript code');
+        console.log('3. Replace YOUR_EMAIL with your actual email');
+        console.log('4. Upload this file to GitHub repository');
+        console.log('5. Enable GitHub Pages in repository settings');
+        console.log('6. Share the GitHub Pages URL with users');
+        console.log('');
+        console.log('🌐 Your users will be able to:');
+        console.log('- Upload files from any device');
+        console.log('- Files go to cloud storage (File.io)');
+        console.log('- You get email notifications with download links');
+        console.log('- Links expire after 1 download (for security)');
+    </script>
+</body>
+</html>
+
