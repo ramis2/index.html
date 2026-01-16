@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 200 Games Download Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .search-box {
+            padding: 15px 25px;
+            font-size: 16px;
+            border: 2px solid #ff6b6b;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            width: 400px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .game-count {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #ff8e8e;
+            font-weight: bold;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 142, 142, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ff8e8e;
+        }
+
+        .game-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(45deg, #ff5a5a, #ff7d7d);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .no-results {
+            text-align: center;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 50px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .search-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .search-box {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 200 Games Download Store</h1>
+        
+        <div class="search-container">
+            <input type="text" class="search-box" id="searchInput" placeholder="Search for games...">
+            <button class="search-btn" onclick="searchGames()">Search</button>
+        </div>
+        
+        <div class="game-count" id="gameCount">Total Games: 200</div>
+        
+        <div class="games-grid" id="gamesGrid">
+            <!-- Games will be dynamically loaded here -->
+        </div>
+        
+        <div class="no-results" id="noResults">
+            No games found matching your search.
+        </div>
+    </div>
+
+    <script>
+        // Game data - 200 games with various genres
+        const games = [
+            { name: "Cyber Runner 2077", description: "Fast-paced cyberpunk endless runner with stunning visuals", version: "v2.1.0", size: "45 MB" },
+            { name: "Dragon's Quest", description: "Epic fantasy RPG with dragons and magic", version: "v1.5.2", size: "128 MB" },
+            { name: "Space Invaders Redux", description: "Classic arcade shooter reimagined for modern era", version: "v3.0.1", size: "32 MB" },
+            { name: "Puzzle Master Pro", description: "Mind-bending puzzle collection with 1000+ levels", version: "v4.2.0", size: "67 MB" },
+            { name: "Racing Thunder", description: "High-speed racing with customizable cars", version: "v2.3.1", size: "89 MB" },
+            { name: "Zombie Survival", description: "Survive the zombie apocalypse with strategy", version: "v1.8.4", size: "156 MB" },
+            { name: "Chess Grandmaster", description: "Ultimate chess experience with AI opponents", version: "v5.1.0", size: "23 MB" },
+            { name: "Tower Defense Elite", description: "Strategic tower defense with epic battles", version: "v2.0.3", size: "78 MB" },
+            { name: "Ninja Warriors", description: "Action-packed ninja combat adventure", version: "v1.9.2", size: "94 MB" },
+            { name: "Farm Life Simulator", description: "Build and manage your dream farm", version: "v3.4.0", size: "112 MB" },
+            { name: "Magic Kingdom", description: "Fantasy kingdom builder with magic spells", version: "v2.5.1", size: "145 MB" },
+            { name: "Street Fighter Arena", description: "Intense fighting game with combo system", version: "v4.0.0", size: "201 MB" },
+            { name: "Adventure Island", description: "Explore mysterious islands full of treasures", version: "v1.7.3", size: "87 MB" },
+            { name: "Word Quest", description: "Vocabulary adventure game for word lovers", version: "v2.2.2", size: "34 MB" },
+            { name: "Basketball Stars", description: "Realistic basketball simulation game", version: "v3.1.1", size: "178 MB" },
+            { name: "Monster Hunter X", description: "Hunt legendary monsters in vast world", version: "v2.8.0", size: "234 MB" },
+            { name: "Cooking Master", description: "Become a master chef in cooking challenges", version: "v1.6.5", size: "56 MB" },
+            { name: "Mystery Detective", description: "Solve crimes in noir detective story", version: "v2.4.2", size: "91 MB" },
+            { name: "Air Combat Heroes", description: "Dogfighting in the skies with WW2 planes", version: "v3.3.0", size: "167 MB" },
+            { name: "Jewel Match Saga", description: "Match-3 puzzle with beautiful gems", version: "v5.2.1", size: "43 MB" },
+            { name: "Robot Wars", description: "Build and battle with customizable robots", version: "v2.1.3", size: "189 MB" },
+            { name: "Mountain Climber", description: "Extreme mountain climbing simulation", version: "v1.4.0", size: "76 MB" },
+            { name: "Pirate's Treasure", description: "Sail the seas searching for hidden treasure", version: "v2.7.2", size: "98 MB" },
+            { name: "Music Maker Studio", description: "Create and mix your own music tracks", version: "v4.1.0", size: "134 MB" },
+            { name: "Alien Invasion", description: "Defend Earth from alien invaders", version: "v3.5.3", size: "156 MB" },
+            { name: "Golf Pro Tour", description: "Professional golf simulation with tournaments", version: "v2.9.1", size: "145 MB" },
+            { name: "Dino World", description: "Jurassic park builder with dinosaurs", version: "v1.8.0", size: "201 MB" },
+            { name: "Superhero City", description: "Save the city as a superhero with powers", version: "v2.6.2", size: "167 MB" },
+            { name: "Card Battle Masters", description: "Strategic card game with deck building", version: "v3.2.0", size: "67 MB" },
+            { name: "Ski Resort Tycoon", description: "Build and manage a ski resort", version: "v2.0.4", size: "89 MB" },
+            { name: "Dark Souls Mobile", description: "Challenging action RPG with boss fights", version: "v1.9.1", size: "212 MB" },
+            { name: "Bubble Pop Mania", description: "Addictive bubble popping puzzle game", version: "v4.3.2", size: "28 MB" },
+            { name: "Wild West Gunslinger", description: "Duel in the wild west as a gunslinger", version: "v2.4.0", size: "78 MB" },
+            { name: "Space Strategy", description: "4X space strategy game with empires", version: "v3.6.1", size: "134 MB" },
+            { name: "Dance Revolution", description: "Rhythm dancing game with hit songs", version: "v5.0.0", size: "245 MB" },
+            { name: "Magic Card Tricks", description: "Learn and perform magic card tricks", version: "v1.5.3", size: "45 MB" },
+            { name: "City Traffic Control", description: "Manage traffic in busy city intersections", version: "v2.3.2", size: "56 MB" },
+            { name: "Fantasy Quest RPG", description: "Epic fantasy role-playing adventure", version: "v4.4.1", size: "189 MB" },
+            { name: "Pool Master Pro", description: "Realistic pool billiards simulation", version: "v3.1.2", size: "87 MB" },
+            { name: "Jungle Adventure", description: "Survive in the dangerous jungle", version: "v1.7.4", size: "98 MB" },
+            { name: "Math Genius", description: "Educational math game for all ages", version: "v2.8.3", size: "23 MB" },
+            { name: "Stealth Ninja", description: "Stealth action in feudal Japan", version: "v2.2.1", size: "112 MB" },
+            { name: "Racing Moto GP", description: "Motorcycle racing championship", version: "v3.4.2", size: "156 MB" },
+            { name: "Empire Builder", description: "Build and expand your empire", version: "v4.0.3", size: "167 MB" },
+            { name: "Zombie Tower Defense", description: "Defend against zombie waves", version: "v2.5.4", size: "67 MB" },
+            { name: "Ice Hockey Pro", description: "Professional ice hockey simulation", version: "v3.2.3", size: "134 MB" },
+            { name: "Memory Match", description: "Test your memory with card matching", version: "v1.6.1", size: "34 MB" },
+            { name: "Samurai Warrior", description: "Honor and combat as a samurai", version: "v2.7.0", size: "145 MB" },
+            { name: "Space Exploration", description: "Explore the galaxy and discover planets", version: "v3.8.2", size: "178 MB" },
+            { name: "Tetris Classic", description: "The timeless block-stacking puzzle", version: "v5.1.2", size: "28 MB" },
+            { name: "Wrestling Champions", description: "Professional wrestling with story mode", version: "v4.2.3", size: "201 MB" },
+            { name: "Garden Designer", description: "Design beautiful virtual gardens", version: "v1.9.4", size: "56 MB" },
+            { name: "Archery Master", description: "Precision archery target shooting", version: "v2.6.3", size: "76 MB" },
+            { name: "Mafia Wars", description: "Organized crime strategy game", version: "v3.3.4", size: "89 MB" },
+            { name: "Color Match", description: "Color theory puzzle game", version: "v2.1.5", size: "43 MB" },
+            { name: "Submarine Commander", description: "Underwater naval warfare", version: "v4.5.0", size: "123 MB" },
+            { name: "Fantasy Chess", description: "Chess with magical fantasy pieces", version: "v3.0.2", size: "45 MB" },
+            { name: "Parkour Runner", description: "Urban parkour free-running game", version: "v2.4.4", size: "98 MB" },
+            { name: "Battle Royale Mobile", description: "100-player battle royale", version: "v5.3.1", size: "267 MB" },
+            { name: "Music Rhythm Tap", description: "Tap to the beat of the music", version: "v4.1.3", size: "156 MB" },
+            { name: "Castle Siege", description: "Medieval castle warfare strategy", version: "v3.7.0", size: "134 MB" },
+            { name: "Virtual Pet Care", description: "Raise and care for virtual pets", version: "v2.8.4", size: "67 MB" },
+            { name: "Boxing Champion", description: "Rise through boxing ranks", version: "v3.5.2", size: "112 MB" },
+            { name: "Word Search Pro", description: "Find hidden words in puzzles", version: "v2.3.5", size: "34 MB" },
+            { name: "Alien Shooter", description: "Shoot aliens in space stations", version: "v4.6.1", size: "87 MB" },
+            { name: "Fashion Designer", description: "Create fashion collections", version: "v2.0.5", size: "78 MB" },
+            { name: "Mountain Bike Pro", description: "Extreme mountain biking trails", version: "v3.4.3", size: "145 MB" },
+            { name: "Magic Puzzle", description: "Puzzle game with magical effects", version: "v5.2.4", size: "56 MB" },
+            { name: "Airport Manager", description: "Manage busy international airport", version: "v2.9.2", size: "98 MB" },
+            { name: "Dragon Battle", description: "Epic dragon combat adventure", version: "v4.3.0", size: "189 MB" },
+            { name: "Number Crunch", description: "Mathematical number puzzle game", version: "v1.7.5", size: "23 MB" },
+            { name: "Spy Mission", description: "Undercover spy stealth missions", version: "v3.1.4", size: "134 MB" },
+            { name: "Basketball Manager", description: "Manage basketball team to victory", version: "v2.6.4", size: "89 MB" },
+            { name: "Jewel Thief", description: "Steal jewels in heist missions", version: "v2.2.3", size: "76 MB" },
+            { name: "Space Colony", description: "Build colony on distant planet", version: "v4.7.2", size: "167 MB" },
+            { name: "Tennis Pro", description: "Professional tennis tournament", version: "v3.8.3", size: "123 MB" },
+            { name: "Logic Master", description: "Challenge your logical thinking", version: "v2.4.5", size: "45 MB" },
+            { name: "Viking Warrior", description: "Norse mythology adventure", version: "v3.5.3", size: "156 MB" },
+            { name: "Car Mechanic Sim", description: "Repair and customize cars", version: "v2.1.6", size: "98 MB" },
+            { name: "Ocean Explorer", description: "Deep sea exploration adventure", version: "v4.8.1", size: "178 MB" },
+            { name: "Rhythm Dance", description: "Dance to various music genres", version: "v5.4.2", size: "234 MB" },
+            { name: "Medieval Knights", description: "Knights and castles warfare", version: "v3.2.4", size: "134 MB" },
+            { name: "Photo Hunt", description: "Find differences in photos", version: "v1.8.2", size: "56 MB" },
+            { name: "Skydiving Simulator", description: "Experience skydiving thrills", version: "v2.7.5", size: "87 MB" },
+            { name: "Candy Crush Saga", description: "Match colorful candies", version: "v6.1.3", size: "67 MB" },
+            { name: "Robot Builder", description: "Build and program robots", version: "v3.6.2", size: "145 MB" },
+            { name: "Haunted House", description: "Explore scary haunted mansion", version: "v2.3.6", size: "98 MB" },
+            { name: "Soccer Stars", description: "Play soccer with world teams", version: "v4.9.0", size: "189 MB" },
+            { name: "Memory Trainer", description: "Improve your memory skills", version: "v2.5.5", size: "34 MB" },
+            { name: "Wild Safari", description: "Photograph African wildlife", version: "v3.4.4", size: "112 MB" },
+            { name: "Bridge Constructor", description: "Engineer bridges that hold", version: "v2.8.5", size: "76 MB" },
+            { name: "Star Wars Mobile", description: "Star Wars universe adventure", version: "v5.5.1", size: "245 MB" },
+            { name: "Paint Studio", description: "Digital painting and drawing", version: "v4.2.4", size: "89 MB" },
+            { name: "Laser Tag Pro", description: "Futuristic laser tag battles", version: "v3.3.5", size: "67 MB" },
+            { name: "Chess Tactics", description: "Learn chess strategies", version: "v2.6.5", size: "45 MB" },
+            { name: "Desert Race", description: "Race through desert dunes", version: "v3.9.2", size: "134 MB" },
+            { name: "Ninja Training", description: "Train to become a ninja master", version: "v2.4.6", size: "98 MB" },
+            { name: "Virtual Reality", description: "VR experiences on mobile", version: "v4.0.4", size: "156 MB" },
+            { name: "Ice Skating", description: "Figure skating championships", version: "v3.1.5", size: "87 MB" },
+            { name: "Code Breaker", description: "Cryptography puzzle game", version: "v2.7.6", size: "56 MB" },
+            { name: "War Strategy", description: "Military strategy warfare", version: "v5.6.2", size: "167 MB" },
+            { name: "Garden Paradise", description: "Create paradise gardens", version: "v3.5.4", size: "76 MB" },
+            { name: "Time Traveler", description: "Travel through different eras", version: "v4.1.5", size: "189 MB" },
+            { name: "Rock Band", description: "Form band and play concerts", version: "v3.2.5", size: "145 MB" },
+            { name: "Pirate Ship Battle", description: "Naval warfare with pirates", version: "v2.9.3", size: "123 MB" },
+            { name: "Brain Training", description: "Exercise your brain daily", version: "v6.2.4", size: "45 MB" },
+            { name: "Forest Adventure", description: "Explore magical forest realms", version: "v3.6.3", size: "98 MB" },
+            { name: "Disco Fever", description: "Disco dancing and music", version: "v4.3.3", size: "156 MB" },
+            { name: "Knight's Honor", description: "Medieval knight's quest", version: "v2.5.6", size: "134 MB" },
+            { name: "Weather Control", description: "Control weather patterns", version: "v3.8.4", size: "67 MB" },
+            { name: "Magic Academy", description: "Learn magic at wizard school", version: "v5.7.1", size: "112 MB" },
+            { name: "Car Parking Pro", description: "Master parallel parking", version: "v2.6.6", size: "89 MB" },
+            { name: "Ancient Egypt", description: "Explore pyramids and tombs", version: "v4.4.2", size: "178 MB" },
+            { name: "Jazz Club", description: "Manage jazz music club", version: "v3.4.5", size: "98 MB" },
+            { name: "Monster Creator", description: "Create and battle monsters", version: "v2.2.4", size: "87 MB" },
+            { name: "Sky Pirates", description: "Airship pirate adventures", version: "v3.9.3", size: "167 MB" },
+            { name: "Logic Gates", description: "Learn digital logic", version: "v2.8.6", size: "34 MB" },
+            { name: "Surfing Pro", description: "Ride the perfect wave", version: "v4.5.3", size: "123 MB" },
+            { name: "Medieval Market", description: "Trade in medieval times", version: "v3.7.1", size: "76 MB" },
+            { name: "Alien Language", description: "Decode alien messages", version: "v2.4.7", size: "56 MB" },
+            { name: "Circus Manager", description: "Run your own circus", version: "v5.8.2", size: "98 MB" },
+            { name: "Quantum Physics", description: "Learn quantum mechanics", version: "v4.2.5", size: "145 MB" },
+            { name: "Wild West Town", description: "Build wild west settlement", version: "v3.3.6", size: "134 MB" },
+            { name: "Memory Palace", description: "Build memory techniques", version: "v2.9.4", size: "45 MB" },
+            { name: "Robot Fighting", description: "Giant robot battles", version: "v6.3.1", size: "189 MB" },
+            { name: "Ocean Cleanup", description: "Clean oceans save planet", version: "v3.5.5", size: "87 MB" },
+            { name: "Star Gazing", description: "Explore constellations", version: "v4.6.2", size: "67 MB" },
+            { name: "Time Management", description: "Master time management", version: "v2.7.7", size: "34 MB" },
+            { name: "Fantasy Football", description: "Manage fantasy football team", version: "v5.9.1", size: "112 MB" },
+            { name: "Cave Exploration", description: "Explore deep cave systems", version: "v3.8.5", size: "98 MB" },
+            { name: "Music Theory", description: "Learn music fundamentals", version: "v4.3.4", size: "76 MB" },
+            { name: "Vampire Hunter", description: "Hunt vampires in gothic world", version: "v2.6.7", size: "156 MB" },
+            { name: "Eco System", description: "Balance ecosystem survival", version: "v3.4.6", size: "89 MB" },
+            { name: "Magic Tricks", description: "Learn street magic tricks", version: "v2.3.7", size: "56 MB" },
+            { name: "Sand Castle", description: "Build epic sand castles", version: "v5.0.5", size: "45 MB" },
+            { name: "Language Learning", description: "Learn new languages fast", version: "v6.4.2", size: "123 MB" },
+            { name: "Storm Chaser", description: "Chase tornadoes and storms", version: "v4.7.3", size: "167 MB" },
+            { name: "Ant Colony", description: "Manage ant colony survival", version: "v3.9.4", size: "67 MB" },
+            { name: "Retro Arcade", description: "Classic arcade game collection", version: "v2.8.7", size: "98 MB" },
+            { name: "Space Station", description: "Manage international space station", version: "v5.1.4", size: "145 MB" },
+            { name: "Dream Journal", description: "Record and analyze dreams", version: "v2.5.7", size: "34 MB" },
+            { name: "Wildlife Rescue", description: "Rescue endangered animals", version: "v4.4.3", size: "112 MB" },
+            { name: "Chemistry Lab", description: "Virtual chemistry experiments", version: "v3.6.4", size: "87 MB" },
+            { name: "Mountain Rescue", description: "Rescue climbers in mountains", version: "v2.9.5", size: "134 MB" },
+            { name: "Art Gallery", description: "Curate famous art collections", version: "v6.5.1", size: "76 MB" },
+            { name: "Solar System", description: "Explore our solar system", version: "v4.8.3", size: "189 MB" },
+            { name: "Bee Keeper", description: "Manage bee hives and honey", version: "v3.5.6", size: "98 MB" },
+            { name: "Logic Puzzles", description: "Advanced logic puzzle collection", version: "v5.2.5", size: "56 MB" },
+            { name: "Ghost Hunter", description: "Hunt ghosts in haunted locations", version: "v2.6.8", size: "156 MB" },
+            { name: "Weather Forecast", description: "Predict weather patterns", version: "v4.0.5", size: "45 MB" },
+            { name: "Marathon Runner", description: "Train for marathon races", version: "v3.7.2", size: "123 MB" },
+            { name: "Crystal Mining", description: "Mine precious crystals", version: "v2.4.8", size: "67 MB" },
+            { name: "Virtual Zoo", description: "Build and manage zoo", version: "v5.9.2", size: "145 MB" },
+            { name: "Paper Airplane", description: "Design flying paper planes", version: "v3.8.6", size: "34 MB" },
+            { name: "Ancient Rome", description: "Build Roman civilization", version: "v4.5.4", size: "178 MB" },
+            { name: "Bird Watching", description: "Identify bird species", version: "v2.7.8", size: "87 MB" },
+            { name: "Cake Decorating", description: "Decorate beautiful cakes", version: "v6.6.1", size: "76 MB" },
+            { name: "DNA Explorer", description: "Explore genetic codes", version: "v3.9.5", size: "112 MB" },
+            { name: "Treasure Diving", description: "Dive for underwater treasure", version: "v5.3.3", size: "134 MB" },
+            { name: "Meditation Guide", description: "Learn meditation techniques", version: "v2.5.8", size: "45 MB" },
+            { name: "Comic Creator", description: "Create digital comics", version: "v4.6.3", size: "98 MB" },
+            { name: "Wind Energy", description: "Build wind farms", version: "v3.4.7", size: "89 MB" },
+            { name: "Origami Master", description: "Learn paper folding art", version: "v2.2.5", size: "56 MB" },
+            { name: "Star Trek Mobile", description: "Star Trek universe game", version: "v6.7.1", size: "234 MB" },
+            { name: "Pottery Studio", description: "Create ceramic pottery", version: "v4.1.6", size: "67 MB" },
+            { name: "Meteor Shower", description: "Observe meteor showers", version: "v3.6.5", size: "123 MB" },
+            { name: "Yoga Trainer", description: "Practice yoga poses", version: "v5.4.4", size: "87 MB" },
+            { name: "Gold Mining", description: "Mine for gold and gems", version: "v2.8.8", size: "156 MB" },
+            { name: "Speed Reading", description: "Improve reading speed", version: "v4.7.4", size: "34 MB" },
+            { name: "Butterfly Garden", description: "Raise beautiful butterflies", version: "v3.5.7", size: "76 MB" },
+            { name: "Astronomy Guide", description: "Learn about stars planets", version: "v6.8.1", size: "145 MB" },
+            { name: "Kite Flying", description: "Fly kites in various winds", version: "v2.6.9", size: "45 MB" },
+            { name: "Oceanography", description: "Study ocean science", version: "v5.0.6", size: "112 MB" },
+            { name: "Calligraphy Art", description: "Learn beautiful writing", version: "v4.2.6", size: "89 MB" },
+            { name: "Solar Power", description: "Harness solar energy", version: "v3.7.3", size: "98 MB" },
+            { name: "Geography Quiz", description: "Test world geography", version: "v2.9.6", size: "56 MB" },
+            { name: "Ice Sculpture", description: "Create ice sculptures", version: "v6.9.1", size: "67 MB" },
+            { name: "Volcano Explorer", description: "Study volcanic activity", version: "v4.8.4", size: "167 MB" },
+            { name: "Mushroom Hunter", description: "Find edible mushrooms", version: "v3.8.7", size: "87 MB" },
+            { name: "Speed Cubing", description: "Solve Rubik's cubes fast", version: "v2.4.9", size: "34 MB" },
+            { name: "Marine Biology", description: "Study ocean creatures", version: "v5.5.2", size: "134 MB" },
+            { name: "Fireworks Show", description: "Create fireworks displays", version: "v4.3.5", size: "76 MB" },
+            { name: "Botanical Garden", description: "Design plant gardens", version: "v3.6.6", size: "123 MB" },
+            { name: "Meteor Impact", description: "Study asteroid impacts", version: "v6.0.7", size: "98 MB" },
+            { name: "Hiking Guide", description: "Plan hiking adventures", version: "v2.7.9", size: "56 MB" },
+            { name: "Crystal Healing", description: "Learn crystal therapy", version: "v5.1.5", size: "45 MB" },
+            { name: "Solar Eclipse", description: "Observe solar eclipses", version: "v4.5.5", size: "189 MB" },
+            { name: "Herb Garden", description: "Grow medicinal herbs", version: "v3.9.6", size: "67 MB" },
+            { name: "Aurora Borealis", description: "Northern lights simulator", version: "v2.8.9", size: "112 MB" },
+            { name: "Stone Skipping", description: "Perfect stone skipping", version: "v6.10.1", size: "34 MB" },
+            { name: "Permaculture", description: "Sustainable farming design", version: "v4.6.4", size: "145 MB" },
+            { name: "Cloud Watching", description: "Identify cloud formations", version: "v3.4.8", size: "87 MB" },
+            { name: "Rainbow Maker", description: "Create rainbow prisms", version: "v5.2.6", size: "76 MB" },
+            { name: "Tide Pool", description: "Explore tide pool life", version: "v2.5.9", size: "98 MB" },
+            { name: "Zen Garden", description: "Create peaceful zen gardens", version: "v4.7.5", size: "56 MB" },
+            { name: "Lightning Storm", description: "Study lightning phenomena", version: "v3.7.4", size: "134 MB" },
+            { name: "Composting", description: "Learn composting methods", version: "v6.11.1", size: "45 MB" },
+            { name: "Star Navigation", description: "Navigate by stars", version: "v5.3.4", size: "123 MB" },
+            { name: "Fossil Hunting", description: "Find ancient fossils", version: "v4.0.6", size: "67 MB" },
+            { name: "Bioluminescence", description: "Study glowing organisms", version: "v3.8.8", size: "156 MB" },
+            { name: "Water Cycle", description: "Explore water cycle", version: "v2.9.7", size: "89 MB" },
+            { name: "Seed Collection", description: "Collect plant seeds", version: "v6.12.1", size: "34 MB" },
+            { name: "Gravity Test", description: "Experiment with gravity", version: "v4.8.5", size: "112 MB" },
+            { name: "Leaf Identification", description: "Identify tree species", version: "v3.5.8", size: "76 MB" },
+            { name: "Moon Phases", description: "Study lunar cycles", version: "v5.4.5", size: "98 MB" },
+            { name: "Rock Collection", description: "Collect mineral samples", version: "v2.6.10", size: "45 MB" },
+            { name: "Pollination", description: "Study plant pollination", version: "v6.13.1", size: "145 MB" },
+            { name: "Wind Patterns", description: "Analyze wind currents", version: "v4.3.6", size: "87 MB" },
+            { name: "Soil Science", description: "Study soil composition", version: "v3.9.7", size: "67 MB" },
+            { name: "Sun Dial", description: "Build ancient time devices", version: "v2.7.10", size: "34 MB" },
+            { name: "Erosion Study", description: "Study erosion effects", version: "v5.5.3", size: "123 MB" },
+            { name: "Natural Disasters", description: "Learn about disasters", version: "v4.6.5", size: "156 MB" },
+            { name: "Climate Change", description: "Understand climate science", version: "v3.6.7", size: "98 MB" },
+            { name: "Renewable Energy", description: "Explore green energy", version: "v6.14.1", size: "76 MB" },
+            { name: "Carbon Footprint", description: "Reduce carbon emissions", version: "v5.0.7", size: "134 MB" },
+            { name: "Green Building", description: "Sustainable architecture", version: "v4.4.4", size: "89 MB" },
+            { name: "Organic Farming", description: "Chemical-free farming", version: "v2.8.10", size: "56 MB" },
+            { name: "Water Conservation", description: "Save water resources", version: "v3.7.5", size: "45 MB" },
+            { name: "Biodiversity", description: "Protect species diversity", version: "v6.15.1", size: "112 MB" },
+            { name: "Recycling Center", description: "Manage recycling plant", version: "v5.1.6", size: "67 MB" },
+            { name: "Eco Tourism", description: "Sustainable travel guide", version: "v4.7.6", size: "145 MB" },
+            { name: "Green Technology", description: "Environmental tech solutions", version: "v3.8.9", size: "87 MB" },
+            { name: "Wildlife Corridor", description: "Connect habitats", version: "v2.9.8", size: "98 MB" },
+            { name: "Clean Energy", description: "Promote clean energy", version: "v6.16.1", size: "76 MB" },
+            { name: "Sustainable City", description: "Design eco-friendly cities", version: "v5.2.7", size: "134 MB" },
+            { name: "Nature Reserve", description: "Manage protected areas", version: "v4.5.6", size: "56 MB" },
+            { name: "Greenhouse Gas", description: "Track emissions data", version: "v3.4.9", size: "123 MB" },
+            { name: "Environmental Law", description: "Learn eco regulations", version: "v2.5.10", size: "45 MB" },
+            { name: "Conservation", description: "Protect natural resources", version: "v6.17.1", size: "189 MB" }
+        ];
+
+        let currentGames = [...games];
+
+        function displayGames(gamesToDisplay) {
+            const gamesGrid = document.getElementById('gamesGrid');
+            const noResults = document.getElementById('noResults');
+            const gameCount = document.getElementById('gameCount');
+            
+            gamesGrid.innerHTML = '';
+            
+            if (gamesToDisplay.length === 0) {
+                gamesGrid.style.display = 'none';
+                noResults.style.display = 'block';
+                gameCount.textContent = 'Total Games: 0';
+            } else {
+                gamesGrid.style.display = 'grid';
+                noResults.style.display = 'none';
+                gameCount.textContent = `Total Games: ${gamesToDisplay.length}`;
+                
+                gamesToDisplay.forEach((game, index) => {
+                    const gameCard = document.createElement('div');
+                    gameCard.className = 'game-card';
+                    gameCard.innerHTML = `
+                        <div class="game-title">${game.name}</div>
+                        <div class="game-description">${game.description}</div>
+                        <div class="game-info">
+                            <span>Version: ${game.version}</span>
+                            <span>Size: ${game.size}</span>
+                        </div>
+                        <button class="download-btn" onclick="downloadGame('${game.name}')">Download Now</button>
+                    `;
+                    gamesGrid.appendChild(gameCard);
+                });
+            }
+        }
+
+        function searchGames() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (searchTerm === '') {
+                currentGames = [...games];
+            } else {
+                currentGames = games.filter(game => 
+                    game.name.toLowerCase().includes(searchTerm) || 
+                    game.description.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            displayGames(currentGames);
+        }
+
+        function downloadGame(gameName) {
+            // Simulate download with a delay and visual feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            
+            button.textContent = 'Downloading...';
+            button.disabled = true;
+            button.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                button.textContent = 'Download Complete!';
+                button.style.background = 'linear-gradient(45deg, #4CAF50, #66BB6A)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                    button.style.opacity = '1';
+                    button.style.background = 'linear-gradient(45deg, #ff6b6b, #ff8e8e)';
+                    
+                    // Show success message
+                    alert(`🎮 ${gameName} has been downloaded successfully!\n\nThe game is now ready to install on your device.`);
+                }, 2000);
+            }, 3000);
+        }
+
+        // Allow search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchGames();
+            }
+        });
+
+        // Initial display of all games
+        displayGames(games);
+    </script>
+</body>
+</html>
+
