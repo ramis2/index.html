@@ -574,106 +574,250 @@
                 // Create a new JSZip instance
                 const zip = new JSZip();
                 
-                // Create game files content
+                // Create proper game files with correct formatting
+                const timestamp = new Date().toISOString();
+                const safeGameName = gameName.replace(/[^a-zA-Z0-9]/g, '-');
+                
+                // Create game files with proper content
                 const gameFiles = {
                     "README.txt": `${gameName} - Game Installation Guide
-=====================================
+===============================================
 Game: ${gameName}
 Version: ${version}
 Size: ${size}
+Downloaded: ${timestamp}
 
-Installation Instructions:
+INSTALLATION INSTRUCTIONS:
 1. Extract all files from this ZIP archive
-2. Run setup.exe to install the game
-3. Follow the installation wizard
-4. Launch the game from your desktop
+2. Double-click setup.exe to start installation
+3. Follow the installation wizard prompts
+4. Launch the game from your desktop shortcut
 
-System Requirements:
-- Windows 10/11 or macOS 10.15+
-- 4GB RAM minimum
+SYSTEM REQUIREMENTS:
+- Windows 10/11 (64-bit) or macOS 10.15+
+- 4GB RAM minimum (8GB recommended)
 - 2GB free disk space
-- DirectX 11 compatible graphics
+- DirectX 11 compatible graphics card
+- Internet connection for activation
 
-Support:
-For technical support, visit our website or contact support@gamestore.com
+FILES INCLUDED:
+- setup.exe - Main installer
+- game.dll - Game library
+- config.ini - Configuration settings
+- assets/ - Game assets folder
+- license.txt - License agreement
 
-Enjoy playing ${gameName}!`,
+SUPPORT:
+For technical support, email: support@gamestore.com
+Website: https://gamestore.com/support
 
-                    "game.exe": `[GAME_EXECUTABLE]
-Game: ${gameName}
-Version: ${version}
-Size: ${size}
-Status: Ready to Install
+Enjoy playing ${gameName}!
 
-This is a demo executable file.
-In a real implementation, this would be the actual game executable.`,
+© 2024 Game Store. All rights reserved.`,
 
-                    "config.ini": `[GameSettings]
+                    "setup.exe": `[${safeGameName}_EXECUTABLE]
+VERSION=${version}
+SIZE=${size}
+BUILD_DATE=${timestamp}
+STATUS=READY_TO_INSTALL
+
+GAME_INFORMATION:
+- Name: ${gameName}
+- Version: ${version}
+- File Size: ${size}
+- Platform: Windows/macOS
+- License: Demo Version
+
+INSTALLATION:
+This executable will guide you through the installation process.
+Please close all other applications before proceeding.
+
+SYSTEM_CHECK:
+✓ Operating System: Compatible
+✓ Available Space: Sufficient
+✓ Permissions: Admin rights required
+
+CONTACT_SUPPORT:
+If you encounter issues, contact support@gamestore.com
+
+[END_OF_EXECUTABLE_HEADER]`,
+
+                    "game.dll": `[GAME_LIBRARY_${safeGameName.toUpperCase()}]
+VERSION=${version}
+ARCHITECTURE=x64
+COMPRESSION=LZ4
+ENCRYPTION=AES-256
+
+GAME_ENGINE:
+- Renderer: DirectX 11/OpenGL 4.5
+- Physics: Bullet Physics 3.0
+- Audio: FMOD Studio
+- Networking: ENET 2.0
+- Input: Raw Input/XInput
+
+DEPENDENCIES:
+- Visual C++ Redistributable 2019
+- .NET Framework 4.8
+- DirectX Runtime June 2023
+
+COMPATIBILITY:
+This DLL is compatible with Windows 10/11 and macOS 10.15+
+
+[LIBRARY_SIGNATURE]
+${timestamp}
+${safeGameName}_GAME_LIBRARY_v${version.replace('v', '')}`,
+
+                    "config.ini": `[GameConfig]
 GameName=${gameName}
 Version=${version}
+GraphicsQuality=High
 Resolution=1920x1080
-Graphics=High
-Sound=Enabled
-Language=English`,
+Fullscreen=true
+VSync=true
+AntiAliasing=4xMSAA
+TextureQuality=Ultra
+ShadowQuality=High
+ParticleEffects=true
 
-                    "license.txt": `LICENSE AGREEMENT
-================
+[Audio]
+MasterVolume=85
+MusicVolume=70
+SFXVolume=90
+VoiceVolume=100
+AudioQuality=High
 
-This software is provided as a demo version for educational purposes.
+[Controls]
+MouseSensitivity=50
+InvertY=false
+KeyBindings=Default
+GamepadSupport=true
 
+[Network]
+ServerRegion=Auto
+LatencyOptimization=true
+MaxFPS=60
+
+[Debug]
+Logging=false
+Console=false`,
+
+                    "license.txt": `SOFTWARE LICENSE AGREEMENT
+==========================
 Game: ${gameName}
 Version: ${version}
+License Type: Demo Version
 
-Copyright © 2024 Game Store. All rights reserved.
+IMPORTANT - READ CAREFULLY:
+This is a demonstration version of the game download system.
+The files contained herein are for educational and demonstration purposes.
 
-This is a demonstration of download functionality.
-Actual game files would be provided by the game developers.`,
+LICENSE TERMS:
+1. This software is provided "as-is" without warranty of any kind
+2. You may use this software for personal, non-commercial purposes
+3. Redistribution is permitted with proper attribution
+4. The software may contain demo/sample content only
 
-                    "assets/info.txt": `GAME ASSETS
-===========
-This folder contains game assets including:
-- Textures and graphics
-- Sound effects and music
-- Level designs
-- Character models
+DISCLAIMER:
+This is not a complete game but rather a demonstration of:
+- Download functionality
+- ZIP file creation
+- Game store interface
 
-Total Asset Size: ${size}`
+FILES INCLUDED:
+- README.txt (Installation guide)
+- setup.exe (Demo installer)
+- game.dll (Game library)
+- config.ini (Configuration)
+- assets/ (Sample assets)
+
+SUPPORT CONTACT:
+Email: support@gamestore.com
+Website: https://gamestore.com/demo
+
+DOWNLOADED: ${timestamp}
+
+© 2024 Game Store Demo System. All rights reserved.`,
+
+                    "assets/info.txt": `GAME ASSETS INFORMATION
+=======================
+Game: ${gameName}
+Version: ${version}
+Total Size: ${size}
+
+ASSET CONTENTS:
+This folder would typically contain:
+□ Textures and sprites (.png, .jpg, .dds)
+□ 3D models (.obj, .fbx, .dae)
+□ Audio files (.wav, .mp3, .ogg)
+□ Level designs (.json, .xml)
+□ Particle effects (.pfx)
+□ UI elements (.svg, .psd)
+□ Fonts and typography (.ttf, .otf)
+
+SAMPLE ASSET STRUCTURE:
+/assets/
+  /textures/
+  /models/
+  /audio/
+  /levels/
+  /ui/
+  /fonts/
+
+NOTE: This demo contains asset information only.
+Actual game assets would be included in a full version.
+
+Downloaded: ${timestamp}`
                 };
 
-                // Add files to ZIP with progress simulation
+                // Add files to ZIP with proper timing
                 const fileNames = Object.keys(gameFiles);
                 for (let i = 0; i < fileNames.length; i++) {
                     const fileName = fileNames[i];
                     const content = gameFiles[fileName];
                     
+                    // Add file to ZIP
                     zip.file(fileName, content);
                     
-                    // Update progress
+                    // Update progress gradually
                     const progress = ((i + 1) / fileNames.length) * 100;
                     progressFill.style.width = progress + '%';
                     
-                    // Small delay for realistic feel
-                    await new Promise(resolve => setTimeout(resolve, 200));
+                    // Small delay for realistic processing feel
+                    await new Promise(resolve => setTimeout(resolve, 150));
                 }
 
-                // Generate the ZIP file
-                button.textContent = 'Finalizing...';
+                // Finalize ZIP creation with proper compression
+                button.textContent = 'Compressing...';
+                
+                // Generate the ZIP file with proper settings
                 const zipContent = await zip.generateAsync({ 
                     type: "blob",
                     compression: "DEFLATE",
-                    compressionOptions: { level: 6 }
+                    compressionOptions: { level: 6 },
+                    mimeType: "application/zip",
+                    platform: "DOS" // Better Windows compatibility
                 });
 
-                // Create download link
+                // Create download with proper filename
+                const cleanFileName = `${safeGameName.toLowerCase()}-v${version.replace('v', '')}-game.zip`;
+                
+                // Create and trigger download
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(zipContent);
-                link.download = `${gameName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}-game.zip`;
+                link.download = cleanFileName;
+                link.style.display = 'none';
                 document.body.appendChild(link);
+                
+                // Trigger download
                 link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(link.href);
+                
+                // Cleanup
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                }, 100);
 
-                // Update button text and reset
+                // Success feedback
                 button.textContent = 'Downloaded!';
                 button.style.background = 'linear-gradient(45deg, #4CAF50, #66BB6A)';
                 
@@ -684,7 +828,7 @@ Total Asset Size: ${size}`
                     button.disabled = false;
                     button.style.opacity = '1';
                     button.style.background = 'linear-gradient(45deg, #ff6b6b, #ff8e8e)';
-                }, 2000);
+                }, 2500);
                 
             } catch (error) {
                 console.error('Error creating ZIP:', error);
