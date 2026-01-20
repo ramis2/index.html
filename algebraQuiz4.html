@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algebra Quiz - Grades 5-9 | English & Afaan Oromo</title>
+    <style>
+        /* Keep all the previous CSS styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #4a6fa5 0%, #2c5530 50%, #f8f9fa 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #2c5530, #4a6fa5);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .algebra-icon {
+            font-size: 2rem;
+            opacity: 0.9;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+        
+        .grade-selector, .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .grade-btn, .lang-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        
+        .grade-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            min-width: 80px;
+        }
+        
+        .grade-btn.active {
+            background: #ffc107;
+            color: #333;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .grade-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .lang-btn {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            min-width: 160px;
+        }
+        
+        .lang-btn.active {
+            background: #28a745;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .lang-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        #quiz-content {
+            padding: 30px;
+        }
+        
+        .progress {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        #question-counter {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #4a6fa5;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #2c5530, #4a6fa5);
+            width: 10%;
+            transition: width 0.5s ease;
+        }
+        
+        #grade-display {
+            font-size: 1rem;
+            color: #6c757d;
+            text-align: right;
+        }
+        
+        .quiz-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        
+        .question-box {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 5px solid #4a6fa5;
+        }
+        
+        #question-text {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #2c5530;
+            line-height: 1.4;
+        }
+        
+        .math-expression {
+            font-size: 1.3rem;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 2px dashed #dee2e6;
+            font-family: 'Cambria Math', serif;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .option {
+            padding: 15px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            border-color: #4a6fa5;
+            background: #f0f7ff;
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            background: #ffc107;
+            border-color: #ff9800;
+            color: #333;
+        }
+        
+        .option.correct {
+            background: #28a745;
+            border-color: #218838;
+            color: white;
+        }
+        
+        .option.incorrect {
+            background: #dc3545;
+            border-color: #c82333;
+            color: white;
+        }
+        
+        .hint-box {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid #ffc107;
+            display: none;
+        }
+        
+        .hint-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .sound-info {
+            background: #d1ecf1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #0c5460;
+            border-left: 5px solid #17a2b8;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .controls button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        #hint-btn {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        #hint-btn:hover {
+            background: #e0a800;
+        }
+        
+        #play-sound-btn {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        #play-sound-btn:hover {
+            background: #138496;
+        }
+        
+        #next-btn {
+            background: #4a6fa5;
+            color: white;
+        }
+        
+        #next-btn:hover:not(:disabled) {
+            background: #3a5a85;
+        }
+        
+        #next-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 25px;
+            display: none;
+            border-left: 5px solid #28a745;
+        }
+        
+        #result-text {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .score {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #4a6fa5;
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .volume-slider {
+            width: 100px;
+        }
+        
+        @media (max-width: 768px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .grade-selector, .language-selector {
+                gap: 5px;
+            }
+            
+            .grade-btn, .lang-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .lang-btn {
+                min-width: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="algebra-icon">𝑥+𝑦=𝑧</span> Algebra Quiz <span class="algebra-icon">𝑎²+𝑏²=𝑐²</span></h1>
+            <div class="subtitle">Math practice for grades 5-9 with audio in English and Afaan Oromo By Jamal Adeeroo</div>
+            
+            <div class="grade-selector">
+                <button class="grade-btn active" data-grade="5">Grade 5</button>
+                <button class="grade-btn" data-grade="6">Grade 6</button>
+                <button class="grade-btn" data-grade="7">Grade 7</button>
+                <button class="grade-btn" data-grade="8">Grade 8</button>
+                <button class="grade-btn" data-grade="9">Grade 9</button>
+            </div>
+            
+            <div class="language-selector">
+                <button id="lang-en" class="lang-btn active">English Audio</button>
+                <button id="lang-om" class="lang-btn">Afaan Oromo Audio</button>
+            </div>
+        </header>
+        
+        <div id="quiz-content">
+            <div class="progress">
+                <div id="question-counter">Question 1 of 10</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div id="grade-display">Grade 5</div>
+            </div>
+            
+            <div class="quiz-section">
+                <div class="question-box">
+                    <h3 id="question-text">If x = 5, what is the value of 3x + 2?</h3>
+                    <div class="math-expression" id="math-expression">
+                        3𝑥 + 2, where 𝑥 = 5
+                    </div>
+                    <div class="options" id="options-container">
+                        <div class="option" data-index="0">15</div>
+                        <div class="option" data-index="1">17</div>
+                        <div class="option" data-index="2">20</div>
+                        <div class="option" data-index="3">25</div>
+                    </div>
+                </div>
+                
+                <div class="hint-box" id="hint-box">
+                    <h4>Hint:</h4>
+                    <p id="hint-text">Substitute 5 for x: 3(5) + 2 = 15 + 2 = 17</p>
+                </div>
+                
+                <div class="sound-info" id="sound-info">
+                    Audio will play in English. Click the button below to hear the question.
+                    <div class="audio-controls">
+                        <label>Volume:</label>
+                        <input type="range" min="0" max="1" step="0.1" value="1" class="volume-slider" id="volume-slider">
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="hint-btn">Show Hint</button>
+                    <button id="play-sound-btn">Play Question Audio</button>
+                    <button id="next-btn">Next Question</button>
+                </div>
+                
+                <div class="result" id="result">
+                    <div id="result-text"></div>
+                    <div class="score">Score: <span id="score-value">0</span> / <span id="total-questions">10</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== OROMO AUDIO SYSTEM ====================
+        class OromoAudioSystem {
+            constructor() {
+                this.speechUtterance = null;
+                this.volume = 1.0;
+            }
+            
+            speakOromo(text, onEnd) {
+                this.stop();
+                
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    
+                    this.speechUtterance = new SpeechSynthesisUtterance(text);
+                    this.speechUtterance.lang = 'am-ET';
+                    this.speechUtterance.rate = 0.8;
+                    this.speechUtterance.volume = this.volume;
+                    
+                    const voices = window.speechSynthesis.getVoices();
+                    const amharicVoice = voices.find(voice => voice.lang.includes('am'));
+                    if (amharicVoice) {
+                        this.speechUtterance.voice = amharicVoice;
+                    }
+                    
+                    this.speechUtterance.onend = () => {
+                        if (onEnd) onEnd();
+                        this.speechUtterance = null;
+                    };
+                    
+                    window.speechSynthesis.speak(this.speechUtterance);
+                }
+            }
+            
+            speakEnglish(text, onEnd) {
+                this.stop();
+                
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    
+                    this.speechUtterance = new SpeechSynthesisUtterance(text);
+                    this.speechUtterance.lang = 'en-US';
+                    this.speechUtterance.rate = 0.9;
+                    this.speechUtterance.volume = this.volume;
+                    
+                    this.speechUtterance.onend = () => {
+                        if (onEnd) onEnd();
+                        this.speechUtterance = null;
+                    };
+                    
+                    window.speechSynthesis.speak(this.speechUtterance);
+                }
+            }
+            
+            setVolume(vol) {
+                this.volume = vol;
+                if (this.speechUtterance) {
+                    this.speechUtterance.volume = vol;
+                }
+            }
+            
+            stop() {
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+                this.speechUtterance = null;
+            }
+        }
+        
+        // ==================== COMPLETE ALGEBRA QUESTIONS (10 per grade) ====================
+        const algebraQuestions = {
+            5: [
+                {
+                    id: 1,
+                    type: "expression",
+                    question: "If x = 5, what is the value of 3x + 2?",
+                    oromoQuestion: "Yoo x = 5 ta'e, 3x + 2 meeqa?",
+                    expression: "3𝑥 + 2, where 𝑥 = 5",
+                    options: ["15", "17", "20", "25"],
+                    correctAnswer: 1,
+                    hint: "Substitute 5 for x: 3(5) + 2 = 15 + 2 = 17",
+                    englishAudio: "Question 1: If x equals 5, what is the value of 3x plus 2?",
+                    oromoAudio: "Gaaffii tokko: Yoo x = 5 ta'e, 3x + 2 meeqa?"
+                },
+                {
+                    id: 2,
+                    type: "equation",
+                    question: "Solve for y: y + 7 = 12",
+                    oromoQuestion: "y barbaadi: y + 7 = 12",
+                    expression: "𝑦 + 7 = 12",
+                    options: ["y = 3", "y = 5", "y = 7", "y = 12"],
+                    correctAnswer: 1,
+                    hint: "Subtract 7 from both sides: y = 12 - 7 = 5",
+                    englishAudio: "Question 2: Solve for y: y plus 7 equals 12.",
+                    oromoAudio: "Gaaffii lama: y barbaadi: y + 7 = 12"
+                },
+                {
+                    id: 3,
+                    type: "word",
+                    question: "Maria has 15 apples. She gives some to her brother and has 8 left. How many did she give away?",
+                    oromoQuestion: "Mariyaan appilii 15 qabdi. Obboleessa isheetti tokko kennitee, appilii 8 qabdi. Meeqaan kennite?",
+                    expression: "15 - 𝑥 = 8",
+                    options: ["5 apples", "7 apples", "8 apples", "10 apples"],
+                    correctAnswer: 1,
+                    hint: "Set up equation: 15 - x = 8. Then x = 15 - 8 = 7",
+                    englishAudio: "Question 3: Maria has 15 apples. She gives some to her brother and has 8 left. How many did she give away?",
+                    oromoAudio: "Gaaffii sadii: Mariyaan appilii 15 qabdi. Obboleessa isheetti tokko kennitee, appilii 8 qabdi. Meeqaan kennite?"
+                },
+                {
+                    id: 4,
+                    type: "expression",
+                    question: "What is 2 times x plus 3 when x equals 4?",
+                    oromoQuestion: "Yoo x = 4 ta'e, 2x + 3 meeqa?",
+                    expression: "2𝑥 + 3, where 𝑥 = 4",
+                    options: ["8", "11", "14", "15"],
+                    correctAnswer: 1,
+                    hint: "2(4) + 3 = 8 + 3 = 11",
+                    englishAudio: "Question 4: What is 2 times x plus 3 when x equals 4?",
+                    oromoAudio: "Gaaffii afur: Yoo x = 4 ta'e, 2x + 3 meeqa?"
+                },
+                {
+                    id: 5,
+                    type: "equation",
+                    question: "Solve: 4 + x = 9",
+                    oromoQuestion: "Furii argadhu: 4 + x = 9",
+                    expression: "4 + 𝑥 = 9",
+                    options: ["x = 3", "x = 4", "x = 5", "x = 6"],
+                    correctAnswer: 2,
+                    hint: "Subtract 4 from both sides: x = 9 - 4 = 5",
+                    englishAudio: "Question 5: Solve: 4 plus x equals 9",
+                    oromoAudio: "Gaaffii shan: Furii argadhu: 4 + x = 9"
+                },
+                {
+                    id: 6,
+                    type: "expression",
+                    question: "Evaluate: 5x - 3 when x = 2",
+                    oromoQuestion: "Yoo x = 2 ta'e, 5x - 3 meeqa?",
+                    expression: "5𝑥 - 3, where 𝑥 = 2",
+                    options: ["7", "8", "9", "10"],
+                    correctAnswer: 0,
+                    hint: "5(2) - 3 = 10 - 3 = 7",
+                    englishAudio: "Question 6: Evaluate: 5x minus 3 when x equals 2",
+                    oromoAudio: "Gaaffii jaha: Yoo x = 2 ta'e, 5x - 3 meeqa?"
+                },
+                {
+                    id: 7,
+                    type: "word",
+                    question: "A number increased by 8 equals 15. What is the number?",
+                    oromoQuestion: "Lakkoofsi tokko 8 dhaan dabalee 15 ta'e. Lakkoofsi sun meeqa?",
+                    expression: "𝑥 + 8 = 15",
+                    options: ["5", "6", "7", "8"],
+                    correctAnswer: 2,
+                    hint: "x + 8 = 15, so x = 15 - 8 = 7",
+                    englishAudio: "Question 7: A number increased by 8 equals 15. What is the number?",
+                    oromoAudio: "Gaaffii torba: Lakkoofsi tokko 8 dhaan dabalee 15 ta'e. Lakkoofsi sun meeqa?"
+                },
+                {
+                    id: 8,
+                    type: "equation",
+                    question: "Solve: 3x = 18",
+                    oromoQuestion: "Furii argadhu: 3x = 18",
+                    expression: "3𝑥 = 18",
+                    options: ["x = 5", "x = 6", "x = 7", "x = 8"],
+                    correctAnswer: 1,
+                    hint: "Divide both sides by 3: x = 18 ÷ 3 = 6",
+                    englishAudio: "Question 8: Solve: 3x equals 18",
+                    oromoAudio: "Gaaffii saddet: Furii argadhu: 3x = 18"
+                },
+                {
+                    id: 9,
+                    type: "expression",
+                    question: "What is x + 10 when x = 6?",
+                    oromoQuestion: "Yoo x = 6 ta'e, x + 10 meeqa?",
+                    expression: "𝑥 + 10, where 𝑥 = 6",
+                    options: ["14", "15", "16", "17"],
+                    correctAnswer: 2,
+                    hint: "6 + 10 = 16",
+                    englishAudio: "Question 9: What is x plus 10 when x equals 6?",
+                    oromoAudio: "Gaaffii sagal: Yoo x = 6 ta'e, x + 10 meeqa?"
+                },
+                {
+                    id: 10,
+                    type: "word",
+                    question: "If you have 20 candies and give away x candies, you have 12 left. How many did you give away?",
+                    oromoQuestion: "Yoo kandii 20 qabaattee, x kandii kennitee, kandii 12 qabda. Meeqaan kennite?",
+                    expression: "20 - 𝑥 = 12",
+                    options: ["6 candies", "7 candies", "8 candies", "9 candies"],
+                    correctAnswer: 2,
+                    hint: "20 - x = 12, so x = 20 - 12 = 8",
+                    englishAudio: "Question 10: If you have 20 candies and give away x candies, you have 12 left. How many did you give away?",
+                    oromoAudio: "Gaaffii kudhan: Yoo kandii 20 qabaattee, x kandii kennitee, kandii 12 qabda. Meeqaan kennite?"
+                }
+            ],
+            6: [
+                {
+                    id: 1,
+                    type: "expression",
+                    question: "Simplify: 4x + 3x - 2x",
+                    oromoQuestion: "Liqimsiisi: 4x + 3x - 2x",
+                    expression: "4𝑥 + 3𝑥 - 2𝑥",
+                    options: ["5x", "6x", "7x", "9x"],
+                    correctAnswer: 0,
+                    hint: "Combine like terms: 4x + 3x = 7x, then 7x - 2x = 5x",
+                    englishAudio: "Question 1: Simplify: 4x plus 3x minus 2x",
+                    oromoAudio: "Gaaffii tokko: Liqimsiisi: 4x + 3x - 2x"
+                },
+                {
+                    id: 2,
+                    type: "equation",
+                    question: "Solve for n: 3n = 18",
+                    oromoQuestion: "n barbaadi: 3n = 18",
+                    expression: "3𝑛 = 18",
+                    options: ["n = 4", "n = 5", "n = 6", "n = 9"],
+                    correctAnswer: 2,
+                    hint: "Divide both sides by 3: n = 18 ÷ 3 = 6",
+                    englishAudio: "Question 2: Solve for n: 3n equals 18",
+                    oromoAudio: "Gaaffii lama: n barbaadi: 3n = 18"
+                },
+                {
+                    id: 3,
+                    type: "expression",
+                    question: "Evaluate 2a + 5 when a = 3",
+                    oromoQuestion: "Yoo a = 3 ta'e, 2a + 5 meeqa?",
+                    expression: "2𝑎 + 5, where 𝑎 = 3",
+                    options: ["10", "11", "12", "13"],
+                    correctAnswer: 1,
+                    hint: "Substitute 3 for a: 2(3) + 5 = 6 + 5 = 11",
+                    englishAudio: "Question 3: Evaluate 2a plus 5 when a equals 3",
+                    oromoAudio: "Gaaffii sadii: Yoo a = 3 ta'e, 2a + 5 meeqa?"
+                },
+                {
+                    id: 4,
+                    type: "expression",
+                    question: "Simplify: 5x - 2x + 3x",
+                    oromoQuestion: "Liqimsiisi: 5x - 2x + 3x",
+                    expression: "5𝑥 - 2𝑥 + 3𝑥",
+                    options: ["5x", "6x", "7x", "8x"],
+                    correctAnswer: 1,
+                    hint: "5x - 2x = 3x, then 3x + 3x = 6x",
+                    englishAudio: "Question 4: Simplify: 5x minus 2x plus 3x",
+                    oromoAudio: "Gaaffii afur: Liqimsiisi: 5x - 2x + 3x"
+                },
+                {
+                    id: 5,
+                    type: "equation",
+                    question: "Solve: 2x = 14",
+                    oromoQuestion: "Furii argadhu: 2x = 14",
+                    expression: "2𝑥 = 14",
+                    options: ["x = 6", "x = 7", "x = 8", "x = 9"],
+                    correctAnswer: 1,
+                    hint: "Divide both sides by 2: x = 14 ÷ 2 = 7",
+                    englishAudio: "Question 5: Solve: 2x equals 14",
+                    oromoAudio: "Gaaffii shan: Furii argadhu: 2x = 14"
+                },
+                {
+                    id: 6,
+                    type: "expression",
+                    question: "Simplify: 7y - 3y + 2y",
+                    oromoQuestion: "Liqimsiisi: 7y - 3y + 2y",
+                    expression: "7𝑦 - 3𝑦 + 2𝑦",
+                    options: ["5y", "6y", "7y", "8y"],
+                    correctAnswer: 1,
+                    hint: "7y - 3y = 4y, then 4y + 2y = 6y",
+                    englishAudio: "Question 6: Simplify: 7y minus 3y plus 2y",
+                    oromoAudio: "Gaaffii jaha: Liqimsiisi: 7y - 3y + 2y"
+                },
+                {
+                    id: 7,
+                    type: "equation",
+                    question: "Solve: x + 9 = 17",
+                    oromoQuestion: "Furii argadhu: x + 9 = 17",
+                    expression: "𝑥 + 9 = 17",
+                    options: ["x = 6", "x = 7", "x = 8", "x = 9"],
+                    correctAnswer: 2,
+                    hint: "Subtract 9 from both sides: x = 17 - 9 = 8",
+                    englishAudio: "Question 7: Solve: x plus 9 equals 17",
+                    oromoAudio: "Gaaffii torba: Furii argadhu: x + 9 = 17"
+                },
+                {
+                    id: 8,
+                    type: "expression",
+                    question: "Evaluate: 4b - 7 when b = 5",
+                    oromoQuestion: "Yoo b = 5 ta'e, 4b - 7 meeqa?",
+                    expression: "4𝑏 - 7, where 𝑏 = 5",
+                    options: ["11", "12", "13", "14"],
+                    correctAnswer: 2,
+                    hint: "4(5) - 7 = 20 - 7 = 13",
+                    englishAudio: "Question 8: Evaluate: 4b minus 7 when b equals 5",
+                    oromoAudio: "Gaaffii saddet: Yoo b = 5 ta'e, 4b - 7 meeqa?"
+                },
+                {
+                    id: 9,
+                    type: "equation",
+                    question: "Solve: 5m = 45",
+                    oromoQuestion: "Furii argadhu: 5m = 45",
+                    expression: "5𝑚 = 45",
+                    options: ["m = 7", "m = 8", "m = 9", "m = 10"],
+                    correctAnswer: 2,
+                    hint: "Divide both sides by 5: m = 45 ÷ 5 = 9",
+                    englishAudio: "Question 9: Solve: 5m equals 45",
+                    oromoAudio: "Gaaffii sagal: Furii argadhu: 5m = 45"
+                },
+                {
+                    id: 10,
+                    type: "word",
+                    question: "The product of a number and 4 is 36. What is the number?",
+                    oromoQuestion: "Baay'atama lakkoofsaa tokkoo fi 4 = 36. Lakkoofsi sun meeqa?",
+                    expression: "4𝑥 = 36",
+                    options: ["7", "8", "9", "10"],
+                    correctAnswer: 2,
+                    hint: "4x = 36, so x = 36 ÷ 4 = 9",
+                    englishAudio: "Question 10: The product of a number and 4 is 36. What is the number?",
+                    oromoAudio: "Gaaffii kudhan: Baay'atama lakkoofsaa tokkoo fi 4 = 36. Lakkoofsi sun meeqa?"
+                }
+            ],
+            7: [
+                {
+                    id: 1,
+                    type: "equation",
+                    question: "Solve: 2x - 5 = 11",
+                    oromoQuestion: "Furii argadhu: 2x - 5 = 11",
+                    expression: "2𝑥 - 5 = 11",
+                    options: ["x = 3", "x = 6", "x = 8", "x = 16"],
+                    correctAnswer: 2,
+                    hint: "Add 5 to both sides: 2x = 16, then divide by 2: x = 8",
+                    englishAudio: "Question 1: Solve: 2x minus 5 equals 11",
+                    oromoAudio: "Gaaffii tokko: Furii argadhu: 2x - 5 = 11"
+                },
+                {
+                    id: 2,
+                    type: "expression",
+                    question: "Simplify: 5(x + 3) - 2x",
+                    oromoQuestion: "Liqimsiisi: 5(x + 3) - 2x",
+                    expression: "5(𝑥 + 3) - 2𝑥",
+                    options: ["3x + 15", "3x + 3", "7x + 15", "5x + 13"],
+                    correctAnswer: 0,
+                    hint: "Distribute: 5(x+3) = 5x + 15. Then 5x + 15 - 2x = 3x + 15",
+                    englishAudio: "Question 2: Simplify: 5 times open parenthesis x plus 3 close parenthesis minus 2x",
+                    oromoAudio: "Gaaffii lama: Liqimsiisi: 5(x + 3) - 2x"
+                },
+                {
+                    id: 3,
+                    type: "word",
+                    question: "The sum of a number and 9 is 25. What is the number?",
+                    oromoQuestion: "Ida'ama lakkoofsaa tokkoo fi 9 = 25. Lakkoofsi sun meeqa?",
+                    expression: "𝑥 + 9 = 25",
+                    options: ["14", "16", "18", "20"],
+                    correctAnswer: 1,
+                    hint: "Set up equation: x + 9 = 25. Then x = 25 - 9 = 16",
+                    englishAudio: "Question 3: The sum of a number and 9 is 25. What is the number?",
+                    oromoAudio: "Gaaffii sadii: Ida'ama lakkoofsaa tokkoo fi 9 = 25. Lakkoofsi sun meeqa?"
+                },
+                {
+                    id: 4,
+                    type: "equation",
+                    question: "Solve: 3x + 4 = 19",
+                    oromoQuestion: "Furii argadhu: 3x + 4 = 19",
+                    expression: "3𝑥 + 4 = 19",
+                    options: ["x = 3", "x = 4", "x = 5", "x = 6"],
+                    correctAnswer: 2,
+                    hint: "Subtract 4: 3x = 15, then divide by 3: x = 5",
+                    englishAudio: "Question 4: Solve: 3x plus 4 equals 19",
+                    oromoAudio: "Gaaffii afur: Furii argadhu: 3x + 4 = 19"
+                },
+                {
+                    id: 5,
+                    type: "expression",
+                    question: "Simplify: 2(x - 3) + 4x",
+                    oromoQuestion: "Liqimsiisi: 2(x - 3) + 4x",
+                    expression: "2(𝑥 - 3) + 4𝑥",
+                    options: ["6x - 6", "6x - 3", "2x + 6", "6x + 6"],
+                    correctAnswer: 0,
+                    hint: "2(x-3) = 2x - 6, then 2x - 6 + 4x = 6x - 6",
+                    englishAudio: "Question 5: Simplify: 2 times open parenthesis x minus 3 close parenthesis plus 4x",
+                    oromoAudio: "Gaaffii shan: Liqimsiisi: 2(x - 3) + 4x"
+                },
+                {
+                    id: 6,
+                    type: "equation",
+                    question: "Solve: 4(x - 2) = 20",
+                    oromoQuestion: "Furii argadhu: 4(x - 2) = 20",
+                    expression: "4(𝑥 - 2) = 20",
+                    options: ["x = 3", "x = 5", "x = 7", "x = 9"],
+                    correctAnswer: 2,
+                    hint: "Divide by 4: x - 2 = 5, then add 2: x = 7",
+                    englishAudio: "Question 6: Solve: 4 times open parenthesis x minus 2 close parenthesis equals 20",
+                    oromoAudio: "Gaaffii jaha: Furii argadhu: 4(x - 2) = 20"
+                },
+                {
+                    id: 7,
+                    type: "expression",
+                    question: "Simplify: 3(2x + 1) - x",
+                    oromoQuestion: "Liqimsiisi: 3(2x + 1) - x",
+                    expression: "3(2𝑥 + 1) - 𝑥",
+                    options: ["5x + 3", "6x + 3", "5x + 1", "6x + 1"],
+                    correctAnswer: 0,
+                    hint: "3(2x+1) = 6x + 3, then 6x + 3 - x = 5x + 3",
+                    englishAudio: "Question 7: Simplify: 3 times open parenthesis 2x plus 1 close parenthesis minus x",
+                    oromoAudio: "Gaaffii torba: Liqimsiisi: 3(2x + 1) - x"
+                },
+                {
+                    id: 8,
+                    type: "word",
+                    question: "Three times a number decreased by 5 equals 19. What is the number?",
+                    oromoQuestion: "Yeroo sadii lakkoofsaa tokkoo 5 dhaan hir'iisee 19 ta'e. Lakkoofsi sun meeqa?",
+                    expression: "3𝑥 - 5 = 19",
+                    options: ["6", "7", "8", "9"],
+                    correctAnswer: 2,
+                    hint: "3x - 5 = 19, add 5: 3x = 24, divide by 3: x = 8",
+                    englishAudio: "Question 8: Three times a number decreased by 5 equals 19. What is the number?",
+                    oromoAudio: "Gaaffii saddet: Yeroo sadii lakkoofsaa tokkoo 5 dhaan hir'iisee 19 ta'e. Lakkoofsi sun meeqa?"
+                },
+                {
+                    id: 9,
+                    type: "equation",
+                    question: "Solve: 5x - 7 = 3x + 5",
+                    oromoQuestion: "Furii argadhu: 5x - 7 = 3x + 5",
+                    expression: "5𝑥 - 7 = 3𝑥 + 5",
+                    options: ["x = 4", "x = 5", "x = 6", "x = 7"],
+                    correctAnswer: 2,
+                    hint: "Subtract 3x: 2x - 7 = 5, add 7: 2x = 12, divide by 2: x = 6",
+                    englishAudio: "Question 9: Solve: 5x minus 7 equals 3x plus 5",
+                    oromoAudio: "Gaaffii sagal: Furii argadhu: 5x - 7 = 3x + 5"
+                },
+                {
+                    id: 10,
+                    type: "expression",
+                    question: "Simplify: 4(3x - 2) + 5x",
+                    oromoQuestion: "Liqimsiisi: 4(3x - 2) + 5x",
+                    expression: "4(3𝑥 - 2) + 5𝑥",
+                    options: ["17x - 8", "12x - 8", "17x + 8", "12x + 5"],
+                    correctAnswer: 0,
+                    hint: "4(3x-2) = 12x - 8, then 12x - 8 + 5x = 17x - 8",
+                    englishAudio: "Question 10: Simplify: 4 times open parenthesis 3x minus 2 close parenthesis plus 5x",
+                    oromoAudio: "Gaaffii kudhan: Liqimsiisi: 4(3x - 2) + 5x"
+                }
+            ],
+            8: [
+                {
+                    id: 1,
+                    type: "equation",
+                    question: "Solve: 3(x - 4) = 15",
+                    oromoQuestion: "Furii argadhu: 3(x - 4) = 15",
+                    expression: "3(𝑥 - 4) = 15",
+                    options: ["x = 3", "x = 5", "x = 7", "x = 9"],
+                    correctAnswer: 3,
+                    hint: "Divide both sides by 3: x - 4 = 5, then add 4: x = 9",
+                    englishAudio: "Question 1: Solve: 3 times open parenthesis x minus 4 close parenthesis equals 15",
+                    oromoAudio: "Gaaffii tokko: Furii argadhu: 3(x - 4) = 15"
+                },
+                {
+                    id: 2,
+                    type: "expression",
+                    question: "Factor: x² + 5x + 6",
+                    oromoQuestion: "Faktaaraa godhaa: x² + 5x + 6",
+                    expression: "𝑥² + 5𝑥 + 6",
+                    options: ["(x+2)(x+3)", "(x+1)(x+6)", "(x+2)(x+4)", "(x+3)(x+3)"],
+                    correctAnswer: 0,
+                    hint: "Find two numbers that multiply to 6 and add to 5: 2 and 3",
+                    englishAudio: "Question 2: Factor: x squared plus 5x plus 6",
+                    oromoAudio: "Gaaffii lama: Faktaaraa godhaa: x² + 5x + 6"
+                },
+                {
+                    id: 3,
+                    type: "equation",
+                    question: "Solve: 2x + 7 = 3x - 2",
+                    oromoQuestion: "Furii argadhu: 2x + 7 = 3x - 2",
+                    expression: "2𝑥 + 7 = 3𝑥 - 2",
+                    options: ["x = 5", "x = 7", "x = 9", "x = 11"],
+                    correctAnswer: 2,
+                    hint: "Subtract 2x from both sides: 7 = x - 2, then add 2: x = 9",
+                    englishAudio: "Question 3: Solve: 2x plus 7 equals 3x minus 2",
+                    oromoAudio: "Gaaffii sadii: Furii argadhu: 2x + 7 = 3x - 2"
+                },
+                {
+                    id: 4,
+                    type: "equation",
+                    question: "Solve: 4(x + 2) = 24",
+                    oromoQuestion: "Furii argadhu: 4(x + 2) = 24",
+                    expression: "4(𝑥 + 2) = 24",
+                    options: ["x = 2", "x = 4", "x = 6", "x = 8"],
+                    correctAnswer: 1,
+                    hint: "Divide by 4: x + 2 = 6, then subtract 2: x = 4",
+                    englishAudio: "Question 4: Solve: 4 times open parenthesis x plus 2 close parenthesis equals 24",
+                    oromoAudio: "Gaaffii afur: Furii argadhu: 4(x + 2) = 24"
+                },
+                {
+                    id: 5,
+                    type: "expression",
+                    question: "Expand: (x + 3)(x + 4)",
+                    oromoQuestion: "Bu'aa godhaa: (x + 3)(x + 4)",
+                    expression: "(𝑥 + 3)(𝑥 + 4)",
+                    options: ["x² + 7x + 12", "x² + 12x + 7", "x² + 7x + 7", "x² + 12x + 12"],
+                    correctAnswer: 0,
+                    hint: "FOIL method: x² + 4x + 3x + 12 = x² + 7x + 12",
+                    englishAudio: "Question 5: Expand: open parenthesis x plus 3 close parenthesis times open parenthesis x plus 4 close parenthesis",
+                    oromoAudio: "Gaaffii shan: Bu'aa godhaa: (x + 3)(x + 4)"
+                },
+                {
+                    id: 6,
+                    type: "expression",
+                    question: "Factor: x² - 9",
+                    oromoQuestion: "Faktaaraa godhaa: x² - 9",
+                    expression: "𝑥² - 9",
+                    options: ["(x-3)(x+3)", "(x-3)(x-3)", "(x-9)(x+1)", "(x-1)(x+9)"],
+                    correctAnswer: 0,
+                    hint: "Difference of squares: x² - 9 = (x-3)(x+3)",
+                    englishAudio: "Question 6: Factor: x squared minus 9",
+                    oromoAudio: "Gaaffii jaha: Faktaaraa godhaa: x² - 9"
+                },
+                {
+                    id: 7,
+                    type: "equation",
+                    question: "Solve: 2(x + 5) = 3x - 1",
+                    oromoQuestion: "Furii argadhu: 2(x + 5) = 3x - 1",
+                    expression: "2(𝑥 + 5) = 3𝑥 - 1",
+                    options: ["x = 9", "x = 10", "x = 11", "x = 12"],
+                    correctAnswer: 2,
+                    hint: "2x + 10 = 3x - 1, subtract 2x: 10 = x - 1, add 1: x = 11",
+                    englishAudio: "Question 7: Solve: 2 times open parenthesis x plus 5 close parenthesis equals 3x minus 1",
+                    oromoAudio: "Gaaffii torba: Furii argadhu: 2(x + 5) = 3x - 1"
+                },
+                {
+                    id: 8,
+                    type: "expression",
+                    question: "Simplify: (x + 2)²",
+                    oromoQuestion: "Liqimsiisi: (x + 2)²",
+                    expression: "(𝑥 + 2)²",
+                    options: ["x² + 4x + 4", "x² + 2x + 4", "x² + 4", "x² + 4x + 2"],
+                    correctAnswer: 0,
+                    hint: "(x+2)² = (x+2)(x+2) = x² + 2x + 2x + 4 = x² + 4x + 4",
+                    englishAudio: "Question 8: Simplify: open parenthesis x plus 2 close parenthesis squared",
+                    oromoAudio: "Gaaffii saddet: Liqimsiisi: (x + 2)²"
+                },
+                {
+                    id: 9,
+                    type: "equation",
+                    question: "Solve: 5x - 3 = 2x + 12",
+                    oromoQuestion: "Furii argadhu: 5x - 3 = 2x + 12",
+                    expression: "5𝑥 - 3 = 2𝑥 + 12",
+                    options: ["x = 3", "x = 4", "x = 5", "x = 6"],
+                    correctAnswer: 2,
+                    hint: "Subtract 2x: 3x - 3 = 12, add 3: 3x = 15, divide by 3: x = 5",
+                    englishAudio: "Question 9: Solve: 5x minus 3 equals 2x plus 12",
+                    oromoAudio: "Gaaffii sagal: Furii argadhu: 5x - 3 = 2x + 12"
+                },
+                {
+                    id: 10,
+                    type: "expression",
+                    question: "Factor: x² + 8x + 15",
+                    oromoQuestion: "Faktaaraa godhaa: x² + 8x + 15",
+                    expression: "𝑥² + 8𝑥 + 15",
+                    options: ["(x+3)(x+5)", "(x+2)(x+6)", "(x+4)(x+4)", "(x+1)(x+15)"],
+                    correctAnswer: 0,
+                    hint: "Find two numbers that multiply to 15 and add to 8: 3 and 5",
+                    englishAudio: "Question 10: Factor: x squared plus 8x plus 15",
+                    oromoAudio: "Gaaffii kudhan: Faktaaraa godhaa: x² + 8x + 15"
+                }
+            ],
+            9: [
+                {
+                    id: 1,
+                    type: "equation",
+                    question: "Solve: x² - 9 = 0",
+                    oromoQuestion: "Furii argadhu: x² - 9 = 0",
+                    expression: "𝑥² - 9 = 0",
+                    options: ["x = 3", "x = -3", "x = ±3", "x = 9"],
+                    correctAnswer: 2,
+                    hint: "Add 9 to both sides: x² = 9, then take square root: x = ±3",
+                    englishAudio: "Question 1: Solve: x squared minus 9 equals 0",
+                    oromoAudio: "Gaaffii tokko: Furii argadhu: x² - 9 = 0"
+                },
+                {
+                    id: 2,
+                    type: "expression",
+                    question: "Simplify: (2x² + 3x - 5) + (x² - 2x + 7)",
+                    oromoQuestion: "Liqimsiisi: (2x² + 3x - 5) + (x² - 2x + 7)",
+                    expression: "(2𝑥² + 3𝑥 - 5) + (𝑥² - 2𝑥 + 7)",
+                    options: ["3x² + x + 2", "3x² + 5x + 2", "x² + x + 2", "3x² - x + 2"],
+                    correctAnswer: 0,
+                    hint: "Combine like terms: 2x² + x² = 3x², 3x - 2x = x, -5 + 7 = 2",
+                    englishAudio: "Question 2: Simplify: open parenthesis 2x squared plus 3x minus 5 close parenthesis plus open parenthesis x squared minus 2x plus 7 close parenthesis",
+                    oromoAudio: "Gaaffii lama: Liqimsiisi: (2x² + 3x - 5) + (x² - 2x + 7)"
+                },
+                {
+                    id: 3,
+                    type: "equation",
+                    question: "Solve the system: y = 2x + 1 and y = x + 3",
+                    oromoQuestion: "Sirna walsimsiisaa furi: y = 2x + 1 fi y = x + 3",
+                    expression: "𝑦 = 2𝑥 + 1 and 𝑦 = 𝑥 + 3",
+                    options: ["(1, 3)", "(2, 5)", "(3, 7)", "(4, 9)"],
+                    correctAnswer: 1,
+                    hint: "Set equations equal: 2x + 1 = x + 3, solve for x = 2, then y = 2(2)+1 = 5",
+                    englishAudio: "Question 3: Solve the system: y equals 2x plus 1 and y equals x plus 3",
+                    oromoAudio: "Gaaffii sadii: Sirna walsimsiisaa furi: y = 2x + 1 fi y = x + 3"
+                },
+                {
+                    id: 4,
+                    type: "equation",
+                    question: "Solve: 2x² - 8 = 0",
+                    oromoQuestion: "Furii argadhu: 2x² - 8 = 0",
+                    expression: "2𝑥² - 8 = 0",
+                    options: ["x = ±1", "x = ±2", "x = ±3", "x = ±4"],
+                    correctAnswer: 1,
+                    hint: "Add 8: 2x² = 8, divide by 2: x² = 4, square root: x = ±2",
+                    englishAudio: "Question 4: Solve: 2x squared minus 8 equals 0",
+                    oromoAudio: "Gaaffii afur: Furii argadhu: 2x² - 8 = 0"
+                },
+                {
+                    id: 5,
+                    type: "expression",
+                    question: "Simplify: 3(x - 2)²",
+                    oromoQuestion: "Liqimsiisi: 3(x - 2)²",
+                    expression: "3(𝑥 - 2)²",
+                    options: ["3x² - 12x + 12", "3x² - 6x + 12", "3x² - 12x + 6", "3x² - 6x + 6"],
+                    correctAnswer: 0,
+                    hint: "(x-2)² = x² - 4x + 4, then multiply by 3: 3x² - 12x + 12",
+                    englishAudio: "Question 5: Simplify: 3 times open parenthesis x minus 2 close parenthesis squared",
+                    oromoAudio: "Gaaffii shan: Liqimsiisi: 3(x - 2)²"
+                },
+                {
+                    id: 6,
+                    type: "equation",
+                    question: "Solve: x² + 5x + 6 = 0",
+                    oromoQuestion: "Furii argadhu: x² + 5x + 6 = 0",
+                    expression: "𝑥² + 5𝑥 + 6 = 0",
+                    options: ["x = -2, -3", "x = 2, 3", "x = -1, -6", "x = 1, 6"],
+                    correctAnswer: 0,
+                    hint: "Factor: (x+2)(x+3) = 0, so x = -2 or x = -3",
+                    englishAudio: "Question 6: Solve: x squared plus 5x plus 6 equals 0",
+                    oromoAudio: "Gaaffii jaha: Furii argadhu: x² + 5x + 6 = 0"
+                },
+                {
+                    id: 7,
+                    type: "expression",
+                    question: "Simplify: (3x - 4)(2x + 5)",
+                    oromoQuestion: "Liqimsiisi: (3x - 4)(2x + 5)",
+                    expression: "(3𝑥 - 4)(2𝑥 + 5)",
+                    options: ["6x² + 7x - 20", "6x² - 7x - 20", "6x² + 23x - 20", "6x² - 23x - 20"],
+                    correctAnswer: 0,
+                    hint: "FOIL: 3x·2x = 6x², 3x·5 = 15x, -4·2x = -8x, -4·5 = -20. Combine: 6x² + 7x - 20",
+                    englishAudio: "Question 7: Simplify: open parenthesis 3x minus 4 close parenthesis times open parenthesis 2x plus 5 close parenthesis",
+                    oromoAudio: "Gaaffii torba: Liqimsiisi: (3x - 4)(2x + 5)"
+                },
+                {
+                    id: 8,
+                    type: "equation",
+                    question: "Solve the system: 2x + y = 7 and x - y = 2",
+                    oromoQuestion: "Sirna walsimsiisaa furi: 2x + y = 7 fi x - y = 2",
+                    expression: "2𝑥 + 𝑦 = 7 and 𝑥 - 𝑦 = 2",
+                    options: ["(2, 3)", "(3, 1)", "(4, -1)", "(5, -3)"],
+                    correctAnswer: 1,
+                    hint: "Add the two equations: 3x = 9, so x = 3. Then 3 - y = 2, so y = 1",
+                    englishAudio: "Question 8: Solve the system: 2x plus y equals 7 and x minus y equals 2",
+                    oromoAudio: "Gaaffii saddet: Sirna walsimsiisaa furi: 2x + y = 7 fi x - y = 2"
+                },
+                {
+                    id: 9,
+                    type: "expression",
+                    question: "Factor: 4x² - 25",
+                    oromoQuestion: "Faktaaraa godhaa: 4x² - 25",
+                    expression: "4𝑥² - 25",
+                    options: ["(2x-5)(2x+5)", "(4x-5)(x+5)", "(2x-5)(2x-5)", "(4x-1)(x+25)"],
+                    correctAnswer: 0,
+                    hint: "Difference of squares: (2x)² - 5² = (2x-5)(2x+5)",
+                    englishAudio: "Question 9: Factor: 4x squared minus 25",
+                    oromoAudio: "Gaaffii sagal: Faktaaraa godhaa: 4x² - 25"
+                },
+                {
+                    id: 10,
+                    type: "equation",
+                    question: "Solve: 3x² - 12x = 0",
+                    oromoQuestion: "Furii argadhu: 3x² - 12x = 0",
+                    expression: "3𝑥² - 12𝑥 = 0",
+                    options: ["x = 0, 4", "x = 0, 3", "x = 0, 6", "x = 3, 4"],
+                    correctAnswer: 0,
+                    hint: "Factor: 3x(x - 4) = 0, so x = 0 or x = 4",
+                    englishAudio: "Question 10: Solve: 3x squared minus 12x equals 0",
+                    oromoAudio: "Gaaffii kudhan: Furii argadhu: 3x² - 12x = 0"
+                }
+            ]
+        };
+
+        // Oromo translations for UI
+        const oromoTranslations = {
+            correct: "Sirriidha! Bareedaa!",
+            incorrect: "Dogoggora. Deebii sirrii arga.",
+            audio_playing: "Dubbii Afaan Oromootiin dhaggeeffama...",
+            audio_prompt: "Dubbii Afaan Oromootiin dhaggeeffama. Gaaffii dhaggeeffachuuf cuqaasaan guuti.",
+            excellent: "Bareedaa! Algebra keessatti dandeettii guddaa qabda!",
+            good: "Hojii gaarii! Algebra sirrii hubatta.",
+            average: "Tole! Ittiin fufiinsi barbaachisaa dha.",
+            needs_work: "Algebra yaali qaba. Baradhu itti yaali!"
+        };
+
+        // ==================== QUIZ ENGINE ====================
+        const audioSystem = new OromoAudioSystem();
+        
+        // Get references to UI elements
+        const questionText = document.getElementById('question-text');
+        const mathExpression = document.getElementById('math-expression');
+        const optionsContainer = document.getElementById('options-container');
+        const hintText = document.getElementById('hint-text');
+        const soundInfo = document.getElementById('sound-info');
+        const resultText = document.getElementById('result-text');
+        const scoreValue = document.getElementById('score-value');
+        const totalQuestions = document.getElementById('total-questions');
+        const gradeDisplay = document.getElementById('grade-display');
+        const questionCounter = document.getElementById('question-counter');
+        const progressFill = document.getElementById('progress-fill');
+        const volumeSlider = document.getElementById('volume-slider');
+
+        // Get buttons
+        const gradeButtons = document.querySelectorAll('.grade-btn');
+        const langEnBtn = document.getElementById('lang-en');
+        const langOmBtn = document.getElementById('lang-om');
+        const hintBtn = document.getElementById('hint-btn');
+        const playSoundBtn = document.getElementById('play-sound-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        // Quiz state
+        let currentLanguage = 'en';
+        let currentGrade = 5;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questions = [];
+        const totalQs = 10;
+
+        // Initialize quiz
+        function initializeQuiz() {
+            selectGrade(5);
+            setupEventListeners();
+        }
+
+        function selectGrade(grade) {
+            currentGrade = grade;
+            
+            // Update active button
+            gradeButtons.forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.grade) === grade);
+            });
+            
+            // Update display
+            gradeDisplay.textContent = `Grade ${grade}`;
+            
+            // Get questions for this grade
+            questions = [...algebraQuestions[grade]];
+            
+            // Reset quiz state
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            // Load first question
+            loadQuestion(currentQuestionIndex);
+        }
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update active button
+            langEnBtn.classList.toggle('active', lang === 'en');
+            langOmBtn.classList.toggle('active', lang === 'om');
+            
+            // Update sound info text
+            if (lang === 'en') {
+                soundInfo.innerHTML = 'Audio will play in English. Click the button below to hear the question.';
+            } else {
+                soundInfo.innerHTML = 'Dubbii Afaan Oromootiin dhaggeeffama. Gaaffii dhaggeeffachuuf cuqaasaan guuti.';
+            }
+            
+            // Reload current question with new language
+            loadQuestion(currentQuestionIndex, true);
+        }
+
+        function loadQuestion(index, languageChanged = false) {
+            if (index >= questions.length) return;
+            
+            const question = questions[index];
+            
+            // Update progress
+            const progressPercent = ((index + 1) / totalQs) * 100;
+            progressFill.style.width = `${progressPercent}%`;
+            questionCounter.textContent = `Question ${index + 1} of ${totalQs}`;
+            
+            // Set question text based on language
+            if (currentLanguage === 'om' && question.oromoQuestion) {
+                questionText.textContent = `${index + 1}. ${question.oromoQuestion}`;
+            } else {
+                questionText.textContent = `${index + 1}. ${question.question}`;
+            }
+            
+            // Set math expression
+            mathExpression.textContent = question.expression;
+            
+            // Set hint text
+            hintText.textContent = question.hint;
+            
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+            
+            // Create option elements
+            question.options.forEach((option, optionIndex) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.dataset.index = optionIndex;
+                
+                optionElement.addEventListener('click', () => selectOption(optionElement, optionIndex, question.correctAnswer));
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Reset UI state
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('hint-box').style.display = 'none';
+            nextBtn.disabled = true;
+            
+            // Reset all options to clickable
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'auto';
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Update score display
+            scoreValue.textContent = score;
+            totalQuestions.textContent = totalQs;
+            
+            // Play audio for the question if not just changing language
+            if (!languageChanged) {
+                playQuestionAudio();
+            }
+        }
+
+        function playQuestionAudio() {
+            const question = questions[currentQuestionIndex];
+            
+            // Update UI to show audio is playing
+            if (currentLanguage === 'en') {
+                soundInfo.innerHTML = '<strong>🔊 Playing audio in English...</strong>';
+            } else {
+                soundInfo.innerHTML = '<strong>🔊 Dubbii Afaan Oromootiin dhaggeeffama...</strong>';
+            }
+            
+            // Play audio based on language
+            if (currentLanguage === 'en') {
+                audioSystem.speakEnglish(question.englishAudio, () => {
+                    // Audio finished callback
+                    setTimeout(() => {
+                        if (currentLanguage === 'en') {
+                            soundInfo.innerHTML = 'Audio will play in English. Click the button below to hear the question.';
+                        } else {
+                            soundInfo.innerHTML = 'Dubbii Afaan Oromootiin dhaggeeffama. Gaaffii dhaggeeffachuuf cuqaasaan guuti.';
+                        }
+                    }, 500);
+                });
+            } else {
+                audioSystem.speakOromo(question.oromoAudio, () => {
+                    // Audio finished callback
+                    setTimeout(() => {
+                        soundInfo.innerHTML = 'Dubbii Afaan Oromootiin dhaggeeffama. Gaaffii dhaggeeffachuuf cuqaasaan guuti.';
+                    }, 500);
+                });
+            }
+        }
+
+        function selectOption(optionElement, selectedIndex, correctIndex) {
+            const options = document.querySelectorAll('.option');
+            
+            // Disable all options
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            // Mark selected option
+            optionElement.classList.add('selected');
+            
+            // Check if answer is correct
+            if (selectedIndex === correctIndex) {
+                optionElement.classList.add('correct');
+                
+                // Play correct sound feedback
+                if (currentLanguage === 'en') {
+                    audioSystem.speakEnglish("Correct! Well done!", null);
+                    resultText.textContent = 'Correct! Well done!';
+                } else {
+                    audioSystem.speakOromo("Sirriidha! Bareedaa!", null);
+                    resultText.textContent = 'Sirriidha! Bareedaa!';
+                }
+                
+                resultText.style.color = '#28a745';
+                score++;
+            } else {
+                optionElement.classList.add('incorrect');
+                
+                // Play incorrect sound feedback
+                if (currentLanguage === 'en') {
+                    audioSystem.speakEnglish("Incorrect. The right answer is highlighted.", null);
+                    resultText.textContent = 'Incorrect. The right answer is highlighted.';
+                } else {
+                    audioSystem.speakOromo("Dogoggora. Deebii sirrii arga.", null);
+                    resultText.textContent = 'Dogoggora. Deebii sirrii arga.';
+                }
+                
+                resultText.style.color = '#dc3545';
+                
+                // Highlight correct answer
+                options[correctIndex].classList.add('correct');
+            }
+            
+            // Show result and enable next button
+            document.getElementById('result').style.display = 'block';
+            nextBtn.disabled = false;
+            
+            // Update score display
+            scoreValue.textContent = score;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < totalQs) {
+                loadQuestion(currentQuestionIndex);
+            } else {
+                showFinalResults();
+            }
+        }
+
+        function showFinalResults() {
+            const percentage = Math.round((score / totalQs) * 100);
+            
+            // Update progress to 100%
+            progressFill.style.width = '100%';
+            questionCounter.textContent = currentLanguage === 'en' ? 'Quiz Completed!' : 'Qiizii Xumuramte!';
+            
+            // Show final results
+            questionText.textContent = currentLanguage === 'en' ? 'Algebra Quiz Completed!' : 'Qiizii Algebra Xumuramte!';
+            mathExpression.style.display = 'none';
+            optionsContainer.innerHTML = '';
+            document.getElementById('hint-box').style.display = 'none';
+            soundInfo.style.display = 'none';
+            hintBtn.style.display = 'none';
+            playSoundBtn.style.display = 'none';
+            
+            let message;
+            let congratsAudio;
+            
+            if (currentLanguage === 'en') {
+                if (percentage >= 90) {
+                    message = "Outstanding! You're an algebra expert!";
+                    congratsAudio = "Outstanding! You're an algebra expert!";
+                } else if (percentage >= 80) {
+                    message = "Excellent work! You understand algebra well.";
+                    congratsAudio = "Excellent work! You understand algebra well.";
+                } else if (percentage >= 70) {
+                    message = "Good job! You're getting the hang of algebra.";
+                    congratsAudio = "Good job! You're getting the hang of algebra.";
+                } else if (percentage >= 60) {
+                    message = "Not bad! Keep practicing to improve.";
+                    congratsAudio = "Not bad! Keep practicing to improve.";
+                } else {
+                    message = "Algebra takes practice. Keep learning and try again!";
+                    congratsAudio = "Algebra takes practice. Keep learning and try again!";
+                }
+            } else {
+                if (percentage >= 90) {
+                    message = oromoTranslations.excellent;
+                    congratsAudio = oromoTranslations.excellent;
+                } else if (percentage >= 80) {
+                    message = oromoTranslations.good;
+                    congratsAudio = oromoTranslations.good;
+                } else if (percentage >= 70) {
+                    message = oromoTranslations.average;
+                    congratsAudio = oromoTranslations.average;
+                } else if (percentage >= 60) {
+                    message = "Tole! Itti fufiinsaan yaali.";
+                    congratsAudio = "Tole! Itti fufiinsaan yaali.";
+                } else {
+                    message = oromoTranslations.needs_work;
+                    congratsAudio = oromoTranslations.needs_work;
+                }
+            }
+            
+            // Play congratulations audio
+            if (currentLanguage === 'en') {
+                audioSystem.speakEnglish(congratsAudio, null);
+            } else {
+                audioSystem.speakOromo(congratsAudio, null);
+            }
+            
+            resultText.innerHTML = `
+                <p><strong>${currentLanguage === 'en' ? 'Your final score:' : 'Qarshii xumuraa:'}</strong> ${score} ${currentLanguage === 'en' ? 'out of' : 'irraa'} ${totalQs}</p>
+                <p><strong>${currentLanguage === 'en' ? 'Percentage:' : 'Sadarkaa:'}</strong> ${percentage}%</p>
+                <p>${message}</p>
+                <button onclick="restartQuiz()" style="margin-top: 20px; padding: 12px 25px; background: linear-gradient(to right, #2c5530, #4a6fa5); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1rem;">
+                    ${currentLanguage === 'en' ? 'Try Another Grade Level' : 'Sadarkaa Biroo Yaali'}
+                </button>
+            `;
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function restartQuiz() {
+            // Reset UI
+            mathExpression.style.display = 'block';
+            soundInfo.style.display = 'block';
+            hintBtn.style.display = 'block';
+            playSoundBtn.style.display = 'block';
+            
+            // Stop any audio
+            audioSystem.stop();
+            
+            // Reload current grade
+            selectGrade(currentGrade);
+        }
+
+        function setupEventListeners() {
+            // Grade buttons
+            gradeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectGrade(parseInt(btn.dataset.grade));
+                });
+            });
+            
+            // Language buttons
+            langEnBtn.addEventListener('click', () => switchLanguage('en'));
+            langOmBtn.addEventListener('click', () => switchLanguage('om'));
+            
+            // Control buttons
+            hintBtn.addEventListener('click', () => {
+                document.getElementById('hint-box').style.display = 'block';
+            });
+            
+            playSoundBtn.addEventListener('click', playQuestionAudio);
+            nextBtn.addEventListener('click', nextQuestion);
+            
+            // Volume control
+            volumeSlider.addEventListener('input', (e) => {
+                const volume = parseFloat(e.target.value);
+                audioSystem.setVolume(volume);
+            });
+            
+            // Stop audio when leaving page
+            window.addEventListener('beforeunload', () => {
+                audioSystem.stop();
+            });
+        }
+
+        // Initialize the quiz when page loads
+        window.addEventListener('load', initializeQuiz);
+        
+        // Make restartQuiz available globally
+        window.restartQuiz = restartQuiz;
+    </script>
+</body>
+</html>
