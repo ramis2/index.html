@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elegant Compass - HTML5</title>
+    <!-- PWA Manifest - Makes it installable as app -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/96/compass--v1.png">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            touch-action: manipulation;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f0f4ff, #d9e2ff);
+            color: #1a1a2e;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid rgba(76, 201, 240, 0.3);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .light-mode header {
+            border-bottom: 2px solid rgba(67, 97, 238, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #4cc9f0, #f72585);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .light-mode h1 {
+            background: linear-gradient(90deg, #4361ee, #f72585);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #a5b4fc;
+            font-size: 1rem;
+        }
+
+        .light-mode .subtitle {
+            color: #4f46e5;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: #4cc9f0;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(76, 201, 240, 0.1);
+            transform: scale(1.1);
+        }
+
+        .light-mode .theme-toggle {
+            color: #4361ee;
+        }
+
+        .compass-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 30px auto;
+        }
+
+        .compass-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid #4cc9f0;
+            border-radius: 50%;
+            box-shadow: 
+                0 0 30px rgba(76, 201, 240, 0.3),
+                inset 0 0 30px rgba(76, 201, 240, 0.1);
+        }
+
+        .light-mode .compass-ring {
+            border: 3px solid #4361ee;
+            box-shadow: 
+                0 0 30px rgba(67, 97, 238, 0.3),
+                inset 0 0 30px rgba(67, 97, 238, 0.1);
+        }
+
+        .compass-inner {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            top: 5%;
+            left: 5%;
+            border: 2px solid rgba(247, 37, 133, 0.5);
+            border-radius: 50%;
+            background: rgba(26, 26, 46, 0.7);
+        }
+
+        .light-mode .compass-inner {
+            border: 2px solid rgba(247, 37, 133, 0.3);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .compass-center {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #f72585;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #f72585;
+            z-index: 10;
+        }
+
+        .compass-needle {
+            position: absolute;
+            width: 4px;
+            height: 120px;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%);
+            background: linear-gradient(to top, #ff006e, #ff4da6);
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(255, 0, 110, 0.7);
+            z-index: 5;
+            transition: transform 0.1s ease-out;
+        }
+
+        .compass-needle-tail {
+            position: absolute;
+            width: 6px;
+            height: 40px;
+            top: 50%;
+            left: 50%;
+            transform-origin: top center;
+            transform: translate(-50%, 0);
+            background: linear-gradient(to bottom, #4361ee, #3a56d4);
+            border-radius: 4px;
+            z-index: 4;
+        }
+
+        .direction-markers {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .direction {
+            position: absolute;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .light-mode .direction {
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .north {
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff006e;
+        }
+
+        .east {
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            color: #4cc9f0;
+        }
+
+        .light-mode .east {
+            color: #4361ee;
+        }
+
+        .south {
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #4cc9f0;
+        }
+
+        .light-mode .south {
+            color: #4361ee;
+        }
+
+        .west {
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            color: #4cc9f0;
+        }
+
+        .light-mode .west {
+            color: #4361ee;
+        }
+
+        .degrees {
+            position: absolute;
+            font-size: 0.8rem;
+            color: #a9a9a9;
+        }
+
+        .light-mode .degrees {
+            color: #666;
+        }
+
+        .degree-0 { top: 5%; left: 50%; transform: translateX(-50%); }
+        .degree-45 { top: 15%; right: 15%; }
+        .degree-90 { top: 50%; right: 5%; transform: translateY(-50%); }
+        .degree-135 { bottom: 15%; right: 15%; }
+        .degree-180 { bottom: 5%; left: 50%; transform: translateX(-50%); }
+        .degree-225 { bottom: 15%; left: 15%; }
+        .degree-270 { top: 50%; left: 5%; transform: translateY(-50%); }
+        .degree-315 { top: 15%; left: 15%; }
+
+        .info-panel {
+            background: rgba(15, 52, 96, 0.7);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(76, 201, 240, 0.2);
+        }
+
+        .light-mode .info-panel {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(67, 97, 238, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .direction-display {
+            font-size: 4.5rem;
+            font-weight: bold;
+            color: #f72585;
+            margin: 10px 0;
+            text-shadow: 0 0 20px rgba(247, 37, 133, 0.5);
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .degree-display {
+            font-size: 2rem;
+            color: #e5e5e5;
+            margin-bottom: 20px;
+        }
+
+        .light-mode .degree-display {
+            color: #444;
+        }
+
+        .cardinal-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .cardinal-item {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 15px;
+            padding: 15px 10px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .light-mode .cardinal-item {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .cardinal-item.active {
+            background: rgba(247, 37, 133, 0.2);
+            border-color: #f72585;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+        }
+
+        .light-mode .cardinal-item.active {
+            background: rgba(247, 37, 133, 0.1);
+        }
+
+        .cardinal-name {
+            font-size: 0.9rem;
+            color: #a5b4fc;
+            margin-bottom: 5px;
+        }
+
+        .light-mode .cardinal-name {
+            color: #4f46e5;
+        }
+
+        .cardinal-symbol {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 18px 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-left {
+            background: linear-gradient(135deg, #4361ee, #3a56d4);
+            color: white;
+        }
+
+        .btn-right {
+            background: linear-gradient(135deg, #f72585, #d91a72);
+            color: white;
+        }
+
+        .btn-location {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn:hover, .btn:active {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .sensor-status {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 4px solid #4cc9f0;
+        }
+
+        .light-mode .sensor-status {
+            background: rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #4361ee;
+        }
+
+        .status-text {
+            font-size: 1rem;
+            color: #a5b4fc;
+        }
+
+        .light-mode .status-text {
+            color: #4f46e5;
+        }
+
+        .status-text.supported {
+            color: #4ade80;
+        }
+
+        .light-mode .status-text.supported {
+            color: #16a34a;
+        }
+
+        .status-text.unsupported {
+            color: #f87171;
+        }
+
+        .location-info {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .light-mode .location-info {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            color: #a5b4fc;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(76, 201, 240, 0.2);
+        }
+
+        .light-mode footer {
+            color: #4f46e5;
+            border-top: 1px solid rgba(67, 97, 238, 0.2);
+        }
+
+        /* Animation for calibration */
+        @keyframes pulse {
+            0% { transform: translate(-50%, -100%) scale(1); }
+            50% { transform: translate(-50%, -100%) scale(1.1); }
+            100% { transform: translate(-50%, -100%) scale(1); }
+        }
+
+        .calibrating {
+            animation: pulse 1s infinite;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .compass-container {
+                width: 280px;
+                height: 280px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .direction-display {
+                font-size: 4rem;
+            }
+            
+            .btn {
+                padding: 16px;
+                font-size: 1rem;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                font-size: 1.3rem;
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .compass-container {
+                width: 250px;
+                height: 250px;
+                margin: 20px auto;
+            }
+            
+            .info-panel {
+                padding: 20px;
+                margin: 20px 0;
+            }
+            
+            .direction-display {
+                font-size: 3.5rem;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ELEGANT COMPASS</h1>
+            <div class="subtitle">By 0598 • Works in Browser • Real Sensors</div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+        
+        <div class="compass-container">
+            <div class="compass-ring"></div>
+            <div class="compass-inner"></div>
+            
+            <!-- Direction markers -->
+            <div class="direction-markers">
+                <div class="direction north">N</div>
+                <div class="direction east">E</div>
+                <div class="direction south">S</div>
+                <div class="direction west">W</div>
+                
+                <!-- Degree markers -->
+                <div class="degrees degree-0">0°</div>
+                <div class="degrees degree-45">45°</div>
+                <div class="degrees degree-90">90°</div>
+                <div class="degrees degree-135">135°</div>
+                <div class="degrees degree-180">180°</div>
+                <div class="degrees degree-225">225°</div>
+                <div class="degrees degree-270">270°</div>
+                <div class="degrees degree-315">315°</div>
+            </div>
+            
+            <!-- Compass needle -->
+            <div class="compass-needle" id="needle"></div>
+            <div class="compass-needle-tail"></div>
+            <div class="compass-center"></div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="degree-display" id="degrees">0°</div>
+            <div class="direction-display" id="direction">NORTH</div>
+            
+            <div class="cardinal-grid">
+                <div class="cardinal-item active" data-dir="N">
+                    <div class="cardinal-name">NORTH</div>
+                    <div class="cardinal-symbol">N</div>
+                </div>
+                <div class="cardinal-item" data-dir="E">
+                    <div class="cardinal-name">EAST</div>
+                    <div class="cardinal-symbol">E</div>
+                </div>
+                <div class="cardinal-item" data-dir="S">
+                    <div class="cardinal-name">SOUTH</div>
+                    <div class="cardinal-symbol">S</div>
+                </div>
+                <div class="cardinal-item" data-dir="W">
+                    <div class="cardinal-name">WEST</div>
+                    <div class="cardinal-symbol">W</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sensor-status">
+            <div class="status-text" id="sensorStatus">
+                <i class="fas fa-sync-alt fa-spin"></i> Checking device sensors...
+            </div>
+        </div>
+        
+        <div class="location-info" id="locationInfo">
+            <!-- Location info will appear here -->
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-left" id="rotateLeft">
+                <i class="fas fa-undo-alt"></i> Rotate Left
+            </button>
+            <button class="btn btn-right" id="rotateRight">
+                Rotate Right <i class="fas fa-redo-alt"></i>
+            </button>
+        </div>
+        
+        <button class="btn btn-location" id="getLocation">
+            <i class="fas fa-map-marker-alt"></i> Show My Location
+        </button>
+        
+        <footer>
+            <p>@JA0598 2026 Elegant Compass • Works on all modern phones • Tap "Rotate" buttons or move your device</p>
+            <p><i class="fas fa-mobile-alt"></i> Hold your phone flat for accurate readings</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const needle = document.getElementById('needle');
+        const degreesElement = document.getElementById('degrees');
+        const directionElement = document.getElementById('direction');
+        const sensorStatus = document.getElementById('sensorStatus');
+        const rotateLeftBtn = document.getElementById('rotateLeft');
+        const rotateRightBtn = document.getElementById('rotateRight');
+        const getLocationBtn = document.getElementById('getLocation');
+        const locationInfo = document.getElementById('locationInfo');
+        const themeToggle = document.getElementById('themeToggle');
+        const cardinalItems = document.querySelectorAll('.cardinal-item');
+
+        // Compass variables
+        let currentHeading = 0;
+        let isCalibrating = false;
+        let sensorSupported = false;
+        let userLocation = null;
+
+        // Cardinal directions with degree ranges
+        const directions = [
+            { name: "NORTH", symbol: "N", min: 337.5, max: 22.5, color: "#ff006e" },
+            { name: "NORTHEAST", symbol: "NE", min: 22.5, max: 67.5, color: "#d946ef" },
+            { name: "EAST", symbol: "E", min: 67.5, max: 112.5, color: "#4cc9f0" },
+            { name: "SOUTHEAST", symbol: "SE", min: 112.5, max: 157.5, color: "#22c55e" },
+            { name: "SOUTH", symbol: "S", min: 157.5, max: 202.5, color: "#4cc9f0" },
+            { name: "SOUTHWEST", symbol: "SW", min: 202.5, max: 247.5, color: "#f97316" },
+            { name: "WEST", symbol: "W", min: 247.5, max: 292.5, color: "#4cc9f0" },
+            { name: "NORTHWEST", symbol: "NW", min: 292.5, max: 337.5, color: "#a855f7" }
+        ];
+
+        // Initialize compass
+        function initCompass() {
+            // Check for DeviceOrientation API support
+            if (typeof DeviceOrientationEvent !== 'undefined' && 
+                typeof DeviceOrientationEvent.requestPermission === 'function') {
+                // iOS 13+ devices
+                sensorStatus.innerHTML = '<i class="fas fa-mobile-alt"></i> iOS Device - Tap here to enable compass';
+                sensorStatus.classList.add('unsupported');
+                sensorStatus.style.cursor = 'pointer';
+                
+                // Add click handler to request permission
+                sensorStatus.addEventListener('click', requestIOSPermission);
+            } else if ('ondeviceorientationabsolute' in window || 
+                      'ondeviceorientation' in window) {
+                // Devices with compass support
+                startCompass();
+            } else {
+                // No compass support
+                sensorStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Compass not supported - Using simulation';
+                sensorStatus.classList.add('unsupported');
+                sensorSupported = false;
+                updateCompassDisplay(); // Start with simulation
+            }
+        }
+
+        // Request permission on iOS
+        function requestIOSPermission() {
+            DeviceOrientationEvent.requestPermission()
+                .then(permissionState => {
+                    if (permissionState === 'granted') {
+                        sensorStatus.innerHTML = '<i class="fas fa-check-circle"></i> Permission granted - Starting compass...';
+                        setTimeout(startCompass, 1000);
+                    } else {
+                        sensorStatus.innerHTML = '<i class="fas fa-times-circle"></i> Permission denied - Using simulation';
+                        sensorSupported = false;
+                        updateCompassDisplay();
+                    }
+                })
+                .catch(console.error);
+        }
+
+        // Start compass with sensor data
+        function startCompass() {
+            // Use absolute orientation if available
+            if ('ondeviceorientationabsolute' in window) {
+                window.addEventListener('deviceorientationabsolute', handleOrientation);
+                sensorSupported = true;
+            } else if ('ondeviceorientation' in window) {
+                window.addEventListener('deviceorientation', handleOrientation);
+                sensorSupported = true;
+            }
+            
+            if (sensorSupported) {
+                sensorStatus.innerHTML = '<i class="fas fa-check-circle"></i> Using device compass - Hold phone flat';
+                sensorStatus.classList.remove('unsupported');
+                sensorStatus.classList.add('supported');
+                
+                // Show calibration message
+                isCalibrating = true;
+                needle.classList.add('calibrating');
+                sensorStatus.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Calibrating... Move phone in figure-8';
+                
+                setTimeout(() => {
+                    isCalibrating = false;
+                    needle.classList.remove('calibrating');
+                    sensorStatus.innerHTML = '<i class="fas fa-check-circle"></i> Compass ready! Hold phone flat';
+                }, 3000);
+            }
+        }
+
+        // Handle orientation data
+        function handleOrientation(event) {
+            if (isCalibrating) return;
+            
+            // Get compass heading from different possible sources
+            if (event.alpha !== null) {
+                currentHeading = event.alpha;
+            } else if (event.webkitCompassHeading) {
+                // iOS Safari
+                currentHeading = event.webkitCompassHeading;
+            }
+            
+            updateCompassDisplay();
+        }
+
+        // Update the compass display
+        function updateCompassDisplay() {
+            // Normalize heading to 0-360
+            let normalizedHeading = currentHeading % 360;
+            if (normalizedHeading < 0) normalizedHeading += 360;
+            
+            // Update needle position
+            needle.style.transform = `translate(-50%, -100%) rotate(${normalizedHeading}deg)`;
+            
+            // Update degree display
+            degreesElement.textContent = `${Math.round(normalizedHeading)}°`;
+            
+            // Get cardinal direction
+            const direction = getCardinalDirection(normalizedHeading);
+            directionElement.textContent = direction.name;
+            directionElement.style.color = direction.color;
+            
+            // Update active cardinal indicator
+            updateCardinalIndicator(direction.symbol);
+        }
+
+        // Get cardinal direction from degree
+        function getCardinalDirection(heading) {
+            // Handle the 0/360 wrap-around for North
+            if (heading > 337.5 || heading < 22.5) {
+                return directions[0]; // NORTH
+            }
+            
+            // Check other directions
+            for (let i = 1; i < directions.length; i++) {
+                if (heading >= directions[i].min && heading < directions[i].max) {
+                    return directions[i];
+                }
+            }
+            
+            return directions[0]; // Default to NORTH
+        }
+
+        // Update active cardinal indicator
+        function updateCardinalIndicator(symbol) {
+            cardinalItems.forEach(item => {
+                if (item.getAttribute('data-dir') === symbol) {
+                    item.classList.add('active');
+                    item.style.borderColor = getCardinalDirection(currentHeading).color;
+                } else {
+                    item.classList.remove('active');
+                    item.style.borderColor = 'transparent';
+                }
+            });
+        }
+
+        // Rotate left (counter-clockwise)
+        function rotateLeft() {
+            currentHeading = (currentHeading + 15) % 360;
+            updateCompassDisplay();
+            vibrate();
+            
+            rotateLeftBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                rotateLeftBtn.style.transform = '';
+            }, 200);
+        }
+
+        // Rotate right (clockwise)
+        function rotateRight() {
+            currentHeading = (currentHeading - 15) % 360;
+            if (currentHeading < 0) currentHeading += 360;
+            updateCompassDisplay();
+            vibrate();
+            
+            rotateRightBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                rotateRightBtn.style.transform = '';
+            }, 200);
+        }
+
+        // Get user location
+        function getLocation() {
+            if ('geolocation' in navigator) {
+                getLocationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting location...';
+                getLocationBtn.disabled = true;
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = position;
+                        const lat = position.coords.latitude.toFixed(6);
+                        const lng = position.coords.longitude.toFixed(6);
+                        const accuracy = Math.round(position.coords.accuracy);
+                        
+                        locationInfo.innerHTML = `
+                            <p><i class="fas fa-location-dot" style="color:#22c55e"></i> <strong>Your Location:</strong></p>
+                            <p>📍 Latitude: <strong>${lat}°</strong></p>
+                            <p>📍 Longitude: <strong>${lng}°</strong></p>
+                            <p>🎯 Accuracy: <strong>${accuracy} meters</strong></p>
+                            <p><small><i class="fas fa-compass"></i> Combined with compass heading for navigation</small></p>
+                        `;
+                        locationInfo.style.display = 'block';
+                        getLocationBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Update Location';
+                        getLocationBtn.disabled = false;
+                        vibrate([50, 30, 50]);
+                    },
+                    (error) => {
+                        locationInfo.innerHTML = `
+                            <p style="color:#f87171"><i class="fas fa-exclamation-triangle"></i> Could not get location</p>
+                            <p><small>${error.message}</small></p>
+                            <p><small>Check location permissions in browser settings</small></p>
+                        `;
+                        locationInfo.style.display = 'block';
+                        getLocationBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Try Again';
+                        getLocationBtn.disabled = false;
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                locationInfo.innerHTML = '<p style="color:#f87171"><i class="fas fa-exclamation-triangle"></i> Geolocation not supported</p>';
+                locationInfo.style.display = 'block';
+            }
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const icon = themeToggle.querySelector('i');
+            
+            if (document.body.classList.contains('light-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('compassTheme', 'light');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('compassTheme', 'dark');
+            }
+            
+            vibrate();
+        }
+
+        // Vibrate if supported
+        function vibrate(pattern = 50) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        }
+
+        // Event listeners
+        rotateLeftBtn.addEventListener('click', rotateLeft);
+        rotateRightBtn.addEventListener('click', rotateRight);
+        getLocationBtn.addEventListener('click', getLocation);
+        themeToggle.addEventListener('click', toggleTheme);
+
+        // Touch event listeners for mobile
+        rotateLeftBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            rotateLeft();
+        });
+
+        rotateRightBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            rotateRight();
+        });
+
+        getLocationBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                rotateLeft();
+            } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                rotateRight();
+            } else if (e.key === 'l' || e.key === 'L') {
+                getLocation();
+            } else if (e.key === 't' || e.key === 'T') {
+                toggleTheme();
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initCompass();
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('compassTheme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                themeToggle.querySelector('i').classList.remove('fa-moon');
+                themeToggle.querySelector('i').classList.add('fa-sun');
+            }
+            
+            // Instructions alert on first visit
+            if (!localStorage.getItem('compassVisited')) {
+                setTimeout(() => {
+                    alert("Welcome to Elegant Compass!\n\n📱 Hold phone flat for compass\n📍 Tap 'Show My Location' for coordinates\n🌙 Tap moon icon for light mode\n\nTap 'OK' to begin!");
+                    localStorage.setItem('compassVisited', 'true');
+                }, 1000);
+            }
+        });
+
+        // Handle visibility change - recalibrate when returning to app
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && sensorSupported) {
+                isCalibrating = true;
+                needle.classList.add('calibrating');
+                sensorStatus.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Recalibrating...';
+                
+                setTimeout(() => {
+                    isCalibrating = false;
+                    needle.classList.remove('calibrating');
+                    sensorStatus.innerHTML = '<i class="fas fa-check-circle"></i> Compass ready!';
+                }, 1000);
+            }
+        });
+
+        // Prevent overscroll on mobile
+        document.body.addEventListener('touchmove', (e) => {
+            if (e.target.tagName === 'BUTTON') return;
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
