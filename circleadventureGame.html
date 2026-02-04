@@ -1,0 +1,1134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radius Explorer: Circle & Sphere Adventure</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin-top: 20px;
+            border: 8px solid #FFD700;
+            position: relative;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #FF416C, #FF4B2B);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 8px solid #FFD700;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="20" cy="20" r="3" fill="white" opacity="0.3"/><circle cx="50" cy="40" r="4" fill="white" opacity="0.3"/><circle cx="80" cy="20" r="2" fill="white" opacity="0.3"/><circle cx="30" cy="70" r="5" fill="white" opacity="0.3"/><circle cx="70" cy="60" r="3" fill="white" opacity="0.3"/></svg>');
+            z-index: 0;
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 #FFD700;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .world-map {
+            flex: 3;
+            min-width: 300px;
+            background-color: #8B4513;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 6px solid #654321;
+            position: relative;
+            min-height: 500px;
+            overflow: hidden;
+        }
+        
+        .player {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-color: #FF416C;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            border: 4px solid white;
+        }
+        
+        .player:hover {
+            transform: scale(1.1);
+        }
+        
+        .player i {
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        .obstacle {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid white;
+        }
+        
+        .obstacle:hover {
+            transform: scale(1.05);
+        }
+        
+        .obstacle.circle {
+            background: radial-gradient(circle at 30% 30%, #4169E1, #1E90FF);
+        }
+        
+        .obstacle.sphere {
+            background: radial-gradient(circle at 30% 30%, #FF6347, #DC143C);
+        }
+        
+        .info-panel {
+            flex: 2;
+            min-width: 300px;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border: 4px solid #1E90FF;
+        }
+        
+        .panel-title {
+            color: #FF416C;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #FFD700;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid;
+        }
+        
+        .stat-card:nth-child(1) { border-color: #4169E1; }
+        .stat-card:nth-child(2) { border-color: #FF6347; }
+        .stat-card:nth-child(3) { border-color: #32CD32; }
+        .stat-card:nth-child(4) { border-color: #FFD700; }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .challenge-window {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            border: 3px dashed #1E90FF;
+        }
+        
+        .challenge-title {
+            color: #4169E1;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .challenge-question {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .answer-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .answer-btn {
+            padding: 15px;
+            background-color: #f0f8ff;
+            border: 2px solid #1E90FF;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+        
+        .answer-btn:hover {
+            background-color: #e0f0ff;
+            transform: translateY(-3px);
+        }
+        
+        .answer-btn.correct {
+            background-color: #90EE90;
+            border-color: #32CD32;
+        }
+        
+        .answer-btn.incorrect {
+            background-color: #FFB6C1;
+            border-color: #FF6347;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .control-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .move-btn {
+            background-color: #4169E1;
+            color: white;
+        }
+        
+        .move-btn:hover {
+            background-color: #3556C7;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(65, 105, 225, 0.3);
+        }
+        
+        .hint-btn {
+            background-color: #FFD700;
+            color: #333;
+        }
+        
+        .hint-btn:hover {
+            background-color: #E6C200;
+        }
+        
+        .powerups {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+        
+        .powerup-title {
+            color: #FF416C;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .powerup-items {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .powerup-item {
+            padding: 12px 18px;
+            background: white;
+            border-radius: 50px;
+            border: 3px solid;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .powerup-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .powerup-item:nth-child(1) { border-color: #4169E1; color: #4169E1; }
+        .powerup-item:nth-child(2) { border-color: #FF6347; color: #FF6347; }
+        .powerup-item:nth-child(3) { border-color: #32CD32; color: #32CD32; }
+        
+        .powerup-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .powerup-item.disabled:hover {
+            transform: none;
+        }
+        
+        .feedback {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 20px 30px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .feedback.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .feedback.correct {
+            background-color: #32CD32;
+        }
+        
+        .feedback.incorrect {
+            background-color: #FF6347;
+        }
+        
+        .level-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid #FFD700;
+        }
+        
+        .level-indicator span {
+            color: #FF416C;
+        }
+        
+        @media (max-width: 900px) {
+            .game-container {
+                flex-direction: column;
+            }
+            
+            .world-map, .info-panel {
+                min-width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .answer-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RADIUS EXPLORER</h1>
+            <div class="subtitle">Adventure through the world of circles and spheres!</div>
+            <div class="level-indicator">Level: <span id="level">1</span></div>
+        </div>
+        
+        <div class="game-container">
+            <div class="world-map" id="world-map">
+                <!-- Player and obstacles will be generated here by JavaScript -->
+            </div>
+            
+            <div class="info-panel">
+                <div class="panel-title">
+                    <i class="fas fa-map-marked-alt"></i> Adventure Info
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div><i class="fas fa-star" style="color: #4169E1;"></i> Score</div>
+                        <div class="stat-value" id="score">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div><i class="fas fa-heart" style="color: #FF6347;"></i> Lives</div>
+                        <div class="stat-value" id="lives">3</div>
+                    </div>
+                    <div class="stat-card">
+                        <div><i class="fas fa-bullseye" style="color: #32CD32;"></i> Solved</div>
+                        <div class="stat-value" id="solved">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div><i class="fas fa-gem" style="color: #FFD700;"></i> Coins</div>
+                        <div class="stat-value" id="coins">50</div>
+                    </div>
+                </div>
+                
+                <div class="challenge-window">
+                    <div class="challenge-title" id="challenge-title">
+                        <i class="fas fa-question-circle"></i> Challenge
+                    </div>
+                    <div class="challenge-question" id="challenge-question">
+                        Find a circle or sphere on the map and click it to start a challenge!
+                    </div>
+                    
+                    <div class="answer-options" id="answer-options">
+                        <!-- Answer buttons will be generated by JavaScript -->
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="control-btn move-btn" id="move-btn">
+                            <i class="fas fa-walking"></i> Move Player
+                        </button>
+                        <button class="control-btn hint-btn" id="hint-btn">
+                            <i class="fas fa-lightbulb"></i> Get Hint (10 coins)
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="powerups">
+                    <div class="powerup-title">
+                        <i class="fas fa-magic"></i> Power-ups
+                    </div>
+                    <div class="powerup-items">
+                        <div class="powerup-item" id="radius-revealer">
+                            <i class="fas fa-eye"></i> Radius Revealer
+                            <span class="cost">(30 coins)</span>
+                        </div>
+                        <div class="powerup-item" id="skip-challenge">
+                            <i class="fas fa-forward"></i> Skip Challenge
+                            <span class="cost">(50 coins)</span>
+                        </div>
+                        <div class="powerup-item" id="extra-life">
+                            <i class="fas fa-heart"></i> Extra Life
+                            <span class="cost">(100 coins)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="feedback" id="feedback">
+        <!-- Feedback messages will appear here -->
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            score: 0,
+            lives: 3,
+            solved: 0,
+            coins: 50,
+            level: 1,
+            playerPosition: { x: 50, y: 250 },
+            currentChallenge: null,
+            powerups: {
+                radiusRevealer: 1,
+                skipChallenge: 1,
+                extraLife: 0
+            },
+            obstacles: []
+        };
+
+        // DOM elements
+        const worldMap = document.getElementById('world-map');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+        const solvedElement = document.getElementById('solved');
+        const coinsElement = document.getElementById('coins');
+        const levelElement = document.getElementById('level');
+        const challengeQuestion = document.getElementById('challenge-question');
+        const challengeTitle = document.getElementById('challenge-title');
+        const answerOptions = document.getElementById('answer-options');
+        const moveButton = document.getElementById('move-btn');
+        const hintButton = document.getElementById('hint-btn');
+        const feedback = document.getElementById('feedback');
+        
+        // Power-up elements
+        const radiusRevealerBtn = document.getElementById('radius-revealer');
+        const skipChallengeBtn = document.getElementById('skip-challenge');
+        const extraLifeBtn = document.getElementById('extra-life');
+
+        // Initialize the game
+        function initGame() {
+            updateUI();
+            createObstacles();
+            createPlayer();
+            setupEventListeners();
+        }
+
+        // Create player on the map
+        function createPlayer() {
+            const player = document.createElement('div');
+            player.className = 'player';
+            player.id = 'player';
+            player.innerHTML = '<i class="fas fa-user"></i>';
+            player.style.left = `${gameState.playerPosition.x}px`;
+            player.style.top = `${gameState.playerPosition.y}px`;
+            
+            worldMap.appendChild(player);
+        }
+
+        // Create obstacles (circles and spheres) on the map
+        function createObstacles() {
+            // Clear existing obstacles
+            gameState.obstacles = [];
+            
+            // Create 8-12 obstacles based on level
+            const obstacleCount = 8 + Math.min(gameState.level, 5);
+            
+            for (let i = 0; i < obstacleCount; i++) {
+                const isCircle = Math.random() > 0.5;
+                const size = 40 + Math.random() * 40;
+                
+                // Ensure obstacles don't overlap too much with player or each other
+                let x, y;
+                let validPosition = false;
+                let attempts = 0;
+                
+                while (!validPosition && attempts < 100) {
+                    x = 20 + Math.random() * (worldMap.clientWidth - 60);
+                    y = 20 + Math.random() * (worldMap.clientHeight - 60);
+                    
+                    // Check distance from player
+                    const distFromPlayer = Math.sqrt(
+                        Math.pow(x - gameState.playerPosition.x, 2) + 
+                        Math.pow(y - gameState.playerPosition.y, 2)
+                    );
+                    
+                    // Check distance from other obstacles
+                    let tooClose = false;
+                    for (const obstacle of gameState.obstacles) {
+                        const dist = Math.sqrt(
+                            Math.pow(x - obstacle.x, 2) + 
+                            Math.pow(y - obstacle.y, 2)
+                        );
+                        
+                        if (dist < size + obstacle.size + 20) {
+                            tooClose = true;
+                            break;
+                        }
+                    }
+                    
+                    if (distFromPlayer > 100 && !tooClose) {
+                        validPosition = true;
+                    }
+                    
+                    attempts++;
+                }
+                
+                // Create obstacle object
+                const obstacle = {
+                    id: i,
+                    type: isCircle ? 'circle' : 'sphere',
+                    x: x,
+                    y: y,
+                    size: size,
+                    solved: false,
+                    element: null
+                };
+                
+                gameState.obstacles.push(obstacle);
+                
+                // Create DOM element for the obstacle
+                const obstacleElement = document.createElement('div');
+                obstacleElement.className = `obstacle ${obstacle.type}`;
+                obstacleElement.style.left = `${x}px`;
+                obstacleElement.style.top = `${y}px`;
+                obstacleElement.style.width = `${size}px`;
+                obstacleElement.style.height = `${size}px`;
+                obstacleElement.innerHTML = `<i class="fas fa-${isCircle ? 'circle' : 'globe-americas'}"></i>`;
+                
+                // Add click event to start challenge
+                obstacleElement.addEventListener('click', () => startChallenge(obstacle));
+                
+                worldMap.appendChild(obstacleElement);
+                obstacle.element = obstacleElement;
+            }
+        }
+
+        // Start a challenge when clicking an obstacle
+        function startChallenge(obstacle) {
+            if (obstacle.solved) {
+                showFeedback('You already solved this one! Find another.', 'incorrect');
+                return;
+            }
+            
+            gameState.currentChallenge = obstacle;
+            
+            // Generate a random question about radius
+            const question = generateRadiusQuestion(obstacle.type);
+            
+            // Update challenge display
+            challengeTitle.innerHTML = `<i class="fas fa-${obstacle.type === 'circle' ? 'circle' : 'globe-americas'}"></i> ${obstacle.type === 'circle' ? 'Circle' : 'Sphere'} Challenge`;
+            challengeQuestion.textContent = question.text;
+            
+            // Generate answer options
+            generateAnswerOptions(question.correctAnswer, question.answers);
+            
+            // Highlight the obstacle
+            highlightObstacle(obstacle.id, true);
+        }
+
+        // Generate a radius-related question
+        function generateRadiusQuestion(type) {
+            const radius = Math.floor(Math.random() * 15) + 5; // 5-20
+            const diameter = radius * 2;
+            const circumference = type === 'circle' ? (2 * Math.PI * radius).toFixed(1) : null;
+            const volume = type === 'sphere' ? ((4/3) * Math.PI * Math.pow(radius, 3)).toFixed(1) : null;
+            const surfaceArea = type === 'sphere' ? (4 * Math.PI * Math.pow(radius, 2)).toFixed(1) : null;
+            
+            const questionTypes = [
+                {
+                    text: `A ${type} has a diameter of ${diameter} units. What is its radius?`,
+                    correctAnswer: radius,
+                    answers: generateWrongAnswers(radius)
+                },
+                {
+                    text: `If the radius of a ${type} is ${radius} units, what is its diameter?`,
+                    correctAnswer: diameter,
+                    answers: generateWrongAnswers(diameter)
+                }
+            ];
+            
+            if (type === 'circle') {
+                questionTypes.push({
+                    text: `A circle has a circumference of ${circumference} units. What is its radius?`,
+                    correctAnswer: radius,
+                    answers: generateWrongAnswers(radius)
+                });
+            } else {
+                questionTypes.push({
+                    text: `A sphere has a volume of ${volume} units³. What is its radius?`,
+                    correctAnswer: radius,
+                    answers: generateWrongAnswers(radius)
+                });
+                questionTypes.push({
+                    text: `A sphere has a surface area of ${surfaceArea} units². What is its radius?`,
+                    correctAnswer: radius,
+                    answers: generateWrongAnswers(radius)
+                });
+            }
+            
+            // Select a random question type
+            return questionTypes[Math.floor(Math.random() * questionTypes.length)];
+        }
+
+        // Generate wrong answers for multiple choice
+        function generateWrongAnswers(correctAnswer) {
+            const answers = [correctAnswer];
+            
+            while (answers.length < 4) {
+                let wrongAnswer;
+                
+                // Generate plausible wrong answers
+                if (Math.random() > 0.5) {
+                    // Add or subtract a small amount
+                    wrongAnswer = correctAnswer + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 5) + 1);
+                } else {
+                    // Multiply or divide by a simple factor
+                    const factor = Math.random() > 0.5 ? 2 : 0.5;
+                    wrongAnswer = Math.round(correctAnswer * factor);
+                }
+                
+                // Ensure the wrong answer is positive and not already in the array
+                if (wrongAnswer > 0 && !answers.includes(wrongAnswer)) {
+                    answers.push(wrongAnswer);
+                }
+            }
+            
+            // Shuffle the answers
+            return answers.sort(() => Math.random() - 0.5);
+        }
+
+        // Generate answer buttons
+        function generateAnswerOptions(correctAnswer, answers) {
+            answerOptions.innerHTML = '';
+            
+            answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.className = 'answer-btn';
+                button.textContent = answer;
+                
+                button.addEventListener('click', () => checkAnswer(answer, correctAnswer, button));
+                
+                answerOptions.appendChild(button);
+            });
+        }
+
+        // Check the selected answer
+        function checkAnswer(selectedAnswer, correctAnswer, button) {
+            const isCorrect = selectedAnswer === correctAnswer;
+            
+            if (isCorrect) {
+                // Correct answer
+                button.classList.add('correct');
+                gameState.score += 10 * gameState.level;
+                gameState.solved++;
+                gameState.coins += 15;
+                
+                // Mark obstacle as solved
+                if (gameState.currentChallenge) {
+                    gameState.currentChallenge.solved = true;
+                    gameState.currentChallenge.element.innerHTML = '<i class="fas fa-check"></i>';
+                    gameState.currentChallenge.element.style.opacity = '0.6';
+                    highlightObstacle(gameState.currentChallenge.id, false);
+                }
+                
+                showFeedback('Correct! +' + (10 * gameState.level) + ' points', 'correct');
+                
+                // Check if level should advance
+                if (gameState.solved >= gameState.level * 3) {
+                    advanceLevel();
+                }
+            } else {
+                // Incorrect answer
+                button.classList.add('incorrect');
+                gameState.lives--;
+                
+                // Highlight correct answer
+                document.querySelectorAll('.answer-btn').forEach(btn => {
+                    if (parseInt(btn.textContent) === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
+                
+                showFeedback('Incorrect! The answer was ' + correctAnswer, 'incorrect');
+                
+                // Check if game over
+                if (gameState.lives <= 0) {
+                    setTimeout(gameOver, 1000);
+                }
+            }
+            
+            // Disable all answer buttons after selection
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            updateUI();
+        }
+
+        // Move the player to a random position
+        function movePlayer() {
+            const player = document.getElementById('player');
+            
+            // Find a position not too close to existing obstacles
+            let newX, newY;
+            let validPosition = false;
+            let attempts = 0;
+            
+            while (!validPosition && attempts < 100) {
+                newX = 30 + Math.random() * (worldMap.clientWidth - 90);
+                newY = 30 + Math.random() * (worldMap.clientHeight - 90);
+                
+                // Check distance from obstacles
+                let tooClose = false;
+                for (const obstacle of gameState.obstacles) {
+                    const dist = Math.sqrt(
+                        Math.pow(newX - obstacle.x, 2) + 
+                        Math.pow(newY - obstacle.y, 2)
+                    );
+                    
+                    if (dist < 80) {
+                        tooClose = true;
+                        break;
+                    }
+                }
+                
+                if (!tooClose) {
+                    validPosition = true;
+                }
+                
+                attempts++;
+            }
+            
+            if (validPosition) {
+                // Update position with animation
+                player.style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                player.style.left = `${newX}px`;
+                player.style.top = `${newY}px`;
+                
+                gameState.playerPosition.x = newX;
+                gameState.playerPosition.y = newY;
+                
+                // Cost to move
+                gameState.coins -= 5;
+                updateUI();
+                
+                // Reset transition after animation
+                setTimeout(() => {
+                    player.style.transition = '';
+                }, 800);
+            }
+        }
+
+        // Show a hint for the current challenge
+        function showHint() {
+            if (gameState.coins < 10) {
+                showFeedback('Not enough coins for a hint!', 'incorrect');
+                return;
+            }
+            
+            if (!gameState.currentChallenge) {
+                showFeedback('Select a challenge first!', 'incorrect');
+                return;
+            }
+            
+            gameState.coins -= 10;
+            
+            let hint = '';
+            const type = gameState.currentChallenge.type;
+            
+            if (challengeQuestion.textContent.includes('diameter')) {
+                hint = type === 'circle' 
+                    ? 'For circles: Radius = Diameter ÷ 2' 
+                    : 'For spheres: Radius = Diameter ÷ 2';
+            } else if (challengeQuestion.textContent.includes('circumference')) {
+                hint = 'For circles: Radius = Circumference ÷ (2 × π)';
+            } else if (challengeQuestion.textContent.includes('volume')) {
+                hint = 'For spheres: Radius = ³√(Volume × 3/4 ÷ π)';
+            } else if (challengeQuestion.textContent.includes('surface area')) {
+                hint = 'For spheres: Radius = √(Surface Area ÷ (4 × π))';
+            } else {
+                hint = 'The radius is half of the diameter';
+            }
+            
+            showFeedback(`Hint: ${hint}`, 'correct');
+            updateUI();
+        }
+
+        // Use power-up: Radius Revealer
+        function useRadiusRevealer() {
+            if (gameState.coins < 30) {
+                showFeedback('Not enough coins!', 'incorrect');
+                return;
+            }
+            
+            if (!gameState.currentChallenge) {
+                showFeedback('Select a challenge first!', 'incorrect');
+                return;
+            }
+            
+            gameState.coins -= 30;
+            
+            // Find the correct answer button and highlight it
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                btn.classList.remove('correct');
+            });
+            
+            showFeedback('The correct answer is highlighted!', 'correct');
+            updateUI();
+        }
+
+        // Use power-up: Skip Challenge
+        function useSkipChallenge() {
+            if (gameState.coins < 50) {
+                showFeedback('Not enough coins!', 'incorrect');
+                return;
+            }
+            
+            if (!gameState.currentChallenge) {
+                showFeedback('Select a challenge first!', 'incorrect');
+                return;
+            }
+            
+            gameState.coins -= 50;
+            gameState.currentChallenge.solved = true;
+            gameState.currentChallenge.element.innerHTML = '<i class="fas fa-forward"></i>';
+            gameState.currentChallenge.element.style.opacity = '0.6';
+            highlightObstacle(gameState.currentChallenge.id, false);
+            
+            // Clear challenge display
+            challengeQuestion.textContent = 'Challenge skipped! Find another circle or sphere.';
+            answerOptions.innerHTML = '';
+            
+            showFeedback('Challenge skipped!', 'correct');
+            updateUI();
+        }
+
+        // Use power-up: Extra Life
+        function useExtraLife() {
+            if (gameState.coins < 100) {
+                showFeedback('Not enough coins!', 'incorrect');
+                return;
+            }
+            
+            gameState.coins -= 100;
+            gameState.lives++;
+            
+            showFeedback('Extra life gained!', 'correct');
+            updateUI();
+        }
+
+        // Advance to the next level
+        function advanceLevel() {
+            gameState.level++;
+            
+            // Reward for advancing level
+            gameState.coins += 50;
+            
+            showFeedback(`Level ${gameState.level} unlocked! +50 coins`, 'correct');
+            
+            // Create new obstacles for the new level
+            createObstacles();
+            
+            updateUI();
+        }
+
+        // Game over
+        function gameOver() {
+            showFeedback(`Game Over! Final Score: ${gameState.score}`, 'incorrect');
+            
+            // Ask to restart
+            setTimeout(() => {
+                if (confirm(`Game Over! Your score: ${gameState.score}\n\nPlay again?`)) {
+                    resetGame();
+                }
+            }, 1000);
+        }
+
+        // Reset the game
+        function resetGame() {
+            gameState.score = 0;
+            gameState.lives = 3;
+            gameState.solved = 0;
+            gameState.coins = 50;
+            gameState.level = 1;
+            gameState.playerPosition = { x: 50, y: 250 };
+            gameState.currentChallenge = null;
+            
+            // Clear obstacles
+            document.querySelectorAll('.obstacle').forEach(el => el.remove());
+            
+            // Reset player position
+            const player = document.getElementById('player');
+            player.style.left = '50px';
+            player.style.top = '250px';
+            gameState.playerPosition.x = 50;
+            gameState.playerPosition.y = 250;
+            
+            // Clear challenge display
+            challengeQuestion.textContent = 'Find a circle or sphere on the map and click it to start a challenge!';
+            answerOptions.innerHTML = '';
+            challengeTitle.innerHTML = '<i class="fas fa-question-circle"></i> Challenge';
+            
+            // Create new obstacles
+            createObstacles();
+            
+            updateUI();
+        }
+
+        // Highlight an obstacle
+        function highlightObstacle(obstacleId, highlight) {
+            const obstacle = gameState.obstacles.find(o => o.id === obstacleId);
+            if (obstacle && obstacle.element) {
+                if (highlight) {
+                    obstacle.element.style.boxShadow = '0 0 20px 10px #FFD700';
+                    obstacle.element.style.transform = 'scale(1.1)';
+                } else {
+                    obstacle.element.style.boxShadow = 'inset 0 0 10px rgba(0, 0, 0, 0.5)';
+                    obstacle.element.style.transform = 'scale(1)';
+                }
+            }
+        }
+
+        // Show feedback message
+        function showFeedback(message, type) {
+            feedback.textContent = message;
+            feedback.className = `feedback ${type} show`;
+            
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update UI elements
+        function updateUI() {
+            scoreElement.textContent = gameState.score;
+            livesElement.textContent = gameState.lives;
+            solvedElement.textContent = gameState.solved;
+            coinsElement.textContent = gameState.coins;
+            levelElement.textContent = gameState.level;
+            
+            // Update power-up buttons based on coins
+            radiusRevealerBtn.classList.toggle('disabled', gameState.coins < 30);
+            skipChallengeBtn.classList.toggle('disabled', gameState.coins < 50);
+            extraLifeBtn.classList.toggle('disabled', gameState.coins < 100);
+            
+            // Update move button based on coins
+            moveButton.disabled = gameState.coins < 5;
+            moveButton.style.opacity = gameState.coins < 5 ? '0.5' : '1';
+            
+            // Update hint button based on coins
+            hintButton.disabled = gameState.coins < 10;
+            hintButton.style.opacity = gameState.coins < 10 ? '0.5' : '1';
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            moveButton.addEventListener('click', movePlayer);
+            hintButton.addEventListener('click', showHint);
+            
+            // Power-up buttons
+            radiusRevealerBtn.addEventListener('click', useRadiusRevealer);
+            skipChallengeBtn.addEventListener('click', useSkipChallenge);
+            extraLifeBtn.addEventListener('click', useExtraLife);
+            
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                const player = document.getElementById('player');
+                let newX = gameState.playerPosition.x;
+                let newY = gameState.playerPosition.y;
+                const step = 20;
+                
+                switch(e.key) {
+                    case 'ArrowUp':
+                    case 'w':
+                    case 'W':
+                        newY = Math.max(30, newY - step);
+                        break;
+                    case 'ArrowDown':
+                    case 's':
+                    case 'S':
+                        newY = Math.min(worldMap.clientHeight - 90, newY + step);
+                        break;
+                    case 'ArrowLeft':
+                    case 'a':
+                    case 'A':
+                        newX = Math.max(30, newX - step);
+                        break;
+                    case 'ArrowRight':
+                    case 'd':
+                    case 'D':
+                        newX = Math.min(worldMap.clientWidth - 90, newX + step);
+                        break;
+                    case ' ':
+                        // Space bar to interact with nearest obstacle
+                        interactWithNearestObstacle();
+                        break;
+                }
+                
+                // Update player position
+                player.style.left = `${newX}px`;
+                player.style.top = `${newY}px`;
+                gameState.playerPosition.x = newX;
+                gameState.playerPosition.y = newY;
+            });
+        }
+
+        // Interact with the nearest obstacle
+        function interactWithNearestObstacle() {
+            let nearestObstacle = null;
+            let minDistance = Infinity;
+            
+            for (const obstacle of gameState.obstacles) {
+                const distance = Math.sqrt(
+                    Math.pow(obstacle.x - gameState.playerPosition.x, 2) + 
+                    Math.pow(obstacle.y - gameState.playerPosition.y, 2)
+                );
+                
+                if (distance < minDistance && distance < 100) { // Within 100px
+                    minDistance = distance;
+                    nearestObstacle = obstacle;
+                }
+            }
+            
+            if (nearestObstacle) {
+                startChallenge(nearestObstacle);
+            } else {
+                showFeedback('No obstacles nearby! Move closer to one.', 'incorrect');
+            }
+        }
+
+        // Start the game when page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
