@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elegant Compass - iPhone Fixed</title>
+    <!-- Apple-specific meta tags for iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <!-- Manifest for Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://img.icons8.com/color/180/compass--v1.png">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #4cc9f0, #f72585);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #a5b4fc;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        /* iPhone-specific warning */
+        .iphone-warning {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+            animation: pulseWarning 2s infinite;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        @keyframes pulseWarning {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .compass-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+        }
+
+        .compass-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid #4cc9f0;
+            border-radius: 50%;
+            box-shadow: 
+                0 0 40px rgba(76, 201, 240, 0.4),
+                inset 0 0 40px rgba(76, 201, 240, 0.1);
+        }
+
+        .compass-center {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #f72585;
+            border-radius: 50%;
+            box-shadow: 0 0 30px #f72585;
+            z-index: 10;
+        }
+
+        .compass-needle {
+            position: absolute;
+            width: 6px;
+            height: 130px;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            background: linear-gradient(to top, #ff006e, #ff4da6);
+            border-radius: 6px;
+            box-shadow: 0 0 20px rgba(255, 0, 110, 0.8);
+            z-index: 5;
+            transition: transform 0.2s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+
+        .direction-markers {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .direction {
+            position: absolute;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .north {
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff006e;
+        }
+
+        .east {
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: #4cc9f0;
+        }
+
+        .south {
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #4cc9f0;
+        }
+
+        .west {
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #4cc9f0;
+        }
+
+        .info-panel {
+            background: rgba(15, 52, 96, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(76, 201, 240, 0.3);
+        }
+
+        .direction-display {
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: #f72585;
+            margin: 15px 0;
+            text-shadow: 0 0 30px rgba(247, 37, 133, 0.5);
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .degree-display {
+            font-size: 2.5rem;
+            color: #e5e5e5;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .cardinal-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .cardinal-item {
+            background: rgba(26, 26, 46, 0.9);
+            border-radius: 15px;
+            padding: 15px 5px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .cardinal-item.active {
+            background: rgba(247, 37, 133, 0.3);
+            border-color: #f72585;
+            transform: scale(1.08);
+            box-shadow: 0 8px 25px rgba(247, 37, 133, 0.4);
+        }
+
+        .cardinal-name {
+            font-size: 0.8rem;
+            color: #a5b4fc;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .cardinal-symbol {
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 25px 0;
+            width: 100%;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 22px 15px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            -webkit-appearance: none;
+        }
+
+        .btn-left {
+            background: linear-gradient(135deg, #4361ee, #3a56d4);
+            color: white;
+        }
+
+        .btn-right {
+            background: linear-gradient(135deg, #f72585, #d91a72);
+            color: white;
+        }
+
+        .btn-location {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-ios-fix {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .status-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            width: 100%;
+            text-align: center;
+            border-left: 5px solid #4cc9f0;
+        }
+
+        .status-text {
+            font-size: 1rem;
+            color: #a5b4fc;
+            line-height: 1.5;
+        }
+
+        .status-text.supported {
+            color: #4ade80;
+        }
+
+        .status-text.unsupported {
+            color: #f87171;
+        }
+
+        .location-info {
+            display: none;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            width: 100%;
+            text-align: left;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            color: #a5b4fc;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            width: 100%;
+        }
+
+        /* Calibration animation */
+        @keyframes calibrate {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .calibrating {
+            animation: calibrate 1s infinite;
+        }
+
+        /* iOS specific styles */
+        .ios-instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            display: none;
+            border: 2px dashed #4cc9f0;
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            .compass-container {
+                width: 280px;
+                height: 280px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .direction-display {
+                font-size: 3.5rem;
+            }
+            
+            .btn {
+                padding: 20px 12px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ELEGANT COMPASS</h1>
+            <div class="subtitle">By 0598 • iPhone Compatible • Real Sensors</div>
+        </header>
+        
+        <!-- iPhone-specific warning -->
+        <div class="iphone-warning" id="iphoneWarning">
+            <i class="fas fa-exclamation-triangle"></i> 
+            <strong>iPhone Users:</strong> iOS requires permission for compass. 
+            See instructions below.
+        </div>
+        
+        <!-- iOS Instructions -->
+        <div class="ios-instructions" id="iosInstructions">
+            <h3><i class="fab fa-apple"></i> iPhone Setup:</h3>
+            <ol style="text-align: left; margin-left: 20px; margin-top: 10px;">
+                <li>Make sure you're in <strong>Safari</strong> (not Chrome/Firefox)</li>
+                <li>Tap the <strong>"Fix iPhone Compass"</strong> button below</li>
+                <li>Tap <strong>"Allow"</strong> when iOS asks for motion access</li>
+                <li>Hold phone <strong>flat</strong> and move it slowly</li>
+            </ol>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                <i class="fas fa-info-circle"></i> Works best in Safari on iOS 13+
+            </p>
+        </div>
+        
+        <div class="compass-container">
+            <div class="compass-ring"></div>
+            
+            <div class="direction-markers">
+                <div class="direction north">N</div>
+                <div class="direction east">E</div>
+                <div class="direction south">S</div>
+                <div class="direction west">W</div>
+            </div>
+            
+            <div class="compass-needle" id="needle"></div>
+            <div class="compass-center"></div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="degree-display" id="degrees">0°</div>
+            <div class="direction-display" id="direction">NORTH</div>
+            
+            <div class="cardinal-grid">
+                <div class="cardinal-item active" data-dir="N">
+                    <div class="cardinal-name">NORTH</div>
+                    <div class="cardinal-symbol">N</div>
+                </div>
+                <div class="cardinal-item" data-dir="E">
+                    <div class="cardinal-name">EAST</div>
+                    <div class="cardinal-symbol">E</div>
+                </div>
+                <div class="cardinal-item" data-dir="S">
+                    <div class="cardinal-name">SOUTH</div>
+                    <div class="cardinal-symbol">S</div>
+                </div>
+                <div class="cardinal-item" data-dir="W">
+                    <div class="cardinal-name">WEST</div>
+                    <div class="cardinal-symbol">W</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-area">
+            <div class="status-text" id="sensorStatus">
+                <i class="fas fa-sync-alt fa-spin"></i> Detecting device...
+            </div>
+        </div>
+        
+        <div class="location-info" id="locationInfo">
+            <!-- Location will appear here -->
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-left" id="rotateLeft">
+                <i class="fas fa-undo-alt"></i> Left
+            </button>
+            <button class="btn btn-right" id="rotateRight">
+                Right <i class="fas fa-redo-alt"></i>
+            </button>
+        </div>
+        
+        <!-- Special iOS Fix Button -->
+        <button class="btn btn-ios-fix" id="iosFixBtn">
+            <i class="fab fa-apple"></i> Fix iPhone Compass
+        </button>
+        
+        <button class="btn btn-location" id="getLocation">
+            <i class="fas fa-map-marker-alt"></i> Show Location
+        </button>
+        
+        <footer>
+            <p><i class="fas fa-mobile-alt"></i> Hold phone flat for best accuracy</p>
+            <p><i class="fab fa-apple"></i> iPhone users: Use Safari & allow motion access</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const needle = document.getElementById('needle');
+        const degreesElement = document.getElementById('degrees');
+        const directionElement = document.getElementById('direction');
+        const sensorStatus = document.getElementById('sensorStatus');
+        const rotateLeftBtn = document.getElementById('rotateLeft');
+        const rotateRightBtn = document.getElementById('rotateRight');
+        const getLocationBtn = document.getElementById('getLocation');
+        const locationInfo = document.getElementById('locationInfo');
+        const iosFixBtn = document.getElementById('iosFixBtn');
+        const iphoneWarning = document.getElementById('iphoneWarning');
+        const iosInstructions = document.getElementById('iosInstructions');
+        const cardinalItems = document.querySelectorAll('.cardinal-item');
+
+        // Variables
+        let currentHeading = 0;
+        let isCalibrating = false;
+        let isIOS = false;
+        let permissionRequested = false;
+        let deviceOrientationHandler = null;
+
+        // Detect iOS
+        function detectIOS() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+            
+            if (isIOS) {
+                console.log("iOS device detected");
+                iphoneWarning.style.display = 'block';
+                iosInstructions.style.display = 'block';
+                iosFixBtn.style.display = 'flex';
+                
+                // Show iOS-specific instructions
+                sensorStatus.innerHTML = '<i class="fab fa-apple"></i> iPhone detected. Tap "Fix iPhone Compass" button.';
+                sensorStatus.classList.add('unsupported');
+            }
+        }
+
+        // Enhanced iOS permission request
+        async function requestIOSPermission() {
+            try {
+                sensorStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Requesting permission...';
+                
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    const permission = await DeviceOrientationEvent.requestPermission();
+                    
+                    if (permission === 'granted') {
+                        sensorStatus.innerHTML = '<i class="fas fa-check-circle"></i> Permission granted! Starting compass...';
+                        sensorStatus.classList.remove('unsupported');
+                        sensorStatus.classList.add('supported');
+                        
+                        // Start compass after permission
+                        setTimeout(startCompass, 1000);
+                        permissionRequested = true;
+                        
+                        // Hide warning
+                        iphoneWarning.style.display = 'none';
+                        iosInstructions.style.display = 'none';
+                        
+                        return true;
+                    } else {
+                        sensorStatus.innerHTML = '<i class="fas fa-times-circle"></i> Permission denied. Using simulation.';
+                        startSimulation();
+                        return false;
+                    }
+                }
+            } catch (error) {
+                console.error("iOS Permission error:", error);
+                sensorStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error requesting permission.';
+                startSimulation();
+                return false;
+            }
+        }
+
+        // Start compass with enhanced iOS support
+        function startCompass() {
+            // Remove any existing listeners
+            if (deviceOrientationHandler) {
+                window.removeEventListener('deviceorientation', deviceOrientationHandler);
+                window.removeEventListener('deviceorientationabsolute', deviceOrientationHandler);
+            }
+            
+            // Try absolute orientation first (more accurate)
+            if (typeof window.DeviceOrientationEvent !== 'undefined') {
+                deviceOrientationHandler = handleOrientation;
+                
+                // Check for absolute orientation support
+                if (typeof window.ondeviceorientationabsolute !== 'undefined') {
+                    window.addEventListener('deviceorientationabsolute', deviceOrientationHandler);
+                    console.log("Using deviceorientationabsolute");
+                } else {
+                    // Fall back to regular orientation
+                    window.addEventListener('deviceorientation', deviceOrientationHandler);
+                    console.log("Using deviceorientation");
+                }
+                
+                // Show calibration
+                isCalibrating = true;
+                sensorStatus.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Calibrating... Move phone slowly';
+                
+                setTimeout(() => {
+                    isCalibrating = false;
+                    sensorStatus.innerHTML = '<i class="fas fa-check-circle"></i> Compass active. Hold phone flat.';
+                }, 3000);
+                
+                return true;
+            } else {
+                startSimulation();
+                return false;
+            }
+        }
+
+        // Handle orientation data with iOS fixes
+        function handleOrientation(event) {
+            if (isCalibrating) return;
+            
+            let heading = null;
+            
+            // iOS Safari with webkitCompassHeading
+            if (event.webkitCompassHeading) {
+                heading = event.webkitCompassHeading;
+            }
+            // Standard compass heading
+            else if (event.alpha !== null && event.absolute === true) {
+                heading = event.alpha;
+            }
+            // Relative orientation (needs adjustment)
+            else if (event.alpha !== null) {
+                heading = event.alpha;
+            }
+            
+            if (heading !== null) {
+                currentHeading = heading;
+                updateCompassDisplay();
+            }
+        }
+
+        // Fallback simulation for unsupported devices
+        function startSimulation() {
+            sensorStatus.innerHTML = '<i class="fas fa-gamepad"></i> Using simulation. Use buttons to rotate.';
+            updateCompassDisplay();
+            
+            // Enable simulation buttons
+            rotateLeftBtn.disabled = false;
+            rotateRightBtn.disabled = false;
+        }
+
+        // Update compass display
+        function updateCompassDisplay() {
+            let normalizedHeading = currentHeading % 360;
+            if (normalizedHeading < 0) normalizedHeading += 360;
+            
+            // Update needle with smooth animation
+            needle.style.transform = `translate(-50%, -100%) rotate(${normalizedHeading}deg)`;
+            
+            // Update displays
+            degreesElement.textContent = `${Math.round(normalizedHeading)}°`;
+            
+            // Get direction
+            const direction = getCardinalDirection(normalizedHeading);
+            directionElement.textContent = direction.name;
+            directionElement.style.color = direction.color;
+            
+            // Update indicators
+            updateCardinalIndicator(direction.symbol);
+        }
+
+        // Get cardinal direction
+        function getCardinalDirection(heading) {
+            const directions = [
+                { name: "NORTH", symbol: "N", min: 337.5, max: 22.5, color: "#ff006e" },
+                { name: "NORTHEAST", symbol: "NE", min: 22.5, max: 67.5, color: "#d946ef" },
+                { name: "EAST", symbol: "E", min: 67.5, max: 112.5, color: "#4cc9f0" },
+                { name: "SOUTHEAST", symbol: "SE", min: 112.5, max: 157.5, color: "#22c55e" },
+                { name: "SOUTH", symbol: "S", min: 157.5, max: 202.5, color: "#4cc9f0" },
+                { name: "SOUTHWEST", symbol: "SW", min: 202.5, max: 247.5, color: "#f97316" },
+                { name: "WEST", symbol: "W", min: 247.5, max: 292.5, color: "#4cc9f0" },
+                { name: "NORTHWEST", symbol: "NW", min: 292.5, max: 337.5, color: "#a855f7" }
+            ];
+            
+            if (heading > 337.5 || heading < 22.5) return directions[0];
+            
+            for (let i = 1; i < directions.length; i++) {
+                if (heading >= directions[i].min && heading < directions[i].max) {
+                    return directions[i];
+                }
+            }
+            
+            return directions[0];
+        }
+
+        // Update cardinal indicators
+        function updateCardinalIndicator(symbol) {
+            cardinalItems.forEach(item => {
+                if (item.getAttribute('data-dir') === symbol) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // Button functions
+        function rotateLeft() {
+            currentHeading = (currentHeading + 15) % 360;
+            updateCompassDisplay();
+        }
+
+        function rotateRight() {
+            currentHeading = (currentHeading - 15 + 360) % 360;
+            updateCompassDisplay();
+        }
+
+        // Get location
+        function getLocation() {
+            if (navigator.geolocation) {
+                getLocationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting location...';
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude.toFixed(6);
+                        const lng = position.coords.longitude.toFixed(6);
+                        
+                        locationInfo.innerHTML = `
+                            <p><strong>📍 Your Location:</strong></p>
+                            <p>Latitude: ${lat}°</p>
+                            <p>Longitude: ${lng}°</p>
+                            <p><small><i class="fas fa-compass"></i> Use with compass for navigation</small></p>
+                        `;
+                        locationInfo.style.display = 'block';
+                        getLocationBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Update Location';
+                    },
+                    (error) => {
+                        locationInfo.innerHTML = `<p style="color:#f87171">Error: ${error.message}</p>`;
+                        locationInfo.style.display = 'block';
+                        getLocationBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Try Again';
+                    }
+                );
+            }
+        }
+
+        // Initialize
+        function init() {
+            detectIOS();
+            
+            // Check if we're in Safari (best for iOS)
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            
+            if (isIOS && isSafari) {
+                sensorStatus.innerHTML = '<i class="fab fa-safari"></i> Safari detected - Best for iPhone compass';
+            }
+            
+            // If not iOS, start compass automatically
+            if (!isIOS) {
+                if (typeof DeviceOrientationEvent !== 'undefined') {
+                    startCompass();
+                } else {
+                    startSimulation();
+                }
+            }
+            
+            updateCompassDisplay();
+        }
+
+        // Event Listeners
+        rotateLeftBtn.addEventListener('click', rotateLeft);
+        rotateRightBtn.addEventListener('click', rotateRight);
+        getLocationBtn.addEventListener('click', getLocation);
+        iosFixBtn.addEventListener('click', requestIOSPermission);
+
+        // Touch events for mobile
+        [rotateLeftBtn, rotateRightBtn].forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                btn.style.opacity = '0.8';
+            });
+            
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                btn.style.opacity = '1';
+            });
+        });
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+
+        // Handle page visibility (iOS resumes compass when returning to app)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && isIOS && permissionRequested) {
+                setTimeout(startCompass, 500);
+            }
+        });
+    </script>
+</body>
+</html>
