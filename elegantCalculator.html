@@ -23,24 +23,26 @@
         }
         
         .calculator {
-            width: 400px;
+            width: 420px;
             background: #2c2c2c;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
             border: 2px solid #444;
+            padding: 20px;
         }
         
         .display-container {
             background: #1a1a1a;
-            padding: 25px 20px;
-            border-bottom: 3px solid #444;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #333;
         }
         
         .display-label {
             color: #888;
             font-size: 14px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -48,36 +50,39 @@
         
         #display {
             width: 100%;
-            height: 80px;
+            min-height: 70px;
             background: #1a1a1a;
-            border: none;
             color: white;
-            font-size: 36px;
+            font-size: 32px;
             text-align: right;
-            padding: 10px 15px;
-            outline: none;
+            padding: 10px;
             overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            word-break: break-all;
+            border: none;
+            outline: none;
+            font-family: monospace;
         }
         
         #result {
             width: 100%;
-            height: 50px;
+            min-height: 40px;
             background: #1a1a1a;
-            border: none;
             color: #4CAF50;
-            font-size: 28px;
+            font-size: 24px;
             text-align: right;
-            padding: 5px 15px;
-            outline: none;
+            padding: 5px 10px;
             margin-top: 5px;
+            border: none;
+            outline: none;
+            font-family: monospace;
         }
         
         .fraction-input {
             background: #333;
             padding: 20px;
-            border-bottom: 3px solid #444;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #444;
         }
         
         .fraction-row {
@@ -95,15 +100,15 @@
         }
         
         .fraction-input input {
-            flex: 1;
+            width: 60px;
             height: 50px;
             background: #444;
             border: 2px solid #555;
             border-radius: 8px;
             color: white;
-            font-size: 20px;
+            font-size: 18px;
             text-align: center;
-            padding: 0 10px;
+            padding: 0 5px;
             outline: none;
         }
         
@@ -113,19 +118,19 @@
         
         .fraction-symbol {
             color: #4CAF50;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             margin: 0 5px;
         }
         
         .operator-select {
-            width: 70px;
+            width: 60px;
             height: 50px;
             background: #444;
             border: 2px solid #555;
             border-radius: 8px;
             color: white;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             text-align: center;
             outline: none;
@@ -150,19 +155,18 @@
             background: #45a049;
         }
         
-        .buttons {
+        .buttons-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            padding: 20px;
-            background: #2c2c2c;
+            gap: 10px;
+            margin-bottom: 15px;
         }
         
         .btn {
-            height: 70px;
+            height: 60px;
             border: none;
-            border-radius: 10px;
-            font-size: 24px;
+            border-radius: 8px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             display: flex;
@@ -223,18 +227,17 @@
         .special-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 0 20px 20px;
-            background: #2c2c2c;
+            gap: 10px;
+            margin-bottom: 15px;
         }
         
         .special-btn {
-            height: 50px;
+            height: 45px;
             background: #555;
             border: none;
             border-radius: 8px;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -249,16 +252,17 @@
         
         .history {
             background: #333;
-            padding: 15px 20px;
-            border-top: 3px solid #444;
-            max-height: 150px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #444;
+            max-height: 120px;
             overflow-y: auto;
         }
         
         .history h3 {
             color: #ddd;
             margin-bottom: 10px;
-            font-size: 16px;
+            font-size: 14px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -266,11 +270,12 @@
         
         .history-item {
             color: #bbb;
-            padding: 8px 0;
+            padding: 6px 0;
             border-bottom: 1px solid #444;
-            font-size: 14px;
+            font-size: 12px;
             display: flex;
             justify-content: space-between;
+            font-family: monospace;
         }
         
         .history-item:last-child {
@@ -291,38 +296,40 @@
             border-radius: 3px;
         }
         
-        /* Fraction display styling */
-        .fraction {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0 2px;
-            vertical-align: middle;
+        /* Prevent any overflow issues */
+        .display-line {
+            display: block;
+            width: 100%;
+            text-align: right;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
-        .numerator {
-            border-bottom: 1px solid white;
-            padding: 0 5px;
+        /* Remove spinner buttons from number inputs */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
         
-        .denominator {
-            padding: 0 5px;
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
         
-        .result-fraction {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0 2px;
+        /* Ensure calculator doesn't resize */
+        .calculator {
+            min-width: 420px;
+            max-width: 420px;
+            position: relative;
         }
         
-        .result-numerator {
-            border-bottom: 1px solid #4CAF50;
-            padding: 0 5px;
+        /* Better spacing */
+        .calculator > * {
+            margin-bottom: 15px;
         }
         
-        .result-denominator {
-            padding: 0 5px;
+        .calculator > *:last-child {
+            margin-bottom: 0;
         }
     </style>
 </head>
@@ -330,19 +337,19 @@
     <div class="calculator">
         <div class="display-container">
             <div class="display-label">
-                <span>By JAMAL 0598 FRACTION CALCULATOR</span>
+                <span>BY JA 0598 FRACTION CALCULATOR</span>
                 <span id="mode">FRACTION</span>
             </div>
-            <input type="text" id="display" value="0" readonly>
-            <input type="text" id="result" value="" readonly>
+            <div id="display">0</div>
+            <div id="result"></div>
         </div>
         
         <div class="fraction-input">
             <h3>DIRECT FRACTION INPUT</h3>
             <div class="fraction-row">
-                <input type="number" id="num1" placeholder="Num" value="1">
-                <span class="fraction-symbol">⁄</span>
-                <input type="number" id="den1" placeholder="Den" value="2">
+                <input type="number" id="num1" placeholder="N" value="1">
+                <span class="fraction-symbol">/</span>
+                <input type="number" id="den1" placeholder="D" value="2">
                 
                 <select class="operator-select" id="operationSelect">
                     <option value="+">+</option>
@@ -351,37 +358,37 @@
                     <option value="/">÷</option>
                 </select>
                 
-                <input type="number" id="num2" placeholder="Num" value="1">
-                <span class="fraction-symbol">⁄</span>
-                <input type="number" id="den2" placeholder="Den" value="3">
+                <input type="number" id="num2" placeholder="N" value="1">
+                <span class="fraction-symbol">/</span>
+                <input type="number" id="den2" placeholder="D" value="3">
             </div>
             <button class="calculate-btn" id="calculateDirect">
                 <i class="fas fa-calculator"></i> CALCULATE
             </button>
         </div>
         
-        <div class="buttons">
+        <div class="buttons-grid">
             <button class="btn clear double-width" id="clearAll">AC</button>
             <button class="btn clear" id="clear">C</button>
             <button class="btn function" id="parentheses">( )</button>
             
-            <button class="btn operation" data-value="7">7</button>
-            <button class="btn operation" data-value="8">8</button>
-            <button class="btn operation" data-value="9">9</button>
+            <button class="btn number" data-value="7">7</button>
+            <button class="btn number" data-value="8">8</button>
+            <button class="btn number" data-value="9">9</button>
             <button class="btn function" data-value="/">÷</button>
             
-            <button class="btn operation" data-value="4">4</button>
-            <button class="btn operation" data-value="5">5</button>
-            <button class="btn operation" data-value="6">6</button>
+            <button class="btn number" data-value="4">4</button>
+            <button class="btn number" data-value="5">5</button>
+            <button class="btn number" data-value="6">6</button>
             <button class="btn function" data-value="*">×</button>
             
-            <button class="btn operation" data-value="1">1</button>
-            <button class="btn operation" data-value="2">2</button>
-            <button class="btn operation" data-value="3">3</button>
+            <button class="btn number" data-value="1">1</button>
+            <button class="btn number" data-value="2">2</button>
+            <button class="btn number" data-value="3">3</button>
             <button class="btn function" data-value="-">-</button>
             
-            <button class="btn operation" data-value="0">0</button>
-            <button class="btn operation" data-value="/">/</button>
+            <button class="btn number" data-value="0">0</button>
+            <button class="btn number" id="fractionSlash">/</button>
             <button class="btn function" id="decimal">.</button>
             <button class="btn function" data-value="+">+</button>
         </div>
@@ -401,7 +408,7 @@
             </button>
         </div>
         
-        <div class="buttons">
+        <div class="buttons-grid">
             <button class="btn equals double-width" id="equals">=</button>
         </div>
         
@@ -447,6 +454,7 @@
         const den2El = document.getElementById('den2');
         const operationSelect = document.getElementById('operationSelect');
         const calculateDirectBtn = document.getElementById('calculateDirect');
+        const fractionSlashBtn = document.getElementById('fractionSlash');
         
         // Button elements
         const clearBtn = document.getElementById('clear');
@@ -459,32 +467,10 @@
         const decimalBtn = document.getElementById('decimal');
         const toDecimalBtn = document.getElementById('toDecimal');
         
-        // Update display
+        // Update display - Simple text only
         function updateDisplay() {
-            display.value = formatExpression(currentExpression);
-            resultDisplay.value = result ? '= ' + formatResult(result) : '';
-        }
-        
-        // Format expression for display
-        function formatExpression(expr) {
-            if (expr === '') return '0';
-            return expr.replace(/(\d+)\/(\d+)/g, formatFraction);
-        }
-        
-        // Format result for display
-        function formatResult(res) {
-            if (res.includes('/')) {
-                return formatFraction(res);
-            }
-            return res;
-        }
-        
-        // Format a fraction
-        function formatFraction(match, num, den) {
-            return `<div class="fraction">
-                <div class="numerator">${num}</div>
-                <div class="denominator">${den}</div>
-            </div>`;
+            display.textContent = currentExpression || '0';
+            resultDisplay.textContent = result ? '= ' + result : '';
         }
         
         // Update history display
@@ -494,8 +480,8 @@
                 const div = document.createElement('div');
                 div.className = 'history-item';
                 div.innerHTML = `
-                    <span>${formatExpression(item.expression)}</span>
-                    <span>${formatResult(item.result)}</span>
+                    <span>${item.expression}</span>
+                    <span>${item.result}</span>
                 `;
                 historyList.appendChild(div);
             });
@@ -569,7 +555,7 @@
             button.addEventListener('click', () => {
                 const value = button.getAttribute('data-value');
                 
-                if (currentExpression === '0') {
+                if (currentExpression === '0' && value !== '/') {
                     currentExpression = value;
                 } else {
                     currentExpression += value;
@@ -577,6 +563,15 @@
                 
                 updateDisplay();
             });
+        });
+        
+        // Fraction slash button
+        fractionSlashBtn.addEventListener('click', () => {
+            if (currentExpression === '0') {
+                currentExpression = '';
+            }
+            currentExpression += '/';
+            updateDisplay();
         });
         
         // Clear button
@@ -736,6 +731,23 @@
             modeDisplay.textContent = 'FRACTION';
             addToHistory(expr, result);
             updateDisplay();
+        });
+        
+        // Input field event listeners - prevent any layout changes
+        [num1El, den1El, num2El, den2El].forEach(input => {
+            input.addEventListener('input', () => {
+                // Ensure values are valid
+                if (input.value === '') input.value = '0';
+                if (input.value.length > 4) input.value = input.value.slice(0, 4);
+            });
+            
+            input.addEventListener('focus', () => {
+                input.style.borderColor = '#4CAF50';
+            });
+            
+            input.addEventListener('blur', () => {
+                input.style.borderColor = '#555';
+            });
         });
         
         // Initialize
