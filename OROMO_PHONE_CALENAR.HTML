@@ -20,18 +20,18 @@
             min-height: 100vh;
         }
 
-        /* Mobile-first design */
+        /* Mobile calendar container */
         .mobile-calendar {
             max-width: 480px;
             width: 100%;
             background: #fdf2e4;
-            background-image: linear-gradient(45deg, #ffe9ce 10%, transparent 10%);
-            background-size: 20px 20px;
             border-radius: 32px 12px 32px 12px;
             border: 5px solid #8b1a1a;
             padding: 16px;
             position: relative;
             box-shadow: 10px 10px 0 rgba(0,0,0,0.2);
+            background-image: linear-gradient(45deg, #ffe9ce 5%, transparent 5%);
+            background-size: 20px 20px;
         }
 
         /* Oromo flag border */
@@ -48,183 +48,241 @@
             border-style: double;
         }
 
-        /* Header - compact for mobile */
-        .mobile-header {
+        /* ===== HEADER IMAGE ===== */
+        .header-image {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(145deg, #1e5b3e, #0f3a26);
+            border-radius: 24px 8px 24px 8px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #daa520;
+            box-shadow: 0 8px 0 #8b1a1a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 3px 3px 0 #2c1e0e;
+        }
+
+        /* Oromo traditional pattern overlay */
+        .header-image::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, rgba(218, 165, 32, 0.2) 0px, rgba(218, 165, 32, 0.2) 2px,
+                transparent 2px, transparent 8px);
+            pointer-events: none;
+        }
+
+        /* Oromo flag in header */
+        .header-flag {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .flag-stripe {
+            width: 40px;
+            height: 12px;
+            border-radius: 20px;
+        }
+
+        .stripe-red { background: #8b1a1a; border: 2px solid #daa520; }
+        .stripe-yellow { background: #daa520; border: 2px solid white; }
+        .stripe-green { background: #1e5b3e; border: 2px solid #daa520; }
+
+        .header-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 6px;
+            color: #fdf2e4;
+            text-shadow: 4px 4px 0 #8b1a1a, 6px 6px 0 #daa520;
+            margin-bottom: 4px;
+        }
+
+        .header-sub {
+            font-size: 1rem;
+            font-style: italic;
+            background: rgba(0,0,0,0.5);
+            padding: 6px 20px;
+            border-radius: 50px;
+            border: 2px solid #daa520;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Oromo star decoration */
+        .header-stars {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: #daa520;
+            opacity: 0.8;
+        }
+
+        /* ===== MONTH NAVIGATION WITH ARROWS ===== */
+        .month-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #2c1e0e;
+            border-radius: 60px 12px 60px 12px;
+            border: 4px solid #daa520;
+            padding: 8px 12px;
+            margin-bottom: 20px;
+            color: #fdf2e4;
+        }
+
+        .nav-arrow {
+            background: #8b1a1a;
+            color: white;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 2rem;
+            font-weight: bold;
+            border: 3px solid #daa520;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 0 #4a0e0e;
+            user-select: none;
+        }
+
+        .nav-arrow:active {
+            transform: scale(0.9);
+            box-shadow: 0 2px 0 #4a0e0e;
+        }
+
+        .nav-arrow.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            background: #5a4a3a;
+        }
+
+        .current-month-display {
+            text-align: center;
+            flex: 1;
+        }
+
+        .current-oromo {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #daa520;
+            text-shadow: 2px 2px 0 #2c1e0e;
+            line-height: 1.2;
+        }
+
+        .current-gregorian {
+            font-size: 1.1rem;
+            color: #fdf2e4;
+            background: #1e5b3e;
+            padding: 4px 12px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 4px;
+            border: 2px solid #daa520;
+        }
+
+        .current-year-badge {
+            font-size: 1rem;
+            color: #daa520;
+            margin-left: 6px;
+        }
+
+        /* Month card - single view */
+        .month-card {
+            background: white;
+            border-radius: 30px 8px 30px 8px;
+            padding: 20px 16px;
+            border: 4px solid #2c1e0e;
+            background: linear-gradient(145deg, #fffcf5, #f7ead9);
+            box-shadow: 12px 12px 0 rgba(139, 26, 26, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .month-header {
+            background: linear-gradient(145deg, #8b1a1a, #6b1313);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 20px 4px 20px 4px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 4px solid;
-            border-image: repeating-linear-gradient(90deg, #8b1a1a 0px, #8b1a1a 8px, #daa520 8px, #daa520 16px, #1e5b3e 16px, #1e5b3e 24px) 1;
+            border-bottom: 6px solid #daa520;
+            border-right: 4px solid #daa520;
         }
 
-        .mobile-title h1 {
-            font-size: 1.8rem;
-            color: #8b1a1a;
-            text-shadow: 2px 2px 0 #daa520;
-            letter-spacing: 2px;
-            line-height: 1;
-        }
-
-        .mobile-title h2 {
-            font-size: 0.9rem;
-            color: #1e5b3e;
+        .oromo-name {
+            font-size: 1.6rem;
+            font-weight: bold;
             display: flex;
             align-items: center;
+            gap: 8px;
+        }
+
+        .oromo-name::before {
+            content: "☀";
+            color: #daa520;
+            font-size: 1.5rem;
+        }
+
+        .gregorian-name {
+            background: #daa520;
+            color: #2c1e0e;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            border: 2px solid white;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 900;
+            color: #1e5b3e;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            background: #fef3e4;
+            padding: 10px 0;
+            border-radius: 30px;
+            border-bottom: 4px solid #daa520;
+            text-transform: uppercase;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
             gap: 6px;
         }
 
-        .mobile-year {
-            background: #1e5b3e;
-            padding: 8px 12px;
-            border-radius: 40px 8px 40px 8px;
-            border: 3px solid #daa520;
-            text-align: center;
-        }
-
-        .mobile-year .oromo {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #daa520;
-            line-height: 1;
-        }
-
-        .mobile-year .gregorian {
-            font-size: 0.8rem;
-            color: #fdf2e4;
-        }
-
-        /* Season bar */
-        .season-bar {
-            display: flex;
-            justify-content: space-around;
-            background: #2c1e0e;
-            padding: 8px 4px;
-            border-radius: 50px;
-            border: 2px solid #daa520;
-            margin-bottom: 16px;
-            color: #fdf2e4;
-            font-size: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .season-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* Month selector - horizontal scroll */
-        .month-scroll {
-            display: flex;
-            overflow-x: auto;
-            gap: 16px;
-            padding-bottom: 12px;
-            margin-bottom: 8px;
-            scrollbar-width: thin;
-            scrollbar-color: #8b1a1a #f0dbc0;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .month-scroll::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .month-scroll::-webkit-scrollbar-thumb {
-            background: #8b1a1a;
-            border-radius: 10px;
-        }
-
-        /* Mobile month card */
-        .mobile-month-card {
-            flex: 0 0 280px;
-            background: white;
-            border-radius: 24px 8px 24px 8px;
-            padding: 14px;
-            border: 2px solid #2c1e0e;
-            box-shadow: 6px 6px 0 rgba(139, 26, 26, 0.15);
-            position: relative;
-            background: linear-gradient(145deg, #fffcf5, #f7ead9);
-        }
-
-        .mobile-month-card:active {
-            transform: scale(0.98);
-        }
-
-        .mobile-month-header {
-            background: linear-gradient(145deg, #8b1a1a, #6b1313);
-            color: white;
-            padding: 8px 10px;
-            border-radius: 16px 4px 16px 4px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 4px solid #daa520;
-        }
-
-        .mobile-oromo-name {
-            font-size: 1.1rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .mobile-oromo-name::before {
-            content: "☀";
-            color: #daa520;
-            font-size: 0.9rem;
-        }
-
-        .mobile-gregorian {
-            background: #daa520;
-            color: #2c1e0e;
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 900;
-            border: 1px solid white;
-        }
-
-        /* Weekdays */
-        .mobile-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: 900;
-            color: #1e5b3e;
-            font-size: 0.7rem;
-            margin-bottom: 6px;
-            background: #fef3e4;
-            padding: 4px 0;
-            border-radius: 20px;
-            border-bottom: 2px solid #daa520;
-        }
-
-        /* Days grid */
-        .mobile-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 3px;
-        }
-
-        .mobile-day {
+        .day {
             aspect-ratio: 1 / 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
+            font-size: 1rem;
             background: #fff9f0;
-            border-radius: 10px 3px 10px 3px;
+            border-radius: 16px 4px 16px 4px;
             color: #2c1e0e;
             font-weight: 600;
-            border: 1px solid #e0cba0;
+            border: 1.5px solid #e0cba0;
             transition: all 0.1s;
         }
 
-        .mobile-day:active {
+        .day:active {
             background: #daa520;
             transform: scale(0.95);
         }
@@ -235,447 +293,469 @@
         }
 
         /* Holiday styles */
-        .irreecha-m {
+        .irreecha {
             background: #daa520;
             color: #2c1e0e;
-            border: 2px solid #8b1a1a;
+            border: 3px solid #8b1a1a;
+            font-weight: bold;
             position: relative;
         }
 
-        .irreecha-m::after {
+        .irreecha::after {
             content: "🌊";
             position: absolute;
-            top: -4px;
-            right: -2px;
-            font-size: 0.7rem;
+            top: -6px;
+            right: -4px;
+            font-size: 1rem;
+            filter: drop-shadow(2px 2px 0 white);
         }
 
-        .jalaqabsoo-m {
+        .jalaqabsoo {
             background: #8b1a1a;
             color: white;
-            border: 2px solid #daa520;
+            border: 3px solid #daa520;
             font-weight: bold;
         }
 
-        .jalaqabsoo-m::after {
+        .jalaqabsoo::after {
             content: "⚔";
             position: absolute;
-            top: -4px;
-            right: -2px;
-            font-size: 0.7rem;
+            top: -6px;
+            right: -4px;
+            font-size: 1rem;
+            color: #daa520;
         }
 
-        .ayyaana-m {
+        .ayyaana {
             background: #1e5b3e;
             color: white;
-            border: 2px solid #daa520;
+            border: 3px solid #daa520;
+            font-weight: bold;
         }
 
-        .ayyaana-m::after {
+        .ayyaana::after {
             content: "✶";
             position: absolute;
-            bottom: -2px;
-            right: 0px;
-            font-size: 0.7rem;
+            bottom: -4px;
+            right: -2px;
+            font-size: 1rem;
             color: #daa520;
         }
 
-        .fullmoon-m {
+        .fullmoon {
             background: #f0e6d2;
-            border: 2px solid #daa520;
+            border: 3px solid #daa520;
+            font-weight: bold;
         }
 
-        .fullmoon-m::after {
+        .fullmoon::after {
             content: "●";
             position: absolute;
-            bottom: -2px;
+            bottom: -4px;
             left: 2px;
             color: #daa520;
-            font-size: 0.7rem;
+            font-size: 1rem;
+        }
+
+        .holiday-label {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #8b1a1a;
+            border-top: 3px dashed #daa520;
+            padding-top: 12px;
         }
 
         /* Quick jump buttons */
-        .quick-nav {
+        .quick-jump {
             display: flex;
-            justify-content: space-between;
-            margin: 16px 0 8px;
-            gap: 6px;
+            justify-content: space-around;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .nav-btn {
+        .jump-btn {
             flex: 1;
             background: #2c1e0e;
             color: #fdf2e4;
-            border: 2px solid #daa520;
+            border: 3px solid #daa520;
             border-radius: 40px 8px 40px 8px;
-            padding: 10px 0;
-            font-size: 0.8rem;
+            padding: 12px 0;
+            font-size: 0.95rem;
             font-weight: bold;
             text-align: center;
             transition: all 0.2s;
+            cursor: pointer;
         }
 
-        .nav-btn:active {
+        .jump-btn:active {
             background: #8b1a1a;
             transform: scale(0.95);
         }
 
         /* Footer */
-        .mobile-footer {
-            margin-top: 20px;
+        .footer {
+            margin-top: 24px;
             text-align: center;
-            border-top: 4px double #8b1a1a;
-            padding-top: 16px;
+            border-top: 6px double #8b1a1a;
+            padding-top: 20px;
         }
 
-        .mobile-proverb {
+        .proverb {
             background: #1e5b3e;
             color: #fdf2e4;
-            padding: 12px;
-            border-radius: 50px 12px 50px 12px;
-            border: 3px solid #daa520;
-            font-size: 0.9rem;
+            padding: 16px;
+            border-radius: 60px 12px 60px 12px;
+            border: 4px solid #daa520;
+            font-size: 1.1rem;
             font-style: italic;
-            margin-bottom: 12px;
-            box-shadow: 5px 5px 0 #8b1a1a;
+            margin-bottom: 16px;
+            box-shadow: 8px 8px 0 #8b1a1a;
         }
 
-        .holiday-keys {
+        .holiday-key {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 12px;
-            font-size: 0.7rem;
+            gap: 16px;
+            font-size: 0.85rem;
             color: #2c1e0e;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .key-item {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             background: #f0e2cc;
-            padding: 4px 10px;
+            padding: 6px 14px;
             border-radius: 50px;
-            border: 1px solid #8b1a1a;
+            border: 2px solid #8b1a1a;
         }
 
         .key-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
             display: inline-block;
         }
 
-        /* Current month badge */
-        .current-month-badge {
+        .key-moon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
             background: #daa520;
-            color: #2c1e0e;
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: bold;
             display: inline-block;
-            margin-bottom: 8px;
-            border: 2px solid #8b1a1a;
         }
     </style>
 </head>
 <body>
     <div class="mobile-calendar">
-        <!-- Header -->
-        <div class="mobile-header">
-            <div class="mobile-title">
-                <h1>🌿 OROMOO</h1>
-                <h2>
-                    <span style="background:#8b1a1a; color:white; padding:2px 8px; border-radius:20px;">Kal.</span>
-                    Mobayil • 2026
-                </h2>
+        <!-- ===== HEADER IMAGE ===== -->
+        <div class="header-image">
+            <div class="header-flag">
+                <div class="flag-stripe stripe-red"></div>
+                <div class="flag-stripe stripe-yellow"></div>
+                <div class="flag-stripe stripe-green"></div>
             </div>
-            <div class="mobile-year">
-                <div class="oromo">፬፮፬፮</div>
-                <div class="gregorian">2026</div>
-            </div>
+            <div class="header-title">🌿 OROMOO</div>
+            <div class="header-sub">Kalendarii • Aadaa • Duudhaa</div>
+            <div class="header-stars">✶ ✶ ✶</div>
         </div>
 
-        <!-- Season bar -->
-        <div class="season-bar">
-            <div class="season-item"><span style="color:#daa520;">☀</span> Bona (Dry)</div>
-            <div class="season-item"><span style="color:#1e5b3e;">🌧</span> Ganna (Wet)</div>
-            <div class="season-item"><span style="color:#8b1a1a;">✶</span> Ayyaana</div>
+        <!-- ===== MONTH NAVIGATION WITH ARROWS ===== -->
+        <div class="month-nav">
+            <div id="prevMonthBtn" class="nav-arrow">←</div>
+            <div class="current-month-display">
+                <div id="currentOromoName" class="current-oromo">Ammaji</div>
+                <div>
+                    <span id="currentGregorianName" class="current-gregorian">January 2026</span>
+                    <span class="current-year-badge">4646</span>
+                </div>
+            </div>
+            <div id="nextMonthBtn" class="nav-arrow">→</div>
         </div>
 
-        <!-- Quick jump buttons -->
-        <div class="quick-nav">
-            <div class="nav-btn" onclick="document.getElementById('month1').scrollIntoView({behavior:'smooth', inline:'center'})">🗓️ Jan</div>
-            <div class="nav-btn" onclick="document.getElementById('irreecha-month').scrollIntoView({behavior:'smooth', inline:'center'})">🌊 Irreecha</div>
-            <div class="nav-btn" onclick="document.getElementById('today-month').scrollIntoView({behavior:'smooth', inline:'center'})">📅 Amma</div>
+        <!-- ===== MONTH CARD (DYNAMIC) ===== -->
+        <div id="monthCardContainer" class="month-card">
+            <!-- Content populated by JavaScript -->
         </div>
 
-        <!-- Current month badge (February 2026) -->
-        <div style="text-align: center;">
-            <span class="current-month-badge">📱 Amma • Guraandhala • Feb 2026</span>
+        <!-- ===== QUICK JUMP BUTTONS ===== -->
+        <div class="quick-jump">
+            <div class="jump-btn" onclick="jumpToMonth(8)">🌊 Irreecha</div>
+            <div class="jump-btn" onclick="jumpToMonth(7)">⚔ Gadaa</div>
+            <div class="jump-btn" onclick="jumpToMonth(1)">📅 Amma</div>
         </div>
 
-        <!-- MONTHS: JANUARY → DECEMBER (2026) with correct Oromo names -->
-        <div class="month-scroll">
-            <!-- 1. JANUARY 2026 — Ammaji -->
-            <div class="mobile-month-card" id="month1">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Ammaji</span>
-                    <span class="mobile-gregorian">Jan 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day">1</div><div class="mobile-day">2</div><div class="mobile-day">3</div><div class="mobile-day">4</div>
-                    <div class="mobile-day">5</div><div class="mobile-day">6</div><div class="mobile-day">7</div><div class="mobile-day">8</div><div class="mobile-day">9</div><div class="mobile-day">10</div><div class="mobile-day jalaqabsoo-m">11</div>
-                    <div class="mobile-day">12</div><div class="mobile-day">13</div><div class="mobile-day">14</div><div class="mobile-day">15</div><div class="mobile-day">16</div><div class="mobile-day">17</div><div class="mobile-day">18</div>
-                    <div class="mobile-day">19</div><div class="mobile-day">20</div><div class="mobile-day">21</div><div class="mobile-day">22</div><div class="mobile-day">23</div><div class="mobile-day">24</div><div class="mobile-day">25</div>
-                    <div class="mobile-day">26</div><div class="mobile-day">27</div><div class="mobile-day">28</div><div class="mobile-day">29</div><div class="mobile-day">30</div><div class="mobile-day">31</div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.65rem; color: #8b1a1a;">✶ Jalaqabsoo • Ayyaana</div>
-            </div>
-
-            <!-- 2. FEBRUARY 2026 — Guraandhala (Current Month) -->
-            <div class="mobile-month-card" id="today-month">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Guraandhala</span>
-                    <span class="mobile-gregorian">Feb 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day">1</div>
-                    <div class="mobile-day">2</div><div class="mobile-day">3</div><div class="mobile-day">4</div><div class="mobile-day">5</div><div class="mobile-day">6</div><div class="mobile-day">7</div><div class="mobile-day">8</div>
-                    <div class="mobile-day">9</div><div class="mobile-day">10</div><div class="mobile-day">11</div><div class="mobile-day">12</div><div class="mobile-day">13</div><div class="mobile-day">14</div><div class="mobile-day irreecha-m">15</div>
-                    <div class="mobile-day">16</div><div class="mobile-day">17</div><div class="mobile-day">18</div><div class="mobile-day">19</div><div class="mobile-day">20</div><div class="mobile-day">21</div><div class="mobile-day">22</div>
-                    <div class="mobile-day">23</div><div class="mobile-day">24</div><div class="mobile-day">25</div><div class="mobile-day">26</div><div class="mobile-day">27</div><div class="mobile-day">28</div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.65rem; color: #8b1a1a; font-weight: bold;">🌊 Irreecha • Feb 15</div>
-            </div>
-
-            <!-- 3. MARCH 2026 — Guraandhala (2nd) / Bitooteysa? Actually March is also Guraandhala in Oromo system -->
-            <div class="mobile-month-card">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Guraandhala</span>
-                    <span class="mobile-gregorian">Mar 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day">1</div>
-                    <div class="mobile-day">2</div><div class="mobile-day">3</div><div class="mobile-day jalaqabsoo-m">4</div><div class="mobile-day">5</div><div class="mobile-day">6</div><div class="mobile-day">7</div><div class="mobile-day">8</div>
-                    <div class="mobile-day">9</div><div class="mobile-day">10</div><div class="mobile-day">11</div><div class="mobile-day">12</div><div class="mobile-day">13</div><div class="mobile-day">14</div><div class="mobile-day">15</div>
-                    <div class="mobile-day">16</div><div class="mobile-day">17</div><div class="mobile-day">18</div><div class="mobile-day">19</div><div class="mobile-day fullmoon-m">20</div><div class="mobile-day">21</div><div class="mobile-day">22</div>
-                    <div class="mobile-day">23</div><div class="mobile-day">24</div><div class="mobile-day">25</div><div class="mobile-day">26</div><div class="mobile-day">27</div><div class="mobile-day">28</div><div class="mobile-day">29</div>
-                    <div class="mobile-day">30</div><div class="mobile-day">31</div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.65rem; color: #8b1a1a;">⚔ Jalaqabsoo • Mar 4</div>
-            </div>
-
-            <!-- 4. APRIL 2026 — Bitooteysa -->
-            <div class="mobile-month-card">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Bitooteysa</span>
-                    <span class="mobile-gregorian">Apr 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day">1</div><div class="mobile-day">2</div><div class="mobile-day">3</div><div class="mobile-day">4</div><div class="mobile-day">5</div>
-                    <div class="mobile-day">6</div><div class="mobile-day">7</div><div class="mobile-day">8</div><div class="mobile-day">9</div><div class="mobile-day">10</div><div class="mobile-day">11</div><div class="mobile-day">12</div>
-                    <div class="mobile-day">13</div><div class="mobile-day">14</div><div class="mobile-day">15</div><div class="mobile-day">16</div><div class="mobile-day">17</div><div class="mobile-day">18</div><div class="mobile-day">19</div>
-                    <div class="mobile-day ayyaana-m">20</div><div class="mobile-day">21</div><div class="mobile-day">22</div><div class="mobile-day">23</div><div class="mobile-day">24</div><div class="mobile-day">25</div><div class="mobile-day">26</div>
-                    <div class="mobile-day">27</div><div class="mobile-day">28</div><div class="mobile-day">29</div><div class="mobile-day">30</div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.65rem; color: #1e5b3e;">✶ Ayyaana • Apr 20</div>
-            </div>
-
-            <!-- 5. MAY 2026 — Caamsa -->
-            <div class="mobile-month-card">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Caamsa</span>
-                    <span class="mobile-gregorian">May 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day">1</div><div class="mobile-day">2</div>
-                    <div class="mobile-day">3</div><div class="mobile-day">4</div><div class="mobile-day">5</div><div class="mobile-day">6</div><div class="mobile-day">7</div><div class="mobile-day">8</div><div class="mobile-day">9</div>
-                    <div class="mobile-day">10</div><div class="mobile-day">11</div><div class="mobile-day">12</div><div class="mobile-day">13</div><div class="mobile-day">14</div><div class="mobile-day fullmoon-m">15</div><div class="mobile-day">16</div>
-                    <div class="mobile-day">17</div><div class="mobile-day">18</div><div class="mobile-day">19</div><div class="mobile-day">20</div><div class="mobile-day">21</div><div class="mobile-day">22</div><div class="mobile-day">23</div>
-                    <div class="mobile-day">24</div><div class="mobile-day">25</div><div class="mobile-day">26</div><div class="mobile-day">27</div><div class="mobile-day">28</div><div class="mobile-day">29</div><div class="mobile-day">30</div>
-                    <div class="mobile-day">31</div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.65rem; color: #daa520;">● Ji'a Guutuu • May 15</div>
-            </div>
-
-            <!-- 6. JUNE 2026 — Waxabajjii -->
-            <div class="mobile-month-card">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Waxabajjii</span>
-                    <span class="mobile-gregorian">Jun 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day">1</div><div class="mobile-day">2</div><div class="mobile-day">3</div><div class="mobile-day">4</div><div class="mobile-day">5</div><div class="mobile-day">6</div>
-                    <div class="mobile-day">7</div><div class="mobile-day">8</div><div class="mobile-day">9</div><div class="mobile-day">10</div><div class="mobile-day">11</div><div class="mobile-day">12</div><div class="mobile-day">13</div>
-                    <div class="mobile-day">14</div><div class="mobile-day">15</div><div class="mobile-day">16</div><div class="mobile-day">17</div><div class="mobile-day ayyaana-m">18</div><div class="mobile-day">19</div><div class="mobile-day">20</div>
-                    <div class="mobile-day">21</div><div class="mobile-day">22</div><div class="mobile-day">23</div><div class="mobile-day">24</div><div class="mobile-day">25</div><div class="mobile-day">26</div><div class="mobile-day">27</div>
-                    <div class="mobile-day">28</div><div class="mobile-day">29</div><div class="mobile-day">30</div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.65rem; color: #1e5b3e;">✶ Ayyaana • Jun 18</div>
-            </div>
-
-            <!-- 7. JULY 2026 — Adooleeysa -->
-            <div class="mobile-month-card">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Adooleeysa</span>
-                    <span class="mobile-gregorian">Jul 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day">1</div><div class="mobile-day">2</div><div class="mobile-day">3</div><div class="mobile-day">4</div>
-                    <div class="mobile-day">5</div><div class="mobile-day">6</div><div class="mobile-day irreecha-m">7</div><div class="mobile-day">8</div><div class="mobile-day">9</div><div class="mobile-day">10</div><div class="mobile-day">11</div>
-                    <div class="mobile-day">12</div><div class="mobile-day">13</div><div class="mobile-day">14</div><div class="mobile-day">15</div><div class="mobile-day">16</div><div class="mobile-day">17</div><div class="mobile-day">18</div>
-                    <div class="mobile-day">19</div><div class="mobile-day">20</div><div class="mobile-day">21</div><div class="mobile-day">22</div><div class="mobile-day">23</div><div class="mobile-day">24</div><div class="mobile-day">25</div>
-                    <div class="mobile-day">26</div><div class="mobile-day">27</div><div class="mobile-day">28</div><div class="mobile-day">29</div><div class="mobile-day">30</div><div class="mobile-day">31</div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.65rem; color: #8b1a1a;">🌊 Ayyaana Adoolaa • Jul 7</div>
-            </div>
-
-            <!-- 8. AUGUST 2026 — Hagayya (Gadaa Election) -->
-            <div class="mobile-month-card" id="gadaa-month">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Hagayya</span>
-                    <span class="mobile-gregorian">Aug 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day">1</div><div class="mobile-day">2</div><div class="mobile-day">3</div><div class="mobile-day">4</div><div class="mobile-day">5</div>
-                    <div class="mobile-day">6</div><div class="mobile-day">7</div><div class="mobile-day">8</div><div class="mobile-day">9</div><div class="mobile-day">10</div><div class="mobile-day">11</div><div class="mobile-day">12</div>
-                    <div class="mobile-day">13</div><div class="mobile-day">14</div><div class="mobile-day">15</div><div class="mobile-day">16</div><div class="mobile-day">17</div><div class="mobile-day jalaqabsoo-m">18</div><div class="mobile-day">19</div>
-                    <div class="mobile-day">20</div><div class="mobile-day">21</div><div class="mobile-day">22</div><div class="mobile-day">23</div><div class="mobile-day">24</div><div class="mobile-day fullmoon-m">25</div><div class="mobile-day">26</div>
-                    <div class="mobile-day">27</div><div class="mobile-day">28</div><div class="mobile-day">29</div><div class="mobile-day">30</div><div class="mobile-day">31</div><div class="mobile-day empty"></div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.65rem; color: #8b1a1a;">⚔ Gadaa • Jalaqabsoo Aug 18</div>
-            </div>
-
-            <!-- 9. SEPTEMBER 2026 — Fuulbana (Irreecha) -->
-            <div class="mobile-month-card" id="irreecha-month">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Fuulbana</span>
-                    <span class="mobile-gregorian">Sep 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day">1</div><div class="mobile-day">2</div><div class="mobile-day">3</div><div class="mobile-day">4</div>
-                    <div class="mobile-day">5</div><div class="mobile-day">6</div><div class="mobile-day irreecha-m">7</div><div class="mobile-day irreecha-m">8</div><div class="mobile-day irreecha-m">9</div><div class="mobile-day">10</div><div class="mobile-day">11</div>
-                    <div class="mobile-day">12</div><div class="mobile-day">13</div><div class="mobile-day">14</div><div class="mobile-day">15</div><div class="mobile-day">16</div><div class="mobile-day">17</div><div class="mobile-day">18</div>
-                    <div class="mobile-day">19</div><div class="mobile-day">20</div><div class="mobile-day">21</div><div class="mobile-day">22</div><div class="mobile-day">23</div><div class="mobile-day">24</div><div class="mobile-day">25</div>
-                    <div class="mobile-day">26</div><div class="mobile-day">27</div><div class="mobile-day">28</div><div class="mobile-day">29</div><div class="mobile-day">30</div><div class="mobile-day empty"></div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.7rem; color: #8b1a1a; font-weight: bold;">🌊🌊 IRRECHAA • Sep 7-9 🌊🌊</div>
-            </div>
-
-            <!-- 10. OCTOBER 2026 — Onkololeeysa -->
-            <div class="mobile-month-card">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Onkololeeysa</span>
-                    <span class="mobile-gregorian">Oct 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day">1</div><div class="mobile-day">2</div><div class="mobile-day">3</div>
-                    <div class="mobile-day">4</div><div class="mobile-day">5</div><div class="mobile-day">6</div><div class="mobile-day">7</div><div class="mobile-day">8</div><div class="mobile-day">9</div><div class="mobile-day">10</div>
-                    <div class="mobile-day">11</div><div class="mobile-day">12</div><div class="mobile-day">13</div><div class="mobile-day">14</div><div class="mobile-day">15</div><div class="mobile-day">16</div><div class="mobile-day">17</div>
-                    <div class="mobile-day">18</div><div class="mobile-day">19</div><div class="mobile-day">20</div><div class="mobile-day">21</div><div class="mobile-day">22</div><div class="mobile-day">23</div><div class="mobile-day">24</div>
-                    <div class="mobile-day">25</div><div class="mobile-day">26</div><div class="mobile-day">27</div><div class="mobile-day">28</div><div class="mobile-day">29</div><div class="mobile-day">30</div><div class="mobile-day">31</div>
-                </div>
-            </div>
-
-            <!-- 11. NOVEMBER 2026 — Sadaasa -->
-            <div class="mobile-month-card">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Sadaasa</span>
-                    <span class="mobile-gregorian">Nov 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day">1</div><div class="mobile-day">2</div><div class="mobile-day">3</div><div class="mobile-day">4</div><div class="mobile-day">5</div><div class="mobile-day">6</div><div class="mobile-day">7</div>
-                    <div class="mobile-day">8</div><div class="mobile-day">9</div><div class="mobile-day">10</div><div class="mobile-day">11</div><div class="mobile-day">12</div><div class="mobile-day">13</div><div class="mobile-day">14</div>
-                    <div class="mobile-day">15</div><div class="mobile-day">16</div><div class="mobile-day">17</div><div class="mobile-day">18</div><div class="mobile-day">19</div><div class="mobile-day">20</div><div class="mobile-day fullmoon-m">21</div>
-                    <div class="mobile-day">22</div><div class="mobile-day">23</div><div class="mobile-day">24</div><div class="mobile-day">25</div><div class="mobile-day">26</div><div class="mobile-day">27</div><div class="mobile-day">28</div>
-                    <div class="mobile-day">29</div><div class="mobile-day">30</div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.65rem; color: #daa520;">● Ji'a Guutuu • Nov 21</div>
-            </div>
-
-            <!-- 12. DECEMBER 2026 — Abraasa -->
-            <div class="mobile-month-card">
-                <div class="mobile-month-header">
-                    <span class="mobile-oromo-name">Abraasa</span>
-                    <span class="mobile-gregorian">Dec 2026</span>
-                </div>
-                <div class="mobile-weekdays">
-                    <span>Sab</span> <span>Dil</span> <span>Wix</span> <span>Qib</span> <span>Rob</span> <span>Kam</span> <span>Zam</span>
-                </div>
-                <div class="mobile-days">
-                    <div class="mobile-day empty"></div><div class="mobile-day empty"></div><div class="mobile-day">1</div><div class="mobile-day">2</div><div class="mobile-day">3</div><div class="mobile-day">4</div><div class="mobile-day">5</div>
-                    <div class="mobile-day">6</div><div class="mobile-day">7</div><div class="mobile-day">8</div><div class="mobile-day">9</div><div class="mobile-day">10</div><div class="mobile-day">11</div><div class="mobile-day">12</div>
-                    <div class="mobile-day">13</div><div class="mobile-day">14</div><div class="mobile-day">15</div><div class="mobile-day ayyaana-m">16</div><div class="mobile-day">17</div><div class="mobile-day">18</div><div class="mobile-day">19</div>
-                    <div class="mobile-day">20</div><div class="mobile-day">21</div><div class="mobile-day">22</div><div class="mobile-day">23</div><div class="mobile-day">24</div><div class="mobile-day">25</div><div class="mobile-day">26</div>
-                    <div class="mobile-day">27</div><div class="mobile-day">28</div><div class="mobile-day">29</div><div class="mobile-day">30</div><div class="mobile-day">31</div><div class="mobile-day empty"></div><div class="mobile-day empty"></div>
-                </div>
-                <div style="text-align: center; margin-top: 6px; font-size: 0.65rem; color: #1e5b3e;">✶ Ayyaana • Dec 16</div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="mobile-footer">
-            <div class="mobile-proverb">
+        <!-- ===== FOOTER ===== -->
+        <div class="footer">
+            <div class="proverb">
                 "Bara baraan, ji'a ji'aan — Oromiyaan baddiyyee!" ✦
             </div>
-            <div class="holiday-keys">
+            <div class="holiday-key">
                 <span class="key-item"><span class="key-dot" style="background:#daa520;"></span> Irreecha</span>
                 <span class="key-item"><span class="key-dot" style="background:#8b1a1a;"></span> Jalaqabsoo</span>
                 <span class="key-item"><span class="key-dot" style="background:#1e5b3e;"></span> Ayyaana</span>
-                <span class="key-item"><span style="display:inline-block; width:14px; height:14px; border-radius:50%; background:#daa520;"></span> Ji'a Guutuu</span>
+                <span class="key-item"><span class="key-moon"></span> Ji'a Guutuu</span>
             </div>
-            <div style="font-size: 0.65rem; color: #5a3e2b; margin-top: 12px;">
-                ✶ Kalendarii Oromoo • Bara 4646/2026 • G.C. • Mobayil ✶
+            <div style="font-size: 0.75rem; color: #5a3e2b; margin-top: 16px; padding-bottom: 8px;">
+                ✶ Oromoo • Bara 4646/2026 • Mobayil ✶
             </div>
         </div>
     </div>
 
     <script>
-        // Auto-scroll to current month (February) on load
-        window.onload = function() {
-            setTimeout(function() {
-                document.getElementById('today-month').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'center'
+        // ============================================
+        // OROMO CALENDAR DATA - JANUARY TO DECEMBER 2026
+        // ============================================
+        const monthsData = [
+            {   // 0: January 2026
+                oromo: "Ammaji",
+                gregorian: "January 2026",
+                year: 2026,
+                days: 31,
+                startDay: 4, // Thursday (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)
+                holidays: [
+                    { day: 11, type: "jalaqabsoo", name: "Jalaqabsoo" }
+                ]
+            },
+            {   // 1: February 2026
+                oromo: "Guraandhala",
+                gregorian: "February 2026",
+                year: 2026,
+                days: 28,
+                startDay: 0, // Sunday
+                holidays: [
+                    { day: 15, type: "irreecha", name: "Irreecha" }
+                ]
+            },
+            {   // 2: March 2026
+                oromo: "Guraandhala",
+                gregorian: "March 2026",
+                year: 2026,
+                days: 31,
+                startDay: 0, // Sunday
+                holidays: [
+                    { day: 4, type: "jalaqabsoo", name: "Jalaqabsoo" },
+                    { day: 20, type: "fullmoon", name: "Ji'a Guutuu" }
+                ]
+            },
+            {   // 3: April 2026
+                oromo: "Bitooteysa",
+                gregorian: "April 2026",
+                year: 2026,
+                days: 30,
+                startDay: 3, // Wednesday
+                holidays: [
+                    { day: 20, type: "ayyaana", name: "Ayyaana" }
+                ]
+            },
+            {   // 4: May 2026
+                oromo: "Caamsa",
+                gregorian: "May 2026",
+                year: 2026,
+                days: 31,
+                startDay: 5, // Friday
+                holidays: [
+                    { day: 15, type: "fullmoon", name: "Ji'a Guutuu" }
+                ]
+            },
+            {   // 5: June 2026
+                oromo: "Waxabajjii",
+                gregorian: "June 2026",
+                year: 2026,
+                days: 30,
+                startDay: 1, // Monday
+                holidays: [
+                    { day: 18, type: "ayyaana", name: "Ayyaana" }
+                ]
+            },
+            {   // 6: July 2026
+                oromo: "Adooleeysa",
+                gregorian: "July 2026",
+                year: 2026,
+                days: 31,
+                startDay: 3, // Wednesday
+                holidays: [
+                    { day: 7, type: "irreecha", name: "Ayyaana Adoolaa" }
+                ]
+            },
+            {   // 7: August 2026
+                oromo: "Hagayya",
+                gregorian: "August 2026",
+                year: 2026,
+                days: 31,
+                startDay: 6, // Saturday
+                holidays: [
+                    { day: 18, type: "jalaqabsoo", name: "Gadaa • Jalaqabsoo" },
+                    { day: 25, type: "fullmoon", name: "Ji'a Guutuu" }
+                ]
+            },
+            {   // 8: September 2026
+                oromo: "Fuulbana",
+                gregorian: "September 2026",
+                year: 2026,
+                days: 30,
+                startDay: 2, // Tuesday
+                holidays: [
+                    { day: 7, type: "irreecha", name: "IRREECHAA" },
+                    { day: 8, type: "irreecha", name: "IRREECHAA" },
+                    { day: 9, type: "irreecha", name: "IRREECHAA" }
+                ]
+            },
+            {   // 9: October 2026
+                oromo: "Onkololeeysa",
+                gregorian: "October 2026",
+                year: 2026,
+                days: 31,
+                startDay: 4, // Thursday
+                holidays: []
+            },
+            {   // 10: November 2026
+                oromo: "Sadaasa",
+                gregorian: "November 2026",
+                year: 2026,
+                days: 30,
+                startDay: 0, // Sunday
+                holidays: [
+                    { day: 21, type: "fullmoon", name: "Ji'a Guutuu" }
+                ]
+            },
+            {   // 11: December 2026
+                oromo: "Abraasa",
+                gregorian: "December 2026",
+                year: 2026,
+                days: 31,
+                startDay: 2, // Tuesday
+                holidays: [
+                    { day: 16, type: "ayyaana", name: "Ayyaana" }
+                ]
+            }
+        ];
+
+        // Current month index (0 = January)
+        let currentMonthIndex = 1; // February (current month)
+
+        // ============================================
+        // RENDER MONTH FUNCTION
+        // ============================================
+        function renderMonth(index) {
+            const month = monthsData[index];
+            
+            // Update header
+            document.getElementById('currentOromoName').textContent = month.oromo;
+            document.getElementById('currentGregorianName').textContent = month.gregorian;
+            
+            // Enable/disable arrows
+            document.getElementById('prevMonthBtn').classList.toggle('disabled', index === 0);
+            document.getElementById('nextMonthBtn').classList.toggle('disabled', index === monthsData.length - 1);
+            
+            // Build days grid
+            let daysHtml = '';
+            
+            // Weekday headers
+            const weekdays = ['Sab', 'Dil', 'Wix', 'Qib', 'Rob', 'Kam', 'Zam'];
+            let weekdaysHtml = '';
+            weekdays.forEach(day => {
+                weekdaysHtml += `<span>${day}</span>`;
+            });
+            
+            // Empty cells before first day
+            for (let i = 0; i < month.startDay; i++) {
+                daysHtml += '<div class="day empty"></div>';
+            }
+            
+            // Days of month
+            for (let d = 1; d <= month.days; d++) {
+                let dayClass = 'day';
+                let holidayName = '';
+                
+                // Check for holidays
+                month.holidays.forEach(holiday => {
+                    if (holiday.day === d) {
+                        dayClass += ' ' + holiday.type;
+                        holidayName = holiday.name;
+                    }
                 });
-            }, 200);
+                
+                daysHtml += `<div class="${dayClass}">${d}</div>`;
+            }
+            
+            // Fill remaining cells to complete grid
+            const totalCells = Math.ceil((month.startDay + month.days) / 7) * 7;
+            for (let i = month.startDay + month.days; i < totalCells; i++) {
+                daysHtml += '<div class="day empty"></div>';
+            }
+            
+            // Build holiday label
+            let holidayLabel = '';
+            if (month.holidays.length > 0) {
+                const holidayNames = month.holidays.map(h => h.name).join(' • ');
+                holidayLabel = `<div class="holiday-label">${holidayNames}</div>`;
+            } else {
+                holidayLabel = '<div class="holiday-label">—</div>';
+            }
+            
+            // Special highlight for Irreecha in September
+            let irreechaHighlight = '';
+            if (index === 8) {
+                irreechaHighlight = '<div style="text-align: center; margin-top: 8px; font-size: 0.9rem; color: #8b1a1a; font-weight: bold;">🌊🌊 IRRECHAA FESTIVAL • Sep 7-9 🌊🌊</div>';
+                holidayLabel = irreechaHighlight;
+            }
+            
+            // Assemble month card
+            const monthCardHtml = `
+                <div class="month-header">
+                    <span class="oromo-name">${month.oromo}</span>
+                    <span class="gregorian-name">${month.gregorian}</span>
+                </div>
+                <div class="weekdays">
+                    ${weekdaysHtml}
+                </div>
+                <div class="days">
+                    ${daysHtml}
+                </div>
+                ${holidayLabel}
+            `;
+            
+            document.getElementById('monthCardContainer').innerHTML = monthCardHtml;
+        }
+
+        // ============================================
+        // NAVIGATION FUNCTIONS
+        // ============================================
+        function previousMonth() {
+            if (currentMonthIndex > 0) {
+                currentMonthIndex--;
+                renderMonth(currentMonthIndex);
+            }
+        }
+
+        function nextMonth() {
+            if (currentMonthIndex < monthsData.length - 1) {
+                currentMonthIndex++;
+                renderMonth(currentMonthIndex);
+            }
+        }
+
+        function jumpToMonth(index) {
+            if (index >= 0 && index < monthsData.length) {
+                currentMonthIndex = index;
+                renderMonth(currentMonthIndex);
+            }
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.getElementById('prevMonthBtn').addEventListener('click', previousMonth);
+        document.getElementById('nextMonthBtn').addEventListener('click', nextMonth);
+
+        // Initialize with current month (February)
+        window.onload = function() {
+            renderMonth(currentMonthIndex);
         };
     </script>
 </body>
