@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>Oromoo • Kalendarii Mobayil • 2026</title>
+    <title>Oromoo • Kalendarii Mobayil • Dilbata Jalqaba</title>
     <style>
         * {
             margin: 0;
@@ -86,6 +86,7 @@
             display: flex;
             gap: 8px;
             margin-bottom: 8px;
+            z-index: 2;
         }
 
         .flag-stripe {
@@ -105,6 +106,7 @@
             color: #fdf2e4;
             text-shadow: 4px 4px 0 #8b1a1a, 6px 6px 0 #daa520;
             margin-bottom: 4px;
+            z-index: 2;
         }
 
         .header-sub {
@@ -115,6 +117,7 @@
             border-radius: 50px;
             border: 2px solid #daa520;
             backdrop-filter: blur(2px);
+            z-index: 2;
         }
 
         /* Oromo star decoration */
@@ -125,6 +128,7 @@
             font-size: 1.5rem;
             color: #daa520;
             opacity: 0.8;
+            z-index: 2;
         }
 
         /* ===== MONTH NAVIGATION WITH ARROWS ===== */
@@ -247,6 +251,7 @@
             border: 2px solid white;
         }
 
+        /* Weekdays - SUNDAY FIRST, SATURDAY LAST */
         .weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -256,7 +261,7 @@
             font-size: 0.9rem;
             margin-bottom: 12px;
             background: #fef3e4;
-            padding: 10px 0;
+            padding: 12px 0;
             border-radius: 30px;
             border-bottom: 4px solid #daa520;
             text-transform: uppercase;
@@ -501,7 +506,7 @@
                 <span class="key-item"><span class="key-moon"></span> Ji'a Guutuu</span>
             </div>
             <div style="font-size: 0.75rem; color: #5a3e2b; margin-top: 16px; padding-bottom: 8px;">
-                ✶ Oromoo • Bara 4646/2026 • Mobayil ✶ By Jamal Ahmed ✶ 0598 ✶ @2026
+              ✶ Dilbata jalqaba • Sabti dhuma • Oromoo • Bara 4646/2026 ✶By Jamal Ahmed 0598 ✶
             </div>
         </div>
     </div>
@@ -509,6 +514,7 @@
     <script>
         // ============================================
         // OROMO CALENDAR DATA - JANUARY TO DECEMBER 2026
+        // SUNDAY (Dilbata) FIRST DAY OF WEEK
         // ============================================
         const monthsData = [
             {   // 0: January 2026
@@ -526,7 +532,7 @@
                 gregorian: "February 2026",
                 year: 2026,
                 days: 28,
-                startDay: 0, // Sunday
+                startDay: 0, // Sunday ✓
                 holidays: [
                     { day: 15, type: "irreecha", name: "Irreecha" }
                 ]
@@ -635,8 +641,8 @@
             }
         ];
 
-        // Current month index (0 = January)
-        let currentMonthIndex = 1; // February (current month)
+        // Current month index (1 = February - current month)
+        let currentMonthIndex = 1;
 
         // ============================================
         // RENDER MONTH FUNCTION
@@ -655,8 +661,8 @@
             // Build days grid
             let daysHtml = '';
             
-            // Weekday headers
-            const weekdays = ['Sab', 'Dil', 'Wix', 'Qib', 'Rob', 'Kam', 'Zam'];
+            // Weekday headers - SUNDAY FIRST, SATURDAY LAST
+            const weekdays = ['Dil', 'Wix', 'Qib', 'Rob', 'Kam', 'Zam', 'Sab'];
             let weekdaysHtml = '';
             weekdays.forEach(day => {
                 weekdaysHtml += `<span>${day}</span>`;
@@ -760,5 +766,3 @@
     </script>
 </body>
 </html>
-
-
