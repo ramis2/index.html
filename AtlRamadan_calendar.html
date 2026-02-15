@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Oromoo • Atlanta Ramadaan 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a2f1f;
+            font-family: 'Segoe UI', 'Georgia', 'Times New Roman', sans-serif;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .ramadan-card {
+            max-width: 420px;
+            width: 100%;
+            background: #fdf2e4;
+            border-radius: 30px 10px 30px 10px;
+            border: 5px solid #8b1a1a;
+            padding: 20px;
+            position: relative;
+            box-shadow: 12px 12px 0 rgba(0,0,0,0.2);
+        }
+
+        /* Oromo flag border */
+        .ramadan-card::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 4px solid #daa520;
+            border-radius: 40px 15px 40px 15px;
+            pointer-events: none;
+            border-style: double;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #8b1a1a;
+            text-shadow: 3px 3px 0 #daa520;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #1e5b3e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 5px 0;
+        }
+
+        .subtitle span {
+            background: #8b1a1a;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
+        .location {
+            background: #2c1e0e;
+            color: #daa520;
+            padding: 8px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: 2px solid #daa520;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* ===== ISLAMIC FINDER STYLE ===== */
+        .finder-header {
+            background: #1e5b3e;
+            color: white;
+            padding: 15px;
+            border-radius: 20px 5px 20px 5px;
+            margin-bottom: 15px;
+            border: 3px solid #daa520;
+            text-align: center;
+        }
+
+        .finder-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #daa520;
+        }
+
+        .finder-sub {
+            font-size: 1rem;
+            margin: 5px 0;
+        }
+
+        .fiqh-note {
+            background: #8b1a1a;
+            color: white;
+            padding: 8px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border: 2px solid #daa520;
+            margin-top: 8px;
+        }
+
+        .fiqh-note span {
+            color: #daa520;
+            font-weight: 900;
+        }
+
+        /* ===== TABLE STYLE (EXACTLY LIKE IMAGE) ===== */
+        .table-container {
+            background: white;
+            border-radius: 20px 5px 20px 5px;
+            padding: 15px;
+            border: 3px solid #2c1e0e;
+            margin-bottom: 15px;
+        }
+
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: #8b1a1a;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 3px solid #daa520;
+            font-size: 1.1rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            text-align: left;
+            padding: 8px 5px;
+            color: #1e5b3e;
+            font-size: 1rem;
+            border-bottom: 2px solid #daa520;
+        }
+
+        .table td {
+            padding: 6px 5px;
+            border-bottom: 1px solid #e0cba0;
+            font-size: 1rem;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .day-number {
+            font-weight: bold;
+            color: #8b1a1a;
+            width: 40px;
+        }
+
+        .sehar-time, .iftar-time {
+            font-family: monospace;
+            font-size: 1rem;
+        }
+
+        .note {
+            font-size: 0.8rem;
+            color: #5a3e2b;
+            text-align: right;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            border-top: 4px double #8b1a1a;
+            padding-top: 15px;
+            margin-top: 5px;
+        }
+
+        .ramadan-mubarak {
+            font-size: 1.3rem;
+            color: #1e5b3e;
+            font-weight: bold;
+        }
+
+        .ramadan-mubarak span {
+            color: #daa520;
+            font-size: 1.6rem;
+        }
+
+        .footer-small {
+            font-size: 0.8rem;
+            color: #5a3e2b;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="ramadan-card">
+        <!-- ===== HEADER ===== -->
+        <div class="header">
+            <div class="title">🌿 OROMOO</div>
+            <div class="subtitle">
+                <span>Ramadaan</span> 1447
+            </div>
+            <div class="location">
+                ☪ Atlanta, Georgia • Eastern Time ☪
+            </div>
+        </div>
+
+        <!-- ===== ISLAMIC FINDER STYLE HEADER ===== -->
+        <div class="finder-header">
+            <div class="finder-title">Islamic Finder</div>
+            <div class="finder-sub">Search Your City • Atlanta</div>
+            <div class="fiqh-note">
+                <span></span> Suhoor Time -10min | Iftar Time +10min
+            </div>
+        </div>
+
+        <!-- ===== CALENDAR TABLE ===== -->
+        <div class="table-container">
+            <div class="month-header">
+                <span>February / March 2026</span>
+                <span>🌙 Ramadaan 1447</span>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Sehar</th>
+                        <th>Iftar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Week 1 -->
+                    <tr><td class="day-number">1</td><td class="sehar-time">05:52 AM</td><td class="iftar-time">06:25 PM</td></tr>
+                    <tr><td class="day-number">2</td><td class="sehar-time">05:51 AM</td><td class="iftar-time">06:26 PM</td></tr>
+                    <tr><td class="day-number">3</td><td class="sehar-time">05:50 AM</td><td class="iftar-time">06:27 PM</td></tr>
+                    <tr><td class="day-number">4</td><td class="sehar-time">05:49 AM</td><td class="iftar-time">06:28 PM</td></tr>
+                    <tr><td class="day-number">5</td><td class="sehar-time">05:48 AM</td><td class="iftar-time">06:29 PM</td></tr>
+                    
+                    <!-- Week 2 -->
+                    <tr><td class="day-number">6</td><td class="sehar-time">05:47 AM</td><td class="iftar-time">06:30 PM</td></tr>
+                    <tr><td class="day-number">7</td><td class="sehar-time">05:46 AM</td><td class="iftar-time">06:31 PM</td></tr>
+                    <tr><td class="day-number">8</td><td class="sehar-time">05:45 AM</td><td class="iftar-time">06:32 PM</td></tr>
+                    <tr><td class="day-number">9</td><td class="sehar-time">05:44 AM</td><td class="iftar-time">06:33 PM</td></tr>
+                    <tr><td class="day-number">10</td><td class="sehar-time">05:43 AM</td><td class="iftar-time">06:34 PM</td></tr>
+                    
+                    <!-- Week 3 -->
+                    <tr><td class="day-number">11</td><td class="sehar-time">05:42 AM</td><td class="iftar-time">06:35 PM</td></tr>
+                    <tr><td class="day-number">12</td><td class="sehar-time">05:41 AM</td><td class="iftar-time">06:36 PM</td></tr>
+                    <tr><td class="day-number">13</td><td class="sehar-time">05:40 AM</td><td class="iftar-time">06:37 PM</td></tr>
+                    <tr><td class="day-number">14</td><td class="sehar-time">05:39 AM</td><td class="iftar-time">06:38 PM</td></tr>
+                    <tr><td class="day-number">15</td><td class="sehar-time">05:38 AM</td><td class="iftar-time">06:39 PM</td></tr>
+                    
+                    <!-- Week 4 -->
+                    <tr><td class="day-number">16</td><td class="sehar-time">05:37 AM</td><td class="iftar-time">06:40 PM</td></tr>
+                    <tr><td class="day-number">17</td><td class="sehar-time">05:36 AM</td><td class="iftar-time">06:41 PM</td></tr>
+                    <tr><td class="day-number">18</td><td class="sehar-time">05:35 AM</td><td class="iftar-time">06:42 PM</td></tr>
+                    <tr><td class="day-number">19</td><td class="sehar-time">05:34 AM</td><td class="iftar-time">06:43 PM</td></tr>
+                    <tr><td class="day-number">20</td><td class="sehar-time">05:33 AM</td><td class="iftar-time">06:44 PM</td></tr>
+                    
+                    <!-- Week 5 -->
+                    <tr><td class="day-number">21</td><td class="sehar-time">05:32 AM</td><td class="iftar-time">06:45 PM</td></tr>
+                    <tr><td class="day-number">22</td><td class="sehar-time">05:31 AM</td><td class="iftar-time">06:46 PM</td></tr>
+                    <tr><td class="day-number">23</td><td class="sehar-time">05:30 AM</td><td class="iftar-time">06:47 PM</td></tr>
+                    <tr><td class="day-number">24</td><td class="sehar-time">05:29 AM</td><td class="iftar-time">06:48 PM</td></tr>
+                    <tr><td class="day-number">25</td><td class="sehar-time">05:28 AM</td><td class="iftar-time">06:49 PM</td></tr>
+                    
+                    <!-- Week 6 -->
+                    <tr><td class="day-number">26</td><td class="sehar-time">05:27 AM</td><td class="iftar-time">06:50 PM</td></tr>
+                    <tr><td class="day-number">27</td><td class="sehar-time">05:26 AM</td><td class="iftar-time">06:51 PM</td></tr>
+                    <tr><td class="day-number">28</td><td class="sehar-time">05:25 AM</td><td class="iftar-time">06:52 PM</td></tr>
+                    <tr><td class="day-number">29</td><td class="sehar-time">05:24 AM</td><td class="iftar-time">06:53 PM</td></tr>
+                    <tr><td class="day-number">30</td><td class="sehar-time">05:23 AM</td><td class="iftar-time">06:54 PM</td></tr>
+                </tbody>
+            </table>
+            
+            <div class="note">
+                * Times for Atlanta, GA (ISNA Method) • Fajr -10min • Iftar +10min for Fiqh Jafria
+            </div>
+        </div>
+
+        <!-- ===== QUICK REFERENCE ===== -->
+        <div style="background: #f0e2cc; border-radius: 15px 5px 15px 5px; padding: 12px; margin-bottom: 15px; border: 2px solid #8b1a1a;">
+            <div style="display: flex; justify-content: space-around; text-align: center;">
+                <div>
+                    <div style="font-weight: bold; color: #8b1a1a;">1st Ramadan</div>
+                    <div style="font-size: 1.2rem;">Feb 18</div>
+                </div>
+                <div>
+                    <div style="font-weight: bold; color: #8b1a1a;">Laylat al-Qadr</div>
+                    <div style="font-size: 1.2rem;">Mar 16</div>
+                </div>
+                <div>
+                    <div style="font-weight: bold; color: #8b1a1a;">Eid al-Fitr</div>
+                    <div style="font-size: 1.2rem;">Mar 20</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== DUA ===== -->
+        <div style="background: #1e5b3e; color: white; border-radius: 20px 5px 20px 5px; padding: 15px; text-align: center; border: 3px solid #daa520; margin-bottom: 15px;">
+            <div style="font-size: 1.2rem; color: #daa520; margin-bottom: 8px;">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي</div>
+            <div style="font-size: 0.9rem;">Allahumma innaka 'afuwwun tuhibbul 'afwa fa'fu 'anni</div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <div class="footer">
+            <div class="ramadan-mubarak">
+                <span>☪</span> Ramadan Mubarak, Atlanta! <span>☪</span>
+            </div>
+            <div class="footer-small">
+                Oromoo Atlanta • Ramadaan 1447 /By Jamal 0598 @ 2026<br>
+                Dilbata jalqaba • Sabti dhuma • Waaqayyo haa qaaciluf!
+            </div>
+        </div>
+    </div>
+</body>
+</html>
