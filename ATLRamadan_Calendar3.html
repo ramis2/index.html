@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Atlanta • Ramadaan Prayer Times 1447</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a2f1f;
+            font-family: 'Segoe UI', 'Georgia', sans-serif;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .prayer-card {
+            max-width: 500px;
+            width: 100%;
+            background: #fdf2e4;
+            border-radius: 30px 10px 30px 10px;
+            border: 5px solid #8b1a1a;
+            padding: 20px 15px;
+            position: relative;
+            box-shadow: 12px 12px 0 rgba(0,0,0,0.2);
+        }
+
+        .oromo-flag {
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            right: 20px;
+            height: 8px;
+            background: linear-gradient(90deg, #8b1a1a 33%, #daa520 33%, #daa520 66%, #1e5b3e 66%);
+            border-radius: 20px;
+            border: 2px solid #daa520;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 2rem;
+            color: #8b1a1a;
+            text-shadow: 2px 2px 0 #daa520;
+        }
+
+        .location {
+            background: #1e5b3e;
+            color: white;
+            padding: 8px;
+            border-radius: 50px;
+            border: 2px solid #daa520;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .note-box {
+            background: #8b1a1a;
+            color: white;
+            padding: 10px;
+            border-radius: 15px 5px 15px 5px;
+            margin-bottom: 15px;
+            border: 3px solid #daa520;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* ===== IFTAR ALERT SECTION ===== */
+        .iftar-alert {
+            background: linear-gradient(145deg, #1e5b3e, #0f3a26);
+            border-radius: 30px 8px 30px 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 4px solid #daa520;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .iftar-alert::before {
+            content: "☪ ☪ ☪";
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            color: rgba(218, 165, 32, 0.2);
+            font-size: 3rem;
+            white-space: nowrap;
+            animation: moveStars 10s linear infinite;
+        }
+
+        @keyframes moveStars {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
+
+        .iftar-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #daa520;
+            text-shadow: 2px 2px 0 #2c1e0e;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .iftar-time-box {
+            background: #fdf2e4;
+            color: #8b1a1a;
+            font-size: 2.5rem;
+            font-weight: 900;
+            padding: 10px;
+            border-radius: 60px;
+            display: inline-block;
+            margin: 10px 0;
+            border: 4px solid #daa520;
+            box-shadow: 0 5px 0 #4a2e1a;
+            position: relative;
+            z-index: 2;
+        }
+
+        .countdown {
+            font-size: 1.3rem;
+            color: white;
+            background: #8b1a1a;
+            padding: 8px 20px;
+            border-radius: 60px;
+            display: inline-block;
+            border: 3px solid #daa520;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== ADHAN BUTTON ===== */
+        .adhan-button {
+            background: #daa520;
+            color: #2c1e0e;
+            border: none;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 4px solid #8b1a1a;
+            box-shadow: 0 8px 0 #8b1a1a;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 0 #8b1a1a, 0 0 20px #daa520; }
+            100% { transform: scale(1); }
+        }
+
+        .adhan-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 0 #8b1a1a;
+        }
+
+        .adhan-text {
+            color: white;
+            font-size: 1rem;
+            margin-top: 5px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .today-iftar {
+            background: rgba(255,255,255,0.2);
+            padding: 8px;
+            border-radius: 50px;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== PRAYER TIMES TABLE ===== */
+        .table-container {
+            background: white;
+            border-radius: 20px 5px 20px 5px;
+            padding: 10px;
+            border: 3px solid #2c1e0e;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background: #1e5b3e;
+            color: white;
+            padding: 8px 3px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-size: 0.75rem;
+            border-bottom: 3px solid #daa520;
+        }
+
+        td {
+            padding: 6px 2px;
+            text-align: center;
+            border-bottom: 1px solid #e0cba0;
+        }
+
+        .day-col { 
+            font-weight: bold; 
+            color: #8b1a1a;
+            background: #fff9f0;
+        }
+        
+        .iftar-highlight { 
+            background: #d4edda; 
+            font-weight: bold;
+            color: #1e5b3e;
+            position: relative;
+        }
+
+        .iftar-highlight::after {
+            content: "🌙";
+            margin-left: 5px;
+            font-size: 0.9rem;
+        }
+
+        .qadr-row {
+            background: rgba(218, 165, 32, 0.2);
+            font-weight: bold;
+            border: 2px solid #daa520;
+        }
+
+        .footer {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #5a3e2b;
+        }
+
+        .key-dates {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 0.8rem;
+        }
+
+        .key-item {
+            background: #f0e2cc;
+            padding: 5px 8px;
+            border-radius: 20px;
+            border: 2px solid #8b1a1a;
+        }
+
+        /* Audio player hidden */
+        #adhanAudio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="prayer-card">
+        <!-- Hidden audio element for Adhan -->
+        <audio id="adhanAudio" preload="auto">
+            <source src="https://www.islamcan.com/audio/adhan/azan-mishary-al-afasi.mp3" type="audio/mpeg">
+            <!-- Fallback for browsers that don't support MP3 -->
+            <source src="https://www.islamcan.com/audio/adhan/azan-mishary-al-afasi.ogg" type="audio/ogg">
+            Your browser does not support audio
+        </audio>
+
+        <div class="oromo-flag"></div>
+        
+        <div class="header">
+            <div class="title">🌿 OROMOO • ATLANTA</div>
+            <div class="location">☪ Ramadaan 1447 • Feb 18 – Mar 19, 2026 ☪</div>
+        </div>
+
+        <div class="note-box">
+            ⏰ Fajr Iqaamah 20 minutes after Adhan • Eastern Time (ISNA)
+        </div>
+
+        <!-- ===== IFTAR ALERT WITH AUDIO BUTTON ===== -->
+        <div class="iftar-alert">
+            <div class="iftar-title">🌙 IFTAR TIME ALERT 🌙</div>
+            
+            <!-- Today's Iftar time (auto-updates based on current date) -->
+            <div class="today-iftar" id="todayIftar">
+                Today's Iftar: Calculating...
+            </div>
+            
+            <div class="iftar-time-box" id="iftarTimeDisplay">
+                6:25 PM
+            </div>
+            
+            <div class="countdown" id="countdown">
+                --:--:--
+            </div>
+            
+            <!-- Beautiful Adhan Button -->
+            <button class="adhan-button" id="adhanButton" onclick="playAdhan()">
+                🔊
+            </button>
+            <div class="adhan-text">Tap for Maghrib Adhan</div>
+            
+            <div style="font-size: 0.9rem; color: white; margin-top: 8px;">
+                ✦ Allahu Akbar ✦
+            </div>
+        </div>
+
+        <div class="key-dates">
+            <span class="key-item">🌙 1st: Feb 18</span>
+            <span class="key-item">🤲 Laylat al-Qadr: Mar 15-16</span>
+            <span class="key-item">🎉 Eid: Mar 20</span>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Date</th>
+                        <th>Fajr</th>
+                        <th>Sunrise</th>
+                        <th>Dhuhr</th>
+                        <th>Asr</th>
+                        <th>Maghrib/<br>Iftar</th>
+                        <th>Isha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- FEBRUARY 18-28 (Ramadan 1-11) -->
+                    <tr><td class="day-col">1</td><td>Feb 18</td><td>5:52</td><td>7:15</td><td>12:52</td><td>4:01</td><td class="iftar-highlight" data-iftar="6:25">6:25</td><td>7:35</td></tr>
+                    <tr><td class="day-col">2</td><td>Feb 19</td><td>5:51</td><td>7:14</td><td>12:52</td><td>4:01</td><td class="iftar-highlight" data-iftar="6:26">6:26</td><td>7:36</td></tr>
+                    <tr><td class="day-col">3</td><td>Feb 20</td><td>5:50</td><td>7:13</td><td>12:52</td><td>4:02</td><td class="iftar-highlight" data-iftar="6:27">6:27</td><td>7:37</td></tr>
+                    <tr><td class="day-col">4</td><td>Feb 21</td><td>5:49</td><td>7:12</td><td>12:52</td><td>4:02</td><td class="iftar-highlight" data-iftar="6:28">6:28</td><td>7:38</td></tr>
+                    <tr><td class="day-col">5</td><td>Feb 22</td><td>5:48</td><td>7:11</td><td>12:52</td><td>4:03</td><td class="iftar-highlight" data-iftar="6:29">6:29</td><td>7:39</td></tr>
+                    <tr><td class="day-col">6</td><td>Feb 23</td><td>5:47</td><td>7:10</td><td>12:52</td><td>4:03</td><td class="iftar-highlight" data-iftar="6:30">6:30</td><td>7:40</td></tr>
+                    <tr><td class="day-col">7</td><td>Feb 24</td><td>5:46</td><td>7:09</td><td>12:52</td><td>4:04</td><td class="iftar-highlight" data-iftar="6:31">6:31</td><td>7:41</td></tr>
+                    <tr><td class="day-col">8</td><td>Feb 25</td><td>5:45</td><td>7:08</td><td>12:52</td><td>4:04</td><td class="iftar-highlight" data-iftar="6:32">6:32</td><td>7:42</td></tr>
+                    <tr><td class="day-col">9</td><td>Feb 26</td><td>5:44</td><td>7:06</td><td>12:52</td><td>4:05</td><td class="iftar-highlight" data-iftar="6:33">6:33</td><td>7:43</td></tr>
+                    <tr><td class="day-col">10</td><td>Feb 27</td><td>5:43</td><td>7:05</td><td>12:52</td><td>4:05</td><td class="iftar-highlight" data-iftar="6:34">6:34</td><td>7:44</td></tr>
+                    <tr><td class="day-col">11</td><td>Feb 28</td><td>5:42</td><td>7:04</td><td>12:52</td><td>4:06</td><td class="iftar-highlight" data-iftar="6:35">6:35</td><td>7:45</td></tr>
+                    
+                    <!-- MARCH 1-10 (Ramadan 12-21) -->
+                    <tr><td class="day-col">12</td><td>Mar 1</td><td>5:41</td><td>7:03</td><td>12:52</td><td>4:06</td><td class="iftar-highlight" data-iftar="6:36">6:36</td><td>7:46</td></tr>
+                    <tr><td class="day-col">13</td><td>Mar 2</td><td>5:40</td><td>7:02</td><td>12:52</td><td>4:07</td><td class="iftar-highlight" data-iftar="6:37">6:37</td><td>7:47</td></tr>
+                    <tr><td class="day-col">14</td><td>Mar 3</td><td>5:39</td><td>7:00</td><td>12:52</td><td>4:07</td><td class="iftar-highlight" data-iftar="6:38">6:38</td><td>7:48</td></tr>
+                    <tr><td class="day-col">15</td><td>Mar 4</td><td>5:38</td><td>6:59</td><td>12:52</td><td>4:08</td><td class="iftar-highlight" data-iftar="6:39">6:39</td><td>7:49</td></tr>
+                    <tr><td class="day-col">16</td><td>Mar 5</td><td>5:37</td><td>6:58</td><td>12:52</td><td>4:08</td><td class="iftar-highlight" data-iftar="6:40">6:40</td><td>7:50</td></tr>
+                    <tr><td class="day-col">17</td><td>Mar 6</td><td>5:36</td><td>6:56</td><td>12:52</td><td>4:09</td><td class="iftar-highlight" data-iftar="6:41">6:41</td><td>7:51</td></tr>
+                    <tr><td class="day-col">18</td><td>Mar 7</td><td>5:35</td><td>6:55</td><td>12:52</td><td>4:09</td><td class="iftar-highlight" data-iftar="6:42">6:42</td><td>7:52</td></tr>
+                    <tr><td class="day-col">19</td><td>Mar 8</td><td>5:34</td><td>6:54</td><td>12:52</td><td>4:10</td><td class="iftar-highlight" data-iftar="6:43">6:43</td><td>7:53</td></tr>
+                    <tr><td class="day-col">20</td><td>Mar 9</td><td>5:32</td><td>6:52</td><td>12:52</td><td>4:10</td><td class="iftar-highlight" data-iftar="6:44">6:44</td><td>7:54</td></tr>
+                    <tr><td class="day-col">21</td><td>Mar 10</td><td>5:31</td><td>6:51</td><td>12:52</td><td>4:11</td><td class="iftar-highlight" data-iftar="6:45">6:45</td><td>7:55</td></tr>
+                    
+                    <!-- MARCH 11-19 (Ramadan 22-30) -->
+                    <tr><td class="day-col">22</td><td>Mar 11</td><td>5:30</td><td>6:50</td><td>12:52</td><td>4:11</td><td class="iftar-highlight" data-iftar="6:46">6:46</td><td>7:56</td></tr>
+                    <tr><td class="day-col">23</td><td>Mar 12</td><td>5:29</td><td>6:48</td><td>12:52</td><td>4:12</td><td class="iftar-highlight" data-iftar="6:47">6:47</td><td>7:57</td></tr>
+                    <tr><td class="day-col">24</td><td>Mar 13</td><td>5:28</td><td>6:47</td><td>12:52</td><td>4:12</td><td class="iftar-highlight" data-iftar="6:48">6:48</td><td>7:58</td></tr>
+                    <tr><td class="day-col">25</td><td>Mar 14</td><td>5:26</td><td>6:46</td><td>12:52</td><td>4:13</td><td class="iftar-highlight" data-iftar="6:49">6:49</td><td>7:59</td></tr>
+                    <tr class="qadr-row"><td class="day-col">26</td><td>Mar 15</td><td>5:25</td><td>6:44</td><td>12:52</td><td>4:13</td><td class="iftar-highlight" data-iftar="6:50">6:50</td><td>8:00</td></tr>
+                    <tr class="qadr-row"><td class="day-col">27</td><td>Mar 16</td><td>5:24</td><td>6:43</td><td>12:52</td><td>4:14</td><td class="iftar-highlight" data-iftar="6:51">6:51</td><td>8:01</td></tr>
+                    <tr><td class="day-col">28</td><td>Mar 17</td><td>5:23</td><td>6:41</td><td>12:52</td><td>4:14</td><td class="iftar-highlight" data-iftar="6:52">6:52</td><td>8:02</td></tr>
+                    <tr><td class="day-col">29</td><td>Mar 18</td><td>5:21</td><td>6:40</td><td>12:52</td><td>4:14</td><td class="iftar-highlight" data-iftar="6:53">6:53</td><td>8:03</td></tr>
+                    <tr><td class="day-col">30</td><td>Mar 19</td><td>5:20</td><td>6:39</td><td>12:52</td><td>4:15</td><td class="iftar-highlight" data-iftar="6:54">6:54</td><td>8:04</td></tr>
+                    
+                    <!-- EID DAY -->
+                    <tr style="background: #daa520; color: #2c1e0e; font-weight: bold;">
+                        <td class="day-col">Eid</td><td>Mar 20</td><td>5:19</td><td>6:37</td><td>12:52</td><td>4:15</td><td>6:55</td><td>8:05</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 15px; display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.75rem; justify-content: center;">
+            <div style="background: #d4edda; padding: 5px 10px; border-radius: 20px;">🌙 Iftar (Maghrib)</div>
+            <div style="background: #fff3cd; padding: 5px 10px; border-radius: 20px;">⏰ Fajr +20 min</div>
+            <div style="background: #daa520; padding: 5px 10px; border-radius: 20px;">🤲 Laylat al-Qadr</div>
+            <div style="background: #8b1a1a; color: white; padding: 5px 10px; border-radius: 20px;">🎉 Eid</div>
+        </div>
+
+        <div class="footer">
+            ✦ Atlanta Ramadaan 1447 • Feb 18 – Mar 19, 2026 • ISNA Method ✦<br>
+            Dilbata jalqaba • Sabti dhuma • Waaqayyo haa qaaciluf!<br>
+            ✦ Oromoo • Atlanta • Ramadan Mubarak ✦ By Jamal 0598 @ 2026 ✦
+        </div>
+    </div>
+
+    <script>
+        // Ramadan 2026 Iftar Times
+        const iftarTimes = [
+            "6:25 PM", // Feb 18 - Day 1
+            "6:26 PM", // Feb 19 - Day 2
+            "6:27 PM", // Feb 20 - Day 3
+            "6:28 PM", // Feb 21 - Day 4
+            "6:29 PM", // Feb 22 - Day 5
+            "6:30 PM", // Feb 23 - Day 6
+            "6:31 PM", // Feb 24 - Day 7
+            "6:32 PM", // Feb 25 - Day 8
+            "6:33 PM", // Feb 26 - Day 9
+            "6:34 PM", // Feb 27 - Day 10
+            "6:35 PM", // Feb 28 - Day 11
+            "6:36 PM", // Mar 1 - Day 12
+            "6:37 PM", // Mar 2 - Day 13
+            "6:38 PM", // Mar 3 - Day 14
+            "6:39 PM", // Mar 4 - Day 15
+            "6:40 PM", // Mar 5 - Day 16
+            "6:41 PM", // Mar 6 - Day 17
+            "6:42 PM", // Mar 7 - Day 18
+            "6:43 PM", // Mar 8 - Day 19
+            "6:44 PM", // Mar 9 - Day 20
+            "6:45 PM", // Mar 10 - Day 21
+            "6:46 PM", // Mar 11 - Day 22
+            "6:47 PM", // Mar 12 - Day 23
+            "6:48 PM", // Mar 13 - Day 24
+            "6:49 PM", // Mar 14 - Day 25
+            "6:50 PM", // Mar 15 - Day 26
+            "6:51 PM", // Mar 16 - Day 27
+            "6:52 PM", // Mar 17 - Day 28
+            "6:53 PM", // Mar 18 - Day 29
+            "6:54 PM", // Mar 19 - Day 30
+            "6:55 PM"  // Mar 20 - Eid
+        ];
+
+        // Calculate current Ramadan day based on date
+        function getCurrentRamadanDay() {
+            const today = new Date();
+            const startDate = new Date(2026, 1, 18); // Feb 18, 2026 (month is 0-indexed, so 1 = Feb)
+            
+            // If today is before Ramadan starts
+            if (today < startDate) {
+                return 1; // Show first day
+            }
+            
+            const diffTime = today - startDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            
+            if (diffDays > 31) return 31; // Cap at Eid
+            if (diffDays < 1) return 1;
+            
+            return diffDays;
+        }
+
+        // Update Iftar time based on current date
+        function updateIftarDisplay() {
+            const day = getCurrentRamadanDay();
+            const iftarTime = iftarTimes[day - 1] || "6:25 PM";
+            
+            document.getElementById('iftarTimeDisplay').textContent = iftarTime;
+            document.getElementById('todayIftar').textContent = `Today's Iftar (Day ${day}): ${iftarTime}`;
+            
+            // Update countdown
+            updateCountdown(iftarTime);
+        }
+
+        // Countdown timer to Iftar
+        function updateCountdown(iftarTimeStr) {
+            const now = new Date();
+            const [time, period] = iftarTimeStr.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            
+            if (period === 'PM' && hours !== 12) hours += 12;
+            if (period === 'AM' && hours === 12) hours = 0;
+            
+            const iftarTime = new Date();
+            iftarTime.setHours(hours, minutes, 0, 0);
+            
+            // If iftar time has passed today, show tomorrow's iftar
+            if (now > iftarTime) {
+                iftarTime.setDate(iftarTime.getDate() + 1);
+            }
+            
+            const diff = iftarTime - now;
+            
+            if (diff <= 0) {
+                document.getElementById('countdown').textContent = "IFTAR TIME! 🌙";
+                return;
+            }
+            
+            const hoursLeft = Math.floor(diff / (1000 * 60 * 60));
+            const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secondsLeft = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('countdown').textContent = 
+                `${hoursLeft.toString().padStart(2, '0')}:${minutesLeft.toString().padStart(2, '0')}:${secondsLeft.toString().padStart(2, '0')}`;
+        }
+
+        // Play Adhan function
+        function playAdhan() {
+            const audio = document.getElementById('adhanAudio');
+            
+            // Try to play
+            audio.play().catch(error => {
+                console.log("Playback failed:", error);
+                alert("Please tap again to play Adhan. Browsers require user interaction first.");
+            });
+            
+            // Visual feedback
+            const button = document.getElementById('adhanButton');
+            button.style.animation = 'none';
+            button.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                button.style.transform = 'scale(1)';
+                button.style.animation = 'pulse 2s infinite';
+            }, 200);
+        }
+
+        // Initialize
+        updateIftarDisplay();
+        
+        // Update countdown every second
+        setInterval(() => {
+            const day = getCurrentRamadanDay();
+            const iftarTime = iftarTimes[day - 1] || "6:25 PM";
+            updateCountdown(iftarTime);
+        }, 1000);
+
+        // Update Iftar time at midnight
+        setInterval(() => {
+            updateIftarDisplay();
+        }, 60000); // Check every minute
+        
+        // Make playAdhan function globally available
+        window.playAdhan = playAdhan;
+    </script>
+</body>
+</html>
