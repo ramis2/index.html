@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ SecureAuth - Email Verification System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1300px;
+        }
+
+        .success-banner {
+            background: #10b981;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border: 2px solid #fbbf24;
+            font-weight: 500;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px #000;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #0b3b5c;
+            color: white;
+            padding: 1rem 2rem;
+            text-align: center;
+            border-bottom: 3px solid #10b981;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section {
+            background: #f8fafc;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            border: 2px solid #e2e8f0;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            background: #e2e8f0;
+            color: #475569;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .form {
+            transition: all 0.3s;
+        }
+
+        .form.hidden {
+            display: none;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i:not(.toggle-password) {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            z-index: 1;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 0.9rem 3rem 0.9rem 2.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 1rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #3b82f6;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            cursor: pointer;
+            z-index: 2;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: #3b82f6;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px #3b82f680;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+
+        .btn-outline:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .verification-section {
+            background: linear-gradient(145deg, #f8fafc, #ffffff);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            border: 2px solid #e2e8f0;
+        }
+
+        .status-message {
+            padding: 1rem;
+            border-radius: 1rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .status-message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .status-message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .status-message.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .code-box {
+            background: #1e293b;
+            color: #10b981;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            font-family: monospace;
+            font-size: 2.5rem;
+            text-align: center;
+            letter-spacing: 8px;
+            margin: 1.5rem 0;
+            border: 2px dashed #3b82f6;
+        }
+
+        .code-input-area {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .code-input-area input {
+            flex: 2;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 1rem;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 4px;
+        }
+
+        .log-panel {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-top: 1.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dashboard {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .link-box {
+            background: #0f172a;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-top: 1.5rem;
+            word-break: break-all;
+        }
+
+        .link-box a {
+            color: #93c5fd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- EmailJS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Simple Success Banner -->
+        <div class="success-banner">
+            <i class="fas fa-check-circle"></i>
+            <span>Email verification system is ready - Emails will be sent to your inbox</span>
+            <i class="fas fa-envelope"></i>
+        </div>
+
+        <div class="main-card">
+            <!-- Header -->
+            <div class="header">
+                <h2><i class="fas fa-shield-alt"></i> Secure Authentication System</h2>
+            </div>
+
+            <div class="main-grid">
+                <!-- LEFT COLUMN - FORMS -->
+                <div class="form-section">
+                    <!-- Tab Buttons -->
+                    <div class="tab-container">
+                        <button class="tab-btn active" onclick="switchTab('register')" id="registerTabBtn">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('login')" id="loginTabBtn">
+                            <i class="fas fa-sign-in-alt"></i> Sign In
+                        </button>
+                    </div>
+
+                    <!-- REGISTER FORM -->
+                    <div id="registerForm" class="form">
+                        <h2 class="form-title">Register New Account</h2>
+                        
+                        <div class="input-group">
+                            <label>Full Name</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="regName" placeholder="John Doe" value="Test User">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="regEmail" placeholder="your@email.com" value="info2026com@gmail.com">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="regPassword" placeholder="••••••••" value="Test123">
+                                <i class="fas fa-eye toggle-password" onclick="togglePassword('regPassword', this)"></i>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Confirm Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="regConfirmPassword" placeholder="••••••••" value="Test123">
+                                <i class="fas fa-eye toggle-password" onclick="togglePassword('regConfirmPassword', this)"></i>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="registerUser()">
+                            <i class="fas fa-paper-plane"></i> Register & Send Code
+                        </button>
+                    </div>
+
+                    <!-- LOGIN FORM -->
+                    <div id="loginForm" class="form hidden">
+                        <h2 class="form-title">Sign In to Account</h2>
+                        
+                        <div class="input-group">
+                            <label>Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="loginEmail" placeholder="your@email.com" value="info2026com@gmail.com">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="loginPassword" placeholder="••••••••" value="Test123">
+                                <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPassword', this)"></i>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="loginUser()">
+                            <i class="fas fa-paper-plane"></i> Login & Send Code
+                        </button>
+                    </div>
+
+                    <!-- DASHBOARD (shown after login) -->
+                    <div id="dashboard" class="dashboard hidden">
+                        <div class="dashboard-header">
+                            <h2>Welcome, <span id="userNameDisplay"></span>!</h2>
+                            <button class="btn btn-outline" onclick="logout()" style="width: auto; padding: 0.5rem 1.5rem;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                        
+                        <div class="link-box">
+                            <i class="fas fa-link"></i> 
+                            <a href="#" id="dashboardLink">https://secure.app/dashboard</a>
+                            <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.5rem;">
+                                ✅ Authentication successful - Access your secure dashboard
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN - VERIFICATION -->
+                <div class="verification-section">
+                    <h2 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-shield-alt" style="color: #3b82f6;"></i>
+                        Email Verification
+                    </h2>
+                    
+                    <div id="statusMessage" class="status-message info">
+                        <i class="fas fa-info-circle"></i> Register or login to receive verification code
+                    </div>
+
+                    <div class="code-box" id="codeDisplay">
+                        ??????
+                    </div>
+
+                    <div class="code-input-area">
+                        <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6">
+                        <button class="btn btn-success" onclick="verifyCode()" id="verifyBtn" disabled>
+                            <i class="fas fa-check"></i> Verify
+                        </button>
+                    </div>
+
+                    <button class="btn btn-outline" onclick="resendCode()" id="resendBtn" disabled>
+                        <i class="fas fa-redo-alt"></i> Resend Code
+                    </button>
+
+                    <div class="log-panel" id="logPanel">
+                        <div class="log-entry">✅ System initialized - Ready to send emails</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // YOUR EMAILJS CREDENTIALS
+        // ============================================
+        
+        const EMAILJS_CONFIG = {
+            publicKey: 'iHhmaufeJHzbn-Ucg',     // Your Public Key
+            serviceId: 'service_50f132p',        // Your Service ID
+            templateId: 'template_j654ywn'       // Your Template ID
+        };
+
+        // Initialize EmailJS
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+
+        // ============================================
+        // PASSWORD TOGGLE FUNCTION
+        // ============================================
+        
+        window.togglePassword = function(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // ============================================
+        // Application State
+        // ============================================
+        
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let currentCode = null;
+        let pendingAction = null;
+        let targetEmail = null;
+
+        // DOM Elements
+        const registerForm = document.getElementById('registerForm');
+        const loginForm = document.getElementById('loginForm');
+        const dashboard = document.getElementById('dashboard');
+        const registerTabBtn = document.getElementById('registerTabBtn');
+        const loginTabBtn = document.getElementById('loginTabBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const codeDisplay = document.getElementById('codeDisplay');
+        const verificationInput = document.getElementById('verificationCode');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const resendBtn = document.getElementById('resendBtn');
+        const logPanel = document.getElementById('logPanel');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const dashboardLink = document.getElementById('dashboardLink');
+
+        // Add log entry
+        function addLog(message) {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<i class="fas fa-${message.includes('✅') ? 'check-circle' : message.includes('❌') ? 'exclamation-circle' : 'info-circle'}"></i> ${new Date().toLocaleTimeString()}: ${message}`;
+            logPanel.insertBefore(entry, logPanel.firstChild);
+            
+            // Keep only last 8 entries
+            while (logPanel.children.length > 8) {
+                logPanel.removeChild(logPanel.lastChild);
+            }
+        }
+
+        // Generate 6-digit code
+        function generateCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Send REAL email
+        async function sendEmail(email, code) {
+            addLog(`📨 Sending verification code to ${email}...`);
+
+            try {
+                // Template parameters - match your EmailJS template
+                const templateParams = {
+                    to_email: email,
+                    to_name: email.split('@')[0],
+                    verification_code: code,
+                    message: `Your verification code is: ${code}`
+                };
+
+                addLog(`📧 Connecting to EmailJS...`);
+                
+                const response = await emailjs.send(
+                    EMAILJS_CONFIG.serviceId,
+                    EMAILJS_CONFIG.templateId,
+                    templateParams
+                );
+                
+                if (response.status === 200) {
+                    addLog(`✅ Email sent successfully to ${email}`);
+                    addLog(`🔐 Verification code: ${code}`);
+                    
+                    statusMessage.innerHTML = `<i class="fas fa-check-circle"></i> ✅ Code sent to ${email}! Check your inbox`;
+                    statusMessage.className = 'status-message success';
+                    
+                    codeDisplay.textContent = code;
+                    codeDisplay.style.color = '#10b981';
+                    
+                    return true;
+                } else {
+                    throw new Error('Failed to send');
+                }
+
+            } catch (error) {
+                addLog(`❌ Error: ${error.text || error.message || 'Unknown error'}`);
+                statusMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> Error sending email. Please try again.`;
+                statusMessage.className = 'status-message warning';
+                return false;
+            }
+        }
+
+        // Register user
+        window.registerUser = async function() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPass = document.getElementById('regConfirmPassword').value;
+
+            // Validation
+            if (!name || !email || !password || !confirmPass) {
+                statusMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please fill all fields';
+                statusMessage.className = 'status-message warning';
+                return;
+            }
+
+            if (password !== confirmPass) {
+                statusMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Passwords do not match';
+                statusMessage.className = 'status-message warning';
+                return;
+            }
+
+            if (password.length < 6) {
+                statusMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Password must be at least 6 characters';
+                statusMessage.className = 'status-message warning';
+                return;
+            }
+
+            // Check if user exists
+            if (users.find(u => u.email === email)) {
+                statusMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> User already exists';
+                statusMessage.className = 'status-message warning';
+                return;
+            }
+
+            // Generate and send code
+            currentCode = generateCode();
+            targetEmail = email;
+            
+            const sent = await sendEmail(email, currentCode);
+            
+            if (sent) {
+                pendingAction = {
+                    type: 'register',
+                    data: { name, email, password: btoa(password) }
+                };
+
+                // Enable verification inputs
+                verificationInput.disabled = false;
+                verifyBtn.disabled = false;
+                resendBtn.disabled = false;
+                
+                addLog(`📝 Registration initiated for ${email}`);
+            }
+        };
+
+        // Login user
+        window.loginUser = async function() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                statusMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter email and password';
+                statusMessage.className = 'status-message warning';
+                return;
+            }
+
+            // Find user
+            const user = users.find(u => u.email === email);
+            
+            if (!user || atob(user.password) !== password) {
+                statusMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Invalid email or password';
+                statusMessage.className = 'status-message warning';
+                return;
+            }
+
+            // Generate and send code
+            currentCode = generateCode();
+            targetEmail = email;
+            
+            const sent = await sendEmail(email, currentCode);
+            
+            if (sent) {
+                pendingAction = { type: 'login', email };
+
+                // Enable verification inputs
+                verificationInput.disabled = false;
+                verifyBtn.disabled = false;
+                resendBtn.disabled = false;
+                
+                addLog(`🔐 Login initiated for ${email}`);
+            }
+        };
+
+        // Verify code
+        window.verifyCode = function() {
+            const enteredCode = verificationInput.value.trim();
+
+            if (!enteredCode) {
+                statusMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter verification code';
+                statusMessage.className = 'status-message warning';
+                return;
+            }
+
+            if (enteredCode !== currentCode) {
+                statusMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Invalid verification code';
+                statusMessage.className = 'status-message warning';
+                addLog(`❌ Invalid code attempt: ${enteredCode}`);
+                return;
+            }
+
+            // Complete registration or login
+            if (pendingAction.type === 'register') {
+                const newUser = { ...pendingAction.data, verified: true };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                currentUser = newUser;
+                addLog(`✅ New account created: ${pendingAction.data.email}`);
+            } else {
+                currentUser = users.find(u => u.email === pendingAction.email);
+                addLog(`✅ Login successful: ${pendingAction.email}`);
+            }
+
+            // Save current user
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Show success message
+            statusMessage.innerHTML = '<i class="fas fa-check-circle"></i> Verification successful! Redirecting...';
+            statusMessage.className = 'status-message success';
+
+            // Show dashboard
+            showDashboard();
+            updateUserInfo();
+
+            // Reset verification inputs
+            verificationInput.disabled = true;
+            verifyBtn.disabled = true;
+            resendBtn.disabled = true;
+            verificationInput.value = '';
+            currentCode = null;
+            pendingAction = null;
+        };
+
+        // Resend code
+        window.resendCode = function() {
+            if (targetEmail && currentCode) {
+                sendEmail(targetEmail, currentCode);
+                addLog(`🔄 Resent code to ${targetEmail}`);
+            }
+        };
+
+        // Show dashboard
+        function showDashboard() {
+            registerForm.classList.add('hidden');
+            loginForm.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+        }
+
+        // Update user info in dashboard
+        function updateUserInfo() {
+            if (currentUser) {
+                userNameDisplay.textContent = currentUser.name;
+                const sessionToken = Math.random().toString(36).substring(2, 15);
+                dashboardLink.href = '#';
+                dashboardLink.textContent = `https://secure.app/dashboard?session=${sessionToken}`;
+            }
+        }
+
+        // Logout
+        window.logout = function() {
+            currentUser = null;
+            pendingAction = null;
+            currentCode = null;
+            targetEmail = null;
+            localStorage.removeItem('currentUser');
+            
+            // Show forms
+            registerForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+            dashboard.classList.add('hidden');
+            
+            // Reset status
+            statusMessage.innerHTML = '<i class="fas fa-info-circle"></i> Register or login to receive verification code';
+            statusMessage.className = 'status-message info';
+            
+            codeDisplay.textContent = '??????';
+            codeDisplay.style.color = '#10b981';
+            
+            addLog('👋 Logged out successfully');
+            
+            // Switch to register tab
+            switchTab('register');
+        };
+
+        // Switch between tabs
+        window.switchTab = function(tab) {
+            if (tab === 'register') {
+                registerForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                registerTabBtn.classList.add('active');
+                loginTabBtn.classList.remove('active');
+            } else {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginTabBtn.classList.add('active');
+                registerTabBtn.classList.remove('active');
+            }
+        };
+
+        // Initialize demo user if none exists
+        if (users.length === 0) {
+            const demoUser = {
+                name: 'Test User',
+                email: 'test@example.com',
+                password: btoa('Test123'),
+                verified: true
+            };
+            users.push(demoUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            addLog('👤 Demo user created: test@example.com / Test123');
+        }
+
+        // Check if user is already logged in
+        if (currentUser) {
+            showDashboard();
+            updateUserInfo();
+            addLog(`👋 Welcome back, ${currentUser.name}`);
+        }
+
+        // Initial log
+        addLog('✅ System ready - Enter your email to receive verification code');
+    </script>
+</body>
+</html>
