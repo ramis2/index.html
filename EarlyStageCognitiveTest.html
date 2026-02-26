@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>🧠 MindPulse · gentle cognitive screener</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+            /* soft, calm gradient background — friendly and non‑clinical */
+            background: linear-gradient(165deg, #d9e8f5 0%, #e6f0f9 40%, #f7f3e9 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            margin: 0;
+            -webkit-tap-highlight-color: rgba(78, 139, 196, 0.2);
+        }
+
+        .card {
+            max-width: 750px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 56px 56px 44px 44px;
+            box-shadow: 0 30px 50px rgba(47, 91, 128, 0.25), 0 12px 28px rgba(0, 30, 50, 0.2), inset 0 1px 4px rgba(255,255,255,0.8);
+            padding: 28px 24px 36px 24px;
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+
+        /* header with score + progress */
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .score-badge {
+            background: #2c5f7e;
+            color: white;
+            font-weight: 700;
+            font-size: 1.4rem;
+            padding: 10px 24px;
+            border-radius: 60px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 18px -8px #1d3f55, inset 0 1px 6px #b3dcff;
+            border: 1px solid #c7e2ff;
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .score-badge span {
+            font-size: 1.9rem;
+            margin-right: 6px;
+        }
+
+        .q-marker {
+            background: #ecd9c2;
+            color: #4e3f30;
+            padding: 10px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            border: 1px solid #e4c5a3;
+            box-shadow: inset 0 1px 5px #ffeee0, 0 8px 12px -12px #8f7b68;
+        }
+
+        h2 {
+            font-size: 2.1rem;
+            font-weight: 450;
+            color: #1f4a64;
+            margin: 10px 0 10px 12px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            text-shadow: 0 2px 6px #e6f0fa;
+        }
+
+        .question-panel {
+            background: #f3f9ff;
+            border-radius: 60px 60px 40px 40px;
+            padding: 30px 16px 24px 16px;
+            margin: 16px 0 18px 0;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: inset 0 0 0 2px #ffffffcc, 0 20px 30px -16px #7299b9;
+        }
+
+        .items-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 18px 24px;
+            margin: 10px 0 18px 0;
+            padding: 8px 4px;
+        }
+
+        .item-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 115px;
+            min-height: 115px;
+            padding: 16px 10px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 32px;
+            background: linear-gradient(145deg, #ffffff, #f3f9ff);
+            box-shadow: 0 16px 24px -12px #3c677e, 0 6px 12px rgba(0,35,55,0.15), 0 0 0 2px rgba(255,255,255,0.9);
+            transition: all 0.15s ease;
+            border: 2px solid rgba(255,255,255,0.8);
+            flex: 0 1 auto;
+            cursor: pointer;
+            -webkit-tap-highlight-color: #aad0f0;
+        }
+
+        .item-box.selected-correct {
+            background: #cbe6b5;
+            box-shadow: 0 0 0 5px #3f9e4c, 0 18px 28px -14px #1b6d3b;
+            border: 2px solid white;
+            transform: scale(1.02);
+        }
+
+        .item-box.wrong-attempt {
+            background: #fccac2;
+            box-shadow: 0 0 0 4px #cf5a4b, 0 15px 20px -12px #a14233;
+            border: 2px solid #fff7f0;
+            opacity: 0.9;
+        }
+
+        .shape-symbol {
+            font-size: 3.6rem;
+            line-height: 1.2;
+            filter: drop-shadow(2px 6px 8px #94b7cf77);
+            margin-bottom: 4px;
+        }
+
+        .word-text {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #12425b;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 5px white;
+        }
+
+        .number-text {
+            font-size: 3.3rem;
+            font-weight: 600;
+            color: #1b5375;
+            font-feature-settings: "tnum";
+        }
+
+        .item-caption {
+            font-size: 1.1rem;
+            color: #2d5672;
+            font-weight: 600;
+            margin-top: 8px;
+            background: #ffffffdd;
+            padding: 4px 18px;
+            border-radius: 60px;
+            border: 1px solid #b8d1e7;
+        }
+
+        .next-btn {
+            background: #327ba8;
+            border: none;
+            width: 100%;
+            padding: 22px 10px;
+            border-radius: 70px;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px #063959;
+            box-shadow: 0 26px 30px -18px #124257, 0 6px 0 #20567b inset, 0 -3px 12px #cce9ff inset;
+            letter-spacing: 3px;
+            transition: all 0.12s ease;
+            margin-top: 10px;
+            cursor: pointer;
+            touch-action: manipulation;
+            border: 1px solid #aad0f0;
+        }
+
+        .next-btn:active {
+            transform: translateY(7px);
+            box-shadow: 0 16px 22px -14px #0d3143, 0 2px 0 #20567b inset;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.4;
+            transform: translateY(3px);
+            box-shadow: 0 10px 14px -12px #1e455b;
+            pointer-events: none;
+        }
+
+        .footer-note {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 28px;
+            color: #3b6681;
+            font-weight: 500;
+            padding: 0 12px;
+            font-size: 1.1rem;
+        }
+
+        .restart-link {
+            color: #1f5677;
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: #f1e7db;
+            padding: 10px 26px;
+            border-radius: 50px;
+            text-decoration: none;
+            border: 1px solid #cbbcaa;
+            box-shadow: 0 10px 14px -12px #826e59;
+            transition: 0.1s;
+        }
+
+        .restart-link:active {
+            background: #e2d4c2;
+            transform: scale(0.97);
+        }
+
+        @media (max-width: 550px) {
+            .item-box {
+                min-width: 95px;
+                min-height: 95px;
+            }
+            .word-text { font-size: 2.0rem; }
+            .number-text { font-size: 2.7rem; }
+            .shape-symbol { font-size: 3.0rem; }
+            h2 { font-size: 1.8rem; }
+        }
+        @media (max-width: 400px) {
+            .items-grid { gap: 10px; }
+            .item-box { min-width: 75px; min-height: 80px; }
+        }
+    </style>
+</head>
+<body>
+<div class="card" role="main" aria-label="cognitive self-assessment">
+    <div class="stats-bar">
+        <div class="score-badge" id="scoreDisplay">🏆 <span id="scoreValue">0</span> pts</div>
+        <div class="q-marker" id="questionCounter">Q1 / 12</div>
+    </div>
+    <h2 id="questionText">find the different item</h2>
+
+    <div class="question-panel" id="questionPanel">
+        <div class="items-grid" id="itemsContainer"></div>
+    </div>
+
+    <button class="next-btn" id="nextBtn" aria-label="next question">⏵ NEXT ⏵</button>
+
+    <div class="footer-note">
+        <span>✨ mix · spelling · numbers · shapes</span>
+        <a href="#" class="restart-link" id="restartBtn" aria-label="restart assessment">↻ restart</a>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- 12+ QUESTIONS (mix: similar spelling, numbers, shapes) ----------
+        const questions = [
+            { // 0
+                type: 'word',
+                question: 'which word is spelled differently?',
+                items: ['bread', 'beard', 'bread', 'bread'],
+                answerIndex: 1       // beard
+            },
+            { // 1
+                type: 'number',
+                question: 'find the number that stands out',
+                items: ['13', '13', '73', '13'],
+                answerIndex: 2       // 73
+            },
+            { // 2
+                type: 'shape',
+                question: 'pick the odd shape',
+                items: ['●', '■', '●', '●'],
+                answerIndex: 1       // black square
+            },
+            { // 3
+                type: 'word',
+                question: 'spot the differently sounding word',
+                items: ['tough', 'rough', 'through', 'tough'],
+                answerIndex: 2       // through
+            },
+            { // 4
+                type: 'number',
+                question: 'which number is the odd one?',
+                items: ['101', '101', '110', '101'],
+                answerIndex: 2       // 110
+            },
+            { // 5
+                type: 'shape',
+                question: 'different shape or box',
+                items: ['▢', '▢', '△', '▢'],
+                answerIndex: 2       // triangle
+            },
+            { // 6
+                type: 'word',
+                question: 'choose the word with a unique spelling',
+                items: ['bough', 'cough', 'bough', 'bough'],
+                answerIndex: 1       // cough
+            },
+            { // 7
+                type: 'number',
+                question: 'find the intruder',
+                items: ['80', '80', '18', '80'],
+                answerIndex: 2       // 18
+            },
+            { // 8
+                type: 'shape',
+                question: 'which shape does not match?',
+                items: ['⬟', '⬟', '⬟', '⬣'],
+                answerIndex: 3       // ⬣ (different hex/pentagon)
+            },
+            { // 9
+                type: 'word',
+                question: 'odd one out (similar spelling)',
+                items: ['dear', 'dare', 'dear', 'dear'],
+                answerIndex: 1       // dare
+            },
+            { // 10
+                type: 'number',
+                question: 'spot the different number',
+                items: ['55', '55', '58', '55'],
+                answerIndex: 2       // 58
+            },
+            { // 11
+                type: 'shape',
+                question: 'find the odd shape out',
+                items: ['♥', '♥', '♠', '♥'],
+                answerIndex: 2       // spade
+            },
+            { // 12 (bonus 13th to show 12+)
+                type: 'word',
+                question: 'which word does not rhyme?',
+                items: ['height', 'weight', 'height', 'height'],
+                answerIndex: 1       // weight (different pronunciation)
+            },
+            { // 13
+                type: 'number',
+                question: 'find the different number',
+                items: ['222', '222', '227', '222'],
+                answerIndex: 2       // 227
+            }
+        ];
+
+        // use first 12 questions (or keep them all, but we show Q count total = 12)
+        // slice to keep exactly 12 questions (0-11) -> 12 items, but we have 14, so we take first 12.
+        const activeQuestions = questions.slice(0, 12);
+        const totalQuestions = activeQuestions.length;  // = 12
+
+        // state
+        let currentIndex = 0;
+        let score = 0;
+        let selectedIdx = null;            // index (0-3) of item user tapped
+        let answerLocked = false;           // after correct/next ready? we disable further clicks if correct already?
+        // BUT we want auto‑next on correct: after correct, we move to next question automatically (with slight delay)
+        // we'll manage a timer.
+
+        let autoNextTimer = null;
+
+        // DOM elements
+        const questionTextEl = document.getElementById('questionText');
+        const itemsContainer = document.getElementById('itemsContainer');
+        const nextBtn = document.getElementById('nextBtn');
+        const counterEl = document.getElementById('questionCounter');
+        const scoreSpan = document.getElementById('scoreValue');
+        const restartBtn = document.getElementById('restartBtn');
+
+        function updateScoreDisplay() {
+            scoreSpan.innerText = score;
+        }
+
+        // Clear any pending auto next
+        function clearAutoTimer() {
+            if (autoNextTimer) {
+                clearTimeout(autoNextTimer);
+                autoNextTimer = null;
+            }
+        }
+
+        // go to next question (advance or wrap)
+        function goToNextQuestion() {
+            clearAutoTimer();
+
+            if (currentIndex + 1 < totalQuestions) {
+                currentIndex++;
+                selectedIdx = null;
+                answerLocked = false;          // fresh question
+            } else {
+                // loop back to start (optional, but we also keep score)
+                currentIndex = 0;
+                selectedIdx = null;
+                answerLocked = false;
+            }
+            renderQuestion();
+        }
+
+        // highlight correct/incorrect & increment score on correct, then auto next
+        function handleItemClick(e) {
+            const box = e.target.closest('.item-box');
+            if (!box) return;
+            if (answerLocked) return;          // already answered this question (prevents double answer)
+
+            const idxAttr = box.getAttribute('data-item-index');
+            if (idxAttr === null) return;
+            const clickedIdx = parseInt(idxAttr, 10);
+            const q = activeQuestions[currentIndex];
+            const isCorrect = (clickedIdx === q.answerIndex);
+
+            // Lock further clicks on this question
+            answerLocked = true;
+
+            // apply visual classes
+            const allBoxes = document.querySelectorAll('.item-box');
+            allBoxes.forEach((b, i) => {
+                b.classList.remove('selected-correct', 'wrong-attempt');
+                if (i === q.answerIndex) {
+                    b.classList.add('selected-correct');   // correct answer always green
+                } else if (i === clickedIdx && !isCorrect) {
+                    b.classList.add('wrong-attempt');      // if user picked wrong, mark that red
+                }
+            });
+
+            // If correct, increase score
+            if (isCorrect) {
+                score++;
+                updateScoreDisplay();
+            }
+
+            // Enable next button (even if wrong, they can go manually)
+            nextBtn.disabled = false;
+
+            // AUTO NEXT if correct (with short delay to show feedback)
+            if (isCorrect) {
+                clearAutoTimer();
+                autoNextTimer = setTimeout(() => {
+                    goToNextQuestion();
+                }, 700); // 0.7 sec delay, feels natural
+            }
+
+            // (if incorrect, no auto‑next, but NEXT button is active)
+        }
+
+        // Render current question (fresh)
+        function renderQuestion() {
+            const q = activeQuestions[currentIndex];
+            questionTextEl.innerText = q.question;
+
+            let htmlStr = '';
+            q.items.forEach((item, idx) => {
+                let innerContent = '';
+                if (q.type === 'word') {
+                    innerContent = `<div class="word-text">${item}</div>`;
+                } else if (q.type === 'number') {
+                    innerContent = `<div class="number-text">${item}</div>`;
+                } else { // shape
+                    innerContent = `<div class="shape-symbol">${item}</div>`;
+                }
+
+                const caption = String.fromCharCode(65 + idx); // A,B,C,D
+                // no selected class at first (fresh render)
+                htmlStr += `
+                    <div class="item-box" data-item-index="${idx}" role="button" tabindex="0" aria-label="option ${caption}: ${item}">
+                        ${innerContent}
+                        <span class="item-caption">${caption}</span>
+                    </div>
+                `;
+            });
+
+            itemsContainer.innerHTML = htmlStr;
+
+            // update counter
+            counterEl.innerText = `Q${currentIndex+1} / ${totalQuestions}`;
+
+            // disable next button until answer given (or if locked but answer given, but render fresh -> no lock)
+            nextBtn.disabled = true;
+
+            // reset answerLocked and selection
+            selectedIdx = null;
+            answerLocked = false;
+            clearAutoTimer();
+        }
+
+        // Manual next button (fallback, or after incorrect)
+        function manualNext() {
+            if (!nextBtn.disabled) {  // only if enabled
+                goToNextQuestion();
+            }
+        }
+
+        // restart full quiz
+        function restartQuiz() {
+            clearAutoTimer();
+            currentIndex = 0;
+            score = 0;
+            selectedIdx = null;
+            answerLocked = false;
+            updateScoreDisplay();
+            renderQuestion();
+        }
+
+        // Event listeners
+        itemsContainer.addEventListener('click', handleItemClick);
+        itemsContainer.addEventListener('touchstart', (e) => {
+            // just to allow passive, no interference
+        }, { passive: true });
+
+        // keyboard accessibility
+        itemsContainer.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const box = e.target.closest('.item-box');
+                if (box && !answerLocked) {
+                    e.preventDefault();
+                    // simulate click
+                    const clickEvent = new MouseEvent('click', { bubbles: true });
+                    box.dispatchEvent(clickEvent);
+                }
+            }
+        });
+
+        nextBtn.addEventListener('click', manualNext);
+        restartBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            restartQuiz();
+        });
+
+        // initial render
+        renderQuestion();
+        updateScoreDisplay();
+    })();
+</script>
+</body>
+</html>
+copyright @ By Jamal 0598 * 2026
