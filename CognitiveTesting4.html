@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>🔲 Memory Match · numbers vanish (early dementia friendly)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #b8d4e7 0%, #dbeaf5 45%, #f2e3cf 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            -webkit-tap-highlight-color: #7fa9c7;
+        }
+
+        .card {
+            max-width: 820px;
+            width: 100%;
+            background: rgba(255, 248, 238, 0.8);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: 70px 70px 50px 50px;
+            box-shadow: 0 35px 60px rgba(46, 78, 105, 0.35), 0 20px 30px -15px #1d445b, inset 0 2px 12px #fffef5;
+            padding: 36px 24px 40px 24px;
+            border: 2px solid rgba(255, 250, 235, 0.9);
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 0 16px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .score-pill {
+            background: #31658c;
+            color: white;
+            font-weight: 700;
+            font-size: 1.6rem;
+            padding: 12px 32px;
+            border-radius: 60px;
+            box-shadow: 0 18px 28px -18px #1a3b4e, inset 0 3px 12px #cbe2ff;
+            border: 2px solid #cde2fc;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .score-pill span {
+            font-size: 2.4rem;
+            margin-right: 6px;
+        }
+
+        .level-pill {
+            background: #eedbc8;
+            color: #4f3929;
+            padding: 12px 36px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            border: 2px solid #ecccaa;
+            box-shadow: inset 0 2px 10px #fff7e6;
+        }
+
+        .phase-indicator {
+            background: #bface0;
+            color: #1e2f47;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-align: center;
+            margin: 6px 0 10px 18px;
+            display: inline-block;
+            border: 2px solid #e5d4ff;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            color: #1f5575;
+            margin: 10px 0 20px 18px;
+            line-height: 1.2;
+        }
+
+        .game-panel {
+            background: #ebf4fc;
+            border-radius: 80px 80px 50px 50px;
+            padding: 35px 20px 35px 20px;
+            margin: 10px 0 20px 0;
+            border: 4px solid #ffffffec;
+            box-shadow: inset 0 0 0 3px #ffffff, 0 30px 40px -28px #386282;
+        }
+
+        /* ---------- BOXES GRID (shapes: circles & squares) ---------- */
+        .memory-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 22px 28px;
+            margin: 20px 0 20px 0;
+            padding: 12px 8px;
+        }
+
+        /* base style for every shape box */
+        .shape-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 130px;
+            height: 150px;
+            background: #fef7e9;
+            border-radius: 35px;           /* square with soft edges (default) */
+            box-shadow: 0 25px 30px -18px #4a3f33, 0 8px 0 #caae8f inset, 0 -6px 16px #fff3cf inset;
+            border: 4px solid #fff0dd;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: #f7c7a0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        /* circle class overrides border-radius to make it a circle */
+        .shape-box.circle {
+            border-radius: 50%;
+            width: 140px;
+            height: 140px;
+            background: #fcefda;
+            box-shadow: 0 25px 30px -18px #6d5a48, 0 7px 0 #bb9f80 inset, 0 -6px 16px #ffeac6 inset;
+        }
+
+        /* number display area */
+        .number-display {
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: #1f5880;
+            text-shadow: 0 4px 8px #ffe29c;
+            background: rgba(255,255,245,0.8);
+            width: 100%;
+            text-align: center;
+            padding: 18px 0 8px 0;
+            border-radius: inherit;
+            transition: opacity 0.25s ease;
+        }
+
+        /* shape label (A, B, C, ...) */
+        .index-label {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: #ddcbb4;
+            color: #2f4d62;
+            padding: 8px 0;
+            width: 100%;
+            text-align: center;
+            border-radius: 0 0 32px 32px;
+            border-top: 4px solid #ffeec7;
+            margin-top: 8px;
+            letter-spacing: 2px;
+        }
+
+        .circle .index-label {
+            border-radius: 0 0 50% 50%;
+        }
+
+        /* ---------- RECALL PHASE: numbers completely replaced with "?" ---------- */
+        .shape-box.recall-phase .number-display {
+            /* hide the original number text */
+            font-size: 4.5rem;
+            content: "?";
+            color: #7b5e47;
+            text-shadow: 0 2px 6px #bc9f82;
+        }
+
+        /* we need to actually change the text, not just style. We'll handle it via JS.
+           But we also add a class to indicate recall, and JS will update inner text. */
+        .shape-box.recall-phase .number-display {
+            background: #dccbb8;
+            color: #3d2b1c;
+        }
+
+        /* selected / feedback */
+        .shape-box.selected-correct {
+            background: #bfe0b0;
+            box-shadow: 0 0 0 8px #36804b, 0 20px 30px -18px #1f6433;
+            border: 4px solid white;
+            transform: scale(1.02);
+        }
+
+        .shape-box.wrong-attempt {
+            background: #f5c2b9;
+            box-shadow: 0 0 0 8px #c45141, 0 20px 30px -18px #a13b2e;
+            border: 4px solid #fff3ec;
+        }
+
+        /* next button */
+        .next-btn {
+            background: #3f7ca3;
+            border: none;
+            width: 100%;
+            padding: 26px 10px;
+            border-radius: 80px;
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 4px 8px #13415a;
+            box-shadow: 0 32px 38px -24px #1f4b64, 0 10px 0 #25648b inset, 0 -6px 18px #cdeaff inset;
+            letter-spacing: 5px;
+            transition: all 0.1s ease;
+            margin-top: 16px;
+            cursor: pointer;
+            border: 3px solid #cde5ff;
+        }
+
+        .next-btn:active {
+            transform: translateY(10px);
+            box-shadow: 0 22px 28px -22px #163c4f, 0 5px 0 #1f5679 inset;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.4;
+            transform: translateY(5px);
+            box-shadow: 0 20px 26px -20px #1e4359;
+            pointer-events: none;
+        }
+
+        .footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+            color: #3b6681;
+            font-weight: 600;
+            padding: 0 16px;
+            font-size: 1.3rem;
+        }
+
+        .restart-link {
+            color: #235473;
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: #f0ddc9;
+            padding: 14px 36px;
+            border-radius: 70px;
+            text-decoration: none;
+            border: 3px solid #e2be97;
+            box-shadow: 0 18px 20px -22px #8d7258;
+        }
+
+        .restart-link:active {
+            background: #e6ceb4;
+            transform: scale(0.96);
+        }
+
+        @media (max-width: 600px) {
+            .shape-box { width: 105px; height: 125px; }
+            .shape-box.circle { width: 115px; height: 115px; }
+            .number-display { font-size: 3.5rem; }
+            h2 { font-size: 1.8rem; }
+        }
+        @media (max-width: 450px) {
+            .shape-box { width: 85px; height: 100px; }
+            .shape-box.circle { width: 95px; height: 95px; }
+            .number-display { font-size: 2.8rem; }
+            .index-label { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="stats-row">
+        <div class="score-pill">⭐ <span id="scoreValue">0</span> pts</div>
+        <div class="level-pill" id="questionCounter">round 1/8</div>
+    </div>
+    <h2 id="questionText">remember numbers in squares & circles</h2>
+
+    <div class="game-panel">
+        <div class="memory-grid" id="memoryGrid"></div>
+    </div>
+
+    <button class="next-btn" id="nextBtn" aria-label="next round">⏵ NEXT ⏵</button>
+
+    <div class="footer-row">
+        <span>🔲⬤ watch · recall · tap @ 2026. By Jamal Ahmed 0598 </span>
+        <a href="#" class="restart-link" id="restartBtn">↻ restart</a>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // LEVELS: each contains an array of objects: { shape: 'square' or 'circle', number: int }
+        const levels = [
+            {
+                shapes: [
+                    { shape: 'square', number: 5 },
+                    { shape: 'circle', number: 2 },
+                    { shape: 'square', number: 5 },
+                    { shape: 'circle', number: 5 }
+                ],
+                answerIndex: 1,    // the circle with number 2
+                question: 'which box held a different number? (tap it)'
+            },
+            {
+                shapes: [
+                    { shape: 'square', number: 8 },
+                    { shape: 'circle', number: 8 },
+                    { shape: 'square', number: 3 },
+                    { shape: 'circle', number: 8 },
+                    { shape: 'square', number: 8 },
+                    { shape: 'circle', number: 8 }
+                ],
+                answerIndex: 2,    // square with 3
+                question: 'remember the numbers. which box had a different number?'
+            },
+            {
+                shapes: [
+                    { shape: 'circle', number: 12 },
+                    { shape: 'square', number: 12 },
+                    { shape: 'circle', number: 12 },
+                    { shape: 'square', number: 7 },
+                    { shape: 'circle', number: 12 },
+                    { shape: 'square', number: 12 }
+                ],
+                answerIndex: 3,    // square with 7
+                question: 'find the box with the odd number (remember its shape)'
+            },
+            {
+                shapes: [
+                    { shape: 'square', number: 22 },
+                    { shape: 'circle', number: 22 },
+                    { shape: 'circle', number: 22 },
+                    { shape: 'square', number: 22 },
+                    { shape: 'circle', number: 9 },
+                    { shape: 'square', number: 22 },
+                    { shape: 'circle', number: 22 },
+                    { shape: 'square', number: 22 }
+                ],
+                answerIndex: 4,    // circle with 9
+                question: 'which box contained a different number?'
+            },
+            {
+                shapes: [
+                    { shape: 'circle', number: 31 },
+                    { shape: 'square', number: 31 },
+                    { shape: 'square', number: 31 },
+                    { shape: 'circle', number: 31 },
+                    { shape: 'square', number: 31 },
+                    { shape: 'circle', number: 14 },
+                    { shape: 'square', number: 31 },
+                    { shape: 'circle', number: 31 }
+                ],
+                answerIndex: 5,    // circle with 14
+                question: 'look carefully. which box is different?'
+            },
+            {
+                shapes: [
+                    { shape: 'square', number: 44 },
+                    { shape: 'circle', number: 44 },
+                    { shape: 'square', number: 44 },
+                    { shape: 'circle', number: 44 },
+                    { shape: 'square', number: 27 },
+                    { shape: 'circle', number: 44 }
+                ],
+                answerIndex: 4,    // square with 27
+                question: 'one number is unique. tap its box (remember shape!)'
+            },
+            {
+                shapes: [
+                    { shape: 'circle', number: 55 },
+                    { shape: 'square', number: 55 },
+                    { shape: 'circle', number: 55 },
+                    { shape: 'square', number: 55 },
+                    { shape: 'circle', number: 55 },
+                    { shape: 'square', number: 55 },
+                    { shape: 'circle', number: 63 },
+                    { shape: 'square', number: 55 }
+                ],
+                answerIndex: 6,    // circle with 63
+                question: 'recall the numbers — which box was different?'
+            },
+            {
+                shapes: [
+                    { shape: 'square', number: 99 },
+                    { shape: 'circle', number: 99 },
+                    { shape: 'square', number: 99 },
+                    { shape: 'circle', number: 100 }
+                ],
+                answerIndex: 3,    // circle with 100
+                question: 'almost done! which box had a different number?'
+            }
+        ];
+
+        const totalLevels = levels.length;
+        let currentLevel = 0;
+        let score = 0;
+        let phase = 'show';            // 'show' (numbers visible) or 'recall' (numbers hidden)
+        let answerLocked = false;
+        let autoNextTimer = null;
+
+        // DOM elements
+        const memoryGrid = document.getElementById('memoryGrid');
+        const questionTextEl = document.getElementById('questionText');
+        const nextBtn = document.getElementById('nextBtn');
+        const counterEl = document.getElementById('questionCounter');
+        const scoreSpan = document.getElementById('scoreValue');
+        const restartBtn = document.getElementById('restartBtn');
+
+        function updateScoreDisplay() {
+            scoreSpan.innerText = score;
+        }
+
+        function clearTimer() {
+            if (autoNextTimer) {
+                clearTimeout(autoNextTimer);
+                autoNextTimer = null;
+            }
+        }
+
+        // Render current level based on phase
+        function renderLevel() {
+            const level = levels[currentLevel];
+            const isShowPhase = (phase === 'show');
+
+            if (isShowPhase) {
+                questionTextEl.innerText = '👀 remember these numbers ... (they will disappear)';
+            } else {
+                questionTextEl.innerText = level.question + ' (tap the correct box)';
+            }
+
+            // build grid
+            let htmlStr = '';
+            level.shapes.forEach((item, idx) => {
+                const shapeClass = item.shape === 'circle' ? 'circle' : '';
+                const numberValue = item.number;
+                const caption = String.fromCharCode(65 + idx); // A, B, C...
+
+                // In show phase: display the actual number
+                // In recall phase: we set the number text to "?" (completely hidden)
+                const displayNumber = isShowPhase ? numberValue : '?';
+
+                // Add a class for styling if needed, but we override text
+                const phaseClass = isShowPhase ? '' : 'recall-phase';
+
+                htmlStr += `
+                    <div class="shape-box ${shapeClass} ${phaseClass}" data-card-index="${idx}" data-original-number="${numberValue}" role="button" tabindex="0">
+                        <div class="number-display">${displayNumber}</div>
+                        <div class="index-label">${caption}</div>
+                    </div>
+                `;
+            });
+
+            memoryGrid.innerHTML = htmlStr;
+
+            counterEl.innerText = `round ${currentLevel+1}/${totalLevels}`;
+
+            if (phase === 'show') {
+                nextBtn.disabled = true;    // disabled during show phase
+                // After 2.8 seconds, automatically switch to recall phase
+                clearTimer();
+                autoNextTimer = setTimeout(() => {
+                    phase = 'recall';
+                    answerLocked = false;
+                    renderLevel();  // re-render with "?" and new question
+                }, 2800);
+            } else {
+                // recall phase: next disabled until answer
+                nextBtn.disabled = true;
+                answerLocked = false;
+            }
+
+            // Remove any leftover feedback classes
+            document.querySelectorAll('.shape-box').forEach(b => {
+                b.classList.remove('selected-correct', 'wrong-attempt');
+            });
+        }
+
+        // Handle clicks on boxes (only active during recall phase)
+        function handleBoxClick(e) {
+            const box = e.target.closest('.shape-box');
+            if (!box) return;
+            if (phase !== 'recall') return;   // no clicking during show phase
+            if (answerLocked) return;
+
+            const idxAttr = box.getAttribute('data-card-index');
+            if (!idxAttr) return;
+            const clickedIdx = parseInt(idxAttr, 10);
+            const level = levels[currentLevel];
+            const isCorrect = (clickedIdx === level.answerIndex);
+
+            // Lock further answers
+            answerLocked = true;
+
+            // Apply classes to all boxes
+            const allBoxes = document.querySelectorAll('.shape-box');
+            allBoxes.forEach((b, i) => {
+                b.classList.remove('selected-correct', 'wrong-attempt');
+                if (i === level.answerIndex) {
+                    b.classList.add('selected-correct');   // correct answer (green)
+                } else if (i === clickedIdx && !isCorrect) {
+                    b.classList.add('wrong-attempt');      // user's wrong pick (red)
+                }
+            });
+
+            if (isCorrect) {
+                score++;
+                updateScoreDisplay();
+                // auto-next after short delay
+                clearTimer();
+                autoNextTimer = setTimeout(() => {
+                    advanceToNextLevel();
+                }, 800);
+            } else {
+                // wrong answer: enable next button so they can continue manually
+                nextBtn.disabled = false;
+            }
+
+            // if correct, also enable next as fallback (but auto will move)
+            if (isCorrect) {
+                nextBtn.disabled = false;
+            }
+        }
+
+        function advanceToNextLevel() {
+            clearTimer();
+            if (currentLevel + 1 < totalLevels) {
+                currentLevel++;
+                phase = 'show';          // start next level with show phase
+            } else {
+                // completed all levels: loop back (keep score for fun)
+                currentLevel = 0;
+                phase = 'show';
+            }
+            renderLevel();
+        }
+
+        function manualNext() {
+            if (!nextBtn.disabled && phase === 'recall') {
+                advanceToNextLevel();
+            }
+        }
+
+        function restartGame() {
+            clearTimer();
+            currentLevel = 0;
+            score = 0;
+            phase = 'show';
+            answerLocked = false;
+            updateScoreDisplay();
+            renderLevel();
+        }
+
+        // Event listeners
+        memoryGrid.addEventListener('click', handleBoxClick);
+        memoryGrid.addEventListener('touchstart', (e) => {}, { passive: true });
+
+        // keyboard accessibility
+        memoryGrid.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const box = e.target.closest('.shape-box');
+                if (box && phase === 'recall' && !answerLocked) {
+                    e.preventDefault();
+                    const clickEvent = new MouseEvent('click', { bubbles: true });
+                    box.dispatchEvent(clickEvent);
+                }
+            }
+        });
+
+        nextBtn.addEventListener('click', manualNext);
+        restartBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            restartGame();
+        });
+
+        // initial render
+        renderLevel();
+        updateScoreDisplay();
+    })();
+</script>
+</body>
+</html>
