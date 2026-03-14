@@ -2,74 +2,96 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Fraction Calculator - Mixed Numbers</title>
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+            background-attachment: fixed;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
             padding: 20px;
         }
         
         .calculator {
-            background: white;
-            width: 480px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 500px;
             padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
         }
         
         h1 {
             text-align: center;
             margin: 0 0 20px 0;
-            color: #333;
-        }
-        
-        .display {
-            background: #f0f0f0;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        
-        #expression {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 12px;
-            font-size: 22px;
-            text-align: right;
-            font-family: monospace;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            min-height: 30px;
-        }
-        
-        #result {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 10px 12px;
-            font-size: 20px;
-            text-align: right;
-            font-family: monospace;
-            border-radius: 5px;
-            color: #27ae60;
+            background: linear-gradient(135deg, #4158D0, #C850C0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 32px;
             font-weight: bold;
         }
         
+        .display {
+            background: linear-gradient(135deg, #f6f9fc 0%, #e6f0fa 100%);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        #expression {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #d0e0f0;
+            padding: 15px;
+            font-size: 24px;
+            text-align: right;
+            font-family: monospace;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            min-height: 40px;
+            word-break: break-all;
+            color: #2c3e50;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        #result {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #d0e0f0;
+            padding: 12px 15px;
+            font-size: 22px;
+            text-align: right;
+            font-family: monospace;
+            border-radius: 15px;
+            color: #C850C0;
+            font-weight: bold;
+            word-break: break-all;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
         .explanation {
-            background: #e3f2fd;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffe6f0 100%);
+            border-radius: 15px;
             padding: 15px;
             margin-top: 15px;
-            border-left: 4px solid #2196f3;
+            border-left: 4px solid #C850C0;
             font-size: 14px;
             line-height: 1.6;
             display: none;
+            box-shadow: 0 5px 15px rgba(200,80,192,0.1);
         }
         
         .explanation.show {
@@ -82,23 +104,27 @@
         }
         
         .explanation .step {
-            color: #1976d2;
+            color: #C850C0;
             font-weight: bold;
         }
         
-        /* MIXED NUMBER INPUT SECTION */
         .mixed-section {
-            background: #f0f0f0;
-            border-radius: 10px;
-            padding: 15px;
+            background: linear-gradient(135deg, #f0f7ff 0%, #ffe6f0 100%);
+            border-radius: 20px;
+            padding: 20px;
             margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
         
         .mixed-title {
             font-weight: bold;
-            color: #2c3e50;
+            color: #4158D0;
             margin-bottom: 15px;
             text-align: center;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .mixed-builders {
@@ -110,18 +136,24 @@
         
         .mixed-box {
             flex: 1;
-            background: white;
-            border-radius: 8px;
-            padding: 10px;
-            border: 2px solid #4299e1;
+            background: rgba(255,255,255,0.8);
+            border-radius: 15px;
+            padding: 15px;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #4158D0, #C850C0) border-box;
         }
         
         .mixed-label {
             text-align: center;
             font-size: 12px;
-            color: #4299e1;
-            margin-bottom: 5px;
+            background: linear-gradient(135deg, #4158D0, #C850C0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .mixed-row {
@@ -132,48 +164,69 @@
         }
         
         .mixed-input {
-            width: 50px;
+            width: 45px;
             height: 40px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 2px solid #e0e7ff;
+            border-radius: 10px;
             text-align: center;
             font-size: 18px;
             font-family: monospace;
+            background: white;
+            color: #4158D0;
+            font-weight: bold;
+        }
+        
+        .mixed-input:focus {
+            outline: none;
+            border-color: #C850C0;
         }
         
         .mixed-sep {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
-            color: #e53e3e;
+            color: #C850C0;
         }
         
         .mixed-operator {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: bold;
-            color: #ed8936;
-            min-width: 40px;
+            background: linear-gradient(135deg, #4158D0, #C850C0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            min-width: 50px;
             text-align: center;
             cursor: pointer;
+            padding: 5px;
         }
         
         .mixed-buttons {
             display: flex;
             gap: 10px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         
         .mixed-btn {
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
-            border-radius: 5px;
+            border-radius: 25px;
             font-weight: bold;
             cursor: pointer;
             color: white;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
         
-        .mixed-calc { background: #48bb78; }
-        .mixed-clear { background: #f56565; }
-        .mixed-swap { background: #4299e1; }
+        .mixed-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .mixed-calc { background: linear-gradient(135deg, #48bb78, #38a169); }
+        .mixed-clear { background: linear-gradient(135deg, #f56565, #e53e3e); }
+        .mixed-swap { background: linear-gradient(135deg, #4299e1, #3182ce); }
         
         .input-group {
             display: flex;
@@ -183,22 +236,36 @@
         
         #inputField {
             flex: 1;
-            padding: 12px;
+            padding: 15px;
             font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            border: 2px solid #e0e7ff;
+            border-radius: 25px;
             font-family: monospace;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        #inputField:focus {
+            outline: none;
+            border-color: #C850C0;
         }
         
         #useBtn {
-            padding: 12px 25px;
-            background: #4299e1;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #4158D0, #C850C0);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 25px;
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        #useBtn:hover {
+            transform: translateY(-2px);
         }
         
         .buttons {
@@ -209,65 +276,77 @@
         }
         
         button {
-            height: 55px;
-            font-size: 20px;
+            height: 60px;
+            font-size: 22px;
             font-weight: bold;
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
             color: white;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
         }
         
         button:active {
-            transform: scale(0.95);
+            transform: translateY(2px);
+            box-shadow: none;
         }
         
-        .number { background: #4a5568; }
-        .operator { background: #ed8936; }
-        .clear { background: #f56565; }
-        .space { background: #4299e1; }
-        .equals { background: #48bb78; grid-column: span 2; }
+        .number { background: linear-gradient(135deg, #4a5568, #2d3748); }
+        .operator { background: linear-gradient(135deg, #ed8936, #dd6b20); }
+        .clear { background: linear-gradient(135deg, #f56565, #e53e3e); }
+        .space { background: linear-gradient(135deg, #4299e1, #3182ce); }
+        .equals { background: linear-gradient(135deg, #48bb78, #38a169); grid-column: span 2; }
         
         #history {
-            background: #f5f5f5;
-            padding: 12px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #f6f9fc 0%, #ffe6f0 100%);
+            padding: 15px;
+            border-radius: 20px;
             max-height: 100px;
             overflow-y: auto;
             font-family: monospace;
             font-size: 14px;
             margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.5);
         }
         
         .history-item {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid #ddd;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(200,80,192,0.2);
+            color: #2c3e50;
         }
         
         .history-result {
-            color: #27ae60;
+            color: #C850C0;
             font-weight: bold;
         }
         
-        /* ===== COPYRIGHT FOOTER ===== */
         .footer {
             text-align: center;
             padding: 15px 0 5px 0;
             color: #718096;
             font-size: 13px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid rgba(200,80,192,0.2);
             margin-top: 10px;
-        }
-        
-        .footer .copyright {
-            font-weight: normal;
         }
         
         .footer .heart {
             color: #f56565;
+        }
+        
+        @media (max-width: 500px) {
+            .calculator { padding: 15px; }
+            .mixed-builders { flex-direction: column; }
+            .mixed-operator { transform: rotate(90deg); }
+            .mixed-input { width: 40px; height: 35px; font-size: 16px; }
+            .buttons button { height: 50px; font-size: 18px; }
         }
     </style>
 </head>
@@ -284,12 +363,10 @@
             </div>
         </div>
         
-        <!-- MIXED NUMBER BUILDER -->
         <div class="mixed-section">
             <div class="mixed-title">📝 Build Mixed Numbers</div>
             
             <div class="mixed-builders">
-                <!-- First Mixed Number -->
                 <div class="mixed-box">
                     <div class="mixed-label">FIRST NUMBER</div>
                     <div class="mixed-row">
@@ -303,7 +380,6 @@
                 
                 <div class="mixed-operator" id="mixedOperator">+</div>
                 
-                <!-- Second Mixed Number -->
                 <div class="mixed-box">
                     <div class="mixed-label">SECOND NUMBER</div>
                     <div class="mixed-row">
@@ -323,9 +399,8 @@
             </div>
         </div>
         
-        <!-- Direct Input -->
         <div class="input-group">
-            <input type="text" id="inputField" value="2 1/2 + 3 3/4">
+            <input type="text" id="inputField" value="2 1/2 + 3 3/4" placeholder="e.g. 2 1/2 + 3 3/4">
             <button id="useBtn">USE</button>
         </div>
         
@@ -356,11 +431,10 @@
         </div>
         
         <div id="history"></div>
-        
-        <!-- ===== COPYRIGHT FOOTER ===== -->
+        By 
         <div class="footer">
-            <p class="copyright">© 2026 By Jamal Ahmed 0598.Fraction Calculator. All rights reserved.</p>
-            <p class="copyright">Made with <span class="heart">❤️</span> for easy fraction calculations</p>
+            <p>© 2026 Fraction Calculator.By Jamal Ahmed 0598. All rights reserved.</p>
+            <p>Made with <span class="heart">❤️</span> on GitHub</p>
         </div>
     </div>
 
@@ -409,7 +483,7 @@
         const clear = document.getElementById('clear');
         const clearAll = document.getElementById('clearAll');
         
-        // Cycle operator for mixed builder
+        // Cycle operator
         let currentOp = '+';
         function cycleOperator() {
             const ops = ['+', '-', '×', '/'];
@@ -418,10 +492,9 @@
             currentOp = ops[index];
             mixedOperator.innerText = currentOp;
         }
-        
         mixedOperator.onclick = cycleOperator;
         
-        // Build mixed number expression
+        // Build expression
         function buildExpression() {
             let w1 = parseInt(whole1.value) || 0;
             let n1 = parseInt(num1.value) || 0;
@@ -435,8 +508,7 @@
             return `${w1} ${n1}/${d1} ${op} ${w2} ${n2}/${d2}`;
         }
         
-        // ===== MATH FUNCTIONS =====
-        
+        // Math functions (same as before)
         function gcd(a, b) {
             a = Math.abs(a);
             b = Math.abs(b);
@@ -458,7 +530,6 @@
         function parseFraction(str) {
             str = str.trim();
             
-            // Mixed number: "2 3/4"
             if (str.includes(' ') && str.includes('/')) {
                 let parts = str.split(' ');
                 let whole = parseInt(parts[0]);
@@ -468,13 +539,11 @@
                 return { num: whole * den + num, den: den, original: str };
             }
             
-            // Simple fraction: "3/4"
             if (str.includes('/')) {
                 let parts = str.split('/');
                 return { num: parseInt(parts[0]), den: parseInt(parts[1]), original: str };
             }
             
-            // Whole number: "5"
             if (!isNaN(parseInt(str))) {
                 return { num: parseInt(str), den: 1, original: str };
             }
@@ -502,8 +571,8 @@
         function generateExplanation(left, right, op, resultNum, resultDen) {
             let steps = [];
             
-            steps.push(`<p><span class="step">Step 1:</span> Left number: ${left.original} = ${left.num}/${left.den}</p>`);
-            steps.push(`<p><span class="step">Step 2:</span> Right number: ${right.original} = ${right.num}/${right.den}</p>`);
+            steps.push(`<p><span class="step">Step 1:</span> Left: ${left.original} = ${left.num}/${left.den}</p>`);
+            steps.push(`<p><span class="step">Step 2:</span> Right: ${right.original} = ${right.num}/${right.den}</p>`);
             
             if (op === '+' || op === '-') {
                 let commonDen = left.den * right.den;
@@ -512,11 +581,10 @@
                 steps.push(`<p>&nbsp;&nbsp;${left.num}/${left.den} = ${left.num * right.den}/${commonDen}</p>`);
                 steps.push(`<p>&nbsp;&nbsp;${right.num}/${right.den} = ${right.num * left.den}/${commonDen}</p>`);
             } else if (op === '*') {
-                steps.push(`<p><span class="step">Step 3:</span> Multiply numerators: ${left.num} × ${right.num} = ${left.num * right.num}</p>`);
-                steps.push(`<p><span class="step">Step 4:</span> Multiply denominators: ${left.den} × ${right.den} = ${left.den * right.den}</p>`);
+                steps.push(`<p><span class="step">Step 3:</span> Multiply: ${left.num} × ${right.num} = ${left.num * right.num}</p>`);
+                steps.push(`<p><span class="step">Step 4:</span> Multiply: ${left.den} × ${right.den} = ${left.den * right.den}</p>`);
             } else if (op === '/') {
                 steps.push(`<p><span class="step">Step 3:</span> Invert second: ${right.num}/${right.den} → ${right.den}/${right.num}</p>`);
-                steps.push(`<p><span class="step">Step 4:</span> Multiply: ${left.num}/${left.den} × ${right.den}/${right.num}</p>`);
             }
             
             if (op === '+') {
@@ -610,7 +678,7 @@
             }
         }
         
-        // ===== BUTTON HANDLERS =====
+        // Button handlers
         btn0.onclick = () => inputField.value += '0';
         btn1.onclick = () => inputField.value += '1';
         btn2.onclick = () => inputField.value += '2';
@@ -642,7 +710,6 @@
         useBtn.onclick = () => updateDisplay(inputField.value);
         equalsBtn.onclick = () => updateDisplay(inputField.value);
         
-        // Mixed builder handlers
         buildCalc.onclick = () => {
             let expr = buildExpression();
             inputField.value = expr;
