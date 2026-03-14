@@ -3,106 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Fraction Calculator</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Fraction Calculator - Mixed Numbers</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
         body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
             padding: 20px;
         }
         
         .calculator {
-            width: 440px;
-            background: #f8f9fa;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            border: 1px solid #e0e0e0;
+            background: white;
+            width: 480px;
             padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
-        .header {
+        h1 {
             text-align: center;
+            margin: 0 0 20px 0;
+            color: #333;
+        }
+        
+        .display {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
             margin-bottom: 20px;
         }
         
-        .header h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .header p {
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-        
-        .display-container {
+        #expression {
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 2px solid #e3e3e3;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        
-        .display-label {
-            color: #3498db;
-            font-size: 13px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-        }
-        
-        #display {
-            width: 100%;
-            min-height: 60px;
-            background: white;
-            color: #2c3e50;
-            font-size: 28px;
+            border: 1px solid #ddd;
+            padding: 12px;
+            font-size: 22px;
             text-align: right;
-            padding: 10px;
-            overflow: hidden;
-            word-break: break-all;
-            border: none;
-            outline: none;
-            font-weight: 500;
+            font-family: monospace;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            min-height: 30px;
         }
         
         #result {
-            width: 100%;
-            min-height: 50px;
             background: white;
-            color: #27ae60;
-            font-size: 22px;
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            font-size: 20px;
             text-align: right;
-            padding: 8px 10px;
-            margin-top: 10px;
-            border: none;
-            outline: none;
-            font-weight: 600;
+            font-family: monospace;
+            border-radius: 5px;
+            color: #27ae60;
+            font-weight: bold;
         }
         
         .explanation {
-            background: #e8f4fc;
+            background: #e3f2fd;
+            border-radius: 8px;
             padding: 15px;
-            border-radius: 10px;
             margin-top: 15px;
-            border-left: 4px solid #3498db;
+            border-left: 4px solid #2196f3;
             font-size: 14px;
-            color: #2c3e50;
+            line-height: 1.6;
             display: none;
         }
         
@@ -110,909 +76,598 @@
             display: block;
         }
         
-        .explanation h4 {
-            color: #2980b9;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
         .explanation p {
-            line-height: 1.5;
+            margin: 8px 0;
+            color: #2c3e50;
         }
         
-        .fraction-input {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
+        .explanation .step {
+            color: #1976d2;
+            font-weight: bold;
+        }
+        
+        /* MIXED NUMBER INPUT SECTION */
+        .mixed-section {
+            background: #f0f0f0;
+            border-radius: 10px;
+            padding: 15px;
             margin-bottom: 20px;
-            border: 2px solid #e3e3e3;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         
-        .fraction-row {
+        .mixed-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .mixed-builders {
             display: flex;
             align-items: center;
+            gap: 10px;
             margin-bottom: 15px;
+        }
+        
+        .mixed-box {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            border: 2px solid #4299e1;
+        }
+        
+        .mixed-label {
+            text-align: center;
+            font-size: 12px;
+            color: #4299e1;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .mixed-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .mixed-input {
+            width: 50px;
+            height: 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+            font-family: monospace;
+        }
+        
+        .mixed-sep {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e53e3e;
+        }
+        
+        .mixed-operator {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ed8936;
+            min-width: 40px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .mixed-buttons {
+            display: flex;
             gap: 10px;
             justify-content: center;
         }
         
-        .fraction-input h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 16px;
-            text-align: center;
-            font-weight: 600;
-        }
-        
-        .fraction-input input {
-            width: 70px;
-            height: 50px;
-            background: #f8f9fa;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            color: #2c3e50;
-            font-size: 18px;
-            text-align: center;
-            padding: 0 5px;
-            outline: none;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        
-        .fraction-input input:focus {
-            border-color: #3498db;
-            background: white;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-        }
-        
-        .fraction-symbol {
-            color: #e74c3c;
-            font-size: 26px;
+        .mixed-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
             font-weight: bold;
-            margin: 0 8px;
-        }
-        
-        .operator-select {
-            width: 70px;
-            height: 50px;
-            background: #f8f9fa;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            color: #2c3e50;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            outline: none;
             cursor: pointer;
-            transition: all 0.3s;
+            color: white;
         }
         
-        .operator-select:focus {
-            border-color: #3498db;
-            background: white;
+        .mixed-calc { background: #48bb78; }
+        .mixed-clear { background: #f56565; }
+        .mixed-swap { background: #4299e1; }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         
-        .calculate-btn {
-            width: 100%;
-            height: 50px;
-            background: linear-gradient(to right, #3498db, #2980b9);
+        #inputField {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        #useBtn {
+            padding: 12px 25px;
+            background: #4299e1;
+            color: white;
             border: none;
             border-radius: 8px;
-            color: white;
+            font-weight: bold;
             font-size: 16px;
-            font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
         }
         
-        .calculate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(52, 152, 219, 0.4);
-        }
-        
-        .buttons-grid {
+        .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            gap: 8px;
             margin-bottom: 15px;
         }
         
-        .btn {
-            height: 60px;
-            border: none;
-            border-radius: 10px;
+        button {
+            height: 55px;
             font-size: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
             color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.1s;
         }
         
-        .btn:active {
+        button:active {
             transform: scale(0.95);
         }
         
-        .number {
-            background: #2c3e50;
-        }
+        .number { background: #4a5568; }
+        .operator { background: #ed8936; }
+        .clear { background: #f56565; }
+        .space { background: #4299e1; }
+        .equals { background: #48bb78; grid-column: span 2; }
         
-        .number:hover {
-            background: #34495e;
-        }
-        
-        .operation {
-            background: #e67e22;
-        }
-        
-        .operation:hover {
-            background: #d35400;
-        }
-        
-        .function {
-            background: #3498db;
-        }
-        
-        .function:hover {
-            background: #2980b9;
-        }
-        
-        .equals {
-            background: linear-gradient(to right, #27ae60, #219653);
-        }
-        
-        .equals:hover {
-            background: linear-gradient(to right, #219653, #1e8449);
-        }
-        
-        .clear {
-            background: linear-gradient(to right, #e74c3c, #c0392b);
-        }
-        
-        .clear:hover {
-            background: linear-gradient(to right, #c0392b, #a93226);
-        }
-        
-        .double-width {
-            grid-column: span 2;
-        }
-        
-        .special-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+        #history {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            max-height: 100px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
             margin-bottom: 15px;
         }
         
-        .special-btn {
-            height: 45px;
-            background: #95a5a6;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s;
-            font-weight: 600;
-        }
-        
-        .special-btn:hover {
-            background: #7f8c8d;
-            transform: translateY(-2px);
-        }
-        
-        .history {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid #e3e3e3;
-            max-height: 140px;
-            overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        
-        .history h3 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-        }
-        
         .history-item {
-            color: #34495e;
-            padding: 8px 0;
-            border-bottom: 1px solid #ecf0f1;
-            font-size: 13px;
             display: flex;
             justify-content: space-between;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .history-item:last-child {
-            border-bottom: none;
-        }
-        
-        .history-expression {
-            font-weight: 500;
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
         }
         
         .history-result {
             color: #27ae60;
-            font-weight: 600;
-        }
-        
-        /* Scrollbar styling */
-        .history::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .history::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        .history::-webkit-scrollbar-thumb {
-            background: #bdc3c7;
-            border-radius: 10px;
-        }
-        
-        .history::-webkit-scrollbar-thumb:hover {
-            background: #95a5a6;
-        }
-        
-        /* Remove spinner buttons from number inputs */
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-        
-        /* Fraction display */
-        .fraction-display {
-            display: inline-block;
-            vertical-align: middle;
-            text-align: center;
-            margin: 0 3px;
-        }
-        
-        .fraction-num {
-            border-bottom: 2px solid #3498db;
-            padding: 0 8px;
-            display: block;
-            font-weight: 600;
-        }
-        
-        .fraction-den {
-            padding: 0 8px;
-            display: block;
-            font-weight: 600;
-        }
-        
-        /* Result styles */
-        .result-box {
-            background: #f1f8e9;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #8bc34a;
-            margin-top: 15px;
-        }
-        
-        .result-label {
-            color: #689f38;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .result-value {
-            font-size: 22px;
-            color: #388e3c;
-            font-weight: 700;
-            text-align: center;
-            margin: 10px 0;
-        }
-        
-        .result-details {
-            font-size: 13px;
-            color: #555;
-            line-height: 1.5;
-        }
-        
-        .highlight {
-            background: #fff9c4;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-            color: #f57c00;
-        }
-        
-        .step {
-            margin: 8px 0;
-            padding-left: 15px;
-            position: relative;
-        }
-        
-        .step:before {
-            content: "•";
-            color: #3498db;
             font-weight: bold;
-            position: absolute;
-            left: 0;
+        }
+        
+        /* ===== COPYRIGHT FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 15px 0 5px 0;
+            color: #718096;
+            font-size: 13px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 10px;
+        }
+        
+        .footer .copyright {
+            font-weight: normal;
+        }
+        
+        .footer .heart {
+            color: #f56565;
         }
     </style>
 </head>
 <body>
     <div class="calculator">
-        <div class="header">
-            <h1><i class="fas fa-calculator"></i>By JA 0598 Fraction Calculator</h1>
-            <p>Calculate fractions with detailed expl anations</p>
-        </div>
+        <h1>🧮 Fraction Calculator</h1>
         
-        <div class="display-container">
-            <div class="display-label">
-                <span><i class="fas fa-keyboard"></i> Expression</span>
-                <span id="mode">Fraction Mode</span>
-            </div>
-            <div id="display">0</div>
-            <div id="result"></div>
+        <div class="display">
+            <div id="expression">2 1/2 + 3 3/4</div>
+            <div id="result">= 6 1/4</div>
             
             <div class="explanation" id="explanation">
-                <h4><i class="fas fa-info-circle"></i> Calculation Details</h4>
-                <p id="explanationText">Your calculation details will appear here...</p>
+                <div id="explanationText"></div>
             </div>
         </div>
         
-        <div class="fraction-input">
-            <h3><i class="fas fa-edit"></i> Direct Fraction Input</h3>
-            <div class="fraction-row">
-                <input type="number" id="num1" placeholder="N" value="1">
-                <span class="fraction-symbol">/</span>
-                <input type="number" id="den1" placeholder="D" value="2">
+        <!-- MIXED NUMBER BUILDER -->
+        <div class="mixed-section">
+            <div class="mixed-title">📝 Build Mixed Numbers</div>
+            
+            <div class="mixed-builders">
+                <!-- First Mixed Number -->
+                <div class="mixed-box">
+                    <div class="mixed-label">FIRST NUMBER</div>
+                    <div class="mixed-row">
+                        <input type="number" id="whole1" class="mixed-input" value="2" min="0">
+                        <span class="mixed-sep"> </span>
+                        <input type="number" id="num1" class="mixed-input" value="1" min="0">
+                        <span class="mixed-sep">/</span>
+                        <input type="number" id="den1" class="mixed-input" value="2" min="1">
+                    </div>
+                </div>
                 
-                <select class="operator-select" id="operationSelect">
-                    <option value="+">+</option>
-                    <option value="-">-</option>
-                    <option value="*">×</option>
-                    <option value="/">÷</option>
-                </select>
+                <div class="mixed-operator" id="mixedOperator">+</div>
                 
-                <input type="number" id="num2" placeholder="N" value="1">
-                <span class="fraction-symbol">/</span>
-                <input type="number" id="den2" placeholder="D" value="3">
-            </div>
-            <button class="calculate-btn" id="calculateDirect">
-                <i class="fas fa-calculator"></i> CALCULATE
-            </button>
-        </div>
-        
-        <div class="buttons-grid">
-            <button class="btn clear double-width" id="clearAll">AC</button>
-            <button class="btn clear" id="clear">C</button>
-            <button class="btn function" id="parentheses">( )</button>
-            
-            <button class="btn number" data-value="7">7</button>
-            <button class="btn number" data-value="8">8</button>
-            <button class="btn number" data-value="9">9</button>
-            <button class="btn function" data-value="/">÷</button>
-            
-            <button class="btn number" data-value="4">4</button>
-            <button class="btn number" data-value="5">5</button>
-            <button class="btn number" data-value="6">6</button>
-            <button class="btn function" data-value="*">×</button>
-            
-            <button class="btn number" data-value="1">1</button>
-            <button class="btn number" data-value="2">2</button>
-            <button class="btn number" data-value="3">3</button>
-            <button class="btn function" data-value="-">-</button>
-            
-            <button class="btn number" data-value="0">0</button>
-            <button class="btn number" id="fractionSlash">/</button>
-            <button class="btn function" id="decimal">.</button>
-            <button class="btn function" data-value="+">+</button>
-        </div>
-        
-        <div class="special-buttons">
-            <button class="special-btn" id="reciprocal">
-                <i class="fas fa-exchange-alt"></i> 1/x
-            </button>
-            <button class="special-btn" id="negate">
-                <i class="fas fa-plus-minus"></i> ±
-            </button>
-            <button class="special-btn" id="simplify">
-                <i class="fas fa-compress-alt"></i> Simplify
-            </button>
-            <button class="special-btn" id="toDecimal">
-                <i class="fas fa-divide"></i> To Decimal
-            </button>
-        </div>
-        
-        <div class="buttons-grid">
-            <button class="btn equals double-width" id="equals">=</button>
-        </div>
-        
-        <div class="history">
-            <h3><i class="fas fa-history"></i> Calculation History</h3>
-            <div id="historyList">
-                <div class="history-item">
-                    <span class="history-expression">1/2 + 1/4</span>
-                    <span class="history-result">3/4</span>
-                </div>
-                <div class="history-item">
-                    <span class="history-expression">3/4 × 2/3</span>
-                    <span class="history-result">1/2</span>
-                </div>
-                <div class="history-item">
-                    <span class="history-expression">5/6 - 1/3</span>
-                    <span class="history-result">1/2</span>
+                <!-- Second Mixed Number -->
+                <div class="mixed-box">
+                    <div class="mixed-label">SECOND NUMBER</div>
+                    <div class="mixed-row">
+                        <input type="number" id="whole2" class="mixed-input" value="3" min="0">
+                        <span class="mixed-sep"> </span>
+                        <input type="number" id="num2" class="mixed-input" value="3" min="0">
+                        <span class="mixed-sep">/</span>
+                        <input type="number" id="den2" class="mixed-input" value="4" min="1">
+                    </div>
                 </div>
             </div>
+            
+            <div class="mixed-buttons">
+                <button class="mixed-btn mixed-calc" id="buildCalc">CALCULATE</button>
+                <button class="mixed-btn mixed-clear" id="buildClear">CLEAR</button>
+                <button class="mixed-btn mixed-swap" id="buildSwap">SWAP</button>
+            </div>
+        </div>
+        
+        <!-- Direct Input -->
+        <div class="input-group">
+            <input type="text" id="inputField" value="2 1/2 + 3 3/4">
+            <button id="useBtn">USE</button>
+        </div>
+        
+        <div class="buttons">
+            <button class="clear" id="clearAll">AC</button>
+            <button class="clear" id="clear">C</button>
+            <button class="space" id="spaceBtn">⎵</button>
+            <button class="operator" id="divideBtn">/</button>
+            
+            <button class="number" id="btn7">7</button>
+            <button class="number" id="btn8">8</button>
+            <button class="number" id="btn9">9</button>
+            <button class="operator" id="multiplyBtn">×</button>
+            
+            <button class="number" id="btn4">4</button>
+            <button class="number" id="btn5">5</button>
+            <button class="number" id="btn6">6</button>
+            <button class="operator" id="subtractBtn">-</button>
+            
+            <button class="number" id="btn1">1</button>
+            <button class="number" id="btn2">2</button>
+            <button class="number" id="btn3">3</button>
+            <button class="operator" id="addBtn">+</button>
+            
+            <button class="number" id="btn0">0</button>
+            <button class="number" id="slashBtn">/</button>
+            <button class="equals" id="equalsBtn">=</button>
+        </div>
+        
+        <div id="history"></div>
+        
+        <!-- ===== COPYRIGHT FOOTER ===== -->
+        <div class="footer">
+            <p class="copyright">© 2026 By Jamal Ahmed 0598.Fraction Calculator. All rights reserved.</p>
+            <p class="copyright">Made with <span class="heart">❤️</span> for easy fraction calculations</p>
         </div>
     </div>
 
     <script>
-        // Calculator state
-        let currentExpression = '0';
-        let result = '';
-        let history = [
-            { expression: '1/2 + 1/4', result: '3/4' },
-            { expression: '3/4 × 2/3', result: '1/2' },
-            { expression: '5/6 - 1/3', result: '1/2' }
-        ];
-        
-        // DOM elements
-        const display = document.getElementById('display');
-        const resultDisplay = document.getElementById('result');
-        const historyList = document.getElementById('historyList');
-        const modeDisplay = document.getElementById('mode');
+        // Get elements
+        const expression = document.getElementById('expression');
+        const result = document.getElementById('result');
         const explanation = document.getElementById('explanation');
         const explanationText = document.getElementById('explanationText');
+        const inputField = document.getElementById('inputField');
+        const useBtn = document.getElementById('useBtn');
+        const equalsBtn = document.getElementById('equalsBtn');
+        const history = document.getElementById('history');
+        const mixedOperator = document.getElementById('mixedOperator');
         
-        // Fraction input elements
-        const num1El = document.getElementById('num1');
-        const den1El = document.getElementById('den1');
-        const num2El = document.getElementById('num2');
-        const den2El = document.getElementById('den2');
-        const operationSelect = document.getElementById('operationSelect');
-        const calculateDirectBtn = document.getElementById('calculateDirect');
-        const fractionSlashBtn = document.getElementById('fractionSlash');
+        // Mixed number inputs
+        const whole1 = document.getElementById('whole1');
+        const num1 = document.getElementById('num1');
+        const den1 = document.getElementById('den1');
+        const whole2 = document.getElementById('whole2');
+        const num2 = document.getElementById('num2');
+        const den2 = document.getElementById('den2');
         
-        // Button elements
-        const clearBtn = document.getElementById('clear');
-        const clearAllBtn = document.getElementById('clearAll');
-        const equalsBtn = document.getElementById('equals');
-        const reciprocalBtn = document.getElementById('reciprocal');
-        const negateBtn = document.getElementById('negate');
-        const simplifyBtn = document.getElementById('simplify');
-        const parenthesesBtn = document.getElementById('parentheses');
-        const decimalBtn = document.getElementById('decimal');
-        const toDecimalBtn = document.getElementById('toDecimal');
+        // Mixed buttons
+        const buildCalc = document.getElementById('buildCalc');
+        const buildClear = document.getElementById('buildClear');
+        const buildSwap = document.getElementById('buildSwap');
         
-        // Update display - Simple text only
-        function updateDisplay() {
-            display.textContent = currentExpression || '0';
-            resultDisplay.textContent = result ? '= ' + formatResultDisplay(result) : '';
+        // Get buttons
+        const btn0 = document.getElementById('btn0');
+        const btn1 = document.getElementById('btn1');
+        const btn2 = document.getElementById('btn2');
+        const btn3 = document.getElementById('btn3');
+        const btn4 = document.getElementById('btn4');
+        const btn5 = document.getElementById('btn5');
+        const btn6 = document.getElementById('btn6');
+        const btn7 = document.getElementById('btn7');
+        const btn8 = document.getElementById('btn8');
+        const btn9 = document.getElementById('btn9');
+        const slashBtn = document.getElementById('slashBtn');
+        const spaceBtn = document.getElementById('spaceBtn');
+        const addBtn = document.getElementById('addBtn');
+        const subtractBtn = document.getElementById('subtractBtn');
+        const multiplyBtn = document.getElementById('multiplyBtn');
+        const divideBtn = document.getElementById('divideBtn');
+        const clear = document.getElementById('clear');
+        const clearAll = document.getElementById('clearAll');
+        
+        // Cycle operator for mixed builder
+        let currentOp = '+';
+        function cycleOperator() {
+            const ops = ['+', '-', '×', '/'];
+            let index = ops.indexOf(currentOp);
+            index = (index + 1) % ops.length;
+            currentOp = ops[index];
+            mixedOperator.innerText = currentOp;
         }
         
-        // Format result for display with fraction symbol
-        function formatResultDisplay(res) {
-            if (res.includes('/')) {
-                const parts = res.split('/');
-                if (parts.length === 2) {
-                    return `${parts[0]}⁄${parts[1]}`;
-                }
-            }
-            return res;
+        mixedOperator.onclick = cycleOperator;
+        
+        // Build mixed number expression
+        function buildExpression() {
+            let w1 = parseInt(whole1.value) || 0;
+            let n1 = parseInt(num1.value) || 0;
+            let d1 = parseInt(den1.value) || 1;
+            let w2 = parseInt(whole2.value) || 0;
+            let n2 = parseInt(num2.value) || 0;
+            let d2 = parseInt(den2.value) || 1;
+            
+            let op = currentOp === '×' ? '*' : currentOp === '/' ? '/' : currentOp;
+            
+            return `${w1} ${n1}/${d1} ${op} ${w2} ${n2}/${d2}`;
         }
         
-        // Update history display
-        function updateHistory() {
-            historyList.innerHTML = '';
-            history.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `
-                    <span class="history-expression">${item.expression}</span>
-                    <span class="history-result">${item.result}</span>
-                `;
-                historyList.appendChild(div);
-            });
-        }
+        // ===== MATH FUNCTIONS =====
         
-        // Add to history
-        function addToHistory(expr, res) {
-            history.unshift({ expression: expr, result: res });
-            if (history.length > 5) history.pop();
-            updateHistory();
-        }
-        
-        // Calculate GCD
         function gcd(a, b) {
-            return b ? gcd(b, a % b) : a;
-        }
-        
-        // Simplify fraction
-        function simplifyFraction(numerator, denominator) {
-            if (numerator === 0) return { numerator: 0, denominator: 1 };
-            const divisor = gcd(Math.abs(numerator), Math.abs(denominator));
-            return {
-                numerator: numerator / divisor,
-                denominator: denominator / divisor
-            };
-        }
-        
-        // Convert to decimal
-        function toDecimal(fraction) {
-            const match = fraction.match(/^(-?\d+)\/(-?\d+)$/);
-            if (match) {
-                const num = parseInt(match[1]);
-                const den = parseInt(match[2]);
-                if (den === 0) return 'Error';
-                return (num / den).toFixed(6).replace(/\.?0+$/, '');
+            a = Math.abs(a);
+            b = Math.abs(b);
+            while (b) {
+                let t = b;
+                b = a % b;
+                a = t;
             }
-            return fraction;
+            return a;
         }
         
-        // Show explanation
-        function showExplanation(text) {
-            explanationText.innerHTML = text;
+        function simplify(n, d) {
+            if (d === 0) return [0, 0];
+            if (n === 0) return [0, 1];
+            let g = gcd(n, d);
+            return [n / g, d / g];
+        }
+        
+        function parseFraction(str) {
+            str = str.trim();
+            
+            // Mixed number: "2 3/4"
+            if (str.includes(' ') && str.includes('/')) {
+                let parts = str.split(' ');
+                let whole = parseInt(parts[0]);
+                let frac = parts[1].split('/');
+                let num = parseInt(frac[0]);
+                let den = parseInt(frac[1]);
+                return { num: whole * den + num, den: den, original: str };
+            }
+            
+            // Simple fraction: "3/4"
+            if (str.includes('/')) {
+                let parts = str.split('/');
+                return { num: parseInt(parts[0]), den: parseInt(parts[1]), original: str };
+            }
+            
+            // Whole number: "5"
+            if (!isNaN(parseInt(str))) {
+                return { num: parseInt(str), den: 1, original: str };
+            }
+            
+            return null;
+        }
+        
+        function formatResult(n, d) {
+            if (d === 0) return "Error";
+            if (n === 0) return "0";
+            
+            let [simpN, simpD] = simplify(n, d);
+            
+            if (simpD === 1) return simpN.toString();
+            
+            if (Math.abs(simpN) > Math.abs(simpD)) {
+                let whole = Math.floor(simpN / simpD);
+                let rem = Math.abs(simpN % simpD);
+                return `${whole} ${rem}/${simpD}`;
+            }
+            
+            return `${simpN}/${simpD}`;
+        }
+        
+        function generateExplanation(left, right, op, resultNum, resultDen) {
+            let steps = [];
+            
+            steps.push(`<p><span class="step">Step 1:</span> Left number: ${left.original} = ${left.num}/${left.den}</p>`);
+            steps.push(`<p><span class="step">Step 2:</span> Right number: ${right.original} = ${right.num}/${right.den}</p>`);
+            
+            if (op === '+' || op === '-') {
+                let commonDen = left.den * right.den;
+                steps.push(`<p><span class="step">Step 3:</span> Common denominator: ${left.den} × ${right.den} = ${commonDen}</p>`);
+                steps.push(`<p><span class="step">Step 4:</span> Convert:</p>`);
+                steps.push(`<p>&nbsp;&nbsp;${left.num}/${left.den} = ${left.num * right.den}/${commonDen}</p>`);
+                steps.push(`<p>&nbsp;&nbsp;${right.num}/${right.den} = ${right.num * left.den}/${commonDen}</p>`);
+            } else if (op === '*') {
+                steps.push(`<p><span class="step">Step 3:</span> Multiply numerators: ${left.num} × ${right.num} = ${left.num * right.num}</p>`);
+                steps.push(`<p><span class="step">Step 4:</span> Multiply denominators: ${left.den} × ${right.den} = ${left.den * right.den}</p>`);
+            } else if (op === '/') {
+                steps.push(`<p><span class="step">Step 3:</span> Invert second: ${right.num}/${right.den} → ${right.den}/${right.num}</p>`);
+                steps.push(`<p><span class="step">Step 4:</span> Multiply: ${left.num}/${left.den} × ${right.den}/${right.num}</p>`);
+            }
+            
+            if (op === '+') {
+                steps.push(`<p><span class="step">Step 5:</span> Add: ${left.num * right.den} + ${right.num * left.den} = ${resultNum}</p>`);
+            } else if (op === '-') {
+                steps.push(`<p><span class="step">Step 5:</span> Subtract: ${left.num * right.den} - ${right.num * left.den} = ${resultNum}</p>`);
+            }
+            
+            steps.push(`<p><span class="step">Step 6:</span> Result = ${resultNum}/${resultDen}</p>`);
+            
+            let [simpNum, simpDen] = simplify(resultNum, resultDen);
+            if (simpNum !== resultNum || simpDen !== resultDen) {
+                let g = gcd(resultNum, resultDen);
+                steps.push(`<p><span class="step">Step 7:</span> Simplify by ${g} → ${simpNum}/${simpDen}</p>`);
+            }
+            
+            let finalResult = formatResult(simpNum, simpDen);
+            steps.push(`<p><span class="step">Step 8:</span> Final = <strong>${finalResult}</strong></p>`);
+            
+            return steps.join('');
+        }
+        
+        function calculate(expr) {
+            expr = expr.trim();
+            
+            let op = '';
+            let parts = [];
+            
+            if (expr.includes('+')) {
+                op = '+';
+                parts = expr.split('+');
+            } else if (expr.includes('-')) {
+                op = '-';
+                parts = expr.split('-');
+            } else if (expr.includes('*')) {
+                op = '*';
+                parts = expr.split('*');
+            } else if (expr.includes('/') && !expr.includes(' ')) {
+                op = '/';
+                parts = expr.split('/');
+            } else {
+                return { result: "Error", steps: "Error: Invalid format" };
+            }
+            
+            if (parts.length !== 2) {
+                return { result: "Error", steps: "Error: Invalid expression" };
+            }
+            
+            let left = parseFraction(parts[0].trim());
+            let right = parseFraction(parts[1].trim());
+            
+            if (!left || !right) {
+                return { result: "Error", steps: "Error: Invalid numbers" };
+            }
+            
+            let num, den;
+            
+            if (op === '+') {
+                num = left.num * right.den + right.num * left.den;
+                den = left.den * right.den;
+            } else if (op === '-') {
+                num = left.num * right.den - right.num * left.den;
+                den = left.den * right.den;
+            } else if (op === '*') {
+                num = left.num * right.num;
+                den = left.den * right.den;
+            } else if (op === '/') {
+                num = left.num * right.den;
+                den = left.den * right.num;
+            }
+            
+            let finalResult = formatResult(num, den);
+            let steps = generateExplanation(left, right, op, num, den);
+            
+            return { result: finalResult, steps: steps };
+        }
+        
+        function updateDisplay(expr) {
+            expression.innerText = expr;
+            let calc = calculate(expr);
+            result.innerText = '= ' + calc.result;
+            explanationText.innerHTML = calc.steps;
             explanation.classList.add('show');
+            
+            let div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `<span>${expr}</span><span class="history-result">${calc.result}</span>`;
+            history.insertBefore(div, history.firstChild);
+            if (history.children.length > 5) {
+                history.removeChild(history.lastChild);
+            }
         }
         
-        // Hide explanation
-        function hideExplanation() {
+        // ===== BUTTON HANDLERS =====
+        btn0.onclick = () => inputField.value += '0';
+        btn1.onclick = () => inputField.value += '1';
+        btn2.onclick = () => inputField.value += '2';
+        btn3.onclick = () => inputField.value += '3';
+        btn4.onclick = () => inputField.value += '4';
+        btn5.onclick = () => inputField.value += '5';
+        btn6.onclick = () => inputField.value += '6';
+        btn7.onclick = () => inputField.value += '7';
+        btn8.onclick = () => inputField.value += '8';
+        btn9.onclick = () => inputField.value += '9';
+        slashBtn.onclick = () => inputField.value += '/';
+        spaceBtn.onclick = () => inputField.value += ' ';
+        addBtn.onclick = () => inputField.value += '+';
+        subtractBtn.onclick = () => inputField.value += '-';
+        multiplyBtn.onclick = () => inputField.value += '*';
+        divideBtn.onclick = () => inputField.value += '/';
+        
+        clear.onclick = () => {
+            inputField.value = inputField.value.slice(0, -1);
+        };
+        
+        clearAll.onclick = () => {
+            inputField.value = '';
+            expression.innerText = '';
+            result.innerText = '=';
             explanation.classList.remove('show');
-        }
+        };
         
-        // Generate explanation for operation
-        function generateExplanation(expr, res, operation = null) {
-            try {
-                // Try to parse fractions from expression
-                const fractionMatch = expr.match(/\((\d+)\/(\d+)\)([\+\-\*\/])\((\d+)\/(\d+)\)/);
-                
-                if (fractionMatch) {
-                    const num1 = parseInt(fractionMatch[1]);
-                    const den1 = parseInt(fractionMatch[2]);
-                    const op = fractionMatch[3];
-                    const num2 = parseInt(fractionMatch[4]);
-                    const den2 = parseInt(fractionMatch[5]);
-                    
-                    let explanationHTML = `<div class="step">First fraction: <span class="highlight">${num1}/${den1}</span></div>`;
-                    explanationHTML += `<div class="step">Second fraction: <span class="highlight">${num2}/${den2}</span></div>`;
-                    
-                    switch(op) {
-                        case '+':
-                            explanationHTML += `<div class="step">Operation: <span class="highlight">Addition</span></div>`;
-                            explanationHTML += `<div class="step">Find common denominator: ${den1} × ${den2} = <span class="highlight">${den1 * den2}</span></div>`;
-                            explanationHTML += `<div class="step">Convert: ${num1}/${den1} = ${num1 * den2}/${den1 * den2}</div>`;
-                            explanationHTML += `<div class="step">Convert: ${num2}/${den2} = ${num2 * den1}/${den1 * den2}</div>`;
-                            explanationHTML += `<div class="step">Add numerators: ${num1 * den2} + ${num2 * den1} = <span class="highlight">${num1 * den2 + num2 * den1}</span></div>`;
-                            explanationHTML += `<div class="step">Result: <span class="highlight">${num1 * den2 + num2 * den1}/${den1 * den2}</span></div>`;
-                            break;
-                        case '-':
-                            explanationHTML += `<div class="step">Operation: <span class="highlight">Subtraction</span></div>`;
-                            explanationHTML += `<div class="step">Find common denominator: ${den1} × ${den2} = <span class="highlight">${den1 * den2}</span></div>`;
-                            explanationHTML += `<div class="step">Convert: ${num1}/${den1} = ${num1 * den2}/${den1 * den2}</div>`;
-                            explanationHTML += `<div class="step">Convert: ${num2}/${den2} = ${num2 * den1}/${den1 * den2}</div>`;
-                            explanationHTML += `<div class="step">Subtract numerators: ${num1 * den2} - ${num2 * den1} = <span class="highlight">${num1 * den2 - num2 * den1}</span></div>`;
-                            explanationHTML += `<div class="step">Result: <span class="highlight">${num1 * den2 - num2 * den1}/${den1 * den2}</span></div>`;
-                            break;
-                        case '*':
-                            explanationHTML += `<div class="step">Operation: <span class="highlight">Multiplication</span></div>`;
-                            explanationHTML += `<div class="step">Multiply numerators: ${num1} × ${num2} = <span class="highlight">${num1 * num2}</span></div>`;
-                            explanationHTML += `<div class="step">Multiply denominators: ${den1} × ${den2} = <span class="highlight">${den1 * den2}</span></div>`;
-                            explanationHTML += `<div class="step">Result: <span class="highlight">${num1 * num2}/${den1 * den2}</span></div>`;
-                            break;
-                        case '/':
-                            explanationHTML += `<div class="step">Operation: <span class="highlight">Division</span></div>`;
-                            explanationHTML += `<div class="step">Reciprocal of second fraction: ${num2}/${den2} → ${den2}/${num2}</div>`;
-                            explanationHTML += `<div class="step">Multiply: ${num1}/${den1} × ${den2}/${num2}</div>`;
-                            explanationHTML += `<div class="step">Multiply numerators: ${num1} × ${den2} = <span class="highlight">${num1 * den2}</span></div>`;
-                            explanationHTML += `<div class="step">Multiply denominators: ${den1} × ${num2} = <span class="highlight">${den1 * num2}</span></div>`;
-                            explanationHTML += `<div class="step">Result: <span class="highlight">${num1 * den2}/${den1 * num2}</span></div>`;
-                            break;
-                    }
-                    
-                    // Check if result was simplified
-                    const resultMatch = res.match(/^(-?\d+)\/(-?\d+)$/);
-                    if (resultMatch) {
-                        const resNum = parseInt(resultMatch[1]);
-                        const resDen = parseInt(resultMatch[2]);
-                        
-                        if (num1 * den2 + num2 * den1 !== resNum || den1 * den2 !== resDen) {
-                            explanationHTML += `<div class="step"><strong>Simplified:</strong> Divided numerator and denominator by GCD</div>`;
-                            explanationHTML += `<div class="step">Final result: <span class="highlight">${resNum}/${resDen}</span></div>`;
-                        }
-                    }
-                    
-                    explanationHTML += `<div class="step"><strong>Final Answer:</strong> <span class="highlight" style="font-size: 16px;">${res}</span></div>`;
-                    
-                    return explanationHTML;
-                }
-                
-                // General explanation
-                return `<div class="step">Expression: <span class="highlight">${expr}</span></div>
-                       <div class="step">Result: <span class="highlight">${res}</span></div>
-                       <div class="step"><strong>Final Answer:</strong> <span class="highlight" style="font-size: 16px;">${res}</span></div>`;
-                
-            } catch (error) {
-                return `<div class="step">Expression: <span class="highlight">${expr}</span></div>
-                       <div class="step">Result: <span class="highlight">${res}</span></div>`;
-            }
-        }
+        useBtn.onclick = () => updateDisplay(inputField.value);
+        equalsBtn.onclick = () => updateDisplay(inputField.value);
         
-        // Evaluate expression
-        function evaluateExpression(expr) {
-            try {
-                expr = expr.replace(/÷/g, '/').replace(/×/g, '*');
-                const evalResult = new Function('return ' + expr)();
-                
-                if (Number.isInteger(evalResult)) {
-                    return evalResult.toString();
-                }
-                
-                // Try to convert to fraction
-                const tolerance = 1.0E-6;
-                for (let den = 1; den < 10000; den++) {
-                    const num = Math.round(evalResult * den);
-                    if (Math.abs(evalResult - num / den) < tolerance) {
-                        const simplified = simplifyFraction(num, den);
-                        if (simplified.denominator === 1) {
-                            return simplified.numerator.toString();
-                        }
-                        return `${simplified.numerator}/${simplified.denominator}`;
-                    }
-                }
-                
-                return evalResult.toFixed(6).replace(/\.?0+$/, '');
-            } catch (error) {
-                return 'Error';
-            }
-        }
+        // Mixed builder handlers
+        buildCalc.onclick = () => {
+            let expr = buildExpression();
+            inputField.value = expr;
+            updateDisplay(expr);
+        };
         
-        // Event listeners for number/operation buttons
-        document.querySelectorAll('.btn[data-value]').forEach(button => {
-            button.addEventListener('click', () => {
-                const value = button.getAttribute('data-value');
-                
-                if (currentExpression === '0' && value !== '/') {
-                    currentExpression = value;
-                } else {
-                    currentExpression += value;
-                }
-                
-                updateDisplay();
-                hideExplanation();
-            });
-        });
+        buildClear.onclick = () => {
+            whole1.value = '0';
+            num1.value = '0';
+            den1.value = '1';
+            whole2.value = '0';
+            num2.value = '0';
+            den2.value = '1';
+            currentOp = '+';
+            mixedOperator.innerText = '+';
+        };
         
-        // Fraction slash button
-        fractionSlashBtn.addEventListener('click', () => {
-            if (currentExpression === '0') {
-                currentExpression = '';
-            }
-            currentExpression += '/';
-            updateDisplay();
-            hideExplanation();
-        });
-        
-        // Clear button
-        clearBtn.addEventListener('click', () => {
-            if (currentExpression.length > 1) {
-                currentExpression = currentExpression.slice(0, -1);
-            } else {
-                currentExpression = '0';
-            }
-            result = '';
-            updateDisplay();
-            hideExplanation();
-        });
-        
-        // Clear All button
-        clearAllBtn.addEventListener('click', () => {
-            currentExpression = '0';
-            result = '';
-            updateDisplay();
-            hideExplanation();
-        });
-        
-        // Equals button
-        equalsBtn.addEventListener('click', () => {
-            if (currentExpression !== '0') {
-                result = evaluateExpression(currentExpression);
-                addToHistory(currentExpression, result);
-                showExplanation(generateExplanation(currentExpression, result));
-                updateDisplay();
-            }
-        });
-        
-        // Reciprocal button
-        reciprocalBtn.addEventListener('click', () => {
-            if (currentExpression !== '0' && currentExpression !== 'Error') {
-                const evalResult = evaluateExpression(currentExpression);
-                const match = evalResult.match(/^(-?\d+)\/(-?\d+)$/);
-                
-                if (match) {
-                    const num = parseInt(match[1]);
-                    const den = parseInt(match[2]);
-                    
-                    if (num === 0) {
-                        result = 'Error: Div by 0';
-                    } else {
-                        const simplified = simplifyFraction(den, num);
-                        result = simplified.denominator === 1 ? 
-                            simplified.numerator.toString() : 
-                            `${simplified.numerator}/${simplified.denominator}`;
-                    }
-                } else {
-                    const num = parseFloat(evalResult);
-                    if (num === 0) {
-                        result = 'Error: Div by 0';
-                    } else {
-                        result = (1 / num).toFixed(6).replace(/\.?0+$/, '');
-                    }
-                }
-                
-                addToHistory(`1/(${currentExpression})`, result);
-                showExplanation(`<div class="step">Operation: <span class="highlight">Reciprocal</span></div>
-                                <div class="step">Find reciprocal of: <span class="highlight">${currentExpression}</span></div>
-                                <div class="step">Result: <span class="highlight">${result}</span></div>`);
-                updateDisplay();
-            }
-        });
-        
-        // Negate button
-        negateBtn.addEventListener('click', () => {
-            if (currentExpression !== '0' && currentExpression !== 'Error') {
-                const evalResult = evaluateExpression(currentExpression);
-                const match = evalResult.match(/^(-?\d+)\/(-?\d+)$/);
-                
-                if (match) {
-                    const num = parseInt(match[1]);
-                    const den = parseInt(match[2]);
-                    const simplified = simplifyFraction(-num, den);
-                    result = simplified.denominator === 1 ? 
-                        simplified.numerator.toString() : 
-                        `${simplified.numerator}/${simplified.denominator}`;
-                } else {
-                    result = (-parseFloat(evalResult)).toString();
-                }
-                
-                addToHistory(`-(${currentExpression})`, result);
-                showExplanation(`<div class="step">Operation: <span class="highlight">Negation</span></div>
-                                <div class="step">Multiply by -1: <span class="highlight">${currentExpression} × (-1)</span></div>
-                                <div class="step">Result: <span class="highlight">${result}</span></div>`);
-                updateDisplay();
-            }
-        });
-        
-        // Simplify button
-        simplifyBtn.addEventListener('click', () => {
-            if (currentExpression !== '0') {
-                const evalResult = evaluateExpression(currentExpression);
-                const match = evalResult.match(/^(-?\d+)\/(-?\d+)$/);
-                
-                if (match) {
-                    const num = parseInt(match[1]);
-                    const den = parseInt(match[2]);
-                    const simplified = simplifyFraction(num, den);
-                    result = simplified.denominator === 1 ? 
-                        simplified.numerator.toString() : 
-                        `${simplified.numerator}/${simplified.denominator}`;
-                    
-                    addToHistory(`Simplify: ${currentExpression}`, result);
-                    showExplanation(`<div class="step">Operation: <span class="highlight">Simplification</span></div>
-                                    <div class="step">Original fraction: <span class="highlight">${num}/${den}</span></div>
-                                    <div class="step">Find GCD of ${num} and ${den}</div>
-                                    <div class="step">Divide numerator and denominator by GCD</div>
-                                    <div class="step">Simplified fraction: <span class="highlight">${result}</span></div>`);
-                    updateDisplay();
-                }
-            }
-        });
-        
-        // Parentheses button
-        parenthesesBtn.addEventListener('click', () => {
-            const open = (currentExpression.match(/\(/g) || []).length;
-            const close = (currentExpression.match(/\)/g) || []).length;
-            
-            if (open <= close) {
-                currentExpression += '(';
-            } else {
-                currentExpression += ')';
-            }
-            
-            updateDisplay();
-            hideExplanation();
-        });
-        
-        // Decimal button
-        decimalBtn.addEventListener('click', () => {
-            currentExpression += '.';
-            updateDisplay();
-            hideExplanation();
-        });
-        
-        // To Decimal button
-        toDecimalBtn.addEventListener('click', () => {
-            if (currentExpression !== '0') {
-                const evalResult = evaluateExpression(currentExpression);
-                const decimalResult = toDecimal(evalResult);
-                
-                if (decimalResult !== evalResult) {
-                    result = decimalResult;
-                    modeDisplay.textContent = 'Decimal Mode';
-                    addToHistory(`${currentExpression} (decimal)`, result);
-                    showExplanation(`<div class="step">Operation: <span class="highlight">Convert to Decimal</span></div>
-                                    <div class="step">Fraction: <span class="highlight">${evalResult}</span></div>
-                                    <div class="step">Divide numerator by denominator</div>
-                                    <div class="step">Decimal result: <span class="highlight">${result}</span></div>`);
-                    updateDisplay();
-                }
-            }
-        });
-        
-        // Direct calculation
-        calculateDirectBtn.addEventListener('click', () => {
-            const num1 = parseInt(num1El.value) || 0;
-            const den1 = parseInt(den1El.value) || 1;
-            const num2 = parseInt(num2El.value) || 0;
-            const den2 = parseInt(den2El.value) || 1;
-            const operation = operationSelect.value;
-            
-            if (den1 === 0 || den2 === 0) {
-                result = 'Error: Div by 0';
-                updateDisplay();
-                return;
-            }
-            
-            const expr = `(${num1}/${den1})${operation}(${num2}/${den2})`;
-            currentExpression = expr;
-            result = evaluateExpression(expr);
-            
-            modeDisplay.textContent = 'Fraction Mode';
-            addToHistory(expr, result);
-            showExplanation(generateExplanation(expr, result, operation));
-            updateDisplay();
-        });
-        
-        // Input field event listeners
-        [num1El, den1El, num2El, den2El].forEach(input => {
-            input.addEventListener('input', () => {
-                if (input.value === '') input.value = '0';
-                if (input.value.length > 4) input.value = input.value.slice(0, 4);
-            });
-        });
+        buildSwap.onclick = () => {
+            [whole1.value, whole2.value] = [whole2.value, whole1.value];
+            [num1.value, num2.value] = [num2.value, num1.value];
+            [den1.value, den2.value] = [den2.value, den1.value];
+        };
         
         // Initialize
-        updateDisplay();
-        updateHistory();
+        updateDisplay('2 1/2 + 3 3/4');
     </script>
 </body>
 </html>
-
