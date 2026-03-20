@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Eid Mubarak • Oromoo • Atlanta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0a2f1f, #1a4a2e);
+            font-family: 'Georgia', 'Times New Roman', 'Noto Serif', serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Floating stars background */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(2px 2px at 10px 20px, #daa520, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 30px 150px, #daa520, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 90px 300px, #daa520, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 150px 80px, #daa520, rgba(0,0,0,0)),
+                radial-gradient(4px 4px at 250px 400px, #daa520, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 350px 150px, #daa520, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 450px 250px, #daa520, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 500px 500px, #daa520, rgba(0,0,0,0));
+            background-repeat: repeat;
+            opacity: 0.3;
+            animation: twinkle 4s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.6; }
+        }
+
+        .eid-card {
+            max-width: 500px;
+            width: 100%;
+            background: #fdf2e4;
+            border-radius: 60px 20px 60px 20px;
+            border: 8px solid #8b1a1a;
+            padding: 30px 25px;
+            position: relative;
+            box-shadow: 25px 25px 0 rgba(0,0,0,0.3);
+            background-image: linear-gradient(45deg, #fff5e0 3%, transparent 3%);
+            background-size: 30px 30px;
+            z-index: 10;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Oromo flag border */
+        .eid-card::before {
+            content: "";
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+            border: 6px solid #daa520;
+            border-radius: 75px 25px 75px 25px;
+            pointer-events: none;
+            border-style: double;
+            z-index: 1;
+        }
+
+        /* Oromo flag stripes at top */
+        .flag-stripes {
+            position: absolute;
+            top: -25px;
+            left: 20px;
+            right: 20px;
+            height: 12px;
+            background: linear-gradient(90deg, #8b1a1a 33%, #daa520 33%, #daa520 66%, #1e5b3e 66%);
+            border-radius: 30px;
+            border: 3px solid #daa520;
+            z-index: 5;
+            box-shadow: 0 5px 0 #4a2e1a;
+        }
+
+        /* Decorative crescents */
+        .crescent-left {
+            position: absolute;
+            top: 20px;
+            left: 10px;
+            font-size: 4rem;
+            color: #daa520;
+            opacity: 0.2;
+            transform: rotate(-15deg);
+            z-index: 0;
+        }
+
+        .crescent-right {
+            position: absolute;
+            bottom: 20px;
+            right: 10px;
+            font-size: 5rem;
+            color: #daa520;
+            opacity: 0.2;
+            transform: rotate(20deg);
+            z-index: 0;
+        }
+
+        /* Main content */
+        .content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .arabic {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #8b1a1a;
+            text-shadow: 3px 3px 0 #daa520;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            font-family: 'Traditional Arabic', 'Scheherazade', serif;
+        }
+
+        .eid-title {
+            font-size: 3.2rem;
+            font-weight: 900;
+            color: #1e5b3e;
+            text-shadow: 3px 3px 0 #daa520, 5px 5px 0 #8b1a1a;
+            margin-bottom: 10px;
+            letter-spacing: 4px;
+        }
+
+        .eid-subtitle {
+            font-size: 1.8rem;
+            color: #8b1a1a;
+            font-style: italic;
+            margin-bottom: 25px;
+            border-bottom: 4px dashed #daa520;
+            padding-bottom: 15px;
+        }
+
+        .oromo-blessing {
+            background: linear-gradient(145deg, #1e5b3e, #0f3a26);
+            color: white;
+            padding: 20px;
+            border-radius: 50px 12px 50px 12px;
+            border: 5px solid #daa520;
+            margin: 25px 0;
+            font-size: 1.3rem;
+            font-style: italic;
+            box-shadow: 12px 12px 0 #8b1a1a;
+        }
+
+        .oromo-blessing span {
+            color: #daa520;
+            font-weight: bold;
+            font-size: 1.6rem;
+            display: block;
+            margin-top: 10px;
+            font-style: normal;
+        }
+
+        .prayer {
+            background: #f0e2cc;
+            border-radius: 30px 8px 30px 8px;
+            padding: 20px;
+            border: 4px solid #8b1a1a;
+            margin: 25px 0;
+            font-size: 1rem;
+            color: #2c1e0e;
+        }
+
+        .prayer-arabic {
+            font-size: 1.4rem;
+            color: #1e5b3e;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .divider {
+            width: 80%;
+            height: 4px;
+            background: repeating-linear-gradient(90deg, #8b1a1a 0px, #8b1a1a 10px, #daa520 10px, #daa520 20px, #1e5b3e 20px, #1e5b3e 30px);
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+
+        .city {
+            font-size: 1.4rem;
+            color: #1e5b3e;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .city span {
+            background: #daa520;
+            color: #2c1e0e;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            border: 3px solid #8b1a1a;
+        }
+
+        .date {
+            background: #8b1a1a;
+            color: white;
+            padding: 12px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            border: 4px solid #daa520;
+            display: inline-block;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 1rem;
+            color: #5a3e2b;
+            border-top: 3px double #8b1a1a;
+            padding-top: 20px;
+        }
+
+        .emoji-stars {
+            font-size: 2rem;
+            margin: 15px 0;
+            animation: spin 10s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Button styles */
+        .share-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0 10px;
+        }
+
+        .btn {
+            background: #daa520;
+            color: #2c1e0e;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 60px 12px 60px 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: 3px solid #8b1a1a;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 0 #8b1a1a;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 3px 0 #8b1a1a;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            border-color: #075E54;
+            box-shadow: 0 6px 0 #075E54;
+        }
+
+        .btn-copy {
+            background: #1e5b3e;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="eid-card">
+        <div class="flag-stripes"></div>
+        <div class="crescent-left">☪</div>
+        <div class="crescent-right">☪</div>
+        
+        <div class="content">
+            <!-- Arabic Calligraphy -->
+            <div class="arabic">عيد مبارك</div>
+            
+            <!-- Main Title -->
+            <div class="eid-title">EID MUBARAK!</div>
+            <div class="eid-subtitle">Atlanta • Oromoo</div>
+            
+            <!-- Decorative divider -->
+            <div class="emoji-stars">✨ ☪ ✨ 🌙 ✨ ⭐ ✨</div>
+            
+            <!-- Oromo Blessing -->
+            <div class="oromo-blessing">
+                "Eid Mubarak! From Jamal Adeeroo"
+                <span>Ayyaana Gaarii!</span>
+            </div>
+            
+            <!-- Date Info -->
+            <div class="date">
+                🌙 Shawwal 1, 1447 • March 20, 2026 🌙
+            </div>
+            
+            <!-- Prayer -->
+            <div class="prayer">
+                <div class="prayer-arabic">تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ</div>
+                <div>"Taqabbalallahu minna wa minkum"</div>
+                <div style="margin-top: 10px; font-size: 0.9rem;">May Allah accept from us and from you</div>
+            </div>
+            
+            <!-- City -->
+            <div class="city">
+                <span>🌿 Atlanta, Georgia 🌿</span>
+            </div>
+            
+            <!-- Oromo Blessing Text -->
+            <div style="font-size: 1.1rem; line-height: 1.8; color: #2c1e0e; margin: 20px 0;">
+                <p>Waaqayyo sooma keessan, kadhaa keessan,<br>fi hojii gaarii hunda haa qaacilu!</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">May Allah accept your fasting, prayers, and all good deeds!</p>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <!-- Share Buttons -->
+            <div class="share-buttons">
+                <button class="btn btn-whatsapp" onclick="shareWhatsApp()">
+                    📱 Share on WhatsApp
+                </button>
+                <button class="btn btn-copy" onclick="copyMessage()">
+                    📋 Copy Message
+                </button>
+            </div>
+            
+            <!-- Atlanta Oromo Community -->
+            <div style="background: #2c1e0e; color: white; padding: 15px; border-radius: 50px 8px 50px 8px; margin: 20px 0; border: 3px solid #daa520;">
+                <p style="font-size: 1.2rem;">🇺🇸 • 🇪🇹</p>
+                <p style="font-size: 1rem;">Atlanta Oromoo Community</p>
+                <p style="font-size: 0.8rem; margin-top: 8px;">Ramadaan 1447 ✦ Eid 2026</p>
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer">
+                Dilbata jalqaba • Sabti dhuma<br>
+                ✦ Oromiyaa • Atlanta • Eid Mubarak ✦
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function shareWhatsApp() {
+            const message = encodeURIComponent(
+                "✨ *EID MUBARAK!* ✨\n\n" +
+                "🌙 *Ayyaana Gaarii!* 🌙\n\n" +
+                "Taqabbalallahu minna wa minkum.\n" +
+                "May Allah accept from us and from you.\n\n" +
+                "Waaqayyo sooma keessan, kadhaa keessan,\n" +
+                "fi hojii gaarii hunda haa qaacilu!\n\n" +
+                "🕌 *Atlanta Oromoo Community*\n" +
+                "📅 Shawwal 1, 1447 • March 20, 2026\n\n" +
+                "✨ Eid Mubarak!By Jamal Adeero ✨"
+            );
+            
+            window.open(`https://wa.me/?text=${message}`, '_blank');
+        }
+        
+        function copyMessage() {
+            const message = 
+                "✨ EID MUBARAK! ✨\n\n" +
+                "🌙 Ayyaana Gaarii! 🌙\n\n" +
+                "Taqabbalallahu minna wa minkum.\n" +
+                "May Allah accept from us and from you.\n\n" +
+                "Waaqayyo sooma keessan, kadhaa keessan,\n" +
+                "fi hojii gaarii hunda haa qaacilu!\n\n" +
+                "🕌 Atlanta Oromoo Community\n" +
+                "📅 Shawwal 1, 1447 • March 20, 2026\n\n" +
+                "✨ by Eid Mubarak! ✨";
+            
+            navigator.clipboard.writeText(message).then(() => {
+                alert("✅ Eid message copied! Now paste and share with family!");
+            }).catch(() => {
+                alert("Please copy the message manually");
+            });
+        }
+    </script>
+</body>
+</html>
