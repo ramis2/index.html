@@ -27,7 +27,7 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
             padding: 25px;
             border-radius: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
@@ -50,14 +50,13 @@
             border-radius: 20px;
             margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.5);
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
         }
         
         #expression {
             background: rgba(255,255,255,0.9);
             border: 1px solid #d0e0f0;
             padding: 15px;
-            font-size: 24px;
+            font-size: 22px;
             text-align: right;
             font-family: monospace;
             border-radius: 15px;
@@ -65,7 +64,6 @@
             min-height: 40px;
             word-break: break-all;
             color: #2c3e50;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         #result {
@@ -78,8 +76,6 @@
             border-radius: 15px;
             color: #C850C0;
             font-weight: bold;
-            word-break: break-all;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         .explanation {
@@ -91,7 +87,6 @@
             font-size: 14px;
             line-height: 1.6;
             display: none;
-            box-shadow: 0 5px 15px rgba(200,80,192,0.1);
         }
         
         .explanation.show {
@@ -113,8 +108,6 @@
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.5);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
         
         .mixed-title {
@@ -123,8 +116,6 @@
             margin-bottom: 15px;
             text-align: center;
             font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
         
         .mixed-builders {
@@ -132,28 +123,24 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
         
         .mixed-box {
             flex: 1;
-            background: rgba(255,255,255,0.8);
+            background: white;
             border-radius: 15px;
             padding: 15px;
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box,
-                        linear-gradient(135deg, #4158D0, #C850C0) border-box;
+            border: 2px solid #C850C0;
+            min-width: 150px;
         }
         
         .mixed-label {
             text-align: center;
             font-size: 12px;
-            background: linear-gradient(135deg, #4158D0, #C850C0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #C850C0;
             margin-bottom: 8px;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
         .mixed-row {
@@ -164,8 +151,8 @@
         }
         
         .mixed-input {
-            width: 45px;
-            height: 40px;
+            width: 50px;
+            height: 45px;
             border: 2px solid #e0e7ff;
             border-radius: 10px;
             text-align: center;
@@ -188,15 +175,15 @@
         }
         
         .mixed-operator {
-            font-size: 32px;
+            font-size: 40px;
             font-weight: bold;
             background: linear-gradient(135deg, #4158D0, #C850C0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            min-width: 50px;
+            min-width: 70px;
             text-align: center;
             cursor: pointer;
-            padding: 5px;
+            padding: 10px;
         }
         
         .mixed-buttons {
@@ -204,6 +191,7 @@
             gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
+            margin-top: 15px;
         }
         
         .mixed-btn {
@@ -214,16 +202,10 @@
             cursor: pointer;
             color: white;
             font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transition: transform 0.2s;
         }
         
-        .mixed-btn:hover {
-            transform: translateY(-2px);
-        }
-        
+        .mixed-btn:hover { transform: translateY(-2px); }
         .mixed-calc { background: linear-gradient(135deg, #48bb78, #38a169); }
         .mixed-clear { background: linear-gradient(135deg, #f56565, #e53e3e); }
         .mixed-swap { background: linear-gradient(135deg, #4299e1, #3182ce); }
@@ -242,7 +224,6 @@
             border-radius: 25px;
             font-family: monospace;
             background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         #inputField:focus {
@@ -259,13 +240,6 @@
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
-            white-space: nowrap;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-        
-        #useBtn:hover {
-            transform: translateY(-2px);
         }
         
         .buttons {
@@ -284,18 +258,10 @@
             color: white;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         
-        button:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.1);
-        }
-        
-        button:active {
-            transform: translateY(2px);
-            box-shadow: none;
-        }
+        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        button:active { transform: translateY(2px); }
         
         .number { background: linear-gradient(135deg, #4a5568, #2d3748); }
         .operator { background: linear-gradient(135deg, #ed8936, #dd6b20); }
@@ -309,10 +275,8 @@
             border-radius: 20px;
             max-height: 100px;
             overflow-y: auto;
-            font-family: monospace;
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.5);
         }
         
         .history-item {
@@ -320,13 +284,9 @@
             justify-content: space-between;
             padding: 6px 0;
             border-bottom: 1px solid rgba(200,80,192,0.2);
-            color: #2c3e50;
         }
         
-        .history-result {
-            color: #C850C0;
-            font-weight: bold;
-        }
+        .history-result { color: #C850C0; font-weight: bold; }
         
         .footer {
             text-align: center;
@@ -334,18 +294,13 @@
             color: #718096;
             font-size: 13px;
             border-top: 1px solid rgba(200,80,192,0.2);
-            margin-top: 10px;
         }
         
-        .footer .heart {
-            color: #f56565;
-        }
-        
-        @media (max-width: 500px) {
+        @media (max-width: 550px) {
             .calculator { padding: 15px; }
             .mixed-builders { flex-direction: column; }
-            .mixed-operator { transform: rotate(90deg); }
-            .mixed-input { width: 40px; height: 35px; font-size: 16px; }
+            .mixed-operator { transform: rotate(90deg); margin: 10px 0; }
+            .mixed-input { width: 45px; height: 40px; font-size: 16px; }
             .buttons button { height: 50px; font-size: 18px; }
         }
     </style>
@@ -355,9 +310,8 @@
         <h1>🧮 Fraction Calculator</h1>
         
         <div class="display">
-            <div id="expression">2 1/2 + 3 3/4</div>
-            <div id="result">= 6 1/4</div>
-            
+            <div id="expression">2 1/2 ÷ 3 3/4</div>
+            <div id="result">= 2/3</div>
             <div class="explanation" id="explanation">
                 <div id="explanationText"></div>
             </div>
@@ -378,7 +332,7 @@
                     </div>
                 </div>
                 
-                <div class="mixed-operator" id="mixedOperator">+</div>
+                <div class="mixed-operator" id="mixedOperator">÷</div>
                 
                 <div class="mixed-box">
                     <div class="mixed-label">SECOND NUMBER</div>
@@ -400,7 +354,7 @@
         </div>
         
         <div class="input-group">
-            <input type="text" id="inputField" value="2 1/2 + 3 3/4" placeholder="e.g. 2 1/2 + 3 3/4">
+            <input type="text" id="inputField" value="2 1/2 ÷ 3 3/4" placeholder="e.g. 2 1/2 ÷ 3 3/4">
             <button id="useBtn">USE</button>
         </div>
         
@@ -408,7 +362,7 @@
             <button class="clear" id="clearAll">AC</button>
             <button class="clear" id="clear">C</button>
             <button class="space" id="spaceBtn">⎵</button>
-            <button class="operator" id="divideBtn">/</button>
+            <button class="operator" id="divideBtn">÷</button>
             
             <button class="number" id="btn7">7</button>
             <button class="number" id="btn8">8</button>
@@ -431,9 +385,9 @@
         </div>
         
         <div id="history"></div>
-        By 
+        
         <div class="footer">
-            <p>© 2026 Fraction Calculator.By Jamal Ahmed 0598. All rights reserved.</p>
+            <p>© Jamal Ahmed a2026 Fraction Calculator. All rights reserved.</p>
             <p>Made with <span class="heart">❤️</span> on GitHub</p>
         </div>
     </div>
@@ -450,7 +404,6 @@
         const history = document.getElementById('history');
         const mixedOperator = document.getElementById('mixedOperator');
         
-        // Mixed number inputs
         const whole1 = document.getElementById('whole1');
         const num1 = document.getElementById('num1');
         const den1 = document.getElementById('den1');
@@ -458,12 +411,10 @@
         const num2 = document.getElementById('num2');
         const den2 = document.getElementById('den2');
         
-        // Mixed buttons
         const buildCalc = document.getElementById('buildCalc');
         const buildClear = document.getElementById('buildClear');
         const buildSwap = document.getElementById('buildSwap');
         
-        // Get buttons
         const btn0 = document.getElementById('btn0');
         const btn1 = document.getElementById('btn1');
         const btn2 = document.getElementById('btn2');
@@ -483,10 +434,9 @@
         const clear = document.getElementById('clear');
         const clearAll = document.getElementById('clearAll');
         
-        // Cycle operator
-        let currentOp = '+';
+        let currentOp = '÷';
         function cycleOperator() {
-            const ops = ['+', '-', '×', '/'];
+            const ops = ['+', '-', '×', '÷'];
             let index = ops.indexOf(currentOp);
             index = (index + 1) % ops.length;
             currentOp = ops[index];
@@ -494,7 +444,6 @@
         }
         mixedOperator.onclick = cycleOperator;
         
-        // Build expression
         function buildExpression() {
             let w1 = parseInt(whole1.value) || 0;
             let n1 = parseInt(num1.value) || 0;
@@ -503,12 +452,12 @@
             let n2 = parseInt(num2.value) || 0;
             let d2 = parseInt(den2.value) || 1;
             
-            let op = currentOp === '×' ? '*' : currentOp === '/' ? '/' : currentOp;
+            let opMap = { '+': '+', '-': '-', '×': '*', '÷': '/' };
+            let calcOp = opMap[currentOp];
             
-            return `${w1} ${n1}/${d1} ${op} ${w2} ${n2}/${d2}`;
+            return `${w1} ${n1}/${d1} ${calcOp} ${w2} ${n2}/${d2}`;
         }
         
-        // Math functions (same as before)
         function gcd(a, b) {
             a = Math.abs(a);
             b = Math.abs(b);
@@ -527,25 +476,34 @@
             return [n / g, d / g];
         }
         
-        function parseFraction(str) {
+        // CRITICAL FIX: Parse mixed numbers correctly
+        function parseNumber(str) {
             str = str.trim();
+            if (!str) return null;
             
-            if (str.includes(' ') && str.includes('/')) {
-                let parts = str.split(' ');
-                let whole = parseInt(parts[0]);
-                let frac = parts[1].split('/');
-                let num = parseInt(frac[0]);
-                let den = parseInt(frac[1]);
+            // Check for mixed number: "2 1/2"
+            let mixedMatch = str.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+            if (mixedMatch) {
+                let whole = parseInt(mixedMatch[1]);
+                let num = parseInt(mixedMatch[2]);
+                let den = parseInt(mixedMatch[3]);
+                if (den === 0) den = 1;
                 return { num: whole * den + num, den: den, original: str };
             }
             
-            if (str.includes('/')) {
-                let parts = str.split('/');
-                return { num: parseInt(parts[0]), den: parseInt(parts[1]), original: str };
+            // Check for fraction: "1/2"
+            let fracMatch = str.match(/^(\d+)\/(\d+)$/);
+            if (fracMatch) {
+                let num = parseInt(fracMatch[1]);
+                let den = parseInt(fracMatch[2]);
+                if (den === 0) den = 1;
+                return { num: num, den: den, original: str };
             }
             
-            if (!isNaN(parseInt(str))) {
-                return { num: parseInt(str), den: 1, original: str };
+            // Check for whole number: "5"
+            let wholeNum = parseInt(str);
+            if (!isNaN(wholeNum)) {
+                return { num: wholeNum, den: 1, original: str };
             }
             
             return null;
@@ -562,6 +520,7 @@
             if (Math.abs(simpN) > Math.abs(simpD)) {
                 let whole = Math.floor(simpN / simpD);
                 let rem = Math.abs(simpN % simpD);
+                if (rem === 0) return whole.toString();
                 return `${whole} ${rem}/${simpD}`;
             }
             
@@ -574,70 +533,104 @@
             steps.push(`<p><span class="step">Step 1:</span> Left: ${left.original} = ${left.num}/${left.den}</p>`);
             steps.push(`<p><span class="step">Step 2:</span> Right: ${right.original} = ${right.num}/${right.den}</p>`);
             
-            if (op === '+' || op === '-') {
+            if (op === '/' || op === '÷') {
+                steps.push(`<p><span class="step">Step 3:</span> Division: flip the second fraction</p>`);
+                steps.push(`<p>&nbsp;&nbsp;${right.num}/${right.den} → ${right.den}/${right.num}</p>`);
+                steps.push(`<p><span class="step">Step 4:</span> Multiply: ${left.num}/${left.den} × ${right.den}/${right.num}</p>`);
+                steps.push(`<p>&nbsp;&nbsp;= (${left.num} × ${right.den}) / (${left.den} × ${right.num})</p>`);
+                steps.push(`<p>&nbsp;&nbsp;= ${left.num * right.den} / ${left.den * right.num}</p>`);
+                steps.push(`<p><span class="step">Step 5:</span> Result = ${resultNum}/${resultDen}</p>`);
+            } else if (op === '+' || op === '-') {
                 let commonDen = left.den * right.den;
                 steps.push(`<p><span class="step">Step 3:</span> Common denominator: ${left.den} × ${right.den} = ${commonDen}</p>`);
                 steps.push(`<p><span class="step">Step 4:</span> Convert:</p>`);
                 steps.push(`<p>&nbsp;&nbsp;${left.num}/${left.den} = ${left.num * right.den}/${commonDen}</p>`);
                 steps.push(`<p>&nbsp;&nbsp;${right.num}/${right.den} = ${right.num * left.den}/${commonDen}</p>`);
+                if (op === '+') {
+                    steps.push(`<p><span class="step">Step 5:</span> Add: ${left.num * right.den} + ${right.num * left.den} = ${resultNum}</p>`);
+                } else {
+                    steps.push(`<p><span class="step">Step 5:</span> Subtract: ${left.num * right.den} - ${right.num * left.den} = ${resultNum}</p>`);
+                }
+                steps.push(`<p><span class="step">Step 6:</span> Result = ${resultNum}/${resultDen}</p>`);
             } else if (op === '*') {
-                steps.push(`<p><span class="step">Step 3:</span> Multiply: ${left.num} × ${right.num} = ${left.num * right.num}</p>`);
-                steps.push(`<p><span class="step">Step 4:</span> Multiply: ${left.den} × ${right.den} = ${left.den * right.den}</p>`);
-            } else if (op === '/') {
-                steps.push(`<p><span class="step">Step 3:</span> Invert second: ${right.num}/${right.den} → ${right.den}/${right.num}</p>`);
+                steps.push(`<p><span class="step">Step 3:</span> Multiply numerators: ${left.num} × ${right.num} = ${left.num * right.num}</p>`);
+                steps.push(`<p><span class="step">Step 4:</span> Multiply denominators: ${left.den} × ${right.den} = ${left.den * right.den}</p>`);
+                steps.push(`<p><span class="step">Step 5:</span> Result = ${resultNum}/${resultDen}</p>`);
             }
-            
-            if (op === '+') {
-                steps.push(`<p><span class="step">Step 5:</span> Add: ${left.num * right.den} + ${right.num * left.den} = ${resultNum}</p>`);
-            } else if (op === '-') {
-                steps.push(`<p><span class="step">Step 5:</span> Subtract: ${left.num * right.den} - ${right.num * left.den} = ${resultNum}</p>`);
-            }
-            
-            steps.push(`<p><span class="step">Step 6:</span> Result = ${resultNum}/${resultDen}</p>`);
             
             let [simpNum, simpDen] = simplify(resultNum, resultDen);
             if (simpNum !== resultNum || simpDen !== resultDen) {
                 let g = gcd(resultNum, resultDen);
-                steps.push(`<p><span class="step">Step 7:</span> Simplify by ${g} → ${simpNum}/${simpDen}</p>`);
+                let stepNum = op === '/' ? 6 : (op === '*' ? 6 : 7);
+                steps.push(`<p><span class="step">Step ${stepNum}:</span> Simplify by ${g} → ${simpNum}/${simpDen}</p>`);
             }
             
             let finalResult = formatResult(simpNum, simpDen);
-            steps.push(`<p><span class="step">Step 8:</span> Final = <strong>${finalResult}</strong></p>`);
+            steps.push(`<p><span class="step">Final:</span> <strong>${finalResult}</strong></p>`);
             
             return steps.join('');
         }
         
+        // MAIN CALCULATION FUNCTION - FIXED
         function calculate(expr) {
             expr = expr.trim();
             
+            // Find the MAIN operator (the one that separates left and right)
+            // We need to find the last operator that's NOT inside a fraction
             let op = '';
-            let parts = [];
+            let leftStr = '';
+            let rightStr = '';
+            let opIndex = -1;
             
-            if (expr.includes('+')) {
-                op = '+';
-                parts = expr.split('+');
-            } else if (expr.includes('-')) {
-                op = '-';
-                parts = expr.split('-');
-            } else if (expr.includes('*')) {
-                op = '*';
-                parts = expr.split('*');
-            } else if (expr.includes('/') && !expr.includes(' ')) {
-                op = '/';
-                parts = expr.split('/');
-            } else {
-                return { result: "Error", steps: "Error: Invalid format" };
+            // Look for operators from the end to find the main one
+            // Skip if it's inside a fraction (has numbers around it)
+            for (let i = expr.length - 1; i >= 0; i--) {
+                let c = expr[i];
+                if (c === '+' || c === '-' || c === '*' || c === '/' || c === '÷') {
+                    // Check if this operator is likely the main one
+                    // If there's a space before and after, it's probably the operator
+                    let before = i > 0 ? expr[i-1] : '';
+                    let after = i < expr.length - 1 ? expr[i+1] : '';
+                    
+                    if (before === ' ' || after === ' ') {
+                        opIndex = i;
+                        op = c;
+                        break;
+                    }
+                }
             }
             
-            if (parts.length !== 2) {
-                return { result: "Error", steps: "Error: Invalid expression" };
+            // If no operator found with spaces, try without spaces
+            if (opIndex === -1) {
+                for (let i = 0; i < expr.length; i++) {
+                    let c = expr[i];
+                    if (c === '+' || c === '-' || c === '*' || c === '/' || c === '÷') {
+                        opIndex = i;
+                        op = c;
+                        break;
+                    }
+                }
             }
             
-            let left = parseFraction(parts[0].trim());
-            let right = parseFraction(parts[1].trim());
+            if (opIndex === -1) {
+                return { result: "Error: No operator", steps: "Error: No operator found. Use +, -, ×, ÷" };
+            }
             
-            if (!left || !right) {
-                return { result: "Error", steps: "Error: Invalid numbers" };
+            leftStr = expr.substring(0, opIndex).trim();
+            rightStr = expr.substring(opIndex + 1).trim();
+            
+            if (!leftStr || !rightStr) {
+                return { result: "Error: Invalid format", steps: "Error: Missing left or right number" };
+            }
+            
+            let left = parseNumber(leftStr);
+            let right = parseNumber(rightStr);
+            
+            if (!left) {
+                return { result: "Error: Invalid left number", steps: "Error: Could not parse: " + leftStr };
+            }
+            if (!right) {
+                return { result: "Error: Invalid right number", steps: "Error: Could not parse: " + rightStr };
             }
             
             let num, den;
@@ -651,9 +644,14 @@
             } else if (op === '*') {
                 num = left.num * right.num;
                 den = left.den * right.den;
-            } else if (op === '/') {
+            } else if (op === '/' || op === '÷') {
+                if (right.num === 0) {
+                    return { result: "Error: Division by zero", steps: "Error: Cannot divide by zero" };
+                }
                 num = left.num * right.den;
                 den = left.den * right.num;
+            } else {
+                return { result: "Error: Unknown operator", steps: "Error: Unknown operator: " + op };
             }
             
             let finalResult = formatResult(num, den);
@@ -693,8 +691,8 @@
         spaceBtn.onclick = () => inputField.value += ' ';
         addBtn.onclick = () => inputField.value += '+';
         subtractBtn.onclick = () => inputField.value += '-';
-        multiplyBtn.onclick = () => inputField.value += '*';
-        divideBtn.onclick = () => inputField.value += '/';
+        multiplyBtn.onclick = () => inputField.value += '×';
+        divideBtn.onclick = () => inputField.value += '÷';
         
         clear.onclick = () => {
             inputField.value = inputField.value.slice(0, -1);
@@ -723,8 +721,8 @@
             whole2.value = '0';
             num2.value = '0';
             den2.value = '1';
-            currentOp = '+';
-            mixedOperator.innerText = '+';
+            currentOp = '÷';
+            mixedOperator.innerText = '÷';
         };
         
         buildSwap.onclick = () => {
@@ -734,7 +732,7 @@
         };
         
         // Initialize
-        updateDisplay('2 1/2 + 3 3/4');
+        updateDisplay('2 1/2 ÷ 3 3/4');
     </script>
 </body>
 </html>
