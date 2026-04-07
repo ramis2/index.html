@@ -1,9 +1,11 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Complete Taxi Dispatch - Full Workflow</title>
+    <title>Live Driver Tracking - Complete Dispatch</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -22,17 +24,26 @@
         .stat-number { font-size: 28px; font-weight: bold; color: #1e3c72; }
         .stat-label { font-size: 11px; color: #666; }
         
-        .map-container { height: 350px; background: #ddd; border-radius: 12px; margin-bottom: 12px; }
+        .map-container { height: 450px; background: #ddd; border-radius: 12px; margin-bottom: 12px; position: relative; }
         #map { height: 100%; width: 100%; border-radius: 12px; }
+        
+        .tracking-controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .tracking-controls button { flex: 1; padding: 10px; font-size: 14px; }
+        .tracking-controls .btn-track { background: #2196f3; }
+        .tracking-controls .btn-stop { background: #6b7280; }
+        .tracking-controls .btn-center { background: #f59e0b; }
         
         .search-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 30px; margin-bottom: 12px; }
         .driver-list { max-height: 250px; overflow-y: auto; }
-        .driver-item { background: #f5f5f5; padding: 12px; margin-bottom: 8px; border-radius: 12px; border-left: 4px solid #10b981; display: flex; justify-content: space-between; align-items: center; }
-        .driver-item.busy { border-left-color: #ef4444; }
+        .driver-item { background: #f5f5f5; padding: 12px; margin-bottom: 8px; border-radius: 12px; border-left: 4px solid #10b981; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .driver-item.tracking { background: #e3f2fd; border-left-color: #2196f3; }
         .driver-info h4 { font-size: 16px; }
         .driver-info p { font-size: 12px; color: #666; }
         .driver-actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .driver-actions button { padding: 6px 12px; font-size: 11px; border-radius: 20px; }
+        
+        .live-badge { background: #ef4444; color: white; padding: 2px 6px; border-radius: 10px; font-size: 9px; margin-left: 5px; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
         .form-card { background: #f5f5f5; padding: 16px; border-radius: 16px; margin-bottom: 16px; }
         .row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
@@ -42,32 +53,17 @@
         button { background: #1e3c72; color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: bold; font-size: 16px; width: 100%; }
         .btn-green { background: #10b981; }
         .btn-warning { background: #f59e0b; }
-        .btn-danger { background: #ef4444; }
-        
-        .dispatch-panel { background: #f0fdf4; border: 2px solid #10b981; border-radius: 16px; padding: 15px; margin-bottom: 15px; }
-        .dispatch-panel h3 { color: #10b981; margin-bottom: 10px; }
-        
-        .call-log { background: #f5f5f5; border-radius: 12px; padding: 12px; margin-top: 12px; max-height: 200px; overflow-y: auto; }
-        .call-log-item { padding: 8px; border-bottom: 1px solid #ddd; font-size: 12px; }
-        .call-log-item.outgoing { border-left: 3px solid #f59e0b; padding-left: 8px; }
-        .call-log-item.incoming { border-left: 3px solid #10b981; padding-left: 8px; }
         
         .drivers-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .driver-card { background: #f5f5f5; border-radius: 16px; padding: 15px; position: relative; border-left: 4px solid #10b981; }
-        .driver-card.busy { border-left-color: #ef4444; }
-        .driver-card.on-trip { background: #fef3c7; border-left-color: #f59e0b; }
+        .driver-card.tracking { background: #e3f2fd; border-left-color: #2196f3; }
         .delete-x { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
-        
-        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; }
-        .badge-available { background: #10b981; color: white; }
-        .badge-busy { background: #ef4444; color: white; }
-        .badge-on-trip { background: #f59e0b; color: white; }
-        
-        .call-btn { background: #f59e0b; padding: 6px 12px; font-size: 12px; border-radius: 20px; width: auto; display: inline-block; }
         
         .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #333; color: white; padding: 12px; border-radius: 12px; text-align: center; display: none; z-index: 1000; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-box { background: white; padding: 20px; border-radius: 20px; width: 90%; max-width: 350px; }
+        
+        .track-info { font-size: 11px; color: #2196f3; margin-top: 5px; }
         
         @media (min-width: 768px) {
             .drivers-grid { grid-template-columns: repeat(2, 1fr); }
@@ -78,52 +74,61 @@
 </head>
 <body>
 <div class="main-box">
-    <h1>🚕 Complete Taxi Dispatch</h1>
-    <div class="subtitle">Full Workflow: Request → Dispatch → Track → Complete</div>
+    <h1>🚕 Live Driver Tracking</h1>
+    <div class="subtitle">Real-time GPS tracking | See drivers move on map</div>
 
     <div class="stats">
         <div class="stat"><div class="stat-number" id="totalCount">0</div><div class="stat-label">Total Drivers</div></div>
         <div class="stat"><div class="stat-number" id="availCount">0</div><div class="stat-label">Available</div></div>
-        <div class="stat"><div class="stat-number" id="busyCount">0</div><div class="stat-label">On Trip</div></div>
+        <div class="stat"><div class="stat-number" id="trackingCount">0</div><div class="stat-label">Tracking LIVE</div></div>
         <div class="stat"><div class="stat-number" id="todayTrips">0</div><div class="stat-label">Today's Trips</div></div>
     </div>
 
     <div class="tabs">
-        <button class="tab active" onclick="openTab('dispatch')">🚕 Dispatch</button>
-        <button class="tab" onclick="openTab('map')">🗺️ Track Map</button>
+        <button class="tab active" onclick="openTab('tracking')">📍 Live Tracking</button>
+        <button class="tab" onclick="openTab('dispatch')">📋 Dispatch</button>
         <button class="tab" onclick="openTab('drivers')">🚗 Drivers</button>
         <button class="tab" onclick="openTab('history')">📝 History</button>
-        <button class="tab" onclick="openTab('calls')">📞 Call Log</button>
     </div>
 
-    <!-- DISPATCH TAB - Main workflow -->
-    <div id="tabDispatch" class="tab-content">
-        <div class="dispatch-panel">
-            <h3>📋 NEW RIDE REQUEST</h3>
+    <!-- LIVE TRACKING TAB -->
+    <div id="tabTracking" class="tab-content">
+        <div class="tracking-controls">
+            <button class="btn-track" onclick="startAllTracking()">▶ Start Tracking All</button>
+            <button class="btn-stop" onclick="stopAllTracking()">⏹ Stop All</button>
+            <button class="btn-center" onclick="centerOnDriver()">🎯 Center on Driver</button>
+        </div>
+        <div class="map-container"><div id="map"></div></div>
+        <div style="background: #e0e7ff; border-radius: 12px; padding: 8px; margin-bottom: 12px; text-align: center; font-size: 12px;">
+            🔵 <strong>Blue markers</strong> = Being tracked LIVE | 🟢 <strong>Green</strong> = Available | 🟡 <strong>Yellow</strong> = On Trip
+        </div>
+        <input type="text" id="mapSearch" class="search-box" placeholder="🔍 Search driver..." onkeyup="filterMapDrivers()">
+        <div class="driver-list" id="mapDriversList"></div>
+        <button onclick="openAddModal()" style="margin-top:12px;">➕ Add New Driver</button>
+    </div>
+
+    <!-- DISPATCH TAB -->
+    <div id="tabDispatch" class="tab-content" style="display:none">
+        <div class="form-card">
+            <h3>📋 New Ride Request</h3>
             <div class="row">
-                <div class="field"><label>Customer Name *</label><input type="text" id="custName" placeholder="Full name"></div>
-                <div class="field"><label>Phone Number *</label><input type="text" id="custPhone" placeholder="Phone number"></div>
+                <div class="field"><label>Customer Name</label><input type="text" id="custName" placeholder="Full name"></div>
+                <div class="field"><label>Phone Number</label><input type="text" id="custPhone" placeholder="Phone number"></div>
             </div>
             <div class="row">
-                <div class="field"><label>Pickup Location *</label><input type="text" id="pickupAddr" placeholder="Address or landmark"></div>
-                <div class="field"><label>Dropoff Location *</label><input type="text" id="dropoffAddr" placeholder="Destination"></div>
+                <div class="field"><label>Pickup Location</label><input type="text" id="pickupAddr" placeholder="Address"></div>
+                <div class="field"><label>Dropoff Location</label><input type="text" id="dropoffAddr" placeholder="Destination"></div>
             </div>
             <div class="row">
-                <div class="field"><label>Estimated Fare ($)</label><input type="number" id="tripFare" value="25" step="5"></div>
+                <div class="field"><label>Fare ($)</label><input type="number" id="tripFare" value="25" step="5"></div>
                 <div class="field"><label>Priority</label>
                     <select id="tripPriority">
                         <option value="normal">Normal</option>
                         <option value="high">High Priority (+$5)</option>
-                        <option value="express">Express (+$10)</option>
                     </select>
                 </div>
             </div>
-            <button class="btn-green" onclick="findAndDispatch()">🔍 FIND & DISPATCH DRIVER</button>
-        </div>
-
-        <div style="background: #e0e7ff; border-radius: 16px; padding: 15px; margin-bottom: 15px;">
-            <h3>🚗 Available Drivers</h3>
-            <div id="availableDriversList" style="max-height: 200px; overflow-y: auto;"></div>
+            <button class="btn-green" onclick="findAndDispatch()">🔍 FIND & DISPATCH</button>
         </div>
 
         <div style="background: #fef3c7; border-radius: 16px; padding: 15px;">
@@ -132,23 +137,15 @@
         </div>
     </div>
 
-    <!-- MAP TAB -->
-    <div id="tabMap" class="tab-content" style="display:none">
-        <div class="map-container"><div id="map"></div></div>
-        <input type="text" id="mapSearch" class="search-box" placeholder="🔍 Search driver..." onkeyup="filterMapDrivers()">
-        <div class="driver-list" id="mapDriversList"></div>
-    </div>
-
     <!-- DRIVERS TAB -->
     <div id="tabDrivers" class="tab-content" style="display:none">
         <div style="margin-bottom:12px; display:flex; gap:8px; flex-wrap:wrap;">
             <button onclick="filterDriversList('all')" style="width:auto; padding:8px 16px;">All</button>
             <button onclick="filterDriversList('available')" style="width:auto; padding:8px 16px;">Available</button>
-            <button onclick="filterDriversList('on-trip')" style="width:auto; padding:8px 16px;">On Trip</button>
-            <button onclick="filterDriversList('offline')" style="width:auto; padding:8px 16px;">Offline</button>
+            <button onclick="filterDriversList('tracking')" style="width:auto; padding:8px 16px;">Tracking</button>
             <input type="text" id="driverSearch" placeholder="Search..." style="flex:1; padding:8px; border-radius:30px; border:1px solid #ddd;" onkeyup="searchDriversList()">
         </div>
-        <button onclick="openAddModal()" style="margin-bottom:12px;">➕ Add New Driver</button>
+        <button onclick="openAddModal()" style="margin-bottom:12px;">➕ Add Driver</button>
         <div id="driversListContainer"></div>
     </div>
 
@@ -157,19 +154,10 @@
         <div class="stats">
             <div class="stat"><div class="stat-number" id="historyTotal">0</div><div class="stat-label">Total Trips</div></div>
             <div class="stat"><div class="stat-number" id="historyRevenue">$0</div><div class="stat-label">Revenue</div></div>
-            <div class="stat"><div class="stat-number" id="historyAvg">$0</div><div class="stat-label">Avg Fare</div></div>
         </div>
         <div style="max-height: 400px; overflow-y: auto;">
             <div id="tripsListContainer"></div>
         </div>
-    </div>
-
-    <!-- CALL LOG TAB -->
-    <div id="tabCalls" class="tab-content" style="display:none">
-        <div class="call-log" id="callLogContainer">
-            <div style="text-align:center; padding:20px;">No calls yet</div>
-        </div>
-        <button onclick="clearCallLog()" class="btn-danger" style="margin-top:12px;">Clear Call Log</button>
     </div>
 </div>
 
@@ -179,7 +167,6 @@
         <div class="field"><label>Name</label><input type="text" id="newName" placeholder="Driver name"></div>
         <div class="field"><label>Phone</label><input type="text" id="newPhone" placeholder="Phone number"></div>
         <div class="field"><label>Vehicle</label><input type="text" id="newVehicle" placeholder="Toyota Camry"></div>
-        <div class="field"><label>License</label><input type="text" id="newPlate" placeholder="ABC123"></div>
         <div style="display:flex; gap:10px; margin-top:15px;">
             <button onclick="closeAddModal()" style="background:#6b7280;">Cancel</button>
             <button onclick="addDriver()">Add Driver</button>
@@ -190,17 +177,15 @@
 <div id="toastMsg" class="toast"></div>
 
 <script>
-    // Storage keys
-    const STORAGE_DRIVERS = 'complete_taxi_drivers';
-    const STORAGE_TRIPS = 'complete_taxi_trips';
-    const STORAGE_CALLS = 'complete_taxi_calls';
-    const STORAGE_ACTIVE = 'complete_taxi_active';
+    const STORAGE_DRIVERS = 'taxi_tracking_drivers_v3';
+    const STORAGE_TRIPS = 'taxi_tracking_trips_v3';
+    const STORAGE_ACTIVE = 'taxi_tracking_active_v3';
 
     let allDrivers = [];
     let tripHistory = [];
-    let callLog = [];
     let activeTrips = [];
     let map, mapMarkers = [];
+    let trackingInterval = null;
     let currentDriverFilter = 'all';
     let driverSearchText = '';
 
@@ -211,79 +196,122 @@
     ];
     function randomLocation() { return atlantaSpots[Math.floor(Math.random() * atlantaSpots.length)]; }
 
-    // ============ CALL LOG FUNCTIONS ============
-    function addCallLog(type, from, to, duration, notes) {
-        const call = {
-            id: Date.now(),
-            timestamp: new Date().toLocaleString(),
-            type: type,
-            from: from,
-            to: to,
-            duration: duration,
-            notes: notes
-        };
-        callLog.unshift(call);
-        localStorage.setItem(STORAGE_CALLS, JSON.stringify(callLog));
-        updateCallLog();
-        showToast(`📞 ${type} call logged`, '#f59e0b');
-    }
-
-    function updateCallLog() {
-        const container = document.getElementById('callLogContainer');
-        if (!callLog.length) {
-            container.innerHTML = '<div style="text-align:center; padding:20px;">No calls yet</div>';
-            return;
-        }
-        container.innerHTML = callLog.map(c => `
-            <div class="call-log-item ${c.type === 'To Driver' ? 'outgoing' : 'incoming'}">
-                <div style="display:flex; justify-content:space-between;">
-                    <span><strong>${c.type}</strong></span>
-                    <span style="color:#666;">${c.timestamp}</span>
-                </div>
-                <div>📞 ${c.from} → ${c.to}</div>
-                <div>⏱️ Duration: ${c.duration}</div>
-                <div style="font-size:11px; color:#666;">📝 ${c.notes}</div>
-            </div>
-        `).join('');
-    }
-
-    function clearCallLog() {
-        if (confirm('Clear all call logs?')) {
-            callLog = [];
-            localStorage.setItem(STORAGE_CALLS, JSON.stringify(callLog));
-            updateCallLog();
-            showToast('Call log cleared', '#ef4444');
+    // ============ TRACKING FUNCTIONS ============
+    function startTracking(driverId) {
+        const driver = allDrivers.find(d => d.id === driverId);
+        if (driver) {
+            driver.tracking = true;
+            saveAll();
+            refreshAll();
+            showToast(`📍 Tracking ${driver.name} started`, '#2196f3');
         }
     }
 
-    // ============ CALL DRIVER FUNCTION ============
-    function callDriver(phone, driverName) {
-        if (phone && phone !== 'N/A') {
-            const duration = prompt(`Calling ${driverName} at ${phone}\n\nEnter call duration (seconds):`, "45");
-            if (duration) {
-                addCallLog('To Driver', 'Dispatch Center', driverName, `${duration}s`, `Discussed trip details`);
-                alert(`📞 Call placed to ${driverName}\nNumber: ${phone}\n\nPlease dial manually on your phone.`);
-                showToast(`Call to ${driverName} logged`, '#f59e0b');
+    function stopTracking(driverId) {
+        const driver = allDrivers.find(d => d.id === driverId);
+        if (driver) {
+            driver.tracking = false;
+            saveAll();
+            refreshAll();
+            showToast(`📍 Tracking ${driver.name} stopped`, '#6b7280');
+        }
+    }
+
+    function startAllTracking() {
+        allDrivers.forEach(d => d.tracking = true);
+        saveAll();
+        refreshAll();
+        startMovementSimulation();
+        showToast(`📍 Tracking ALL drivers started`, '#2196f3');
+    }
+
+    function stopAllTracking() {
+        allDrivers.forEach(d => d.tracking = false);
+        saveAll();
+        refreshAll();
+        if (trackingInterval) {
+            clearInterval(trackingInterval);
+            trackingInterval = null;
+        }
+        showToast(`📍 Tracking stopped`, '#6b7280');
+    }
+
+    function startMovementSimulation() {
+        if (trackingInterval) clearInterval(trackingInterval);
+        trackingInterval = setInterval(() => {
+            let updated = false;
+            allDrivers.forEach(driver => {
+                if (driver.tracking) {
+                    // Simulate movement
+                    driver.lat += (Math.random() - 0.5) * 0.002;
+                    driver.lng += (Math.random() - 0.5) * 0.002;
+                    updated = true;
+                }
+            });
+            if (updated) {
+                saveAll();
+                updateMap();
+                updateMapSidebar();
+                updateDriversList();
+                updateStats();
             }
-        } else {
-            showToast('❌ No phone number available', '#ef4444');
-        }
+        }, 3000);
     }
 
-    function callCustomer(phone, customerName) {
-        if (phone && phone !== 'N/A') {
-            const duration = prompt(`Calling customer ${customerName} at ${phone}\n\nEnter call duration (seconds):`, "30");
-            if (duration) {
-                addCallLog('To Customer', 'Dispatch Center', customerName, `${duration}s`, `Confirmed pickup location`);
-                alert(`📞 Call placed to ${customerName}\nNumber: ${phone}\n\nPlease dial manually on your phone.`);
-                showToast(`Call to ${customerName} logged`, '#f59e0b');
+    function centerOnDriver() {
+        const driverName = prompt("Enter driver name to center map:", "");
+        if (driverName) {
+            const driver = allDrivers.find(d => d.name.toLowerCase().includes(driverName.toLowerCase()));
+            if (driver && map) {
+                map.setView([driver.lat, driver.lng], 14);
+                showToast(`📍 Centered on ${driver.name}`, '#f59e0b');
+            } else {
+                showToast(`❌ Driver not found`, '#ef4444');
             }
-        } else {
-            showToast('❌ No phone number available', '#ef4444');
         }
     }
 
     // ============ DISPATCH FUNCTIONS ============
+    function dispatchFromMap(driverId, driverName) {
+        const driver = allDrivers.find(d => d.id === driverId);
+        if (!driver || driver.status !== 'available') {
+            showToast(`❌ ${driverName} is not available!`, '#ef4444');
+            return;
+        }
+
+        const customerName = prompt(`🚕 Dispatch ${driverName}\n\nEnter customer name:`, "Walk-in");
+        if (!customerName) return;
+        const customerPhone = prompt("Enter customer phone:", "N/A");
+        const pickup = prompt("Enter pickup location:", "Unknown");
+        const dropoff = prompt("Enter dropoff location:", "Unknown");
+        const fare = parseFloat(prompt("Enter fare amount:", "25")) || 25;
+
+        const activeTrip = {
+            id: 'trip_' + Date.now(),
+            customerName: customerName,
+            customerPhone: customerPhone,
+            pickup: pickup,
+            dropoff: dropoff,
+            fare: fare,
+            driverId: driver.id,
+            driverName: driver.name,
+            status: 'dispatched',
+            dispatchedAt: new Date().toLocaleString()
+        };
+        
+        activeTrips.push(activeTrip);
+        driver.status = 'on-trip';
+        driver.tracking = true;
+        
+        saveAll();
+        refreshAll();
+        updateActiveTrips();
+        startMovementSimulation();
+        
+        showToast(`✅ ${driver.name} dispatched to ${customerName}!`, '#10b981');
+        alert(`🚕 DRIVER DISPATCHED!\n\nDriver: ${driver.name}\nCustomer: ${customerName}\nPickup: ${pickup}\nDropoff: ${dropoff}\nFare: $${fare}\n\nTracking started!`);
+    }
+
     function findAndDispatch() {
         const customerName = document.getElementById('custName').value.trim();
         const customerPhone = document.getElementById('custPhone').value.trim();
@@ -293,12 +321,11 @@
         const priority = document.getElementById('tripPriority').value;
 
         if (!customerName || !customerPhone || !pickup || !dropoff) {
-            showToast('Please fill all required fields!', '#ef4444');
+            showToast('Please fill all fields!', '#ef4444');
             return;
         }
 
         if (priority === 'high') fare += 5;
-        if (priority === 'express') fare += 10;
 
         const availableDrivers = allDrivers.filter(d => d.status === 'available');
         if (availableDrivers.length === 0) {
@@ -306,10 +333,8 @@
             return;
         }
 
-        // Assign nearest driver (simulated)
         const assignedDriver = availableDrivers[0];
         
-        // Create active trip
         const activeTrip = {
             id: 'trip_' + Date.now(),
             customerName: customerName,
@@ -320,39 +345,33 @@
             driverId: assignedDriver.id,
             driverName: assignedDriver.name,
             status: 'dispatched',
-            dispatchedAt: new Date().toLocaleString(),
-            priority: priority
+            dispatchedAt: new Date().toLocaleString()
         };
         
         activeTrips.push(activeTrip);
         assignedDriver.status = 'on-trip';
-        
-        // Add call log for dispatch
-        addCallLog('To Driver', 'Dispatch Center', assignedDriver.name, '30s', `Dispatched to ${customerName} from ${pickup} to ${dropoff}`);
+        assignedDriver.tracking = true;
         
         saveAll();
         refreshAll();
         updateActiveTrips();
+        startMovementSimulation();
         
-        // Show confirmation
-        showToast(`✅ ${assignedDriver.name} dispatched to ${customerName}!`, '#10b981');
+        showToast(`✅ ${assignedDriver.name} dispatched!`, '#10b981');
         
-        // Clear form
         document.getElementById('custName').value = '';
         document.getElementById('custPhone').value = '';
         document.getElementById('pickupAddr').value = '';
         document.getElementById('dropoffAddr').value = '';
         
-        // Show driver notification
-        alert(`🚕 DRIVER DISPATCHED!\n\nDriver: ${assignedDriver.name}\nCustomer: ${customerName}\nPhone: ${customerPhone}\nPickup: ${pickup}\nDropoff: ${dropoff}\nFare: $${fare}\n\nCall the driver to confirm: ${assignedDriver.phone}`);
+        alert(`🚕 DISPATCHED!\n\nDriver: ${assignedDriver.name}\nCustomer: ${customerName}\nPickup: ${pickup}\nDropoff: ${dropoff}\nFare: $${fare}\n\nTracking started!`);
     }
 
     function completeTrip(tripId, driverId, driverName) {
         const trip = activeTrips.find(t => t.id === tripId);
         if (trip) {
-            const actualFare = parseFloat(prompt(`Enter actual fare for trip to ${trip.dropoff}:`, trip.fare)) || trip.fare;
+            const actualFare = parseFloat(prompt(`Enter actual fare:`, trip.fare)) || trip.fare;
             
-            // Move to history
             const completedTrip = {
                 ...trip,
                 completedAt: new Date().toLocaleString(),
@@ -361,7 +380,6 @@
             };
             tripHistory.unshift(completedTrip);
             
-            // Update driver stats
             const driver = allDrivers.find(d => d.id === driverId);
             if (driver) {
                 driver.status = 'available';
@@ -369,11 +387,7 @@
                 driver.earnings = (driver.earnings || 0) + actualFare;
             }
             
-            // Remove from active
             activeTrips = activeTrips.filter(t => t.id !== tripId);
-            
-            // Add call log for completion
-            addCallLog('To Customer', 'Dispatch Center', trip.customerName, '15s', `Trip completed, fare $${actualFare}`);
             
             saveAll();
             refreshAll();
@@ -382,14 +396,13 @@
         }
     }
 
-    function cancelTrip(tripId, driverId, driverName) {
+    function cancelTrip(tripId, driverId) {
         if (confirm('Cancel this trip?')) {
             const trip = activeTrips.find(t => t.id === tripId);
             if (trip) {
                 const driver = allDrivers.find(d => d.id === driverId);
                 if (driver) driver.status = 'available';
                 activeTrips = activeTrips.filter(t => t.id !== tripId);
-                addCallLog('To Customer', 'Dispatch Center', trip.customerName, '10s', `Trip cancelled`);
                 saveAll();
                 refreshAll();
                 updateActiveTrips();
@@ -406,37 +419,12 @@
         }
         container.innerHTML = activeTrips.map(t => `
             <div style="background:white; border-radius:12px; padding:12px; margin-bottom:8px; border-left:4px solid #f59e0b;">
-                <div style="display:flex; justify-content:space-between;">
-                    <strong>${t.customerName}</strong>
-                    <span class="status-badge badge-on-trip">ON TRIP</span>
-                </div>
-                <div style="font-size:12px;">🚗 Driver: ${t.driverName}</div>
-                <div style="font-size:12px;">📍 ${t.pickup} → ${t.dropoff}</div>
-                <div style="font-size:12px;">💰 $${t.fare}</div>
+                <div><strong>${t.customerName}</strong> → ${t.dropoff}</div>
+                <div style="font-size:12px;">🚗 Driver: ${t.driverName} | 💰 $${t.fare}</div>
                 <div style="display:flex; gap:8px; margin-top:8px;">
-                    <button onclick="callDriver('${allDrivers.find(d => d.id === t.driverId)?.phone}', '${t.driverName}')" style="background:#f59e0b; padding:6px; font-size:12px;">📞 Call Driver</button>
-                    <button onclick="callCustomer('${t.customerPhone}', '${t.customerName}')" style="background:#f59e0b; padding:6px; font-size:12px;">📞 Call Customer</button>
                     <button onclick="completeTrip('${t.id}','${t.driverId}','${t.driverName}')" style="background:#10b981; padding:6px; font-size:12px;">✅ Complete</button>
-                    <button onclick="cancelTrip('${t.id}','${t.driverId}','${t.driverName}')" style="background:#ef4444; padding:6px; font-size:12px;">❌ Cancel</button>
+                    <button onclick="cancelTrip('${t.id}','${t.driverId}')" style="background:#ef4444; padding:6px; font-size:12px;">❌ Cancel</button>
                 </div>
-            </div>
-        `).join('');
-    }
-
-    function updateAvailableDriversList() {
-        const container = document.getElementById('availableDriversList');
-        const available = allDrivers.filter(d => d.status === 'available');
-        if (available.length === 0) {
-            container.innerHTML = '<div style="text-align:center; padding:20px;">No drivers available</div>';
-            return;
-        }
-        container.innerHTML = available.map(d => `
-            <div style="background:white; border-radius:12px; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <strong>${d.name}</strong><br>
-                    <small>${d.vehicle || 'Unknown'} | ⭐ ${d.rating || 5.0}</small>
-                </div>
-                <button onclick="callDriver('${d.phone}', '${d.name}')" style="background:#f59e0b; padding:6px 12px; font-size:12px; width:auto;">📞 Call</button>
             </div>
         `).join('');
     }
@@ -448,6 +436,7 @@
             attribution: '&copy; OpenStreetMap', subdomains: 'abcd'
         }).addTo(map);
         updateMap();
+        startMovementSimulation();
     }
 
     function updateMap() {
@@ -456,11 +445,30 @@
         mapMarkers = [];
         
         allDrivers.forEach(driver => {
-            let color = driver.status === 'available' ? '#10b981' : (driver.status === 'on-trip' ? '#f59e0b' : '#6b7280');
+            let color = '#10b981'; // available
+            if (driver.tracking) color = '#2196f3'; // tracking (blue)
+            else if (driver.status === 'on-trip') color = '#f59e0b'; // on trip (yellow)
+            else if (driver.status === 'offline') color = '#6b7280'; // offline (gray)
+            
             let loc = driver.lat ? { lat: driver.lat, lng: driver.lng } : randomLocation();
-            const marker = L.circleMarker([loc.lat, loc.lng], { radius: 10, fillColor: color, color: 'white', weight: 2, fillOpacity: 0.8 }).addTo(map);
-            let statusText = driver.status === 'on-trip' ? 'ON TRIP' : driver.status.toUpperCase();
-            marker.bindPopup(`<b>${driver.name}</b><br>🚗 ${driver.vehicle || 'Unknown'}<br>📞 ${driver.phone}<br>📍 ${statusText}<br><button onclick="callDriver('${driver.phone}', '${driver.name}')" style="background:#f59e0b;color:white;border:none;padding:5px;border-radius:5px;">📞 Call</button>`);
+            const marker = L.circleMarker([loc.lat, loc.lng], { radius: 12, fillColor: color, color: 'white', weight: 2, fillOpacity: 0.8 }).addTo(map);
+            
+            let statusText = driver.tracking ? '🔵 LIVE TRACKING' : (driver.status === 'on-trip' ? '🟡 ON TRIP' : (driver.status === 'available' ? '🟢 AVAILABLE' : '⚪ OFFLINE'));
+            
+            marker.bindPopup(`
+                <div style="min-width:200px;">
+                    <b>${driver.name}</b><br>
+                    🚗 ${driver.vehicle || 'Unknown'}<br>
+                    📞 ${driver.phone}<br>
+                    📍 ${statusText}<br>
+                    🎯 Lat: ${driver.lat?.toFixed(4)}<br>
+                    🎯 Lng: ${driver.lng?.toFixed(4)}<br>
+                    ${driver.status === 'available' ? 
+                        `<button onclick="dispatchFromMap('${driver.id}','${driver.name}')" style="background:#10b981;color:white;border:none;padding:8px;margin-top:8px;border-radius:8px;width:100%;cursor:pointer;">🚕 DISPATCH</button>` :
+                        `<button onclick="window.location.href='tel:${driver.phone}'" style="background:#f59e0b;color:white;border:none;padding:8px;margin-top:8px;border-radius:8px;width:100%;cursor:pointer;">📞 Call Driver</button>`
+                    }
+                </div>
+            `);
             mapMarkers.push(marker);
         });
     }
@@ -471,12 +479,21 @@
         let filtered = allDrivers.filter(d => d.name.toLowerCase().includes(search));
         if (filtered.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px;">No drivers</div>'; return; }
         container.innerHTML = filtered.map(d => `
-            <div class="driver-item ${d.status === 'on-trip' ? 'busy' : d.status}" onclick="map.setView([${d.lat || ATLANTA_CENTER.lat}, ${d.lng || ATLANTA_CENTER.lng}], 14)">
+            <div class="driver-item ${d.tracking ? 'tracking' : ''}" onclick="map.setView([${d.lat || ATLANTA_CENTER.lat}, ${d.lng || ATLANTA_CENTER.lng}], 14)">
                 <div class="driver-info">
-                    <h4>${d.name} ${d.status === 'on-trip' ? '🚕' : ''}</h4>
+                    <h4>${d.name} ${d.tracking ? '<span class="live-badge">LIVE</span>' : ''}</h4>
                     <p>${d.vehicle || 'Unknown'} | ${d.status}</p>
+                    ${d.tracking ? `<p class="track-info">📍 ${d.lat?.toFixed(4)}, ${d.lng?.toFixed(4)}</p>` : ''}
                 </div>
-                <button onclick="event.stopPropagation(); callDriver('${d.phone}', '${d.name}')" style="background:#f59e0b; padding:6px 12px; font-size:11px;">📞 Call</button>
+                <div class="driver-actions">
+                    ${!d.tracking ? 
+                        `<button onclick="event.stopPropagation(); startTracking('${d.id}')" style="background:#2196f3;">Track</button>` :
+                        `<button onclick="event.stopPropagation(); stopTracking('${d.id}')" style="background:#6b7280;">Stop</button>`
+                    }
+                    ${d.status === 'available' ? 
+                        `<button onclick="event.stopPropagation(); dispatchFromMap('${d.id}','${d.name}')" style="background:#10b981;">Dispatch</button>` : ''
+                    }
+                </div>
             </div>
         `).join('');
     }
@@ -487,27 +504,35 @@
     function updateDriversList() {
         const container = document.getElementById('driversListContainer');
         let filtered = allDrivers;
-        if (currentDriverFilter !== 'all') filtered = filtered.filter(d => d.status === currentDriverFilter);
+        if (currentDriverFilter !== 'all') {
+            if (currentDriverFilter === 'tracking') filtered = filtered.filter(d => d.tracking);
+            else filtered = filtered.filter(d => d.status === currentDriverFilter);
+        }
         if (driverSearchText) filtered = filtered.filter(d => d.name.toLowerCase().includes(driverSearchText) || d.phone.includes(driverSearchText));
         if (filtered.length === 0) { container.innerHTML = '<div style="text-align:center;padding:40px;">No drivers</div>'; return; }
         
         let html = '<div class="drivers-grid">';
         filtered.forEach(d => {
-            let statusClass = d.status === 'on-trip' ? 'on-trip' : d.status;
             html += `
-                <div class="driver-card ${statusClass}">
+                <div class="driver-card ${d.tracking ? 'tracking' : ''}">
                     <button class="delete-x" onclick="deleteDriver('${d.id}','${d.name}')">×</button>
-                    <h3>${d.name}</h3>
+                    <h3>${d.name} ${d.tracking ? '🔵 LIVE' : ''}</h3>
                     <p>📞 ${d.phone}</p>
                     <p>🚗 ${d.vehicle || 'Unknown'}</p>
                     <p>⭐ ${d.rating || 5.0}/5 (${d.trips || 0} trips)</p>
                     <p>💰 $${d.earnings || 0}</p>
-                    <div style="display:flex; gap:8px; margin-top:8px;">
-                        <button onclick="callDriver('${d.phone}', '${d.name}')" style="flex:1; background:#f59e0b;">📞 Call</button>
+                    ${d.tracking ? `<p class="track-info">📍 ${d.lat?.toFixed(4)}, ${d.lng?.toFixed(4)}</p>` : ''}
+                    <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                        ${!d.tracking ? 
+                            `<button onclick="startTracking('${d.id}')" style="flex:1; background:#2196f3;">▶ Start Tracking</button>` :
+                            `<button onclick="stopTracking('${d.id}')" style="flex:1; background:#6b7280;">⏹ Stop Tracking</button>`
+                        }
+                        <button onclick="dispatchFromMap('${d.id}','${d.name}')" style="flex:1; background:#10b981;">🚕 Dispatch</button>
+                        <button onclick="window.location.href='tel:${d.phone}'" style="flex:1; background:#f59e0b;">📞 Call</button>
                         <select onchange="changeDriverStatus('${d.id}', this.value)" style="flex:1; padding:8px; border-radius:30px;">
-                            <option value="available" ${d.status === 'available' ? 'selected' : ''}>🟢 Available</option>
-                            <option value="on-trip" ${d.status === 'on-trip' ? 'selected' : ''}>🟡 On Trip</option>
-                            <option value="offline" ${d.status === 'offline' ? 'selected' : ''}>⚪ Offline</option>
+                            <option value="available" ${d.status === 'available' ? 'selected' : ''}>Available</option>
+                            <option value="on-trip" ${d.status === 'on-trip' ? 'selected' : ''}>On Trip</option>
+                            <option value="offline" ${d.status === 'offline' ? 'selected' : ''}>Offline</option>
                         </select>
                     </div>
                 </div>
@@ -540,7 +565,6 @@
         const total = tripHistory.reduce((s, t) => s + (t.actualFare || t.fare), 0);
         document.getElementById('historyTotal').innerText = tripHistory.length;
         document.getElementById('historyRevenue').innerText = `$${total.toFixed(2)}`;
-        document.getElementById('historyAvg').innerText = `$${(total / (tripHistory.length || 1)).toFixed(2)}`;
         
         if (tripHistory.length === 0) {
             container.innerHTML = '<div style="text-align:center; padding:40px;">No trips yet</div>';
@@ -548,14 +572,9 @@
         }
         container.innerHTML = tripHistory.map(t => `
             <div style="background:#f5f5f5; border-radius:12px; padding:12px; margin-bottom:8px;">
-                <div style="display:flex; justify-content:space-between;">
-                    <strong>${t.customerName}</strong>
-                    <span style="color:#10b981;">$${t.actualFare || t.fare}</span>
-                </div>
-                <div style="font-size:12px;">🚗 Driver: ${t.driverName}</div>
-                <div style="font-size:12px;">📍 ${t.pickup} → ${t.dropoff}</div>
+                <div><strong>${t.customerName}</strong> → ${t.dropoff}</div>
+                <div style="font-size:12px;">🚗 Driver: ${t.driverName} | 💰 $${t.actualFare || t.fare}</div>
                 <div style="font-size:11px; color:#666;">🕐 ${t.completedAt || t.dispatchedAt}</div>
-                <button onclick="callCustomer('${t.customerPhone}', '${t.customerName}')" style="background:#f59e0b; padding:6px 12px; font-size:12px; margin-top:8px; width:auto;">📞 Call Customer</button>
             </div>
         `).join('');
     }
@@ -564,19 +583,17 @@
     function loadData() {
         const savedDrivers = localStorage.getItem(STORAGE_DRIVERS);
         const savedTrips = localStorage.getItem(STORAGE_TRIPS);
-        const savedCalls = localStorage.getItem(STORAGE_CALLS);
         const savedActive = localStorage.getItem(STORAGE_ACTIVE);
         
         allDrivers = savedDrivers ? JSON.parse(savedDrivers) : [];
         tripHistory = savedTrips ? JSON.parse(savedTrips) : [];
-        callLog = savedCalls ? JSON.parse(savedCalls) : [];
         activeTrips = savedActive ? JSON.parse(savedActive) : [];
         
         if (allDrivers.length === 0) {
             allDrivers = [
-                { id: 'd1', name: 'Robert Chen', phone: '404-555-0123', vehicle: 'Toyota Camry', status: 'available', rating: 4.8, trips: 156, earnings: 12491, lat: 33.7490, lng: -84.3880 },
-                { id: 'd2', name: 'Michael Brown', phone: '404-555-4567', vehicle: 'Honda Accord', status: 'available', rating: 4.6, trips: 142, earnings: 10875, lat: 33.7756, lng: -84.3963 },
-                { id: 'd3', name: 'Sarah Johnson', phone: '404-555-7890', vehicle: 'Tesla Model 3', status: 'available', rating: 4.9, trips: 89, earnings: 7543, lat: 33.7489, lng: -84.3819 }
+                { id: 'd1', name: 'Robert Chen', phone: '404-555-0123', vehicle: 'Toyota Camry', status: 'available', rating: 4.8, trips: 156, earnings: 12491, tracking: false, lat: 33.7490, lng: -84.3880 },
+                { id: 'd2', name: 'Michael Brown', phone: '404-555-4567', vehicle: 'Honda Accord', status: 'available', rating: 4.6, trips: 142, earnings: 10875, tracking: false, lat: 33.7756, lng: -84.3963 },
+                { id: 'd3', name: 'Sarah Johnson', phone: '404-555-7890', vehicle: 'Tesla Model 3', status: 'available', rating: 4.9, trips: 89, earnings: 7543, tracking: false, lat: 33.7489, lng: -84.3819 }
             ];
         }
         
@@ -586,7 +603,6 @@
     function saveAll() {
         localStorage.setItem(STORAGE_DRIVERS, JSON.stringify(allDrivers));
         localStorage.setItem(STORAGE_TRIPS, JSON.stringify(tripHistory));
-        localStorage.setItem(STORAGE_CALLS, JSON.stringify(callLog));
         localStorage.setItem(STORAGE_ACTIVE, JSON.stringify(activeTrips));
     }
 
@@ -595,17 +611,15 @@
         updateMap();
         updateMapSidebar();
         updateDriversList();
-        updateAvailableDriversList();
         updateActiveTrips();
         updateTripHistory();
-        updateCallLog();
     }
 
     function updateStats() {
         document.getElementById('totalCount').innerText = allDrivers.length;
         document.getElementById('availCount').innerText = allDrivers.filter(d => d.status === 'available').length;
-        document.getElementById('busyCount').innerText = allDrivers.filter(d => d.status === 'on-trip').length;
-        document.getElementById('todayTrips').innerText = tripHistory.filter(t => t.completedAt?.includes(new Date().toLocaleDateString())).length;
+        document.getElementById('trackingCount').innerText = allDrivers.filter(d => d.tracking).length;
+        document.getElementById('todayTrips').innerText = tripHistory.length;
     }
 
     function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
@@ -624,6 +638,7 @@
             rating: 5.0,
             trips: 0,
             earnings: 0,
+            tracking: false,
             lat: randomLocation().lat,
             lng: randomLocation().lng
         };
@@ -650,9 +665,7 @@
         document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).style.display = 'block';
         document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
-        if (tabName === 'map') setTimeout(() => { if (map) map.invalidateSize(); }, 100);
-        if (tabName === 'history') updateTripHistory();
-        if (tabName === 'calls') updateCallLog();
+        if (tabName === 'tracking') setTimeout(() => { if (map) map.invalidateSize(); }, 100);
     }
 
     loadData();
