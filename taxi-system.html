@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Dispatch System - Manual Dialing</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; background: #1e3c72; padding: 20px; }
+        .main-box { max-width: 1400px; margin: 0 auto; background: white; border-radius: 20px; padding: 20px; }
+        h1 { text-align: center; color: #1e3c72; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #10b981; margin-bottom: 20px; font-weight: bold; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab { background: white; border: 1px solid #ccc; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 10px; cursor: pointer; color: #333; }
+        .tab:hover { background: #e0e0e0; }
+        .tab.active { background: #1e3c72; color: white; border: none; }
+        
+        .stats { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .stat { background: #f0f0f0; padding: 15px; border-radius: 12px; text-align: center; flex: 1; min-width: 100px; }
+        .stat-number { font-size: 32px; font-weight: bold; color: #1e3c72; }
+        
+        .map-section { display: flex; gap: 20px; }
+        .map-container { flex: 2; height: 500px; background: #ddd; border-radius: 12px; }
+        #map { height: 100%; width: 100%; border-radius: 12px; }
+        .driver-sidebar { flex: 1; background: #f5f5f5; padding: 15px; border-radius: 12px; overflow-y: auto; max-height: 500px; }
+        .driver-sidebar input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; }
+        .driver-item { background: white; padding: 10px; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid green; display: flex; justify-content: space-between; align-items: center; }
+        .driver-item.busy { border-left-color: red; }
+        .driver-item.offline { border-left-color: gray; }
+        
+        .form-card { background: #f5f5f5; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .field { flex: 1; }
+        .field label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .field input, .field select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+        button { background: #1e3c72; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-green { background: #10b981; width: 100%; }
+        
+        .drivers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .driver-card { background: #f5f5f5; border-radius: 12px; padding: 15px; position: relative; border-left: 4px solid green; }
+        .driver-card.busy { border-left-color: red; }
+        .driver-card.offline { border-left-color: gray; }
+        .delete-x { position: absolute; top: 10px; right: 10px; background: red; color: white; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; }
+        
+        .data-table { width: 100%; border-collapse: collapse; background: white; }
+        .data-table th, .data-table td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        .data-table th { background: #1e3c72; color: white; }
+        
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 8px; display: none; z-index: 1000; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: white; padding: 25px; border-radius: 15px; width: 400px; max-width: 90%; }
+        
+        .btn-call-customer {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-call-customer:hover { background: #d97706; }
+        
+        @media (max-width: 768px) { .map-section { flex-direction: column; } .row { flex-direction: column; } }
+    </style>
+</head>
+<body>
+<div class="main-box">
+    <h1>🚕 Taxi Dispatch System</h1>
+    <div class="subtitle">Dispatch | Complete Trip | Copy Number & Call Manually</div>
+
+    <div class="stats">
+        <div class="stat"><div class="stat-number" id="totalCount">0</div><div>Total Drivers</div></div>
+        <div class="stat"><div class="stat-number" id="availCount">0</div><div>Available (Green)</div></div>
+        <div class="stat"><div class="stat-number" id="busyCount">0</div><div>Busy (Red)</div></div>
+        <div class="stat"><div class="stat-number" id="offCount">0</div><div>Offline (Gray)</div></div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="openTab('map')">🗺️ LIVE MAP</button>
+        <button class="tab" onclick="openTab('customer')">📱 CUSTOMER REQUEST</button>
+        <button class="tab" onclick="openTab('drivers')">📋 DRIVERS</button>
+        <button class="tab" onclick="openTab('trips')">📝 TRIP HISTORY</button>
+        <button class="tab" onclick="openTab('rankings')">🏆 RANKINGS</button>
+    </div>
+
+    <div id="tabMap" class="tab-content">
+        <div class="map-section">
+            <div class="map-container"><div id="map"></div></div>
+            <div class="driver-sidebar">
+                <h3>Live Drivers</h3>
+                <input type="text" id="mapSearch" placeholder="Search driver..." onkeyup="filterMapDrivers()">
+                <div id="mapDriversList"></div>
+                <button onclick="openAddModal()" style="width:100%; margin-top:10px;">➕ Add New Driver</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tabCustomer" class="tab-content" style="display:none">
+        <div class="form-card">
+            <h3>Request a Ride</h3>
+            <div class="row">
+                <div class="field"><label>Your Name</label><input type="text" id="reqName" placeholder="Full name"></div>
+                <div class="field"><label>Phone</label><input type="text" id="reqPhone" placeholder="Phone number"></div>
+            </div>
+            <div class="row">
+                <div class="field"><label>Pickup Location</label><input type="text" id="reqPickup" placeholder="Pickup address"></div>
+                <div class="field"><label>Dropoff Location</label><input type="text" id="reqDropoff" placeholder="Destination"></div>
+            </div>
+            <div class="row">
+                <div class="field"><label>Fare ($)</label><input type="number" id="reqFare" value="25" step="5"></div>
+                <div class="field"><label>Ride Type</label>
+                    <select id="reqType" onchange="document.getElementById('reqFare').value=this.value">
+                        <option value="15">Standard - $15</option>
+                        <option value="20">Premium - $20</option>
+                        <option value="23">XL - $23</option>
+                        <option value="25">Custom - $25</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-green" onclick="submitRideRequest()">📞 REQUEST RIDE NOW</button>
+        </div>
+        <div style="background:#f5f5f5; padding:15px; border-radius:12px;">
+            <h3>Recent Requests</h3>
+            <div id="recentRequestsList"></div>
+        </div>
+    </div>
+
+    <div id="tabDrivers" class="tab-content" style="display:none">
+        <div style="margin-bottom:15px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button onclick="filterDriversList('all')">All</button>
+            <button onclick="filterDriversList('available')">Available</button>
+            <button onclick="filterDriversList('busy')">Busy</button>
+            <button onclick="filterDriversList('offline')">Offline</button>
+            <input type="text" id="driverSearch" placeholder="Search..." style="flex:1; padding:8px;" onkeyup="searchDriversList()">
+            <button onclick="openAddModal()">➕ Add</button>
+            <button onclick="exportData()">📊 Export</button>
+        </div>
+        <div id="driversListContainer"></div>
+    </div>
+
+    <div id="tabTrips" class="tab-content" style="display:none">
+        <div class="stats">
+            <div class="stat"><div class="stat-number" id="tripsTotal">0</div><div>Total Trips</div></div>
+            <div class="stat"><div class="stat-number" id="tripsRevenue">$0</div><div>Revenue</div></div>
+            <div class="stat"><div class="stat-number" id="tripsAvg">$0</div><div>Avg Fare</div></div>
+        </div>
+        <table class="data-table">
+            <thead><tr><th>Date</th><th>Time</th><th>Driver</th><th>Customer</th><th>Phone</th><th>Pickup</th><th>Dropoff</th><th>Fare</th><th>Call</th></tr></thead>
+            <tbody id="tripsTableBody"></tbody>
+        </table>
+    </div>
+
+    <div id="tabRankings" class="tab-content" style="display:none">
+        <table class="data-table">
+            <thead><tr><th>Rank</th><th>Driver</th><th>Rating</th><th>Trips</th><th>Earnings</th><th>Status</th></tr></thead>
+            <tbody id="rankingsTableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="addModal" class="modal">
+    <div class="modal-box">
+        <h3>Add New Driver</h3>
+        <div class="field"><label>Name</label><input type="text" id="newName" placeholder="Driver name"></div>
+        <div class="field"><label>Phone</label><input type="text" id="newPhone" placeholder="Phone number"></div>
+        <div class="field"><label>Vehicle Make</label><input type="text" id="newMake" placeholder="Toyota"></div>
+        <div class="field"><label>Vehicle Model</label><input type="text" id="newModel" placeholder="Camry"></div>
+        <div class="field"><label>License Plate</label><input type="text" id="newPlate" placeholder="ABC123"></div>
+        <div class="field"><label>Status</label>
+            <select id="newStatus">
+                <option value="available">Available</option>
+                <option value="busy">Busy</option>
+                <option value="offline">Offline</option>
+            </select>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button onclick="closeAddModal()" style="background:#6b7280;">Cancel</button>
+            <button onclick="addDriver()">Add Driver</button>
+        </div>
+    </div>
+</div>
+
+<div id="toastMsg" class="toast"></div>
+
+<script>
+    const STORAGE_DRIVERS = 'taxi_drivers_clean';
+    const STORAGE_TRIPS = 'taxi_trips_clean';
+    const STORAGE_REQUESTS = 'taxi_requests_clean';
+
+    let allDrivers = [];
+    let allTrips = [];
+    let recentRequests = [];
+    let map, mapMarkers = [];
+    let currentDriverFilter = 'all';
+    let driverSearchText = '';
+
+    const atlantaSpots = [
+        { lat: 33.7490, lng: -84.3880 }, { lat: 33.7756, lng: -84.3963 },
+        { lat: 33.7489, lng: -84.3819 }, { lat: 33.7600, lng: -84.3940 },
+        { lat: 33.7450, lng: -84.3850 }, { lat: 33.7550, lng: -84.3900 }
+    ];
+    function randomLocation() { return atlantaSpots[Math.floor(Math.random() * atlantaSpots.length)]; }
+
+    function loadData() {
+        const savedDrivers = localStorage.getItem(STORAGE_DRIVERS);
+        const savedTrips = localStorage.getItem(STORAGE_TRIPS);
+        const savedRequests = localStorage.getItem(STORAGE_REQUESTS);
+        
+        allDrivers = savedDrivers ? JSON.parse(savedDrivers) : [];
+        allTrips = savedTrips ? JSON.parse(savedTrips) : [];
+        recentRequests = savedRequests ? JSON.parse(savedRequests) : [];
+        refreshAll();
+    }
+
+    function saveAll() {
+        localStorage.setItem(STORAGE_DRIVERS, JSON.stringify(allDrivers));
+        localStorage.setItem(STORAGE_TRIPS, JSON.stringify(allTrips));
+        localStorage.setItem(STORAGE_REQUESTS, JSON.stringify(recentRequests));
+    }
+
+    function refreshAll() {
+        updateStats();
+        updateMap();
+        updateMapSidebar();
+        updateDriversList();
+        updateTripsTable();
+        updateRankings();
+        updateRecentRequests();
+    }
+
+    function updateStats() {
+        document.getElementById('totalCount').innerText = allDrivers.length;
+        document.getElementById('availCount').innerText = allDrivers.filter(d => d.status === 'available').length;
+        document.getElementById('busyCount').innerText = allDrivers.filter(d => d.status === 'busy').length;
+        document.getElementById('offCount').innerText = allDrivers.filter(d => d.status === 'offline').length;
+    }
+
+    function initMap() {
+        map = L.map('map').setView([33.7490, -84.3880], 12);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+        updateMap();
+    }
+
+    function updateMap() {
+        if (!map) return;
+        mapMarkers.forEach(m => map.removeLayer(m));
+        mapMarkers = [];
+        
+        allDrivers.forEach(driver => {
+            let color = driver.status === 'available' ? '#10b981' : (driver.status === 'busy' ? '#ef4444' : '#6b7280');
+            let loc = driver.lat ? { lat: driver.lat, lng: driver.lng } : randomLocation();
+            const marker = L.circleMarker([loc.lat, loc.lng], { radius: 10, fillColor: color, color: 'white', weight: 2, fillOpacity: 0.8 }).addTo(map);
+            marker.bindPopup(`
+                <b>${driver.name}</b><br>
+                🚗 ${driver.vehicle?.make} ${driver.vehicle?.model}<br>
+                📞 ${driver.phone}<br>
+                <button onclick="dispatchDriverAction('${driver.id}','${driver.name}')" style="background:#1e3c72;color:white;border:none;padding:5px;border-radius:5px;">🚕 Dispatch</button>
+                <button onclick="completeTrip('${driver.id}','${driver.name}')" style="background:#10b981;color:white;border:none;padding:5px;border-radius:5px;">✅ Complete</button>
+                <button onclick="callDriverAction('${driver.phone}')" style="background:#f59e0b;color:white;border:none;padding:5px;border-radius:5px;">📞 Call Driver</button>
+            `);
+            mapMarkers.push(marker);
+        });
+    }
+
+    function updateMapSidebar() {
+        const container = document.getElementById('mapDriversList');
+        const search = document.getElementById('mapSearch')?.value.toLowerCase() || '';
+        let filtered = allDrivers.filter(d => d.name.toLowerCase().includes(search));
+        if (filtered.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px;">No drivers</div>'; return; }
+        container.innerHTML = filtered.map(d => `
+            <div class="driver-item ${d.status}" onclick="map.setView([${d.lat || 33.7490}, ${d.lng || -84.3880}], 14)">
+                <div><b>${d.name}</b><br><small>${d.vehicle?.make} ${d.vehicle?.model}</small></div>
+                <div style="display:flex; gap:5px;">
+                    <button onclick="event.stopPropagation(); dispatchDriverAction('${d.id}','${d.name}')" style="background:#1e3c72;color:white;border:none;padding:4px 8px;border-radius:5px;">Dispatch</button>
+                    <button onclick="event.stopPropagation(); completeTrip('${d.id}','${d.name}')" style="background:#10b981;color:white;border:none;padding:4px 8px;border-radius:5px;">Complete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterMapDrivers() { updateMapSidebar(); }
+
+    // ============ CALL CUSTOMER - SHOWS NUMBER, NO AUTO DIAL ============
+    function callCustomer(phoneNumber) {
+        if (phoneNumber && phoneNumber !== 'N/A') {
+            const userConfirmed = confirm(`📞 Call Customer\n\nPhone Number: ${phoneNumber}\n\nClick OK to copy number to clipboard, then dial manually on your phone.\n\nCancel to close.`);
+            if (userConfirmed) {
+                navigator.clipboard.writeText(phoneNumber).then(() => {
+                    showToast(`📞 Number ${phoneNumber} copied to clipboard!`, '#10b981');
+                    alert(`✅ Phone number ${phoneNumber} copied to clipboard!\n\nPlease dial this number manually on your phone.`);
+                }).catch(() => {
+                    showToast(`📞 Call ${phoneNumber} manually on your phone`, '#f59e0b');
+                    alert(`📞 Please call: ${phoneNumber}\n\nDial this number manually on your phone.`);
+                });
+            }
+        } else {
+            showToast('❌ No phone number available', '#ef4444');
+            alert('❌ No phone number available for this customer');
+        }
+    }
+
+    // ============ CALL DRIVER - SHOWS NUMBER, NO AUTO DIAL ============
+    function callDriverAction(phone) {
+        if (phone && phone !== 'N/A') {
+            const userConfirmed = confirm(`📞 Call Driver\n\nPhone Number: ${phone}\n\nClick OK to copy number to clipboard, then dial manually.\n\nCancel to close.`);
+            if (userConfirmed) {
+                navigator.clipboard.writeText(phone).then(() => {
+                    showToast(`📞 Driver number ${phone} copied to clipboard!`, '#10b981');
+                    alert(`✅ Driver phone number ${phone} copied to clipboard!\n\nPlease dial manually on your phone.`);
+                }).catch(() => {
+                    showToast(`📞 Call driver at ${phone} manually`, '#f59e0b');
+                    alert(`📞 Please call driver: ${phone}\n\nDial this number manually on your phone.`);
+                });
+            }
+        } else {
+            showToast('❌ No phone number available for this driver', '#ef4444');
+            alert('❌ No phone number available for this driver');
+        }
+    }
+
+    function completeTrip(driverId, driverName) {
+        let driver = allDrivers.find(d => d.id === driverId);
+        if (driver && driver.status === 'busy') {
+            let fare = prompt(`💰 Enter fare amount for ${driverName}:`, "25");
+            fare = parseFloat(fare) || 25;
+            
+            driver.status = 'available';
+            driver.earnings = (driver.earnings || 0) + fare;
+            driver.trips = (driver.trips || 0) + 1;
+            
+            const tripRecord = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                driver: driverName,
+                customer: "Walk-in Customer",
+                customerPhone: "N/A",
+                pickup: "Previous pickup",
+                dropoff: "Destination",
+                fare: fare
+            };
+            allTrips.unshift(tripRecord);
+            
+            saveAll();
+            refreshAll();
+            showToast(`✅ ${driverName} completed trip! $${fare} earned. Driver is now AVAILABLE.`, '#10b981');
+        } else {
+            showToast(`❌ ${driverName} is not on a trip!`, '#ef4444');
+        }
+    }
+
+    function updateDriversList() {
+        const container = document.getElementById('driversListContainer');
+        let filtered = allDrivers;
+        if (currentDriverFilter !== 'all') filtered = filtered.filter(d => d.status === currentDriverFilter);
+        if (driverSearchText) filtered = filtered.filter(d => d.name.toLowerCase().includes(driverSearchText) || d.phone.includes(driverSearchText));
+        
+        if (filtered.length === 0) { container.innerHTML = '<div style="text-align:center;padding:40px;">No drivers</div>'; return; }
+        
+        let html = '<div class="drivers-grid">';
+        filtered.forEach(d => {
+            html += `
+                <div class="driver-card ${d.status}">
+                    <button class="delete-x" onclick="deleteDriverAction('${d.id}','${d.name}')">×</button>
+                    <h3>${d.name}</h3>
+                    <p>📞 ${d.phone}</p>
+                    <p>🚗 ${d.vehicle?.make} ${d.vehicle?.model}</p>
+                    <p>🔢 ${d.vehicle?.license_plate || 'N/A'}</p>
+                    <p>⭐ ${d.rating || 5.0}/5 (${d.trips || 0} trips)</p>
+                    <p>💰 $${d.earnings || 0}</p>
+                    <select onchange="changeDriverStatus('${d.id}', this.value)" style="width:100%; padding:5px; margin-top:5px;">
+                        <option value="available" ${d.status === 'available' ? 'selected' : ''}>🟢 Available</option>
+                        <option value="busy" ${d.status === 'busy' ? 'selected' : ''}>🔴 Busy</option>
+                        <option value="offline" ${d.status === 'offline' ? 'selected' : ''}>⚪ Offline</option>
+                    </select>
+                    <div style="display:flex; gap:5px; margin-top:10px;">
+                        <button onclick="dispatchDriverAction('${d.id}','${d.name}')" style="flex:1; background:#1e3c72;">🚕 Dispatch</button>
+                        <button onclick="completeTrip('${d.id}','${d.name}')" style="flex:1; background:#10b981;">✅ Complete</button>
+                        <button onclick="callDriverAction('${d.phone}')" style="flex:1; background:#f59e0b;">📞 Call</button>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function filterDriversList(status) { currentDriverFilter = status; updateDriversList(); }
+    function searchDriversList() { driverSearchText = document.getElementById('driverSearch').value.toLowerCase(); updateDriversList(); }
+    
+    function deleteDriverAction(id, name) {
+        if (confirm(`Delete ${name}?`)) {
+            allDrivers = allDrivers.filter(d => d.id !== id);
+            saveAll();
+            refreshAll();
+            showToast(`Deleted ${name}`, '#ef4444');
+        }
+    }
+    
+    function changeDriverStatus(id, newStatus) {
+        let d = allDrivers.find(d => d.id === id);
+        if (d) { d.status = newStatus; saveAll(); refreshAll(); showToast(`${d.name} status: ${newStatus}`, '#10b981'); }
+    }
+
+    function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
+    function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+    
+    function addDriver() {
+        const name = document.getElementById('newName').value.trim();
+        const phone = document.getElementById('newPhone').value.trim();
+        if (!name || !phone) { showToast('Name and phone required!', '#ef4444'); return; }
+        
+        const newDriver = {
+            id: 'd' + Date.now(),
+            name: name,
+            phone: phone,
+            vehicle: {
+                make: document.getElementById('newMake').value.trim() || 'Unknown',
+                model: document.getElementById('newModel').value.trim() || 'Unknown',
+                license_plate: document.getElementById('newPlate').value.trim().toUpperCase() || 'NEW'
+            },
+            status: document.getElementById('newStatus').value,
+            rating: 5.0,
+            trips: 0,
+            earnings: 0,
+            lat: randomLocation().lat,
+            lng: randomLocation().lng
+        };
+        allDrivers.push(newDriver);
+        saveAll();
+        refreshAll();
+        closeAddModal();
+        showToast(`✅ ${name} added!`, '#10b981');
+        
+        document.getElementById('newName').value = '';
+        document.getElementById('newPhone').value = '';
+        document.getElementById('newMake').value = '';
+        document.getElementById('newModel').value = '';
+        document.getElementById('newPlate').value = '';
+    }
+
+    function updateRecentRequests() {
+        const container = document.getElementById('recentRequestsList');
+        if (recentRequests.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px;">No requests yet</div>'; return; }
+        container.innerHTML = recentRequests.slice(0, 10).map(r => `
+            <div style="background:white; padding:10px; margin:8px 0; border-radius:8px; border-left:3px solid #10b981;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <b>${r.customerName}</b> - ${r.pickup} → ${r.dropoff}<br>
+                        <small>🚗 ${r.driverName} | 💰 $${r.fare} | ${r.time}</small>
+                    </div>
+                    <button onclick="callCustomer('${r.customerPhone}')" class="btn-call-customer" style="padding:5px 10px; font-size:12px;">📞 Call</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function submitRideRequest() {
+        const name = document.getElementById('reqName').value.trim();
+        const phone = document.getElementById('reqPhone').value.trim();
+        const pickup = document.getElementById('reqPickup').value.trim();
+        const dropoff = document.getElementById('reqDropoff').value.trim();
+        const fare = parseFloat(document.getElementById('reqFare').value);
+        
+        if (!name || !phone || !pickup || !dropoff) { showToast('Please fill all fields!', '#ef4444'); return; }
+        
+        const availableIndex = allDrivers.findIndex(d => d.status === 'available');
+        if (availableIndex === -1) { showToast('No drivers available!', '#ef4444'); return; }
+        
+        const driver = allDrivers[availableIndex];
+        driver.status = 'busy';
+        driver.trips += 1;
+        driver.earnings += fare;
+        
+        const newTrip = {
+            id: Date.now(),
+            date: new Date().toLocaleDateString(),
+            time: new Date().toLocaleTimeString(),
+            driver: driver.name,
+            customer: name,
+            customerPhone: phone,
+            pickup: pickup,
+            dropoff: dropoff,
+            fare: fare
+        };
+        allTrips.unshift(newTrip);
+        
+        recentRequests.unshift({
+            customerName: name,
+            customerPhone: phone,
+            pickup: pickup,
+            dropoff: dropoff,
+            fare: fare,
+            driverName: driver.name,
+            time: new Date().toLocaleTimeString()
+        });
+        
+        saveAll();
+        refreshAll();
+        
+        document.getElementById('reqName').value = '';
+        document.getElementById('reqPhone').value = '';
+        document.getElementById('reqPickup').value = '';
+        document.getElementById('reqDropoff').value = '';
+        
+        showToast(`✅ ${driver.name} dispatched to ${name}!`, '#10b981');
+        
+        const callOption = confirm(`🚕 RIDE CONFIRMED!\n\nCustomer: ${name}\nPhone: ${phone}\nPickup: ${pickup}\nDropoff: ${dropoff}\nFare: $${fare}\n\n✅ Assigned to: ${driver.name}\n\nClick OK to copy customer number, or Cancel to close.`);
+        if (callOption) {
+            navigator.clipboard.writeText(phone).then(() => {
+                alert(`✅ Customer phone number ${phone} copied to clipboard!\n\nPlease dial manually on your phone.`);
+            });
+        }
+    }
+
+    function updateTripsTable() {
+        const tbody = document.getElementById('tripsTableBody');
+        const total = allTrips.reduce((s, t) => s + t.fare, 0);
+        document.getElementById('tripsTotal').innerText = allTrips.length;
+        document.getElementById('tripsRevenue').innerText = `$${total.toFixed(2)}`;
+        document.getElementById('tripsAvg').innerText = `$${(total / (allTrips.length || 1)).toFixed(2)}`;
+        
+        if (allTrips.length === 0) { tbody.innerHTML = '<tr><td colspan="9">No trips yet</td></tr>'; return; }
+        tbody.innerHTML = allTrips.map(t => `
+            <tr>
+                <td>${t.date}</td>
+                <td>${t.time}</td>
+                <td>${t.driver}</td>
+                <td>${t.customer}</td>
+                <td>${t.customerPhone || 'N/A'}</td>
+                <td>${t.pickup}</td>
+                <td>${t.dropoff}</td>
+                <td>$${t.fare}</td>
+                <td><button onclick="callCustomer('${t.customerPhone}')" class="btn-call-customer" style="padding:4px 8px;">📞 Call</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function updateRankings() {
+        const sorted = [...allDrivers].sort((a, b) => b.rating - a.rating);
+        const tbody = document.getElementById('rankingsTableBody');
+        if (sorted.length === 0) { tbody.innerHTML = '<tr><td colspan="6">No drivers</td></tr>'; return; }
+        tbody.innerHTML = sorted.map((d, i) => `
+            <tr>
+                <td>${i+1}</td>
+                <td><b>${d.name}</b></td>
+                <td>⭐ ${d.rating}</td>
+                <td>${d.trips}</td>
+                <td>$${d.earnings}</td>
+                <td>${d.status}</td>
+            </tr>
+        `).join('');
+    }
+
+    function dispatchDriverAction(id, name) {
+        let d = allDrivers.find(d => d.id === id);
+        if (d && d.status === 'available') {
+            d.status = 'busy';
+            saveAll();
+            refreshAll();
+            showToast(`🚕 ${name} dispatched! Now BUSY. Click "Complete" when trip ends.`, '#1e3c72');
+        } else {
+            showToast(`❌ ${name} not available`, '#ef4444');
+        }
+    }
+    
+    function exportData() {
+        let csv = "ID,Name,Phone,Vehicle,Status,Rating,Trips,Earnings\n";
+        allDrivers.forEach(d => { csv += `"${d.id}","${d.name}","${d.phone}","${d.vehicle?.make} ${d.vehicle?.model}","${d.status}","${d.rating}","${d.trips}","${d.earnings}"\n`; });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `drivers_${Date.now()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Exported!', '#10b981');
+    }
+    
+    function showToast(msg, color) {
+        const toast = document.getElementById('toastMsg');
+        toast.innerText = msg;
+        toast.style.backgroundColor = color;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    function openTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+        document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).style.display = 'block';
+        document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        if (tabName === 'map') setTimeout(() => { if (map) map.invalidateSize(); }, 100);
+    }
+
+    loadData();
+    window.onload = initMap;
+</script>
+</body>
+</html>
