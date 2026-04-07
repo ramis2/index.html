@@ -2,344 +2,120 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>Taxi Dispatch - Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Taxi Dispatch - Driver Alerts</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1e3c72; padding: 12px; padding-bottom: 80px; }
+        .main-box { max-width: 100%; margin: 0 auto; background: white; border-radius: 20px; padding: 16px; }
+        h1 { text-align: center; color: #1e3c72; font-size: 24px; }
+        .subtitle { text-align: center; color: #10b981; font-size: 12px; margin-bottom: 15px; }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #1e3c72;
-            padding: 12px;
-            padding-bottom: 80px;
-        }
+        .tabs { display: flex; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center; }
+        .tab { background: white; border: 1px solid #ccc; padding: 10px 16px; font-size: 14px; font-weight: bold; border-radius: 30px; cursor: pointer; }
+        .tab.active { background: #1e3c72; color: white; border: none; }
         
-        .main-box {
-            max-width: 100%;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 16px;
-        }
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat { background: #f0f0f0; padding: 12px; border-radius: 12px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: bold; color: #1e3c72; }
+        .stat-label { font-size: 11px; color: #666; }
         
-        h1 {
-            text-align: center;
-            color: #1e3c72;
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
+        .map-container { height: 300px; background: #ddd; border-radius: 12px; margin-bottom: 12px; }
+        #map { height: 100%; width: 100%; border-radius: 12px; }
         
-        .subtitle {
-            text-align: center;
-            color: #10b981;
-            margin-bottom: 15px;
-            font-size: 12px;
-        }
-        
-        /* Mobile-friendly tabs */
-        .tabs {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .tab {
-            background: white;
-            border: 1px solid #ccc;
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            color: #333;
-            transition: all 0.2s;
-        }
-        
-        .tab.active {
-            background: #1e3c72;
-            color: white;
-            border: none;
-        }
-        
-        /* Stats - mobile friendly */
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .stat {
-            background: #f0f0f0;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 28px;
-            font-weight: bold;
-            color: #1e3c72;
-        }
-        
-        .stat-label {
-            font-size: 11px;
-            color: #666;
-        }
-        
-        /* Map container - mobile sized */
-        .map-container {
-            height: 350px;
-            background: #ddd;
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-        
-        #map {
-            height: 100%;
-            width: 100%;
-            border-radius: 12px;
-        }
-        
-        /* Mobile driver list */
-        .driver-list {
-            max-height: 250px;
-            overflow-y: auto;
-        }
-        
-        .driver-item {
-            background: #f5f5f5;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 12px;
-            border-left: 4px solid #10b981;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
+        .search-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 30px; margin-bottom: 12px; }
+        .driver-list { max-height: 250px; overflow-y: auto; }
+        .driver-item { background: #f5f5f5; padding: 12px; margin-bottom: 8px; border-radius: 12px; border-left: 4px solid #10b981; display: flex; justify-content: space-between; align-items: center; }
         .driver-item.busy { border-left-color: #ef4444; }
-        .driver-item.offline { border-left-color: #6b7280; }
+        .driver-info h4 { font-size: 16px; }
+        .driver-info p { font-size: 12px; color: #666; }
+        .driver-actions { display: flex; gap: 6px; }
+        .driver-actions button { padding: 6px 12px; font-size: 11px; border-radius: 20px; }
         
-        .driver-info h4 {
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
+        .form-card { background: #f5f5f5; padding: 16px; border-radius: 16px; margin-bottom: 16px; }
+        .row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+        .field { width: 100%; }
+        .field label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; }
+        .field input, .field select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; }
+        button { background: #1e3c72; color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: bold; font-size: 16px; width: 100%; }
+        .btn-green { background: #10b981; }
         
-        .driver-info p {
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .driver-actions {
-            display: flex;
-            gap: 6px;
-        }
-        
-        .driver-actions button {
-            padding: 6px 12px;
-            font-size: 11px;
-            border-radius: 20px;
-        }
-        
-        /* Forms - mobile friendly */
-        .form-card {
-            background: #f5f5f5;
-            padding: 16px;
-            border-radius: 16px;
-            margin-bottom: 16px;
-        }
-        
-        .row {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        
-        .field {
-            width: 100%;
-        }
-        
-        .field label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        
-        .field input, .field select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            font-size: 16px;
-        }
-        
-        button {
-            background: #1e3c72;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-            width: 100%;
-        }
-        
-        .btn-green {
-            background: #10b981;
-        }
-        
-        /* Driver cards grid - mobile */
-        .drivers-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-        
-        .driver-card {
-            background: #f5f5f5;
-            border-radius: 16px;
-            padding: 15px;
-            position: relative;
-            border-left: 4px solid #10b981;
-        }
-        
+        .drivers-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .driver-card { background: #f5f5f5; border-radius: 16px; padding: 15px; position: relative; border-left: 4px solid #10b981; }
         .driver-card.busy { border-left-color: #ef4444; }
-        .driver-card.offline { border-left-color: #6b7280; }
+        .delete-x { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
         
-        .delete-x {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-        }
+        .table-wrapper { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 500px; }
+        .data-table th, .data-table td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        .data-table th { background: #1e3c72; color: white; }
         
-        /* Tables - horizontal scroll for mobile */
-        .table-wrapper {
-            overflow-x: auto;
-        }
-        
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            font-size: 12px;
-            min-width: 600px;
-        }
-        
-        .data-table th, .data-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .data-table th {
-            background: #1e3c72;
-            color: white;
-        }
-        
-        .toast {
+        /* DRIVER NOTIFICATION STYLES */
+        .driver-notification {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             left: 20px;
             right: 20px;
-            background: #333;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            display: none;
-            z-index: 1000;
-            font-size: 14px;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-box {
-            background: white;
-            padding: 20px;
             border-radius: 20px;
-            width: 90%;
-            max-width: 350px;
+            padding: 20px;
+            z-index: 2000;
+            animation: slideDown 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-left: 5px solid #10b981;
         }
         
-        .add-driver-btn {
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .driver-notification h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .driver-notification .notif-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .driver-notification .notif-label {
+            font-weight: bold;
+            opacity: 0.8;
+        }
+        
+        .driver-notification .notif-value {
+            font-weight: bold;
+        }
+        
+        .driver-notification button {
             background: #10b981;
-            margin-top: 10px;
-        }
-        
-        .search-box {
-            width: 100%;
+            margin-top: 12px;
             padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 30px;
-            margin-bottom: 12px;
-            font-size: 14px;
         }
         
-        .recent-request-item {
-            background: white;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 12px;
-            border-left: 3px solid #10b981;
-        }
-        
-        .btn-call {
-            background: #f59e0b;
-            padding: 6px 12px;
-            font-size: 12px;
-            margin-top: 8px;
-            width: auto;
-        }
+        .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #333; color: white; padding: 12px; border-radius: 12px; text-align: center; display: none; z-index: 1000; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: white; padding: 20px; border-radius: 20px; width: 90%; max-width: 350px; }
         
         @media (min-width: 768px) {
-            .drivers-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .stats {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            .row {
-                flex-direction: row;
-            }
+            .drivers-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats { grid-template-columns: repeat(4, 1fr); }
+            .row { flex-direction: row; }
         }
     </style>
 </head>
 <body>
 <div class="main-box">
     <h1>🚕 Taxi Dispatch</h1>
-    <div class="subtitle">Mobile-Friendly | Works Offline</div>
+    <div class="subtitle">Driver gets customer info when dispatched</div>
 
     <div class="stats">
         <div class="stat"><div class="stat-number" id="totalCount">0</div><div class="stat-label">Total</div></div>
@@ -356,15 +132,13 @@
         <button class="tab" onclick="openTab('rankings')">🏆 Rankings</button>
     </div>
 
-    <!-- MAP TAB -->
     <div id="tabMap" class="tab-content">
         <div class="map-container"><div id="map"></div></div>
         <input type="text" id="mapSearch" class="search-box" placeholder="🔍 Search driver..." onkeyup="filterMapDrivers()">
         <div class="driver-list" id="mapDriversList"></div>
-        <button onclick="openAddModal()" class="add-driver-btn">➕ Add New Driver</button>
+        <button onclick="openAddModal()">➕ Add New Driver</button>
     </div>
 
-    <!-- REQUEST TAB -->
     <div id="tabRequest" class="tab-content" style="display:none">
         <div class="form-card">
             <h3 style="margin-bottom:12px">Request a Ride</h3>
@@ -390,12 +164,11 @@
             <button class="btn-green" onclick="submitRideRequest()">📞 REQUEST RIDE</button>
         </div>
         <div style="background:#f5f5f5; padding:12px; border-radius:16px;">
-            <h3 style="margin-bottom:10px; font-size:16px;">Recent Requests</h3>
+            <h3 style="margin-bottom:10px;">Recent Requests</h3>
             <div id="recentRequestsList"></div>
         </div>
     </div>
 
-    <!-- DRIVERS TAB -->
     <div id="tabDrivers" class="tab-content" style="display:none">
         <div style="margin-bottom:12px; display:flex; gap:8px; flex-wrap:wrap;">
             <button onclick="filterDriversList('all')" style="width:auto; padding:8px 16px;">All</button>
@@ -407,22 +180,20 @@
         <div id="driversListContainer"></div>
     </div>
 
-    <!-- TRIPS TAB -->
     <div id="tabTrips" class="tab-content" style="display:none">
-        <div class="stats" style="margin-bottom:12px">
+        <div class="stats">
             <div class="stat"><div class="stat-number" id="tripsTotal">0</div><div class="stat-label">Total</div></div>
             <div class="stat"><div class="stat-number" id="tripsRevenue">$0</div><div class="stat-label">Revenue</div></div>
             <div class="stat"><div class="stat-number" id="tripsAvg">$0</div><div class="stat-label">Avg</div></div>
         </div>
         <div class="table-wrapper">
             <table class="data-table">
-                <thead><tr><th>Date</th><th>Driver</th><th>Customer</th><th>Fare</th><th>Call</th></tr></thead>
+                <thead><tr><th>Date</th><th>Driver</th><th>Customer</th><th>Fare</th></tr></thead>
                 <tbody id="tripsTableBody"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- RANKINGS TAB -->
     <div id="tabRankings" class="tab-content" style="display:none">
         <div class="table-wrapper">
             <table class="data-table">
@@ -433,14 +204,13 @@
     </div>
 </div>
 
-<!-- ADD DRIVER MODAL -->
 <div id="addModal" class="modal">
     <div class="modal-box">
-        <h3 style="margin-bottom:15px">Add New Driver</h3>
+        <h3>Add New Driver</h3>
         <div class="field"><label>Name</label><input type="text" id="newName" placeholder="Driver name"></div>
         <div class="field"><label>Phone</label><input type="text" id="newPhone" placeholder="Phone number"></div>
         <div class="field"><label>Vehicle</label><input type="text" id="newVehicle" placeholder="Toyota Camry"></div>
-        <div class="field"><label>License Plate</label><input type="text" id="newPlate" placeholder="ABC123"></div>
+        <div class="field"><label>License</label><input type="text" id="newPlate" placeholder="ABC123"></div>
         <div class="field"><label>Status</label>
             <select id="newStatus">
                 <option value="available">Available</option>
@@ -469,7 +239,6 @@
     let currentDriverFilter = 'all';
     let driverSearchText = '';
 
-    // Atlanta center
     const ATLANTA_CENTER = { lat: 33.7490, lng: -84.3880 };
     const atlantaSpots = [
         { lat: 33.7490, lng: -84.3880 }, { lat: 33.7756, lng: -84.3963 },
@@ -482,7 +251,6 @@
         const savedDrivers = localStorage.getItem(STORAGE_DRIVERS);
         const savedTrips = localStorage.getItem(STORAGE_TRIPS);
         const savedRequests = localStorage.getItem(STORAGE_REQUESTS);
-        
         allDrivers = savedDrivers ? JSON.parse(savedDrivers) : [];
         allTrips = savedTrips ? JSON.parse(savedTrips) : [];
         recentRequests = savedRequests ? JSON.parse(savedRequests) : [];
@@ -515,8 +283,7 @@
     function initMap() {
         map = L.map('map').setView([ATLANTA_CENTER.lat, ATLANTA_CENTER.lng], 12);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap',
-            subdomains: 'abcd'
+            attribution: '&copy; OpenStreetMap', subdomains: 'abcd'
         }).addTo(map);
         updateMap();
     }
@@ -525,18 +292,11 @@
         if (!map) return;
         mapMarkers.forEach(m => map.removeLayer(m));
         mapMarkers = [];
-        
         allDrivers.forEach(driver => {
             let color = driver.status === 'available' ? '#10b981' : (driver.status === 'busy' ? '#ef4444' : '#6b7280');
             let loc = driver.lat ? { lat: driver.lat, lng: driver.lng } : randomLocation();
             const marker = L.circleMarker([loc.lat, loc.lng], { radius: 10, fillColor: color, color: 'white', weight: 2, fillOpacity: 0.8 }).addTo(map);
-            marker.bindPopup(`
-                <b>${driver.name}</b><br>
-                🚗 ${driver.vehicle || 'Unknown'}<br>
-                📞 ${driver.phone}<br>
-                <button onclick="dispatchDriverAction('${driver.id}','${driver.name}')" style="background:#1e3c72;color:white;border:none;padding:5px;border-radius:5px;">Dispatch</button>
-                <button onclick="completeTrip('${driver.id}','${driver.name}')" style="background:#10b981;color:white;border:none;padding:5px;border-radius:5px;">Complete</button>
-            `);
+            marker.bindPopup(`<b>${driver.name}</b><br>🚗 ${driver.vehicle || 'Unknown'}<br>📞 ${driver.phone}<br><button onclick="dispatchDriverAction('${driver.id}','${driver.name}')" style="background:#1e3c72;color:white;border:none;padding:5px;border-radius:5px;">Dispatch</button>`);
             mapMarkers.push(marker);
         });
     }
@@ -548,33 +308,54 @@
         if (filtered.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px;">No drivers</div>'; return; }
         container.innerHTML = filtered.map(d => `
             <div class="driver-item ${d.status}" onclick="map.setView([${d.lat || ATLANTA_CENTER.lat}, ${d.lng || ATLANTA_CENTER.lng}], 14)">
-                <div class="driver-info">
-                    <h4>${d.name}</h4>
-                    <p>${d.vehicle || 'Unknown'} | ${d.phone}</p>
-                </div>
-                <div class="driver-actions">
-                    <button onclick="event.stopPropagation(); dispatchDriverAction('${d.id}','${d.name}')" style="background:#1e3c72;">Dispatch</button>
-                    <button onclick="event.stopPropagation(); completeTrip('${d.id}','${d.name}')" style="background:#10b981;">Complete</button>
-                </div>
+                <div class="driver-info"><h4>${d.name}</h4><p>${d.vehicle || 'Unknown'}</p></div>
+                <div class="driver-actions"><button onclick="event.stopPropagation(); dispatchDriverAction('${d.id}','${d.name}')">Dispatch</button></div>
             </div>
         `).join('');
     }
 
     function filterMapDrivers() { updateMapSidebar(); }
 
-    function callNumber(phoneNumber, name) {
-        if (phoneNumber && phoneNumber !== 'N/A') {
-            const confirmCall = confirm(`📞 Call ${name || 'customer'} at ${phoneNumber}?\n\nClick OK to copy number.`);
-            if (confirmCall) {
-                navigator.clipboard.writeText(phoneNumber).then(() => {
-                    showToast(`✅ ${phoneNumber} copied! Dial manually.`, '#10b981');
-                    alert(`Phone number ${phoneNumber} copied to clipboard!\n\nPlease dial manually.`);
-                }).catch(() => {
-                    alert(`📞 Please call: ${phoneNumber}`);
-                });
-            }
+    // ============ DRIVER NOTIFICATION - SEND CUSTOMER INFO TO DRIVER ============
+    function showDriverNotification(driverName, customerName, customerPhone, pickup, dropoff, fare) {
+        const notification = document.createElement('div');
+        notification.className = 'driver-notification';
+        notification.innerHTML = `
+            <h3>🚕 NEW TRIP ASSIGNED</h3>
+            <div class="notif-row"><span class="notif-label">Driver:</span><span class="notif-value">${driverName}</span></div>
+            <div class="notif-row"><span class="notif-label">Customer:</span><span class="notif-value">${customerName}</span></div>
+            <div class="notif-row"><span class="notif-label">Customer Phone:</span><span class="notif-value">${customerPhone}</span></div>
+            <div class="notif-row"><span class="notif-label">Pickup:</span><span class="notif-value">${pickup}</span></div>
+            <div class="notif-row"><span class="notif-label">Dropoff:</span><span class="notif-value">${dropoff}</span></div>
+            <div class="notif-row"><span class="notif-label">Fare:</span><span class="notif-value">$${fare}</span></div>
+            <button onclick="copyDriverInfo('${customerPhone}', '${pickup}', '${dropoff}')">📋 Copy Customer Info</button>
+            <button onclick="this.parentElement.remove()" style="background:#6b7280; margin-top:8px;">✓ Got it</button>
+        `;
+        document.body.appendChild(notification);
+        
+        // Auto remove after 15 seconds
+        setTimeout(() => { if(notification.parentElement) notification.remove(); }, 15000);
+    }
+    
+    function copyDriverInfo(phone, pickup, dropoff) {
+        const info = `Customer Phone: ${phone}\nPickup: ${pickup}\nDropoff: ${dropoff}`;
+        navigator.clipboard.writeText(info).then(() => {
+            showToast('✅ Customer info copied to clipboard!', '#10b981');
+        });
+    }
+
+    function dispatchDriverWithInfo(driverId, driverName, customerName, customerPhone, pickup, dropoff, fare) {
+        let driver = allDrivers.find(d => d.id === driverId);
+        if (driver && driver.status === 'available') {
+            driver.status = 'busy';
+            saveAll();
+            refreshAll();
+            
+            // Send notification to driver with customer info
+            showDriverNotification(driverName, customerName, customerPhone, pickup, dropoff, fare);
+            showToast(`🚕 ${driverName} dispatched! Customer info sent.`, '#1e3c72');
         } else {
-            showToast('❌ No phone number available', '#ef4444');
+            showToast(`❌ ${driverName} not available`, '#ef4444');
         }
     }
 
@@ -583,21 +364,11 @@
         if (driver && driver.status === 'busy') {
             let fare = prompt(`💰 Enter fare amount for ${driverName}:`, "25");
             fare = parseFloat(fare) || 25;
-            
             driver.status = 'available';
             driver.earnings = (driver.earnings || 0) + fare;
             driver.trips = (driver.trips || 0) + 1;
-            
-            const tripRecord = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString(),
-                time: new Date().toLocaleTimeString(),
-                driver: driverName,
-                customer: "Walk-in",
-                fare: fare
-            };
+            const tripRecord = { id: Date.now(), date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString(), driver: driverName, customer: "Walk-in", fare: fare };
             allTrips.unshift(tripRecord);
-            
             saveAll();
             refreshAll();
             showToast(`✅ ${driverName} completed! $${fare} earned.`, '#10b981');
@@ -611,7 +382,6 @@
         let filtered = allDrivers;
         if (currentDriverFilter !== 'all') filtered = filtered.filter(d => d.status === currentDriverFilter);
         if (driverSearchText) filtered = filtered.filter(d => d.name.toLowerCase().includes(driverSearchText) || d.phone.includes(driverSearchText));
-        
         if (filtered.length === 0) { container.innerHTML = '<div style="text-align:center;padding:40px;">No drivers</div>'; return; }
         
         let html = '<div class="drivers-grid">';
@@ -622,7 +392,6 @@
                     <h3>${d.name}</h3>
                     <p>📞 ${d.phone}</p>
                     <p>🚗 ${d.vehicle || 'Unknown'}</p>
-                    <p>🔢 ${d.plate || 'N/A'}</p>
                     <p>⭐ ${d.rating || 5.0}/5 (${d.trips || 0} trips)</p>
                     <p>💰 $${d.earnings || 0}</p>
                     <select onchange="changeDriverStatus('${d.id}', this.value)" style="width:100%; padding:8px; margin:8px 0; border-radius:30px;">
@@ -631,7 +400,7 @@
                         <option value="offline" ${d.status === 'offline' ? 'selected' : ''}>⚪ Offline</option>
                     </select>
                     <div style="display:flex; gap:8px;">
-                        <button onclick="dispatchDriverAction('${d.id}','${d.name}')" style="flex:1; background:#1e3c72;">Dispatch</button>
+                        <button onclick="dispatchManual('${d.id}','${d.name}')" style="flex:1; background:#1e3c72;">Dispatch</button>
                         <button onclick="completeTrip('${d.id}','${d.name}')" style="flex:1; background:#10b981;">Complete</button>
                         <button onclick="callNumber('${d.phone}','${d.name}')" style="flex:1; background:#f59e0b;">📞 Call</button>
                     </div>
@@ -641,23 +410,22 @@
         html += '</div>';
         container.innerHTML = html;
     }
+    
+    // Manual dispatch (when dispatcher assigns driver manually)
+    function dispatchManual(driverId, driverName) {
+        const customerName = prompt("Enter customer name:", "Walk-in Customer");
+        if (!customerName) return;
+        const customerPhone = prompt("Enter customer phone:", "N/A");
+        const pickup = prompt("Enter pickup location:", "Unknown");
+        const dropoff = prompt("Enter dropoff location:", "Unknown");
+        const fare = parseFloat(prompt("Enter fare amount:", "25")) || 25;
+        dispatchDriverWithInfo(driverId, driverName, customerName, customerPhone, pickup, dropoff, fare);
+    }
 
     function filterDriversList(status) { currentDriverFilter = status; updateDriversList(); }
     function searchDriversList() { driverSearchText = document.getElementById('driverSearch').value.toLowerCase(); updateDriversList(); }
-    
-    function deleteDriverAction(id, name) {
-        if (confirm(`Delete ${name}?`)) {
-            allDrivers = allDrivers.filter(d => d.id !== id);
-            saveAll();
-            refreshAll();
-            showToast(`Deleted ${name}`, '#ef4444');
-        }
-    }
-    
-    function changeDriverStatus(id, newStatus) {
-        let d = allDrivers.find(d => d.id === id);
-        if (d) { d.status = newStatus; saveAll(); refreshAll(); showToast(`${d.name} status: ${newStatus}`, '#10b981'); }
-    }
+    function deleteDriverAction(id, name) { if (confirm(`Delete ${name}?`)) { allDrivers = allDrivers.filter(d => d.id !== id); saveAll(); refreshAll(); showToast(`Deleted ${name}`, '#ef4444'); } }
+    function changeDriverStatus(id, newStatus) { let d = allDrivers.find(d => d.id === id); if (d) { d.status = newStatus; saveAll(); refreshAll(); showToast(`${d.name} status: ${newStatus}`, '#10b981'); } }
 
     function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
     function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
@@ -666,26 +434,18 @@
         const name = document.getElementById('newName').value.trim();
         const phone = document.getElementById('newPhone').value.trim();
         if (!name || !phone) { showToast('Name and phone required!', '#ef4444'); return; }
-        
         const newDriver = {
-            id: 'd' + Date.now(),
-            name: name,
-            phone: phone,
+            id: 'd' + Date.now(), name: name, phone: phone,
             vehicle: document.getElementById('newVehicle').value.trim() || 'Unknown',
             plate: document.getElementById('newPlate').value.trim().toUpperCase() || 'NEW',
-            status: document.getElementById('newStatus').value,
-            rating: 5.0,
-            trips: 0,
-            earnings: 0,
-            lat: randomLocation().lat,
-            lng: randomLocation().lng
+            status: document.getElementById('newStatus').value, rating: 5.0, trips: 0, earnings: 0,
+            lat: randomLocation().lat, lng: randomLocation().lng
         };
         allDrivers.push(newDriver);
         saveAll();
         refreshAll();
         closeAddModal();
         showToast(`✅ ${name} added!`, '#10b981');
-        
         document.getElementById('newName').value = '';
         document.getElementById('newPhone').value = '';
         document.getElementById('newVehicle').value = '';
@@ -696,13 +456,10 @@
         const container = document.getElementById('recentRequestsList');
         if (recentRequests.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px;">No requests yet</div>'; return; }
         container.innerHTML = recentRequests.slice(0, 10).map(r => `
-            <div class="recent-request-item">
+            <div style="background:white; padding:12px; margin-bottom:8px; border-radius:12px; border-left:3px solid #10b981;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                    <div>
-                        <b>${r.customerName}</b><br>
-                        <small>🚗 ${r.driverName} | 💰 $${r.fare}</small>
-                    </div>
-                    <button onclick="callNumber('${r.customerPhone}','${r.customerName}')" class="btn-call">📞 Call</button>
+                    <div><b>${r.customerName}</b><br><small>🚗 ${r.driverName} | 💰 $${r.fare}</small></div>
+                    <button onclick="callNumber('${r.customerPhone}','${r.customerName}')" style="background:#f59e0b; color:white; border:none; padding:8px 16px; border-radius:20px;">📞 Call</button>
                 </div>
                 <div style="font-size:11px; color:#666; margin-top:5px;">📍 ${r.pickup} → ${r.dropoff}</div>
             </div>
@@ -715,35 +472,26 @@
         const pickup = document.getElementById('reqPickup').value.trim();
         const dropoff = document.getElementById('reqDropoff').value.trim();
         const fare = parseFloat(document.getElementById('reqFare').value);
-        
         if (!name || !phone || !pickup || !dropoff) { showToast('Please fill all fields!', '#ef4444'); return; }
         
         const availableIndex = allDrivers.findIndex(d => d.status === 'available');
         if (availableIndex === -1) { showToast('No drivers available!', '#ef4444'); return; }
         
         const driver = allDrivers[availableIndex];
-        driver.status = 'busy';
+        
+        // Dispatch driver with customer info
+        dispatchDriverWithInfo(driver.id, driver.name, name, phone, pickup, dropoff, fare);
+        
+        // Update driver stats
         driver.trips += 1;
         driver.earnings += fare;
         
-        const newTrip = {
-            id: Date.now(),
-            date: new Date().toLocaleDateString(),
-            time: new Date().toLocaleTimeString(),
-            driver: driver.name,
-            customer: name,
-            fare: fare
-        };
+        const newTrip = { id: Date.now(), date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString(), driver: driver.name, customer: name, fare: fare };
         allTrips.unshift(newTrip);
         
         recentRequests.unshift({
-            customerName: name,
-            customerPhone: phone,
-            pickup: pickup,
-            dropoff: dropoff,
-            fare: fare,
-            driverName: driver.name,
-            time: new Date().toLocaleTimeString()
+            customerName: name, customerPhone: phone, pickup: pickup, dropoff: dropoff,
+            fare: fare, driverName: driver.name, time: new Date().toLocaleTimeString()
         });
         
         saveAll();
@@ -754,14 +502,7 @@
         document.getElementById('reqPickup').value = '';
         document.getElementById('reqDropoff').value = '';
         
-        showToast(`✅ ${driver.name} dispatched to ${name}!`, '#10b981');
-        
-        const callOption = confirm(`🚕 RIDE CONFIRMED!\n\nCustomer: ${name}\nPhone: ${phone}\nFare: $${fare}\n\n✅ Assigned to: ${driver.name}\n\nCopy number to call?`);
-        if (callOption) {
-            navigator.clipboard.writeText(phone).then(() => {
-                alert(`✅ ${phone} copied! Dial manually.`);
-            });
-        }
+        showToast(`✅ ${driver.name} dispatched! Customer info sent to driver.`, '#10b981');
     }
 
     function updateTripsTable() {
@@ -770,46 +511,26 @@
         document.getElementById('tripsTotal').innerText = allTrips.length;
         document.getElementById('tripsRevenue').innerText = `$${total.toFixed(2)}`;
         document.getElementById('tripsAvg').innerText = `$${(total / (allTrips.length || 1)).toFixed(2)}`;
-        
-        if (allTrips.length === 0) { tbody.innerHTML = '<tr><td colspan="5">No trips yet</td></tr>'; return; }
-        tbody.innerHTML = allTrips.map(t => `
-            <tr>
-                <td>${t.date}</td>
-                <td>${t.driver}</td>
-                <td>${t.customer}</td>
-                <td>$${t.fare}</td>
-                <td><button onclick="callNumber('${t.customerPhone || ''}','${t.customer}')" style="background:#f59e0b;color:white;border:none;padding:6px 12px;border-radius:20px;">📞</button></td>
-            </tr>
-        `).join('');
+        if (allTrips.length === 0) { tbody.innerHTML = '<tr><td colspan="4">No trips yet</td></tr>'; return; }
+        tbody.innerHTML = allTrips.map(t => `<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.customer}</td><td>$${t.fare}</td></tr>`).join('');
     }
 
     function updateRankings() {
         const sorted = [...allDrivers].sort((a, b) => b.rating - a.rating);
         const tbody = document.getElementById('rankingsTableBody');
         if (sorted.length === 0) { tbody.innerHTML = '<tr><td colspan="5">No drivers</td></tr>'; return; }
-        tbody.innerHTML = sorted.map((d, i) => `
-            <tr>
-                <td>${i+1}</td>
-                <td><b>${d.name}</b></td>
-                <td>⭐ ${d.rating}</td>
-                <td>${d.trips}</td>
-                <td>$${d.earnings}</td>
-            </tr>
-        `).join('');
+        tbody.innerHTML = sorted.map((d, i) => `<tr><td>${i+1}</td><td><b>${d.name}</b></td><td>⭐ ${d.rating}</td><td>${d.trips}</td><td>$${d.earnings}</td></tr>`).join('');
     }
 
-    function dispatchDriverAction(id, name) {
-        let d = allDrivers.find(d => d.id === id);
-        if (d && d.status === 'available') {
-            d.status = 'busy';
-            saveAll();
-            refreshAll();
-            showToast(`🚕 ${name} dispatched! Now BUSY.`, '#1e3c72');
-        } else {
-            showToast(`❌ ${name} not available`, '#ef4444');
-        }
+    function callNumber(phone, name) {
+        if (phone && phone !== 'N/A') {
+            navigator.clipboard.writeText(phone).then(() => {
+                showToast(`✅ ${phone} copied! Dial manually.`, '#10b981');
+                alert(`Phone number ${phone} copied to clipboard!\n\nPlease dial manually.`);
+            });
+        } else { showToast('❌ No phone number', '#ef4444'); }
     }
-    
+
     function showToast(msg, color) {
         const toast = document.getElementById('toastMsg');
         toast.innerText = msg;
