@@ -1,11 +1,9 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Live Driver Tracking - Complete Dispatch</title>
+    <title>Live Driver Tracking - All Counties</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -52,7 +50,6 @@
         .field input, .field select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; }
         button { background: #1e3c72; color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: bold; font-size: 16px; width: 100%; }
         .btn-green { background: #10b981; }
-        .btn-warning { background: #f59e0b; }
         
         .drivers-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .driver-card { background: #f5f5f5; border-radius: 16px; padding: 15px; position: relative; border-left: 4px solid #10b981; }
@@ -64,6 +61,7 @@
         .modal-box { background: white; padding: 20px; border-radius: 20px; width: 90%; max-width: 350px; }
         
         .track-info { font-size: 11px; color: #2196f3; margin-top: 5px; }
+        .county-tag { font-size: 10px; background: #e0e7ff; padding: 2px 6px; border-radius: 10px; display: inline-block; margin-top: 4px; }
         
         @media (min-width: 768px) {
             .drivers-grid { grid-template-columns: repeat(2, 1fr); }
@@ -74,8 +72,8 @@
 </head>
 <body>
 <div class="main-box">
-    <h1>🚕 Live Driver Tracking</h1>
-    <div class="subtitle">Real-time GPS tracking | See drivers move on map</div>
+    <h1>🚕 Live Driver Tracking - Atlanta Metro</h1>
+    <div class="subtitle">Drivers spread across all counties | Real-time movement</div>
 
     <div class="stats">
         <div class="stat"><div class="stat-number" id="totalCount">0</div><div class="stat-label">Total Drivers</div></div>
@@ -99,8 +97,8 @@
             <button class="btn-center" onclick="centerOnDriver()">🎯 Center on Driver</button>
         </div>
         <div class="map-container"><div id="map"></div></div>
-        <div style="background: #e0e7ff; border-radius: 12px; padding: 8px; margin-bottom: 12px; text-align: center; font-size: 12px;">
-            🔵 <strong>Blue markers</strong> = Being tracked LIVE | 🟢 <strong>Green</strong> = Available | 🟡 <strong>Yellow</strong> = On Trip
+        <div style="background: #e0e7ff; border-radius: 12px; padding: 8px; margin-bottom: 12px; text-align: center; font-size: 11px;">
+            🔵 <strong>Blue</strong> = LIVE Tracking | 🟢 <strong>Green</strong> = Available | 🟡 <strong>Yellow</strong> = On Trip | Drivers across ALL Atlanta Metro counties
         </div>
         <input type="text" id="mapSearch" class="search-box" placeholder="🔍 Search driver..." onkeyup="filterMapDrivers()">
         <div class="driver-list" id="mapDriversList"></div>
@@ -167,6 +165,20 @@
         <div class="field"><label>Name</label><input type="text" id="newName" placeholder="Driver name"></div>
         <div class="field"><label>Phone</label><input type="text" id="newPhone" placeholder="Phone number"></div>
         <div class="field"><label>Vehicle</label><input type="text" id="newVehicle" placeholder="Toyota Camry"></div>
+        <div class="field"><label>County/Area</label>
+            <select id="newCounty">
+                <option value="Fulton">Fulton County (Atlanta)</option>
+                <option value="Gwinnett">Gwinnett County (Lawrenceville)</option>
+                <option value="Cobb">Cobb County (Marietta)</option>
+                <option value="DeKalb">DeKalb County (Decatur)</option>
+                <option value="Clayton">Clayton County (Jonesboro)</option>
+                <option value="Cherokee">Cherokee County (Canton)</option>
+                <option value="Forsyth">Forsyth County (Cumming)</option>
+                <option value="Henry">Henry County (McDonough)</option>
+                <option value="Paulding">Paulding County (Dallas)</option>
+                <option value="Coweta">Coweta County (Newnan)</option>
+            </select>
+        </div>
         <div style="display:flex; gap:10px; margin-top:15px;">
             <button onclick="closeAddModal()" style="background:#6b7280;">Cancel</button>
             <button onclick="addDriver()">Add Driver</button>
@@ -177,9 +189,36 @@
 <div id="toastMsg" class="toast"></div>
 
 <script>
-    const STORAGE_DRIVERS = 'taxi_tracking_drivers_v3';
-    const STORAGE_TRIPS = 'taxi_tracking_trips_v3';
-    const STORAGE_ACTIVE = 'taxi_tracking_active_v3';
+    const STORAGE_DRIVERS = 'taxi_county_drivers_v4';
+    const STORAGE_TRIPS = 'taxi_county_trips_v4';
+    const STORAGE_ACTIVE = 'taxi_county_active_v4';
+
+    // COUNTY COORDINATES - Spread across Atlanta Metro
+    const COUNTY_LOCATIONS = {
+        'Fulton': { lat: 33.7490, lng: -84.3880, name: 'Atlanta (Fulton)' },
+        'Gwinnett': { lat: 33.9519, lng: -84.0229, name: 'Lawrenceville (Gwinnett)' },
+        'Cobb': { lat: 33.9526, lng: -84.5499, name: 'Marietta (Cobb)' },
+        'DeKalb': { lat: 33.7749, lng: -84.2965, name: 'Decatur (DeKalb)' },
+        'Clayton': { lat: 33.5213, lng: -84.3538, name: 'Jonesboro (Clayton)' },
+        'Cherokee': { lat: 34.2369, lng: -84.4908, name: 'Canton (Cherokee)' },
+        'Forsyth': { lat: 34.2199, lng: -84.1241, name: 'Cumming (Forsyth)' },
+        'Henry': { lat: 33.4449, lng: -84.1494, name: 'McDonough (Henry)' },
+        'Paulding': { lat: 33.9126, lng: -84.7999, name: 'Dallas (Paulding)' },
+        'Coweta': { lat: 33.3803, lng: -84.7999, name: 'Newnan (Coweta)' }
+    };
+
+    // Random variations within each county (for multiple drivers in same county)
+    function getRandomLocationInCounty(county) {
+        const base = COUNTY_LOCATIONS[county] || COUNTY_LOCATIONS['Fulton'];
+        // Add random offset up to ~5 miles (0.05 degrees)
+        const latOffset = (Math.random() - 0.5) * 0.08;
+        const lngOffset = (Math.random() - 0.5) * 0.08;
+        return {
+            lat: base.lat + latOffset,
+            lng: base.lng + lngOffset,
+            countyName: base.name
+        };
+    }
 
     let allDrivers = [];
     let tripHistory = [];
@@ -189,12 +228,21 @@
     let currentDriverFilter = 'all';
     let driverSearchText = '';
 
-    const ATLANTA_CENTER = { lat: 33.7490, lng: -84.3880 };
-    const atlantaSpots = [
-        { lat: 33.7490, lng: -84.3880 }, { lat: 33.7756, lng: -84.3963 }, { lat: 33.7489, lng: -84.3819 },
-        { lat: 33.7600, lng: -84.3940 }, { lat: 33.7450, lng: -84.3850 }, { lat: 33.7550, lng: -84.3900 }
-    ];
-    function randomLocation() { return atlantaSpots[Math.floor(Math.random() * atlantaSpots.length)]; }
+    // Create initial drivers spread across counties
+    function createInitialDrivers() {
+        return [
+            { id: 'd1', name: 'Robert Chen', phone: '404-555-0123', vehicle: 'Toyota Camry', status: 'available', rating: 4.8, trips: 156, earnings: 12491, tracking: false, county: 'Fulton', lat: 33.7490, lng: -84.3880 },
+            { id: 'd2', name: 'Michael Brown', phone: '770-555-4567', vehicle: 'Honda Accord', status: 'available', rating: 4.6, trips: 142, earnings: 10875, tracking: false, county: 'Gwinnett', lat: 33.9519, lng: -84.0229 },
+            { id: 'd3', name: 'Sarah Johnson', phone: '678-555-7890', vehicle: 'Tesla Model 3', status: 'available', rating: 4.9, trips: 89, earnings: 7543, tracking: false, county: 'Cobb', lat: 33.9526, lng: -84.5499 },
+            { id: 'd4', name: 'David Wilson', phone: '404-555-1111', vehicle: 'Ford Fusion', status: 'available', rating: 4.7, trips: 67, earnings: 5420, tracking: false, county: 'DeKalb', lat: 33.7749, lng: -84.2965 },
+            { id: 'd5', name: 'Lisa Martinez', phone: '770-555-2222', vehicle: 'Chevrolet Malibu', status: 'available', rating: 4.5, trips: 178, earnings: 14230, tracking: false, county: 'Clayton', lat: 33.5213, lng: -84.3538 },
+            { id: 'd6', name: 'James Anderson', phone: '678-555-3333', vehicle: 'BMW 3 Series', status: 'available', rating: 4.9, trips: 234, earnings: 18920, tracking: false, county: 'Cherokee', lat: 34.2369, lng: -84.4908 },
+            { id: 'd7', name: 'Maria Garcia', phone: '770-555-4444', vehicle: 'Nissan Altima', status: 'available', rating: 4.7, trips: 98, earnings: 8230, tracking: false, county: 'Forsyth', lat: 34.2199, lng: -84.1241 },
+            { id: 'd8', name: 'Thomas Lee', phone: '678-555-5555', vehicle: 'Hyundai Sonata', status: 'available', rating: 4.8, trips: 112, earnings: 9870, tracking: false, county: 'Henry', lat: 33.4449, lng: -84.1494 },
+            { id: 'd9', name: 'Amanda White', phone: '770-555-6666', vehicle: 'Kia Optima', status: 'available', rating: 4.6, trips: 87, earnings: 7650, tracking: false, county: 'Paulding', lat: 33.9126, lng: -84.7999 },
+            { id: 'd10', name: 'Kevin Taylor', phone: '678-555-7777', vehicle: 'Subaru Outback', status: 'available', rating: 4.9, trips: 145, earnings: 11230, tracking: false, county: 'Coweta', lat: 33.3803, lng: -84.7999 }
+        ];
+    }
 
     // ============ TRACKING FUNCTIONS ============
     function startTracking(driverId) {
@@ -203,7 +251,7 @@
             driver.tracking = true;
             saveAll();
             refreshAll();
-            showToast(`📍 Tracking ${driver.name} started`, '#2196f3');
+            showToast(`📍 Tracking ${driver.name} in ${driver.county || 'Fulton'} started`, '#2196f3');
         }
     }
 
@@ -222,7 +270,7 @@
         saveAll();
         refreshAll();
         startMovementSimulation();
-        showToast(`📍 Tracking ALL drivers started`, '#2196f3');
+        showToast(`📍 Tracking ALL drivers started - ${allDrivers.length} drivers across all counties`, '#2196f3');
     }
 
     function stopAllTracking() {
@@ -242,9 +290,9 @@
             let updated = false;
             allDrivers.forEach(driver => {
                 if (driver.tracking) {
-                    // Simulate movement
-                    driver.lat += (Math.random() - 0.5) * 0.002;
-                    driver.lng += (Math.random() - 0.5) * 0.002;
+                    // Simulate movement within their county area
+                    driver.lat += (Math.random() - 0.5) * 0.005;
+                    driver.lng += (Math.random() - 0.5) * 0.005;
                     updated = true;
                 }
             });
@@ -263,8 +311,8 @@
         if (driverName) {
             const driver = allDrivers.find(d => d.name.toLowerCase().includes(driverName.toLowerCase()));
             if (driver && map) {
-                map.setView([driver.lat, driver.lng], 14);
-                showToast(`📍 Centered on ${driver.name}`, '#f59e0b');
+                map.setView([driver.lat, driver.lng], 12);
+                showToast(`📍 Centered on ${driver.name} in ${driver.county || 'Fulton'}`, '#f59e0b');
             } else {
                 showToast(`❌ Driver not found`, '#ef4444');
             }
@@ -279,7 +327,7 @@
             return;
         }
 
-        const customerName = prompt(`🚕 Dispatch ${driverName}\n\nEnter customer name:`, "Walk-in");
+        const customerName = prompt(`🚕 Dispatch ${driverName} in ${driver.county}\n\nEnter customer name:`, "Walk-in");
         if (!customerName) return;
         const customerPhone = prompt("Enter customer phone:", "N/A");
         const pickup = prompt("Enter pickup location:", "Unknown");
@@ -295,6 +343,7 @@
             fare: fare,
             driverId: driver.id,
             driverName: driver.name,
+            driverCounty: driver.county,
             status: 'dispatched',
             dispatchedAt: new Date().toLocaleString()
         };
@@ -309,7 +358,7 @@
         startMovementSimulation();
         
         showToast(`✅ ${driver.name} dispatched to ${customerName}!`, '#10b981');
-        alert(`🚕 DRIVER DISPATCHED!\n\nDriver: ${driver.name}\nCustomer: ${customerName}\nPickup: ${pickup}\nDropoff: ${dropoff}\nFare: $${fare}\n\nTracking started!`);
+        alert(`🚕 DRIVER DISPATCHED!\n\nDriver: ${driver.name}\nCounty: ${driver.county || 'Fulton'}\nCustomer: ${customerName}\nPickup: ${pickup}\nDropoff: ${dropoff}\nFare: $${fare}\n\nTracking started!`);
     }
 
     function findAndDispatch() {
@@ -344,6 +393,7 @@
             fare: fare,
             driverId: assignedDriver.id,
             driverName: assignedDriver.name,
+            driverCounty: assignedDriver.county,
             status: 'dispatched',
             dispatchedAt: new Date().toLocaleString()
         };
@@ -364,7 +414,7 @@
         document.getElementById('pickupAddr').value = '';
         document.getElementById('dropoffAddr').value = '';
         
-        alert(`🚕 DISPATCHED!\n\nDriver: ${assignedDriver.name}\nCustomer: ${customerName}\nPickup: ${pickup}\nDropoff: ${dropoff}\nFare: $${fare}\n\nTracking started!`);
+        alert(`🚕 DISPATCHED!\n\nDriver: ${assignedDriver.name}\nCounty: ${assignedDriver.county || 'Fulton'}\nCustomer: ${customerName}\nPickup: ${pickup}\nDropoff: ${dropoff}\nFare: $${fare}\n\nTracking started!`);
     }
 
     function completeTrip(tripId, driverId, driverName) {
@@ -420,7 +470,7 @@
         container.innerHTML = activeTrips.map(t => `
             <div style="background:white; border-radius:12px; padding:12px; margin-bottom:8px; border-left:4px solid #f59e0b;">
                 <div><strong>${t.customerName}</strong> → ${t.dropoff}</div>
-                <div style="font-size:12px;">🚗 Driver: ${t.driverName} | 💰 $${t.fare}</div>
+                <div style="font-size:12px;">🚗 Driver: ${t.driverName} (${t.driverCounty || 'Fulton'}) | 💰 $${t.fare}</div>
                 <div style="display:flex; gap:8px; margin-top:8px;">
                     <button onclick="completeTrip('${t.id}','${t.driverId}','${t.driverName}')" style="background:#10b981; padding:6px; font-size:12px;">✅ Complete</button>
                     <button onclick="cancelTrip('${t.id}','${t.driverId}')" style="background:#ef4444; padding:6px; font-size:12px;">❌ Cancel</button>
@@ -431,7 +481,8 @@
 
     // ============ MAP FUNCTIONS ============
     function initMap() {
-        map = L.map('map').setView([ATLANTA_CENTER.lat, ATLANTA_CENTER.lng], 12);
+        // Center map to show all counties (Atlanta metro area)
+        map = L.map('map').setView([33.85, -84.30], 10);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap', subdomains: 'abcd'
         }).addTo(map);
@@ -450,19 +501,19 @@
             else if (driver.status === 'on-trip') color = '#f59e0b'; // on trip (yellow)
             else if (driver.status === 'offline') color = '#6b7280'; // offline (gray)
             
-            let loc = driver.lat ? { lat: driver.lat, lng: driver.lng } : randomLocation();
-            const marker = L.circleMarker([loc.lat, loc.lng], { radius: 12, fillColor: color, color: 'white', weight: 2, fillOpacity: 0.8 }).addTo(map);
+            const marker = L.circleMarker([driver.lat, driver.lng], { radius: 12, fillColor: color, color: 'white', weight: 2, fillOpacity: 0.8 }).addTo(map);
             
             let statusText = driver.tracking ? '🔵 LIVE TRACKING' : (driver.status === 'on-trip' ? '🟡 ON TRIP' : (driver.status === 'available' ? '🟢 AVAILABLE' : '⚪ OFFLINE'));
             
             marker.bindPopup(`
-                <div style="min-width:200px;">
+                <div style="min-width:220px;">
                     <b>${driver.name}</b><br>
                     🚗 ${driver.vehicle || 'Unknown'}<br>
                     📞 ${driver.phone}<br>
                     📍 ${statusText}<br>
-                    🎯 Lat: ${driver.lat?.toFixed(4)}<br>
-                    🎯 Lng: ${driver.lng?.toFixed(4)}<br>
+                    🏠 County: ${driver.county || 'Fulton'}<br>
+                    🎯 Lat: ${driver.lat.toFixed(4)}<br>
+                    🎯 Lng: ${driver.lng.toFixed(4)}<br>
                     ${driver.status === 'available' ? 
                         `<button onclick="dispatchFromMap('${driver.id}','${driver.name}')" style="background:#10b981;color:white;border:none;padding:8px;margin-top:8px;border-radius:8px;width:100%;cursor:pointer;">🚕 DISPATCH</button>` :
                         `<button onclick="window.location.href='tel:${driver.phone}'" style="background:#f59e0b;color:white;border:none;padding:8px;margin-top:8px;border-radius:8px;width:100%;cursor:pointer;">📞 Call Driver</button>`
@@ -479,11 +530,12 @@
         let filtered = allDrivers.filter(d => d.name.toLowerCase().includes(search));
         if (filtered.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px;">No drivers</div>'; return; }
         container.innerHTML = filtered.map(d => `
-            <div class="driver-item ${d.tracking ? 'tracking' : ''}" onclick="map.setView([${d.lat || ATLANTA_CENTER.lat}, ${d.lng || ATLANTA_CENTER.lng}], 14)">
+            <div class="driver-item ${d.tracking ? 'tracking' : ''}" onclick="map.setView([${d.lat}, ${d.lng}], 12)">
                 <div class="driver-info">
                     <h4>${d.name} ${d.tracking ? '<span class="live-badge">LIVE</span>' : ''}</h4>
                     <p>${d.vehicle || 'Unknown'} | ${d.status}</p>
-                    ${d.tracking ? `<p class="track-info">📍 ${d.lat?.toFixed(4)}, ${d.lng?.toFixed(4)}</p>` : ''}
+                    <p class="county-tag">📍 ${d.county || 'Fulton'}</p>
+                    ${d.tracking ? `<p class="track-info">📍 ${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}</p>` : ''}
                 </div>
                 <div class="driver-actions">
                     ${!d.tracking ? 
@@ -519,9 +571,10 @@
                     <h3>${d.name} ${d.tracking ? '🔵 LIVE' : ''}</h3>
                     <p>📞 ${d.phone}</p>
                     <p>🚗 ${d.vehicle || 'Unknown'}</p>
+                    <p>🏠 County: ${d.county || 'Fulton'}</p>
                     <p>⭐ ${d.rating || 5.0}/5 (${d.trips || 0} trips)</p>
                     <p>💰 $${d.earnings || 0}</p>
-                    ${d.tracking ? `<p class="track-info">📍 ${d.lat?.toFixed(4)}, ${d.lng?.toFixed(4)}</p>` : ''}
+                    ${d.tracking ? `<p class="track-info">📍 ${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}</p>` : ''}
                     <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
                         ${!d.tracking ? 
                             `<button onclick="startTracking('${d.id}')" style="flex:1; background:#2196f3;">▶ Start Tracking</button>` :
@@ -573,7 +626,7 @@
         container.innerHTML = tripHistory.map(t => `
             <div style="background:#f5f5f5; border-radius:12px; padding:12px; margin-bottom:8px;">
                 <div><strong>${t.customerName}</strong> → ${t.dropoff}</div>
-                <div style="font-size:12px;">🚗 Driver: ${t.driverName} | 💰 $${t.actualFare || t.fare}</div>
+                <div style="font-size:12px;">🚗 Driver: ${t.driverName} (${t.driverCounty || 'Fulton'}) | 💰 $${t.actualFare || t.fare}</div>
                 <div style="font-size:11px; color:#666;">🕐 ${t.completedAt || t.dispatchedAt}</div>
             </div>
         `).join('');
@@ -585,17 +638,13 @@
         const savedTrips = localStorage.getItem(STORAGE_TRIPS);
         const savedActive = localStorage.getItem(STORAGE_ACTIVE);
         
-        allDrivers = savedDrivers ? JSON.parse(savedDrivers) : [];
+        if (savedDrivers) {
+            allDrivers = JSON.parse(savedDrivers);
+        } else {
+            allDrivers = createInitialDrivers();
+        }
         tripHistory = savedTrips ? JSON.parse(savedTrips) : [];
         activeTrips = savedActive ? JSON.parse(savedActive) : [];
-        
-        if (allDrivers.length === 0) {
-            allDrivers = [
-                { id: 'd1', name: 'Robert Chen', phone: '404-555-0123', vehicle: 'Toyota Camry', status: 'available', rating: 4.8, trips: 156, earnings: 12491, tracking: false, lat: 33.7490, lng: -84.3880 },
-                { id: 'd2', name: 'Michael Brown', phone: '404-555-4567', vehicle: 'Honda Accord', status: 'available', rating: 4.6, trips: 142, earnings: 10875, tracking: false, lat: 33.7756, lng: -84.3963 },
-                { id: 'd3', name: 'Sarah Johnson', phone: '404-555-7890', vehicle: 'Tesla Model 3', status: 'available', rating: 4.9, trips: 89, earnings: 7543, tracking: false, lat: 33.7489, lng: -84.3819 }
-            ];
-        }
         
         refreshAll();
     }
@@ -622,13 +671,21 @@
         document.getElementById('todayTrips').innerText = tripHistory.length;
     }
 
-    function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
-    function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+    function openAddModal() { 
+        document.getElementById('addModal').style.display = 'flex'; 
+    }
+    function closeAddModal() { 
+        document.getElementById('addModal').style.display = 'none'; 
+    }
     
     function addDriver() {
         const name = document.getElementById('newName').value.trim();
         const phone = document.getElementById('newPhone').value.trim();
         if (!name || !phone) { showToast('Name and phone required!', '#ef4444'); return; }
+        
+        const county = document.getElementById('newCounty').value;
+        const location = getRandomLocationInCounty(county);
+        
         const newDriver = {
             id: 'd' + Date.now(),
             name: name,
@@ -639,14 +696,16 @@
             trips: 0,
             earnings: 0,
             tracking: false,
-            lat: randomLocation().lat,
-            lng: randomLocation().lng
+            county: county,
+            lat: location.lat,
+            lng: location.lng
         };
         allDrivers.push(newDriver);
         saveAll();
         refreshAll();
         closeAddModal();
-        showToast(`✅ ${name} added!`, '#10b981');
+        showToast(`✅ ${name} added in ${COUNTY_LOCATIONS[county].name}!`, '#10b981');
+        
         document.getElementById('newName').value = '';
         document.getElementById('newPhone').value = '';
         document.getElementById('newVehicle').value = '';
