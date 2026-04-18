@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Taxi Dispatch - Direct Call & SMS</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1e3c72; padding: 12px; padding-bottom: 80px; }
+        .main-box { max-width: 100%; margin: 0 auto; background: white; border-radius: 20px; padding: 16px; }
+        h1 { text-align: center; color: #1e3c72; font-size: 24px; }
+        .subtitle { text-align: center; color: #10b981; font-size: 12px; margin-bottom: 15px; }
+        
+        .tabs { display: flex; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center; }
+        .tab { background: white; border: 1px solid #ccc; padding: 10px 16px; font-size: 14px; font-weight: bold; border-radius: 30px; cursor: pointer; }
+        .tab.active { background: #1e3c72; color: white; border: none; }
+        
+        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+        .stat { background: #f0f0f0; padding: 12px; border-radius: 12px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: bold; color: #1e3c72; }
+        .stat-label { font-size: 11px; color: #666; }
+        
+        .map-container { height: 400px; background: #ddd; border-radius: 12px; margin-bottom: 12px; }
+        #map { height: 100%; width: 100%; border-radius: 12px; }
+        
+        .tracking-controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .tracking-controls button { flex: 1; padding: 10px; font-size: 14px; }
+        .btn-track { background: #2196f3; color: white; }
+        .btn-stop { background: #6b7280; color: white; }
+        .btn-center { background: #f59e0b; color: white; }
+        
+        .search-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 30px; margin-bottom: 12px; }
+        .driver-list { max-height: 250px; overflow-y: auto; }
+        .driver-item { background: #f5f5f5; padding: 12px; margin-bottom: 8px; border-radius: 12px; border-left: 4px solid #10b981; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .driver-item.tracking { background: #e3f2fd; border-left-color: #2196f3; }
+        .driver-info h4 { font-size: 16px; }
+        .driver-info p { font-size: 12px; color: #666; }
+        .driver-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .driver-actions button { padding: 6px 12px; font-size: 11px; border-radius: 20px; }
+        
+        .live-badge { background: #ef4444; color: white; padding: 2px 6px; border-radius: 10px; font-size: 9px; margin-left: 5px; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .form-card { background: #f5f5f5; padding: 16px; border-radius: 16px; margin-bottom: 16px; }
+        .row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+        .field { width: 100%; }
+        .field label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; }
+        .field input, .field select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; }
+        button { background: #1e3c72; color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: bold; font-size: 16px; width: 100%; }
+        .btn-green { background: #10b981; }
+        
+        .drivers-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .driver-card { background: #f5f5f5; border-radius: 16px; padding: 15px; position: relative; border-left: 4px solid #10b981; }
+        .driver-card.tracking { background: #e3f2fd; border-left-color: #2196f3; }
+        .delete-x { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+        
+        .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #333; color: white; padding: 12px; border-radius: 12px; text-align: center; display: none; z-index: 1000; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: white; padding: 20px; border-radius: 20px; width: 90%; max-width: 350px; }
+        
+        @media (min-width: 768px) {
+            .drivers-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats { grid-template-columns: repeat(4, 1fr); }
+            .row { flex-direction: row; }
+        }
+    </style>
+</head>
+<body>
+<div class="main-box">
+    <h1>🚕 Taxi Dispatch - Direct Call & SMS</h1>
+    <div class="subtitle">Tap Call → Opens dialer | Dispatch → Opens SMS with trip details</div>
+
+    <div class="stats">
+        <div class="stat"><div class="stat-number" id="totalCount">0</div><div class="stat-label">Total Drivers</div></div>
+        <div class="stat"><div class="stat-number" id="availCount">0</div><div class="stat-label">Available</div></div>
+        <div class="stat"><div class="stat-number" id="trackingCount">0</div><div class="stat-label">Tracking</div></div>
+        <div class="stat"><div class="stat-number" id="todayTrips">0</div><div class="stat-label">Today's Trips</div></div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="openTab('tracking')">📍 Live Map</button>
+        <button class="tab" onclick="openTab('dispatch')">📋 Dispatch</button>
+        <button class="tab" onclick="openTab('drivers')">🚗 Drivers</button>
+        <button class="tab" onclick="openTab('history')">📝 History</button>
+    </div>
+
+    <!-- LIVE TRACKING TAB -->
+    <div id="tabTracking" class="tab-content">
+        <div class="tracking-controls">
+            <button class="btn-track" onclick="startAllTracking()">▶ Track All</button>
+            <button class="btn-stop" onclick="stopAllTracking()">⏹ Stop All</button>
+            <button class="btn-center" onclick="centerOnDriver()">🎯 Find Driver</button>
+        </div>
+        <div class="map-container"><div id="map"></div></div>
+        <div style="background: #e0e7ff; border-radius: 12px; padding: 8px; margin-bottom: 12px; text-align: center; font-size: 11px;">
+            🔵 <strong>Blue</strong> = Tracking | 🟢 <strong>Green</strong> = Available | 🟡 <strong>Yellow</strong> = On Trip<br>
+            <strong>Click marker → Call or Dispatch</strong>
+        </div>
+        <input type="text" id="mapSearch" class="search-box" placeholder="🔍 Search driver..." onkeyup="filterMapDrivers()">
+        <div class="driver-list" id="mapDriversList"></div>
+        <button onclick="openAddModal()" style="margin-top:12px;">➕ Add New Driver</button>
+    </div>
+
+    <!-- DISPATCH TAB -->
+    <div id="tabDispatch" class="tab-content" style="display:none">
+        <div class="form-card">
+            <h3>📋 New Ride Request</h3>
+            <div class="row">
+                <div class="field"><label>Customer Name</label><input type="text" id="custName" placeholder="Full name"></div>
+                <div class="field"><label>Phone Number</label><input type="text" id="custPhone" placeholder="Phone number"></div>
+            </div>
+            <div class="row">
+                <div class="field"><label>Pickup Location</label><input type="text" id="pickupAddr" placeholder="Address"></div>
+                <div class="field"><label>Dropoff Location</label><input type="text" id="dropoffAddr" placeholder="Destination"></div>
+            </div>
+            <div class="row">
+                <div class="field"><label>Fare ($)</label><input type="number" id="tripFare" value="25" step="5"></div>
+                <div class="field"><label>Driver County</label>
+                    <select id="driverCountyFilter">
+                        <option value="all">All Counties</option>
+                        <option value="Fulton">Fulton (Atlanta)</option>
+                        <option value="Gwinnett">Gwinnett (Lawrenceville)</option>
+                        <option value="Cobb">Cobb (Marietta)</option>
+                        <option value="DeKalb">DeKalb (Decatur)</option>
+                        <option value="Clayton">Clayton (Jonesboro)</option>
+                        <option value="Cherokee">Cherokee (Canton)</option>
+                        <option value="Forsyth">Forsyth (Cumming)</option>
+                        <option value="Henry">Henry (McDonough)</option>
+                        <option value="Paulding">Paulding (Dallas)</option>
+                        <option value="Coweta">Coweta (Newnan)</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-green" onclick="findAndDispatch()">🔍 FIND & DISPATCH</button>
+        </div>
+
+        <div style="background: #fef3c7; border-radius: 16px; padding: 15px;">
+            <h3>⏳ Active Trips</h3>
+            <div id="activeTripsList"></div>
+        </div>
+    </div>
+
+    <!-- DRIVERS TAB -->
+    <div id="tabDrivers" class="tab-content" style="display:none">
+        <div style="margin-bottom:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button onclick="filterDriversList('all')" style="width:auto; padding:8px 16px;">All</button>
+            <button onclick="filterDriversList('available')" style="width:auto; padding:8px 16px;">Available</button>
+            <button onclick="filterDriversList('tracking')" style="width:auto; padding:8px 16px;">Tracking</button>
+            <input type="text" id="driverSearch" placeholder="Search..." style="flex:1; padding:8px; border-radius:30px; border:1px solid #ddd;" onkeyup="searchDriversList()">
+        </div>
+        <button onclick="openAddModal()" style="margin-bottom:12px;">➕ Add Driver</button>
+        <div id="driversListContainer"></div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div id="tabHistory" class="tab-content" style="display:none">
+        <div class="stats">
+            <div class="stat"><div class="stat-number" id="historyTotal">0</div><div class="stat-label">Total Trips</div></div>
+            <div class="stat"><div class="stat-number" id="historyRevenue">$0</div><div class="stat-label">Revenue</div></div>
+        </div>
+        <div style="max-height: 400px; overflow-y: auto;">
+            <div id="tripsListContainer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD DRIVER MODAL -->
+<div id="addModal" class="modal">
+    <div class="modal-box">
+        <h3>Add New Driver</h3>
+        <div class="field"><label>Name</label><input type="text" id="newName" placeholder="Driver name"></div>
+        <div class="field"><label>Phone</label><input type="text" id="newPhone" placeholder="Phone number"></div>
+        <div class="field"><label>Vehicle</label><input type="text" id="newVehicle" placeholder="Toyota Camry"></div>
+        <div class="field"><label>County</label>
+            <select id="newCounty">
+                <option value="Fulton">Fulton County (Atlanta)</option>
+                <option value="Gwinnett">Gwinnett County (Lawrenceville)</option>
+                <option value="Cobb">Cobb County (Marietta)</option>
+                <option value="DeKalb">DeKalb County (Decatur)</option>
+                <option value="Clayton">Clayton County (Jonesboro)</option>
+                <option value="Cherokee">Cherokee County (Canton)</option>
+                <option value="Forsyth">Forsyth County (Cumming)</option>
+                <option value="Henry">Henry County (McDonough)</option>
+                <option value="Paulding">Paulding County (Dallas)</option>
+                <option value="Coweta">Coweta County (Newnan)</option>
+            </select>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button onclick="closeAddModal()" style="background:#6b7280;">Cancel</button>
+            <button onclick="addDriver()">Add Driver</button>
+        </div>
+    </div>
+</div>
+
+<div id="toastMsg" class="toast"></div>
+
+<script>
+    // ========== STORAGE KEYS ==========
+    const STORAGE_DRIVERS = 'taxi_final_drivers';
+    const STORAGE_TRIPS = 'taxi_final_trips';
+    const STORAGE_ACTIVE = 'taxi_final_active';
+
+    // ========== COUNTY COORDINATES (spread across Atlanta metro) ==========
+    const COUNTY_LOCATIONS = {
+        'Fulton': { lat: 33.7490, lng: -84.3880, name: 'Downtown Atlanta', bounds: { latMin: 33.70, latMax: 33.85, lngMin: -84.50, lngMax: -84.30 } },
+        'Gwinnett': { lat: 33.9519, lng: -84.0229, name: 'Lawrenceville', bounds: { latMin: 33.85, latMax: 34.05, lngMin: -84.15, lngMax: -83.90 } },
+        'Cobb': { lat: 33.9526, lng: -84.5499, name: 'Marietta', bounds: { latMin: 33.85, latMax: 34.05, lngMin: -84.65, lngMax: -84.45 } },
+        'DeKalb': { lat: 33.7749, lng: -84.2965, name: 'Decatur', bounds: { latMin: 33.70, latMax: 33.85, lngMin: -84.35, lngMax: -84.20 } },
+        'Clayton': { lat: 33.5213, lng: -84.3538, name: 'Jonesboro', bounds: { latMin: 33.45, latMax: 33.60, lngMin: -84.45, lngMax: -84.30 } },
+        'Cherokee': { lat: 34.2369, lng: -84.4908, name: 'Canton', bounds: { latMin: 34.15, latMax: 34.35, lngMin: -84.60, lngMax: -84.40 } },
+        'Forsyth': { lat: 34.2199, lng: -84.1241, name: 'Cumming', bounds: { latMin: 34.10, latMax: 34.35, lngMin: -84.25, lngMax: -84.00 } },
+        'Henry': { lat: 33.4449, lng: -84.1494, name: 'McDonough', bounds: { latMin: 33.35, latMax: 33.55, lngMin: -84.25, lngMax: -84.05 } },
+        'Paulding': { lat: 33.9126, lng: -84.7999, name: 'Dallas', bounds: { latMin: 33.85, latMax: 33.98, lngMin: -84.90, lngMax: -84.70 } },
+        'Coweta': { lat: 33.3803, lng: -84.7999, name: 'Newnan', bounds: { latMin: 33.30, latMax: 33.50, lngMin: -84.90, lngMax: -84.70 } }
+    };
+
+    function getRandomLocationInCounty(county) {
+        const bounds = COUNTY_LOCATIONS[county].bounds;
+        const lat = bounds.latMin + Math.random() * (bounds.latMax - bounds.latMin);
+        const lng = bounds.lngMin + Math.random() * (bounds.lngMax - bounds.lngMin);
+        return { lat, lng };
+    }
+
+    // ========== DIRECT CALL ==========
+    function callNumber(phone, name) {
+        if (phone && phone !== 'N/A') {
+            const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+            window.location.href = `tel:${cleanPhone}`;
+            showToast(`📞 Calling ${name}...`, '#10b981');
+        } else {
+            showToast(`❌ No phone number for ${name}`, '#ef4444');
+        }
+    }
+
+    // ========== DIRECT SMS (opens messaging app) ==========
+    function sendSmsToDriver(driverPhone, driverName, customerName, pickup, dropoff, fare) {
+        if (!driverPhone || driverPhone === 'N/A') {
+            showToast(`❌ No phone number for ${driverName}`, '#ef4444');
+            return;
+        }
+        const message = `🚕 NEW TRIP ASSIGNED\n\nDriver: ${driverName}\nCustomer: ${customerName}\nPickup: ${pickup}\nDropoff: ${dropoff}\nFare: $${fare}\n\nPlease proceed to pickup location.`;
+        const cleanPhone = driverPhone.replace(/[\s\-\(\)]/g, '');
+        window.location.href = `sms:${cleanPhone}?body=${encodeURIComponent(message)}`;
+        showToast(`📱 Opening SMS for ${driverName}...`, '#10b981');
+    }
+
+    // ========== DATA & GLOBALS ==========
+    let allDrivers = [], tripHistory = [], activeTrips = [], map, mapMarkers = [], trackingInterval = null;
+    let currentDriverFilter = 'all', driverSearchText = '';
+
+    // Default drivers spread across counties
+    function createInitialDrivers() {
+        return [
+            { id: 'd1', name: 'Robert Chen', phone: '404-555-0123', vehicle: 'Toyota Camry', status: 'available', rating: 4.8, trips: 156, earnings: 12491, tracking: false, county: 'Fulton', lat: 33.7490, lng: -84.3880 },
+            { id: 'd2', name: 'Michael Brown', phone: '770-555-4567', vehicle: 'Honda Accord', status: 'available', rating: 4.6, trips: 142, earnings: 10875, tracking: false, county: 'Gwinnett', lat: 33.9519, lng: -84.0229 },
+            { id: 'd3', name: 'Sarah Johnson', phone: '678-555-7890', vehicle: 'Tesla Model 3', status: 'available', rating: 4.9, trips: 89, earnings: 7543, tracking: false, county: 'Cobb', lat: 33.9526, lng: -84.5499 },
+            { id: 'd4', name: 'David Wilson', phone: '404-555-1111', vehicle: 'Ford Fusion', status: 'available', rating: 4.7, trips: 67, earnings: 5420, tracking: false, county: 'DeKalb', lat: 33.7749, lng: -84.2965 },
+            { id: 'd5', name: 'Lisa Martinez', phone: '770-555-2222', vehicle: 'Chevrolet Malibu', status: 'available', rating: 4.5, trips: 178, earnings: 14230, tracking: false, county: 'Clayton', lat: 33.5213, lng: -84.3538 },
+            { id: 'd6', name: 'James Anderson', phone: '678-555-3333', vehicle: 'BMW 3 Series', status: 'available', rating: 4.9, trips: 234, earnings: 18920, tracking: false, county: 'Cherokee', lat: 34.2369, lng: -84.4908 },
+            { id: 'd7', name: 'Maria Garcia', phone: '770-555-4444', vehicle: 'Nissan Altima', status: 'available', rating: 4.7, trips: 98, earnings: 8230, tracking: false, county: 'Forsyth', lat: 34.2199, lng: -84.1241 },
+            { id: 'd8', name: 'Thomas Lee', phone: '678-555-5555', vehicle: 'Hyundai Sonata', status: 'available', rating: 4.8, trips: 112, earnings: 9870, tracking: false, county: 'Henry', lat: 33.4449, lng: -84.1494 },
+            { id: 'd9', name: 'Amanda White', phone: '770-555-6666', vehicle: 'Kia Optima', status: 'available', rating: 4.6, trips: 87, earnings: 7650, tracking: false, county: 'Paulding', lat: 33.9126, lng: -84.7999 },
+            { id: 'd10', name: 'Kevin Taylor', phone: '678-555-7777', vehicle: 'Subaru Outback', status: 'available', rating: 4.9, trips: 145, earnings: 11230, tracking: false, county: 'Coweta', lat: 33.3803, lng: -84.7999 }
+        ];
+    }
+
+    // ========== TRACKING ==========
+    function startTracking(id) {
+        let d = allDrivers.find(d=>d.id===id);
+        if(d){ d.tracking=true; saveAll(); refreshAll(); showToast(`📍 Tracking ${d.name}`, '#2196f3');}
+    }
+    function stopTracking(id) {
+        let d = allDrivers.find(d=>d.id===id);
+        if(d){ d.tracking=false; saveAll(); refreshAll(); showToast(`📍 Stopped tracking ${d.name}`, '#6b7280');}
+    }
+    function startAllTracking() {
+        allDrivers.forEach(d=>d.tracking=true);
+        saveAll(); refreshAll(); startMovementSimulation();
+        showToast(`📍 Tracking ALL drivers`, '#2196f3');
+    }
+    function stopAllTracking() {
+        allDrivers.forEach(d=>d.tracking=false);
+        saveAll(); refreshAll();
+        if(trackingInterval) clearInterval(trackingInterval);
+        showToast(`📍 Tracking stopped`, '#6b7280');
+    }
+    function startMovementSimulation() {
+        if(trackingInterval) clearInterval(trackingInterval);
+        trackingInterval = setInterval(()=>{
+            let updated=false;
+            allDrivers.forEach(d=>{
+                if(d.tracking){
+                    d.lat += (Math.random()-0.5)*0.003;
+                    d.lng += (Math.random()-0.5)*0.003;
+                    updated=true;
+                }
+            });
+            if(updated){ saveAll(); updateMap(); updateMapSidebar(); updateDriversList(); updateStats(); }
+        }, 3000);
+    }
+    function centerOnDriver() {
+        let name = prompt("Enter driver name:");
+        if(name){
+            let d = allDrivers.find(d=>d.name.toLowerCase().includes(name.toLowerCase()));
+            if(d && map){ map.setView([d.lat,d.lng],12); showToast(`📍 Centered on ${d.name}`, '#f59e0b'); }
+            else showToast('Driver not found','#ef4444');
+        }
+    }
+
+    // ========== DISPATCH FROM MAP ==========
+    function dispatchFromMap(id, name) {
+        let d = allDrivers.find(d=>d.id===id);
+        if(!d || d.status!=='available'){
+            showToast(`❌ ${name} not available`,'#ef4444');
+            return;
+        }
+        let custName = prompt(`Dispatch ${name}\nCustomer name:`, 'Walk-in');
+        if(!custName) return;
+        let custPhone = prompt('Customer phone:', 'N/A');
+        let pickup = prompt('Pickup:', 'Unknown');
+        let dropoff = prompt('Dropoff:', 'Unknown');
+        let fare = parseFloat(prompt('Fare:', '25')) || 25;
+
+        // Send SMS to driver (opens messaging app)
+        sendSmsToDriver(d.phone, d.name, custName, pickup, dropoff, fare);
+
+        // Create active trip
+        activeTrips.push({
+            id: 'trip_'+Date.now(),
+            customerName: custName,
+            customerPhone: custPhone,
+            pickup, dropoff, fare,
+            driverId: d.id,
+            driverName: d.name,
+            driverCounty: d.county,
+            status: 'dispatched',
+            dispatchedAt: new Date().toLocaleString()
+        });
+        d.status = 'on-trip';
+        d.tracking = true;
+        saveAll(); refreshAll(); updateActiveTrips(); startMovementSimulation();
+        showToast(`✅ ${name} dispatched! SMS opened.`,'#10b981');
+    }
+
+    // ========== DISPATCH FROM FORM ==========
+    function findAndDispatch() {
+        let custName = document.getElementById('custName').value.trim();
+        let custPhone = document.getElementById('custPhone').value.trim();
+        let pickup = document.getElementById('pickupAddr').value.trim();
+        let dropoff = document.getElementById('dropoffAddr').value.trim();
+        let fare = parseFloat(document.getElementById('tripFare').value);
+        let countyFilter = document.getElementById('driverCountyFilter').value;
+
+        if(!custName || !custPhone || !pickup || !dropoff){
+            showToast('Fill all fields!','#ef4444');
+            return;
+        }
+        let available = allDrivers.filter(d=>d.status==='available');
+        if(countyFilter !== 'all') available = available.filter(d=>d.county === countyFilter);
+        if(available.length === 0){
+            showToast(`No drivers in ${countyFilter==='all'?'any county':countyFilter}`,'#ef4444');
+            return;
+        }
+        let driver = available[0];
+
+        sendSmsToDriver(driver.phone, driver.name, custName, pickup, dropoff, fare);
+
+        activeTrips.push({
+            id: 'trip_'+Date.now(),
+            customerName: custName,
+            customerPhone: custPhone,
+            pickup, dropoff, fare,
+            driverId: driver.id,
+            driverName: driver.name,
+            driverCounty: driver.county,
+            status: 'dispatched',
+            dispatchedAt: new Date().toLocaleString()
+        });
+        driver.status = 'on-trip';
+        driver.tracking = true;
+        saveAll(); refreshAll(); updateActiveTrips(); startMovementSimulation();
+        showToast(`✅ ${driver.name} dispatched! SMS opened.`,'#10b981');
+
+        // Clear form
+        document.getElementById('custName').value = '';
+        document.getElementById('custPhone').value = '';
+        document.getElementById('pickupAddr').value = '';
+        document.getElementById('dropoffAddr').value = '';
+    }
+
+    // ========== TRIP MANAGEMENT ==========
+    function completeTrip(tripId, driverId, driverName) {
+        let trip = activeTrips.find(t=>t.id===tripId);
+        if(trip){
+            let actualFare = parseFloat(prompt('Actual fare:', trip.fare)) || trip.fare;
+            tripHistory.push({
+                ...trip,
+                completedAt: new Date().toLocaleString(),
+                actualFare: actualFare,
+                status: 'completed'
+            });
+            let driver = allDrivers.find(d=>d.id===driverId);
+            if(driver){
+                driver.status = 'available';
+                driver.trips++;
+                driver.earnings += actualFare;
+            }
+            activeTrips = activeTrips.filter(t=>t.id!==tripId);
+            saveAll(); refreshAll(); updateActiveTrips();
+            showToast(`✅ Trip completed! $${actualFare} earned.`,'#10b981');
+        }
+    }
+    function cancelTrip(tripId, driverId) {
+        if(confirm('Cancel trip?')){
+            let trip = activeTrips.find(t=>t.id===tripId);
+            if(trip){
+                let driver = allDrivers.find(d=>d.id===driverId);
+                if(driver) driver.status = 'available';
+                activeTrips = activeTrips.filter(t=>t.id!==tripId);
+                saveAll(); refreshAll(); updateActiveTrips();
+                showToast('Trip cancelled','#ef4444');
+            }
+        }
+    }
+    function updateActiveTrips() {
+        let container = document.getElementById('activeTripsList');
+        if(activeTrips.length===0){
+            container.innerHTML = '<div style="text-align:center;padding:20px;">No active trips</div>';
+            return;
+        }
+        container.innerHTML = activeTrips.map(t=>`
+            <div style="background:white; border-radius:12px; padding:12px; margin-bottom:8px; border-left:4px solid #f59e0b;">
+                <div><strong>${t.customerName}</strong> → ${t.dropoff}</div>
+                <div style="font-size:12px;">🚗 ${t.driverName} (${t.driverCounty}) | 💰 $${t.fare}</div>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button onclick="completeTrip('${t.id}','${t.driverId}','${t.driverName}')" style="background:#10b981; padding:6px;">✅ Complete</button>
+                    <button onclick="cancelTrip('${t.id}','${t.driverId}')" style="background:#ef4444; padding:6px;">❌ Cancel</button>
+                    <button onclick="callNumber('${t.customerPhone}','${t.customerName}')" style="background:#f59e0b; padding:6px;">📞 Call Customer</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ========== MAP ==========
+    function initMap() {
+        map = L.map('map').setView([33.85, -84.30], 9.5);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap', subdomains: 'abcd'
+        }).addTo(map);
+        updateMap();
+        startMovementSimulation();
+    }
+    function updateMap() {
+        if(!map) return;
+        mapMarkers.forEach(m=>map.removeLayer(m));
+        mapMarkers = [];
+        allDrivers.forEach(d=>{
+            let color = d.tracking ? '#2196f3' : (d.status==='on-trip' ? '#f59e0b' : (d.status==='available' ? '#10b981' : '#6b7280'));
+            let marker = L.circleMarker([d.lat,d.lng], {radius:12, fillColor:color, color:'white', weight:2, fillOpacity:0.8}).addTo(map);
+            marker.bindPopup(`
+                <div style="min-width:200px;">
+                    <b>${d.name}</b><br>
+                    🚗 ${d.vehicle}<br>
+                    📞 ${d.phone}<br>
+                    📍 ${d.status}<br>
+                    🏠 ${d.county}<br>
+                    <div style="display:flex; gap:5px; margin-top:8px;">
+                        <button onclick="dispatchFromMap('${d.id}','${d.name}')" style="background:#10b981;color:white;border:none;padding:6px;border-radius:8px;flex:1;">🚕 Dispatch</button>
+                        <button onclick="callNumber('${d.phone}','${d.name}')" style="background:#f59e0b;color:white;border:none;padding:6px;border-radius:8px;flex:1;">📞 Call</button>
+                    </div>
+                </div>
+            `);
+            mapMarkers.push(marker);
+        });
+    }
+    function updateMapSidebar() {
+        let container = document.getElementById('mapDriversList');
+        let search = document.getElementById('mapSearch')?.value.toLowerCase() || '';
+        let filtered = allDrivers.filter(d=>d.name.toLowerCase().includes(search));
+        if(filtered.length===0){
+            container.innerHTML = '<div style="text-align:center;padding:20px;">No drivers</div>';
+            return;
+        }
+        container.innerHTML = filtered.map(d=>`
+            <div class="driver-item ${d.tracking?'tracking':''}" onclick="map.setView([${d.lat},${d.lng}],12)">
+                <div class="driver-info">
+                    <h4>${d.name} ${d.tracking?'<span class="live-badge">LIVE</span>':''}</h4>
+                    <p>${d.vehicle} | ${d.status}</p>
+                    <p>📍 ${d.county}</p>
+                </div>
+                <div class="driver-actions">
+                    ${!d.tracking ? `<button onclick="event.stopPropagation(); startTracking('${d.id}')" style="background:#2196f3;">Track</button>` : `<button onclick="event.stopPropagation(); stopTracking('${d.id}')" style="background:#6b7280;">Stop</button>`}
+                    <button onclick="event.stopPropagation(); dispatchFromMap('${d.id}','${d.name}')" style="background:#10b981;">Dispatch</button>
+                    <button onclick="event.stopPropagation(); callNumber('${d.phone}','${d.name}')" style="background:#f59e0b;">Call</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    function filterMapDrivers() { updateMapSidebar(); }
+
+    // ========== DRIVERS LIST ==========
+    function updateDriversList() {
+        let container = document.getElementById('driversListContainer');
+        let filtered = allDrivers;
+        if(currentDriverFilter !== 'all'){
+            if(currentDriverFilter === 'tracking') filtered = filtered.filter(d=>d.tracking);
+            else filtered = filtered.filter(d=>d.status === currentDriverFilter);
+        }
+        if(driverSearchText) filtered = filtered.filter(d=>d.name.toLowerCase().includes(driverSearchText) || d.phone.includes(driverSearchText));
+        if(filtered.length===0){
+            container.innerHTML = '<div style="text-align:center;padding:40px;">No drivers</div>';
+            return;
+        }
+        let html = '<div class="drivers-grid">';
+        filtered.forEach(d=>{
+            html += `
+                <div class="driver-card ${d.tracking?'tracking':''}">
+                    <button class="delete-x" onclick="deleteDriver('${d.id}','${d.name}')">×</button>
+                    <h3>${d.name} ${d.tracking?'🔵 LIVE':''}</h3>
+                    <p>📞 ${d.phone}</p>
+                    <p>🚗 ${d.vehicle}</p>
+                    <p>🏠 ${d.county}</p>
+                    <p>⭐ ${d.rating}/5 (${d.trips} trips)</p>
+                    <p>💰 $${d.earnings}</p>
+                    ${d.tracking ? `<p>📍 ${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}</p>` : ''}
+                    <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                        ${!d.tracking ? `<button onclick="startTracking('${d.id}')" style="flex:1; background:#2196f3;">▶ Track</button>` : `<button onclick="stopTracking('${d.id}')" style="flex:1; background:#6b7280;">⏹ Stop</button>`}
+                        <button onclick="dispatchFromMap('${d.id}','${d.name}')" style="flex:1; background:#10b981;">🚕 Dispatch</button>
+                        <button onclick="callNumber('${d.phone}','${d.name}')" style="flex:1; background:#f59e0b;">📞 Call</button>
+                        <select onchange="changeDriverStatus('${d.id}', this.value)" style="flex:1; padding:8px;">
+                            <option value="available" ${d.status==='available'?'selected':''}>Available</option>
+                            <option value="on-trip" ${d.status==='on-trip'?'selected':''}>On Trip</option>
+                            <option value="offline" ${d.status==='offline'?'selected':''}>Offline</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    function filterDriversList(status){ currentDriverFilter=status; updateDriversList(); }
+    function searchDriversList(){ driverSearchText=document.getElementById('driverSearch').value.toLowerCase(); updateDriversList(); }
+    function deleteDriver(id,name){
+        if(confirm(`Delete ${name}?`)){
+            allDrivers = allDrivers.filter(d=>d.id!==id);
+            saveAll(); refreshAll();
+            showToast(`Deleted ${name}`,'#ef4444');
+        }
+    }
+    function changeDriverStatus(id,newStatus){
+        let d = allDrivers.find(d=>d.id===id);
+        if(d){ d.status=newStatus; saveAll(); refreshAll(); showToast(`${d.name} status: ${newStatus}`,'#10b981'); }
+    }
+
+    // ========== TRIP HISTORY ==========
+    function updateTripHistory() {
+        let container = document.getElementById('tripsListContainer');
+        let total = tripHistory.reduce((s,t)=>s+(t.actualFare||t.fare),0);
+        document.getElementById('historyTotal').innerText = tripHistory.length;
+        document.getElementById('historyRevenue').innerText = `$${total.toFixed(2)}`;
+        if(tripHistory.length===0){
+            container.innerHTML = '<div style="text-align:center;padding:40px;">No trips yet</div>';
+            return;
+        }
+        container.innerHTML = tripHistory.map(t=>`
+            <div style="background:#f5f5f5; border-radius:12px; padding:12px; margin-bottom:8px;">
+                <div><strong>${t.customerName}</strong> → ${t.dropoff}</div>
+                <div style="font-size:12px;">🚗 ${t.driverName} (${t.driverCounty}) | 💰 $${t.actualFare||t.fare}</div>
+                <div style="font-size:11px;">🕐 ${t.completedAt||t.dispatchedAt}</div>
+                <button onclick="callNumber('${t.customerPhone}','${t.customerName}')" style="background:#f59e0b; margin-top:5px; padding:5px;">📞 Call Customer</button>
+            </div>
+        `).join('');
+    }
+
+    // ========== PERSISTENCE ==========
+    function loadData() {
+        let savedDrivers = localStorage.getItem(STORAGE_DRIVERS);
+        let savedTrips = localStorage.getItem(STORAGE_TRIPS);
+        let savedActive = localStorage.getItem(STORAGE_ACTIVE);
+        allDrivers = savedDrivers ? JSON.parse(savedDrivers) : createInitialDrivers();
+        tripHistory = savedTrips ? JSON.parse(savedTrips) : [];
+        activeTrips = savedActive ? JSON.parse(savedActive) : [];
+        refreshAll();
+    }
+    function saveAll() {
+        localStorage.setItem(STORAGE_DRIVERS, JSON.stringify(allDrivers));
+        localStorage.setItem(STORAGE_TRIPS, JSON.stringify(tripHistory));
+        localStorage.setItem(STORAGE_ACTIVE, JSON.stringify(activeTrips));
+    }
+    function refreshAll() {
+        updateStats(); updateMap(); updateMapSidebar(); updateDriversList(); updateActiveTrips(); updateTripHistory();
+    }
+    function updateStats() {
+        document.getElementById('totalCount').innerText = allDrivers.length;
+        document.getElementById('availCount').innerText = allDrivers.filter(d=>d.status==='available').length;
+        document.getElementById('trackingCount').innerText = allDrivers.filter(d=>d.tracking).length;
+        document.getElementById('todayTrips').innerText = tripHistory.length;
+    }
+
+    // ========== ADD DRIVER ==========
+    function openAddModal() { document.getElementById('addModal').style.display='flex'; }
+    function closeAddModal() { document.getElementById('addModal').style.display='none'; }
+    function addDriver() {
+        let name = document.getElementById('newName').value.trim();
+        let phone = document.getElementById('newPhone').value.trim();
+        if(!name || !phone){ showToast('Name and phone required!','#ef4444'); return; }
+        let county = document.getElementById('newCounty').value;
+        let loc = getRandomLocationInCounty(county);
+        let newDriver = {
+            id: 'd'+Date.now(),
+            name, phone,
+            vehicle: document.getElementById('newVehicle').value.trim() || 'Unknown',
+            status: 'available',
+            rating: 5.0,
+            trips: 0,
+            earnings: 0,
+            tracking: false,
+            county: county,
+            lat: loc.lat,
+            lng: loc.lng
+        };
+        allDrivers.push(newDriver);
+        saveAll(); refreshAll(); closeAddModal();
+        showToast(`✅ ${name} added in ${COUNTY_LOCATIONS[county].name}!`,'#10b981');
+        document.getElementById('newName').value = '';
+        document.getElementById('newPhone').value = '';
+        document.getElementById('newVehicle').value = '';
+    }
+
+    // ========== UI HELPERS ==========
+    function showToast(msg,color) {
+        let t = document.getElementById('toastMsg');
+        t.innerText = msg;
+        t.style.backgroundColor = color;
+        t.style.display = 'block';
+        setTimeout(()=>t.style.display='none',3000);
+    }
+    function openTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
+        document.getElementById(`tab${tabName.charAt(0).toUpperCase()+tabName.slice(1)}`).style.display = 'block';
+        document.querySelectorAll('.tab').forEach(btn=>btn.classList.remove('active'));
+        event.target.classList.add('active');
+        if(tabName === 'tracking') setTimeout(()=>{if(map)map.invalidateSize();},100);
+    }
+
+    loadData();
+    window.onload = initMap;
+</script>
+</body>
+</html>
+@ja:0598
