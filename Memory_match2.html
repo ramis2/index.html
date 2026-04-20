@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🧠 Cognitive Test · Odd One Out · No Hints</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            background: linear-gradient(135deg, #1a3e3a 0%, #0e2a26 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .game-container {
+            background: #fffaf0;
+            border-radius: 64px;
+            max-width: 550px;
+            width: 100%;
+            padding: 24px 20px 32px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.6rem;
+            margin: 0 0 5px;
+            color: #2d5a3b;
+        }
+        .sub {
+            color: #6b7a5e;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: #efe2cf;
+            border-radius: 60px;
+            padding: 8px 20px;
+            margin: 15px 0;
+        }
+        .stat {
+            background: #2d5a3b;
+            border-radius: 50px;
+            padding: 5px 18px;
+            color: #fff0cf;
+            min-width: 100px;
+        }
+        .stat span {
+            font-size: 0.7rem;
+            display: block;
+            color: #cfd4a8;
+        }
+        .stat div {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .speed-control {
+            background: #f7efdf;
+            border-radius: 60px;
+            padding: 10px 18px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .speed-label {
+            background: #e8dcc8;
+            padding: 4px 15px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        input {
+            flex: 2;
+            min-width: 140px;
+            height: 6px;
+            border-radius: 10px;
+        }
+        #speedValue {
+            background: #5a7e4a;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            background: #e2d0b0;
+            padding: 20px;
+            border-radius: 48px;
+            margin: 20px 0;
+        }
+        .card {
+            background: #fff5e6;
+            border-radius: 28px;
+            aspect-ratio: 1 / 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            font-family: monospace;
+            box-shadow: 0 10px 0 #7b5d3e;
+            cursor: pointer;
+            transition: 0.05s linear;
+            color: #2c4a2a;
+        }
+        .card:active {
+            transform: translateY(3px);
+            box-shadow: 0 5px 0 #7b5d3e;
+        }
+        .card.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+            transform: none;
+        }
+        .message-area {
+            background: #fff1df;
+            padding: 10px;
+            border-radius: 60px;
+            margin: 12px 0;
+            font-weight: 500;
+            color: #4f5e3c;
+            min-height: 70px;
+        }
+        button {
+            background: #618a56;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px 24px;
+            border-radius: 50px;
+            color: white;
+            margin: 6px 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #2e4a2a;
+            transition: 0.05s linear;
+        }
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #2e4a2a;
+        }
+        .feedback {
+            font-size: 0.9rem;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        footer {
+            font-size: 0.65rem;
+            margin-top: 20px;
+            color: #8f7a58;
+            border-top: 1px solid #e2d0b0;
+            padding-top: 14px;
+        }
+        @media (max-width: 500px) {
+            .card { font-size: 2.2rem; }
+            .grid { gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <h1>🧠 Odd One Out</h1>
+    <div class="sub">Remember the odd one — then tap where it was</div>
+
+    <div class="stats">
+        <div class="stat"><span>⭐ SCORE</span><div id="scoreDisplay">0</div></div>
+        <div class="stat"><span>📋 ROUND</span><div id="roundDisplay">1</div></div>
+    </div>
+
+    <div class="speed-control">
+        <div class="speed-label">⏱️ Memorise time</div>
+        <input type="range" id="speedSlider" min="1500" max="8000" step="300" value="4000">
+        <div><span id="speedValue">4.0</span> sec</div>
+    </div>
+
+    <div class="grid" id="grid">
+        <div class="card" data-pos="0">?</div>
+        <div class="card" data-pos="1">?</div>
+        <div class="card" data-pos="2">?</div>
+        <div class="card" data-pos="3">?</div>
+    </div>
+
+    <div class="message-area" id="messageArea">
+        👀 Memorise the four items. One is odd. Then all disappear. Tap where the odd one WAS.
+    </div>
+    <div class="feedback" id="feedback"></div>
+
+    <div>
+        <button id="nextRoundBtn" disabled>▶ NEXT ROUND</button>
+        <button id="restartBtn">🔄 RESTART</button>
+    </div>
+    <footer>🔴 By Jamal Ahmed 0598 * No hints, no reappearance — pure memory.</footer>
+</div>
+
+<script>
+    let currentRound = 1;
+    let totalScore = 0;
+    const MAX_ROUNDS = 10;
+    
+    let cards = ['?', '?', '?', '?'];
+    let oddPosition = -1;
+    let phase = "showing";   // showing -> waiting -> finished
+    let disappearTimeout = null;
+    
+    const cardElements = document.querySelectorAll('.card');
+    const scoreSpan = document.getElementById('scoreDisplay');
+    const roundSpan = document.getElementById('roundDisplay');
+    const messageDiv = document.getElementById('messageArea');
+    const feedbackDiv = document.getElementById('feedback');
+    const nextBtn = document.getElementById('nextRoundBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const speedSlider = document.getElementById('speedSlider');
+    const speedValueSpan = document.getElementById('speedValue');
+    
+    function updateSpeedDisplay() {
+        let ms = parseInt(speedSlider.value);
+        speedValueSpan.innerText = (ms / 1000).toFixed(1);
+    }
+    speedSlider.addEventListener('input', () => {
+        updateSpeedDisplay();
+        if (phase === "showing" && disappearTimeout) {
+            clearTimeout(disappearTimeout);
+            let newDelay = parseInt(speedSlider.value);
+            disappearTimeout = setTimeout(makeAllDisappear, newDelay);
+            messageDiv.innerHTML = `⏱️ Time adjusted — all vanish in ${(newDelay/1000).toFixed(1)} sec`;
+        }
+    });
+    updateSpeedDisplay();
+    
+    function isOddValue(value) {
+        let num = parseInt(value);
+        if (!isNaN(num)) return num % 2 === 1;
+        const oddSymbols = ['★', '◆', '♥', '▲', '♦', '⚡', '☀', '♣'];
+        return oddSymbols.includes(value);
+    }
+    
+    function generateRoundData() {
+        const useNumbers = Math.random() < 0.5;
+        let evenPool, oddPool;
+        if (useNumbers) {
+            evenPool = ['2', '4', '6', '8', '10', '12'];
+            oddPool = ['1', '3', '5', '7', '9'];
+        } else {
+            evenPool = ['●', '■', '◆', '▲', '○', '□'];
+            oddPool = ['★', '♥', '♦', '⚡', '☀', '♣'];
+        }
+        
+        let oddVal = oddPool[Math.floor(Math.random() * oddPool.length)];
+        let evens = [];
+        for (let i = 0; i < 3; i++) {
+            evens.push(evenPool[Math.floor(Math.random() * evenPool.length)]);
+        }
+        
+        let oddPos = Math.floor(Math.random() * 4);
+        let allCards = [...evens];
+        allCards.splice(oddPos, 0, oddVal);
+        
+        return {
+            cards: allCards,
+            oddPosition: oddPos
+        };
+    }
+    
+    function renderCards(values) {
+        for (let i = 0; i < cardElements.length; i++) {
+            cardElements[i].innerText = values[i];
+            cardElements[i].style.background = '';
+        }
+    }
+    
+    function makeAllDisappear() {
+        if (phase !== "showing") return;
+        phase = "waiting";
+        for (let i = 0; i < cardElements.length; i++) {
+            cardElements[i].innerText = '?';
+            cardElements[i].style.background = '';
+        }
+        messageDiv.innerHTML = `🔍 All disappeared. Tap where the odd one WAS.`;
+        feedbackDiv.innerHTML = ``;
+        // enable tapping
+        cardElements.forEach(card => card.classList.remove('disabled'));
+    }
+    
+    function onCardClick(position) {
+        if (phase !== "waiting") return;
+        
+        if (position === oddPosition) {
+            let points = 10 * currentRound;
+            totalScore += points;
+            scoreSpan.innerText = totalScore;
+            feedbackDiv.innerHTML = `✅ Correct! +${points} pts`;
+            messageDiv.innerHTML = `🎉 +${points} points! Total: ${totalScore}`;
+            phase = "finished";
+            // disable further taps
+            cardElements.forEach(card => card.classList.add('disabled'));
+            // reveal original cards (no colors)
+            for (let i = 0; i < cardElements.length; i++) {
+                cardElements[i].innerText = cards[i];
+                cardElements[i].style.background = '';
+            }
+            if (currentRound >= MAX_ROUNDS) {
+                messageDiv.innerHTML = `🏆 COMPLETE! Final score: ${totalScore} 🏆`;
+                nextBtn.disabled = true;
+            } else {
+                nextBtn.disabled = false;
+            }
+        } else {
+            feedbackDiv.innerHTML = `❌ Wrong spot. No points.`;
+            messageDiv.innerHTML = `❌ Round ${currentRound} failed. Score: ${totalScore}`;
+            // brief red flash on wrong tap (only feedback)
+            cardElements[position].style.backgroundColor = '#e6a08c';
+            setTimeout(() => cardElements[position].style.backgroundColor = '', 300);
+            phase = "finished";
+            cardElements.forEach(card => card.classList.add('disabled'));
+            for (let i = 0; i < cardElements.length; i++) {
+                cardElements[i].innerText = cards[i];
+                cardElements[i].style.background = '';
+            }
+            if (currentRound >= MAX_ROUNDS) {
+                messageDiv.innerHTML = `🏁 Game finished. Final score: ${totalScore}. Press RESTART.`;
+                nextBtn.disabled = true;
+            } else {
+                nextBtn.disabled = false;
+            }
+        }
+    }
+    
+    function startRound() {
+        if (disappearTimeout) clearTimeout(disappearTimeout);
+        phase = "showing";
+        nextBtn.disabled = true;
+        const roundData = generateRoundData();
+        cards = roundData.cards;
+        oddPosition = roundData.oddPosition;
+        for (let i = 0; i < cardElements.length; i++) {
+            cardElements[i].innerText = cards[i];
+            cardElements[i].style.background = '';
+            cardElements[i].classList.remove('disabled');
+        }
+        let delayMs = parseInt(speedSlider.value);
+        messageDiv.innerHTML = `👀 Round ${currentRound}: Memorise these four. One is odd. All will vanish.`;
+        feedbackDiv.innerHTML = ``;
+        disappearTimeout = setTimeout(() => makeAllDisappear(), delayMs);
+    }
+    
+    function nextRound() {
+        if (phase !== "finished") return;
+        if (currentRound >= MAX_ROUNDS) return;
+        currentRound++;
+        roundSpan.innerText = currentRound;
+        startRound();
+    }
+    
+    function restartGame() {
+        if (disappearTimeout) clearTimeout(disappearTimeout);
+        currentRound = 1;
+        totalScore = 0;
+        scoreSpan.innerText = totalScore;
+        roundSpan.innerText = currentRound;
+        startRound();
+    }
+    
+    for (let i = 0; i < cardElements.length; i++) {
+        cardElements[i].addEventListener('click', () => onCardClick(i));
+    }
+    nextBtn.addEventListener('click', nextRound);
+    restartBtn.addEventListener('click', restartGame);
+    restartGame();
+</script>
+</body>
+</html>
