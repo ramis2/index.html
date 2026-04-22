@@ -2,369 +2,208 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AutoFleet | Real SMS via Device + Full Policy System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>AutoFleet Mobile | Driver SMS + Policy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
+        * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #f4f7fc; transition: background 0.3s; }
-        body.dark-mode { background: #1a202c; color: #e2e8f0; }
-        body.dark-mode .bg-white, body.dark-mode .bg-gray-50, body.dark-mode .bg-indigo-50 { background-color: #2d3748 !important; color: #e2e8f0 !important; }
-        .log-area { max-height: 280px; overflow-y: auto; }
-        .driver-table-scroll { max-height: 320px; overflow-y: auto; }
-        .real-sms-btn { background-color: #25D366; color: white; border-radius: 9999px; padding: 2px 8px; font-size: 0.7rem; }
-        .real-sms-btn:hover { background-color: #128C7E; }
+        body.dark-mode { background: #0f172a; color: #e2e8f0; }
+        body.dark-mode .bg-white, body.dark-mode .bg-gray-50, body.dark-mode .bg-indigo-50,
+        body.dark-mode .bg-gray-100 { background-color: #1e293b !important; color: #e2e8f0 !important; }
+        body.dark-mode .border-gray-200, body.dark-mode .border-gray-300 { border-color: #334155 !important; }
+        .log-area { max-height: 300px; overflow-y: auto; }
+        .driver-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .driver-table-scroll table { min-width: 600px; }
+        .card { border-radius: 1.5rem; }
+        button, .btn-like { cursor: pointer; }
+        @media (max-width: 640px) {
+            .container-padding { padding-left: 1rem; padding-right: 1rem; }
+            h1 { font-size: 1.5rem; }
+            .text-sm { font-size: 0.8rem; }
+        }
     </style>
 </head>
-<body class="p-5 md:p-8">
+<body class="p-3 md:p-6 container-padding">
 
-<div class="max-w-[1600px] mx-auto">
-    <!-- Header with warning -->
-    <div class="bg-yellow-100 dark:bg-yellow-900/50 border-l-4 border-yellow-500 p-3 mb-5 rounded-lg text-sm">
-        <i class="fas fa-exclamation-triangle text-yellow-600"></i> <strong>Important:</strong> The "Send to Group/Selected/All" buttons below are <strong>simulations</strong> (they only log to the activity panel). To actually send a real SMS from your phone, use the <strong>📱 Send Real SMS</strong> button next to each driver – it will open your phone's messaging app.
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-amber-50 dark:bg-amber-900/30 border-l-4 border-amber-500 p-3 rounded-xl text-sm mb-4">
+        <i class="fas fa-mobile-alt text-amber-600"></i> <strong>Mobile optimized</strong> – Use <span class="font-bold">📱 SMS button</span> on each driver to send real texts from your phone. Other buttons simulate & log only.
     </div>
 
-    <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
         <div>
-            <h1 class="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-                <i class="fas fa-truck-fast text-indigo-600"></i>
-                <span>Driver<span class="text-indigo-600">AutoText</span> <span class="text-xs bg-green-500 text-white px-2 py-1 rounded-full">Real SMS Ready</span></span>
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-2 flex-wrap">
+                <i class="fas fa-truck-fast text-indigo-600 text-2xl"></i>
+                <span>Driver<span class="text-indigo-600">AutoText</span></span>
+                <span class="text-[10px] bg-green-500 text-white px-2 py-0.5 rounded-full">Real SMS Ready</span>
             </h1>
-            <p class="text-slate-500 dark:text-gray-300 text-sm">Group messaging · Policy enforcement · Real SMS via device · Scheduling · Templates</p>
+            <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Group policy · Violation tracking · One‑tap real SMS</p>
         </div>
-        <button id="darkModeToggle" class="bg-gray-200 dark:bg-gray-700 p-2 rounded-full"><i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline"></i></button>
+        <button id="darkModeToggle" class="bg-gray-200 dark:bg-gray-700 p-2 rounded-full text-sm"><i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline"></i></button>
     </div>
 
-    <!-- Dashboard -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-7">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-3 text-center"><i class="fas fa-users text-indigo-500 text-2xl"></i><p class="text-2xl font-bold" id="statTotalDrivers">0</p><p class="text-xs">Total Drivers</p></div>
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-3 text-center"><i class="fas fa-gavel text-red-500 text-2xl"></i><p class="text-2xl font-bold" id="statViolations">0</p><p class="text-xs">Total Violations</p></div>
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-3 text-center"><i class="fas fa-ban text-orange-500 text-2xl"></i><p class="text-2xl font-bold" id="statSuspended">0</p><p class="text-xs">Suspended</p></div>
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-3 text-center"><i class="fas fa-chart-line text-green-500 text-2xl"></i><p class="text-2xl font-bold" id="statCompliance">100%</p><p class="text-xs">Compliance Rate</p></div>
+    <!-- Dashboard stats as scrollable row on mobile -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-2 text-center"><i class="fas fa-users text-indigo-500 text-xl"></i><p class="text-xl font-bold" id="statTotalDrivers">0</p><p class="text-[11px]">Drivers</p></div>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-2 text-center"><i class="fas fa-gavel text-red-500 text-xl"></i><p class="text-xl font-bold" id="statViolations">0</p><p class="text-[11px]">Violations</p></div>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-2 text-center"><i class="fas fa-ban text-orange-500 text-xl"></i><p class="text-xl font-bold" id="statSuspended">0</p><p class="text-[11px]">Suspended</p></div>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-2 text-center"><i class="fas fa-chart-line text-green-500 text-xl"></i><p class="text-xl font-bold" id="statCompliance">100%</p><p class="text-[11px]">Compliance</p></div>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4 mb-7"><canvas id="violationChart" height="100" style="max-height: 200px;"></canvas></div>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-3 mb-6"><canvas id="violationChart" height="120" style="max-height: 160px;"></canvas></div>
 
-    <!-- Policy Settings -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-4 mb-7 flex flex-wrap gap-4 items-center">
-        <label><input type="checkbox" id="autoWelcomeToggle"> 🤖 Auto-welcome</label>
-        <input type="text" id="welcomeMessage" value="Welcome to the fleet! Drive safe." class="border rounded px-2 py-1 text-sm w-48">
-        <label><input type="checkbox" id="autoWarningSmsToggle" checked> 📱 Warning SMS (simulated)</label>
-        <label><input type="checkbox" id="autoSuspendToggle" checked> ⛔ Auto-suspend after <input type="number" id="suspendThreshold" value="3" min="1" max="10" class="w-12 border rounded text-center"> violations</label>
+    <!-- Policy settings (compact on mobile) -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-3 mb-6 space-y-2">
+        <div class="flex flex-wrap gap-2 items-center">
+            <label class="flex items-center gap-1 text-sm"><input type="checkbox" id="autoWelcomeToggle"> 🤖 Auto‑welcome</label>
+            <input type="text" id="welcomeMessage" value="Welcome to the fleet!" class="border rounded px-2 py-1 text-sm w-36">
+        </div>
+        <div class="flex flex-wrap gap-3 items-center">
+            <label class="flex items-center gap-1 text-sm"><input type="checkbox" id="autoWarningSmsToggle" checked> 📱 Warning SMS (sim)</label>
+            <label class="flex items-center gap-1 text-sm"><input type="checkbox" id="autoSuspendToggle" checked> ⛔ Auto‑suspend after <input type="number" id="suspendThreshold" value="3" min="1" max="10" class="w-12 border rounded text-center"> violations</label>
+        </div>
     </div>
 
-    <!-- Main Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-7">
-        <!-- LEFT: Drivers, Groups, Templates -->
-        <div class="space-y-7">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden">
-                <div class="px-5 py-4 border-b flex justify-between"><h2 class="font-bold text-xl"><i class="fas fa-users mr-2"></i> Driver Directory</h2><span id="driverCount" class="text-xs bg-indigo-100 dark:bg-indigo-900 px-2 py-1 rounded-full">0</span></div>
-                <div class="p-4 bg-gray-50 dark:bg-gray-900 border-b">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                        <input type="text" id="driverName" placeholder="Full name" class="border rounded-lg px-3 py-2 text-sm">
-                        <input type="tel" id="driverPhone" placeholder="Phone (with country code)" class="border rounded-lg px-3 py-2 text-sm">
-                        <select id="driverGroupSelect" class="border rounded-lg px-3 py-2 text-sm"></select>
-                        <div class="flex gap-2"><button id="addDriverBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus"></i> Add</button><button id="cancelDriverEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg">Cancel</button></div>
-                    </div>
-                    <input type="hidden" id="editDriverId">
+    <!-- Main content: stacked on mobile -->
+    <div class="space-y-6">
+        <!-- Driver Directory card -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-hidden">
+            <div class="px-4 py-3 border-b flex justify-between items-center"><h2 class="font-bold text-lg"><i class="fas fa-users mr-2"></i> Drivers</h2><span id="driverCount" class="text-xs bg-indigo-100 dark:bg-indigo-900 px-2 py-0.5 rounded-full">0</span></div>
+            <div class="p-3 bg-gray-50 dark:bg-gray-900 border-b">
+                <div class="grid grid-cols-1 gap-2">
+                    <input type="text" id="driverName" placeholder="Full name" class="border rounded-lg px-3 py-2 text-sm">
+                    <input type="tel" id="driverPhone" placeholder="Phone (with country code)" class="border rounded-lg px-3 py-2 text-sm">
+                    <select id="driverGroupSelect" class="border rounded-lg px-3 py-2 text-sm"></select>
+                    <div class="flex gap-2"><button id="addDriverBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm flex-1"><i class="fas fa-plus"></i> Add</button><button id="cancelDriverEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg text-sm">Cancel</button></div>
                 </div>
-                <div class="driver-table-scroll">
-                    <table class="min-w-full text-sm">
-                        <thead class="bg-gray-100 dark:bg-gray-700"><tr><th class="px-3 py-2"><input type="checkbox" id="selectAllDrivers"></th><th>Name / Status</th><th>Phone</th><th>Group</th><th class="text-center">Actions</th></tr></thead>
-                        <tbody id="driversTableBody"></tbody>
-                    </table>
-                </div>
+                <input type="hidden" id="editDriverId">
             </div>
-
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden">
-                <div class="px-5 py-4 border-b flex justify-between"><h2 class="font-bold text-xl"><i class="fas fa-layer-group mr-2"></i> Groups</h2><span id="groupCount" class="text-xs bg-emerald-100 dark:bg-emerald-900 px-2 py-1 rounded-full">0</span></div>
-                <div class="p-4 bg-gray-50 dark:bg-gray-900 border-b flex gap-2"><input type="text" id="groupNameInput" placeholder="Group name" class="flex-1 border rounded-lg px-3 py-2 text-sm"><button id="addGroupBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-plus-circle"></i> Create</button><button id="cancelGroupEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg">Cancel</button><input type="hidden" id="editGroupId"></div>
-                <div class="p-2"><table class="min-w-full"><tbody id="groupsTableBody"></tbody></table></div>
-            </div>
-
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-4">
-                <h2 class="font-bold text-lg mb-2"><i class="fas fa-templates"></i> Message Templates</h2>
-                <div class="flex flex-wrap gap-2" id="templateList"></div>
-                <div class="mt-2 flex gap-2"><input type="text" id="newTemplateName" placeholder="Name" class="border rounded px-2 py-1 text-sm flex-1"><textarea id="newTemplateText" rows="1" placeholder="Text" class="border rounded px-2 py-1 text-sm flex-1"></textarea><button id="addTemplateBtn" class="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm"><i class="fas fa-save"></i> Save</button></div>
+            <div class="driver-table-scroll p-1">
+                <table class="min-w-[600px] w-full text-sm">
+                    <thead class="bg-gray-100 dark:bg-gray-700"><tr><th class="p-2"><input type="checkbox" id="selectAllDrivers"></th><th>Name</th><th>Phone</th><th>Group</th><th>Actions</th></tr></thead>
+                    <tbody id="driversTableBody"></tbody>
+                </table>
             </div>
         </div>
 
-        <!-- RIGHT: Messaging, Scheduling, Logs -->
-        <div class="space-y-7">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-5">
-                <h2 class="font-bold text-xl mb-3"><i class="fas fa-paper-plane text-blue-500"></i> Instant Texting (Simulated)</h2>
-                <select id="instantGroupSelect" class="w-full border rounded-xl p-2 mb-2"></select>
-                <textarea id="instantMessage" rows="3" class="w-full border rounded-xl p-2 mb-2" placeholder="Message..."></textarea>
-                <div class="flex flex-wrap gap-2">
-                    <button id="sendToGroupBtn" class="bg-blue-600 text-white px-4 py-2 rounded-xl">Simulate → Group</button>
-                    <button id="sendToSelectedBtn" class="bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-4 py-2 rounded-xl">Simulate → Selected</button>
-                    <button id="sendToAllBtn" class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-xl">Simulate → All</button>
-                </div>
-            </div>
+        <!-- Groups card -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-hidden">
+            <div class="px-4 py-3 border-b flex justify-between"><h2 class="font-bold text-lg"><i class="fas fa-layer-group mr-2"></i> Groups</h2><span id="groupCount" class="text-xs bg-emerald-100 dark:bg-emerald-900 px-2 py-0.5 rounded-full">0</span></div>
+            <div class="p-3 bg-gray-50 dark:bg-gray-900 border-b flex gap-2"><input type="text" id="groupNameInput" placeholder="Group name" class="flex-1 border rounded-lg px-3 py-2 text-sm"><button id="addGroupBtn" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-plus-circle"></i> Create</button><button id="cancelGroupEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg text-sm">Cancel</button><input type="hidden" id="editGroupId"></div>
+            <div class="p-2"><table class="min-w-full text-sm"><tbody id="groupsTableBody"></tbody></table></div>
+        </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-5">
-                <h2 class="font-bold text-xl mb-2"><i class="fas fa-clock"></i> Scheduled & Recurring (Simulated)</h2>
-                <div class="grid grid-cols-2 gap-2 mb-2"><select id="scheduleGroupSelect" class="border rounded p-2"></select><input type="datetime-local" id="scheduleDatetime" class="border rounded p-2"></div>
-                <div class="flex gap-2 mb-2"><select id="recurringType" class="border rounded p-2 flex-1"><option value="once">One-time</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select><input type="time" id="recurringTime" class="border rounded p-2"></div>
-                <textarea id="scheduleMessage" rows="2" class="w-full border rounded p-2 mb-2" placeholder="Message..."></textarea>
-                <button id="scheduleTextBtn" class="bg-amber-600 text-white w-full py-2 rounded-xl font-semibold"><i class="fas fa-calendar-alt"></i> Schedule (Simulated)</button>
-                <div class="mt-3"><div class="font-semibold text-sm">Pending jobs</div><div id="scheduledListContainer" class="max-h-32 overflow-y-auto text-sm space-y-1 mt-1"></div></div>
-            </div>
+        <!-- Templates card -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-3">
+            <h2 class="font-bold text-lg mb-2"><i class="fas fa-templates"></i> Templates</h2>
+            <div class="flex flex-wrap gap-1 mb-2" id="templateList"></div>
+            <div class="flex flex-col gap-2"><input type="text" id="newTemplateName" placeholder="Name" class="border rounded px-3 py-2 text-sm"><textarea id="newTemplateText" rows="1" placeholder="Message text" class="border rounded px-3 py-2 text-sm"></textarea><button id="addTemplateBtn" class="bg-purple-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-save"></i> Save Template</button></div>
+        </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md">
-                <div class="px-5 py-3 border-b flex justify-between"><h2 class="font-semibold"><i class="fas fa-history"></i> Activity Log (Simulated SMS & Violations)</h2><button id="clearLogBtn" class="text-xs text-red-500">Clear</button></div>
-                <div class="log-area p-3" id="messageLogContainer"><div class="text-center text-gray-400 text-sm py-6">📭 No activity yet.</div></div>
+        <!-- Instant Messaging (Simulated) -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4">
+            <h2 class="font-bold text-lg mb-2"><i class="fas fa-paper-plane text-blue-500"></i> Instant Text (Simulated)</h2>
+            <select id="instantGroupSelect" class="w-full border rounded-xl p-2 mb-2 text-sm"></select>
+            <textarea id="instantMessage" rows="2" class="w-full border rounded-xl p-2 mb-2 text-sm" placeholder="Message..."></textarea>
+            <div class="grid grid-cols-2 gap-2">
+                <button id="sendToGroupBtn" class="bg-blue-600 text-white py-2 rounded-xl text-sm">Sim → Group</button>
+                <button id="sendToSelectedBtn" class="bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 py-2 rounded-xl text-sm">Sim → Selected</button>
+                <button id="sendToAllBtn" class="bg-gray-200 dark:bg-gray-700 py-2 rounded-xl text-sm col-span-2">Sim → All Drivers</button>
             </div>
+        </div>
+
+        <!-- Scheduling -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4">
+            <h2 class="font-bold text-lg mb-2"><i class="fas fa-clock"></i> Scheduled / Recurring (Sim)</h2>
+            <div class="space-y-2">
+                <select id="scheduleGroupSelect" class="w-full border rounded p-2 text-sm"></select>
+                <input type="datetime-local" id="scheduleDatetime" class="w-full border rounded p-2 text-sm">
+                <div class="flex gap-2"><select id="recurringType" class="flex-1 border rounded p-2 text-sm"><option value="once">One-time</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select><input type="time" id="recurringTime" class="flex-1 border rounded p-2 text-sm"></div>
+                <textarea id="scheduleMessage" rows="2" class="w-full border rounded p-2 text-sm" placeholder="Message..."></textarea>
+                <button id="scheduleTextBtn" class="bg-amber-600 text-white w-full py-2 rounded-xl font-semibold text-sm"><i class="fas fa-calendar-alt"></i> Schedule</button>
+            </div>
+            <div class="mt-3"><div class="font-semibold text-sm">Pending jobs</div><div id="scheduledListContainer" class="max-h-32 overflow-y-auto text-xs space-y-1 mt-1"></div></div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow">
+            <div class="px-4 py-2 border-b flex justify-between"><h2 class="font-semibold"><i class="fas fa-history"></i> Activity Log</h2><button id="clearLogBtn" class="text-xs text-red-500">Clear</button></div>
+            <div class="log-area p-2 text-xs" id="messageLogContainer"><div class="text-center text-gray-400 py-4">📭 No activity yet.</div></div>
         </div>
     </div>
 </div>
 
-<!-- Violation Modal -->
-<div id="violationModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50"><div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 shadow-xl"><div class="flex justify-between"><h3 class="font-bold text-lg"><i class="fas fa-gavel text-red-500"></i> Violation History</h3><button id="closeModalBtn" class="text-gray-500"><i class="fas fa-times"></i></button></div><div id="violationModalContent" class="text-sm space-y-2 max-h-96 overflow-y-auto my-3"></div><div class="flex justify-between"><button id="resetViolationsBtn" class="text-red-600 text-sm border px-3 py-1 rounded-lg">Reset violations</button><button id="unsuspendFromModalBtn" class="text-green-600 text-sm border px-3 py-1 rounded-lg">Unsuspend</button></div></div></div>
+<!-- Violation Modal (mobile friendly) -->
+<div id="violationModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4"><div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-5"><div class="flex justify-between"><h3 class="font-bold"><i class="fas fa-gavel text-red-500"></i> Violation History</h3><button id="closeModalBtn" class="text-gray-500"><i class="fas fa-times"></i></button></div><div id="violationModalContent" class="text-sm space-y-2 max-h-64 overflow-y-auto my-3"></div><div class="flex justify-between gap-2"><button id="resetViolationsBtn" class="text-red-600 text-sm border px-3 py-1 rounded-lg flex-1">Reset violations</button><button id="unsuspendFromModalBtn" class="text-green-600 text-sm border px-3 py-1 rounded-lg flex-1">Unsuspend</button></div></div></div>
 
 <script>
-    // -------------------- DATA MODELS --------------------
-    let drivers = [];       // { id, name, phone, groupId, violations: [{reason, date}], suspended, joinDate }
-    let groups = [];
-    let scheduledMessages = [];
-    let templates = [];
-    
-    let autoWelcomeEnabled = true, welcomeMsgText = "Welcome to the fleet! Drive safe.";
-    let autoWarningSms = true, autoSuspend = true, suspendThreshold = 3;
+    // -------------------- DATA MODELS (same as before, fully functional) --------------------
+    let drivers = [], groups = [], scheduledMessages = [], templates = [];
+    let autoWelcomeEnabled = true, welcomeMsgText = "Welcome to the fleet!", autoWarningSms = true, autoSuspend = true, suspendThreshold = 3;
     let darkMode = localStorage.getItem('darkMode') === 'true';
-    
     function genId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 8); }
-    
     function loadData() {
-        const stored = localStorage.getItem('fleet_ultimate_real');
-        if(stored) {
-            const data = JSON.parse(stored);
-            drivers = data.drivers || [];
-            groups = data.groups || [];
-            scheduledMessages = data.scheduledMessages || [];
-            templates = data.templates || [];
-            autoWelcomeEnabled = data.autoWelcomeEnabled ?? true;
-            welcomeMsgText = data.welcomeMsgText || welcomeMsgText;
-            autoWarningSms = data.autoWarningSms ?? true;
-            autoSuspend = data.autoSuspend ?? true;
-            suspendThreshold = data.suspendThreshold ?? 3;
-        } else {
-            drivers = [
-                { id: genId(), name: "Elena Rodriguez", phone: "+15550101", groupId: null, violations: [], suspended: false, joinDate: new Date().toISOString() },
-                { id: genId(), name: "David Kim", phone: "+15550234", groupId: null, violations: [], suspended: false, joinDate: new Date().toISOString() }
-            ];
-            groups = [{ id: genId(), name: "Morning Shift" }, { id: genId(), name: "Night Shift" }];
-            templates = [{ name: "Reminder", text: "Please submit your daily report." }, { name: "Safety", text: "Drive carefully!" }];
-            if(groups[0]) drivers[0].groupId = groups[0].id;
-        }
-        drivers.forEach(d => { if(!d.joinDate) d.joinDate = new Date().toISOString(); if(!d.violations) d.violations = []; });
-        updateUIsettings();
-        saveAll();
+        const stored = localStorage.getItem('fleet_mobile_v1');
+        if(stored) { const d=JSON.parse(stored); drivers=d.drivers||[]; groups=d.groups||[]; scheduledMessages=d.scheduledMessages||[]; templates=d.templates||[]; autoWelcomeEnabled=d.autoWelcomeEnabled??true; welcomeMsgText=d.welcomeMsgText||welcomeMsgText; autoWarningSms=d.autoWarningSms??true; autoSuspend=d.autoSuspend??true; suspendThreshold=d.suspendThreshold??3; }
+        else { drivers=[{id:genId(),name:"Elena Rodriguez",phone:"+15550101",groupId:null,violations:[],suspended:false,joinDate:new Date().toISOString()},{id:genId(),name:"David Kim",phone:"+15550234",groupId:null,violations:[],suspended:false,joinDate:new Date().toISOString()}]; groups=[{id:genId(),name:"Morning Shift"},{id:genId(),name:"Night Shift"}]; templates=[{name:"Reminder",text:"Please submit report"},{name:"Safety",text:"Drive carefully"}]; if(groups[0]) drivers[0].groupId=groups[0].id; }
+        drivers.forEach(d=>{if(!d.violations)d.violations=[]; if(!d.joinDate)d.joinDate=new Date().toISOString();});
+        saveAll(); updateUIsettings();
     }
-    function saveAll() { localStorage.setItem('fleet_ultimate_real', JSON.stringify({ drivers, groups, scheduledMessages, templates, autoWelcomeEnabled, welcomeMsgText, autoWarningSms, autoSuspend, suspendThreshold })); }
-    
-    // Simulation logging (only for internal log)
-    function addLogEntry(recipient, phone, message, type = "SMS") {
-        const container = document.getElementById('messageLogContainer');
-        const ts = new Date().toLocaleString();
-        const icon = type === "VIOLATION" ? "fa-gavel text-red-500" : "fa-message text-indigo-400";
-        const bg = type === "VIOLATION" ? "bg-red-50 dark:bg-red-900/30" : "bg-white dark:bg-gray-800";
-        const html = `<div class="${bg} border rounded-lg p-2 mb-2 text-xs shadow-sm"><div class="flex justify-between"><span><i class="fas ${icon}"></i> ${type}</span><span>${ts}</span></div><div class="font-medium">${recipient} ${phone ? '('+phone+')' : ''}</div><div class="text-gray-700 dark:text-gray-300 mt-1">${escapeHtml(message)}</div></div>`;
-        if(container.querySelector('.text-center')) container.innerHTML = '';
-        container.insertAdjacentHTML('afterbegin', html);
+    function saveAll() { localStorage.setItem('fleet_mobile_v1', JSON.stringify({drivers,groups,scheduledMessages,templates,autoWelcomeEnabled,welcomeMsgText,autoWarningSms,autoSuspend,suspendThreshold})); }
+    function addLogEntry(recipient,phone,message,type="SMS"){ let c=document.getElementById('messageLogContainer'); let ts=new Date().toLocaleString(); let icon=type==="VIOLATION"?"fa-gavel text-red-500":"fa-message text-indigo-400"; let bg=type==="VIOLATION"?"bg-red-50 dark:bg-red-900/30":"bg-white dark:bg-gray-800"; let html=`<div class="${bg} border rounded p-2 mb-1 shadow-sm"><div class="flex justify-between"><span><i class="fas ${icon}"></i> ${type}</span><span>${ts}</span></div><div>${recipient} ${phone?`(${phone})`:''}</div><div class="mt-1 break-words">${escapeHtml(message)}</div></div>`; if(c.querySelector('.text-center')) c.innerHTML=''; c.insertAdjacentHTML('afterbegin',html); }
+    function escapeHtml(s){return s.replace(/[&<>]/g,function(m){if(m==='&')return '&amp;';if(m==='<')return '&lt;';if(m==='>')return '&gt;';return m;});}
+    function simulateSendToDriver(d,msg,isWarning=false){if(d.suspended&&!isWarning){addLogEntry(d.name,d.phone,`[SUSPENDED] Not sent: ${msg}`,"SMS");return false;} if(!d.phone){addLogEntry(d.name,"NO_PHONE",`Failed: ${msg}`,"SMS");return false;} addLogEntry(d.name,d.phone,msg,"SMS"); return true;}
+    function simulateSendToGroup(gid,msg){drivers.filter(d=>d.groupId===gid&&!d.suspended).forEach(d=>simulateSendToDriver(d,msg));}
+    function simulateSendToSelected(ids,msg){drivers.filter(d=>ids.includes(d.id)&&!d.suspended).forEach(d=>simulateSendToDriver(d,msg));}
+    function simulateSendToAll(msg){drivers.forEach(d=>simulateSendToDriver(d,msg));}
+    function sendRealSms(phone,message){if(!phone){alert("No phone number");return;} let clean=phone.replace(/\s+/g,'').replace(/[^0-9+]/g,''); if(!clean.startsWith('+'))clean='+'+clean; window.location.href=`sms:${clean}?body=${encodeURIComponent(message)}`;}
+    function reportViolation(id,reason){let d=drivers.find(d=>d.id===id); if(!d)return; let r=reason||prompt(`Violation for ${d.name}:`,"Policy infraction"); if(!r)return; d.violations.push({reason:r.substring(0,200),date:new Date().toISOString()}); let cnt=d.violations.length; let oldGroup=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"none"):"none"; if(d.groupId)d.groupId=null; if(autoWarningSms&&cnt===1)simulateSendToDriver(d,`⚠️ WARNING: ${r}. Removed from group.`,true); if(autoSuspend&&cnt>=suspendThreshold&&!d.suspended){d.suspended=true; simulateSendToDriver(d,`🚫 AUTO-SUSPENDED: ${cnt} violations.`,true); addLogEntry(d.name,d.phone,`Auto-suspended after ${cnt} violations`,"VIOLATION");} addLogEntry(d.name,d.phone,`Violation #${cnt}: ${r} | Removed from "${oldGroup}"`,"VIOLATION"); saveAll(); renderAll(); alert(`Violation recorded. ${d.suspended?'Driver suspended.':''}`);}
+    function toggleSuspend(id){let d=drivers.find(d=>d.id===id); if(d){d.suspended=!d.suspended; addLogEntry(d.name,d.phone,d.suspended?"Manually suspended":"Reinstated","VIOLATION"); saveAll(); renderAll();}}
+    function resetViolations(id){let d=drivers.find(d=>d.id===id); if(d&&confirm("Reset all violations?")){d.violations=[]; addLogEntry(d.name,d.phone,"Violation history reset","VIOLATION"); saveAll(); renderAll(); if(currentViolationDriverId===id)showViolationModal(id);}}
+    function addSchedule(gid,msg,dt,recurring='once',timeOfDay=null){if(!gid||!msg)return false; scheduledMessages.push({id:genId(),groupId:gid,message:msg,scheduledTime:recurring==='once'?dt:`${recurring}:${timeOfDay}`,recurring,lastRun:null}); saveAll(); renderAll(); return true;}
+    function removeSchedule(sid){scheduledMessages=scheduledMessages.filter(s=>s.id!==sid); saveAll(); renderAll();}
+    function checkScheduled(){let now=new Date(); let changed=false; scheduledMessages=scheduledMessages.filter(s=>{if(s.recurring==='once'){if(new Date(s.scheduledTime)<=now){simulateSendToGroup(s.groupId,s.message); return false;} return true;}else{let shouldRun=false; let today=new Date(); let lastRun=s.lastRun?new Date(s.lastRun):null; if(s.recurring==='daily')shouldRun=!lastRun||lastRun.toDateString()!==today.toDateString(); else if(s.recurring==='weekly')shouldRun=!lastRun||(Math.floor((today-lastRun)/(86400000))>=7); if(shouldRun&&s.scheduledTime){let [_,hm]=s.scheduledTime.split(':'); let [hour,minute]=hm.split(':').map(Number); let runTime=new Date(today); runTime.setHours(hour,minute,0,0); if(now>=runTime){simulateSendToGroup(s.groupId,s.message); s.lastRun=now.toISOString(); changed=true;}} return true;}}); if(changed){saveAll(); renderAll();}}
+    function renderTemplates(){let container=document.getElementById('templateList'); container.innerHTML=templates.map(t=>`<button class="template-btn bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full text-xs" data-text="${escapeHtml(t.text)}">${escapeHtml(t.name)}</button>`).join(''); document.querySelectorAll('.template-btn').forEach(btn=>btn.onclick=()=>{document.getElementById('instantMessage').value=btn.dataset.text;});}
+    function addTemplate(name,text){if(name&&text){templates.push({name,text}); saveAll(); renderTemplates();}}
+    let chart; function updateDashboard(){document.getElementById('statTotalDrivers').innerText=drivers.length; let tv=drivers.reduce((s,d)=>s+(d.violations?.length||0),0); document.getElementById('statViolations').innerText=tv; let sc=drivers.filter(d=>d.suspended).length; document.getElementById('statSuspended').innerText=sc; let comp=drivers.length?((drivers.length-sc)/drivers.length*100).toFixed(1):100; document.getElementById('statCompliance').innerText=comp+'%'; if(chart)chart.destroy(); let ctx=document.getElementById('violationChart').getContext('2d'); chart=new Chart(ctx,{type:'bar',data:{labels:drivers.map(d=>d.name.substring(0,8)),datasets:[{label:'Violations',data:drivers.map(d=>d.violations?.length||0),backgroundColor:'#f97316'}]},options:{responsive:true,maintainAspectRatio:true}});}
+    function renderAll(){renderGroupsAndDropdowns(); renderDriversTable(); renderScheduledList(); updateDashboard(); renderTemplates(); document.getElementById('driverCount').innerText=drivers.length; document.getElementById('groupCount').innerText=groups.length;}
+    function renderGroupsAndDropdowns(){let opts='<option value="">-- No Group --</option>'+groups.map(g=>`<option value="${g.id}">${escapeHtml(g.name)}</option>`).join(''); ['driverGroupSelect','instantGroupSelect','scheduleGroupSelect'].forEach(id=>{let el=document.getElementById(id); if(el){let val=el.value; el.innerHTML=opts; if(val&&groups.some(g=>g.id===val))el.value=val;}}); document.getElementById('groupsTableBody').innerHTML=groups.map(g=>`<tr class="border-b"><td class="px-3 py-1 font-medium">${escapeHtml(g.name)}</td><td class="text-center">${drivers.filter(d=>d.groupId===g.id).length}</td><td class="text-right"><button class="edit-group-btn text-blue-500 mr-1" data-id="${g.id}"><i class="fas fa-edit"></i></button><button class="delete-group-btn text-red-400" data-id="${g.id}"><i class="fas fa-trash"></i></button></td></tr>`).join('');}
+    function renderDriversTable(){let tbody=document.getElementById('driversTableBody'); tbody.innerHTML=drivers.map(d=>{let gn=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"—"):"—"; let vc=d.violations?.length||0; let badges=`${vc>0?`<span class="bg-red-100 text-red-800 text-[10px] px-1 rounded-full ml-1">${vc}⚖️</span>`:''}${d.suspended?`<span class="bg-yellow-100 text-yellow-800 text-[10px] px-1 rounded-full ml-1">⛔</span>`:''}`; return `<tr><td class="p-2"><input type="checkbox" class="driver-checkbox" value="${d.id}"></td><td class="font-medium text-sm">${escapeHtml(d.name)} ${badges}</td><td class="text-xs">${escapeHtml(d.phone)}</td><td class="text-xs"><span class="bg-gray-100 dark:bg-gray-700 px-1 rounded">${escapeHtml(gn)}</span></td><td class="whitespace-nowrap"><button class="edit-driver-btn text-indigo-500 mr-1" data-id="${d.id}"><i class="fas fa-pen"></i></button><button class="violation-btn text-red-600 mr-1" data-id="${d.id}"><i class="fas fa-gavel"></i></button><button class="view-violations-btn text-amber-600 mr-1" data-id="${d.id}"><i class="fas fa-list"></i></button><button class="suspend-toggle-btn ${d.suspended?'text-green-600':'text-orange-600'} mr-1" data-id="${d.id}"><i class="fas ${d.suspended?'fa-play-circle':'fa-pause-circle'}"></i></button><button class="real-sms-btn bg-green-500 text-white text-[10px] px-1 py-0.5 rounded-full" data-phone="${escapeHtml(d.phone)}" data-name="${escapeHtml(d.name)}"><i class="fas fa-comment-dots"></i> SMS</button><button class="delete-driver-btn text-gray-400 ml-1" data-id="${d.id}"><i class="fas fa-trash-alt"></i></button></td></tr>`;}).join('');
+        document.querySelectorAll('.real-sms-btn').forEach(btn=>{btn.onclick=(e)=>{e.stopPropagation(); let phone=btn.dataset.phone; let name=btn.dataset.name; let msg=prompt(`📱 Real SMS to ${name} (${phone})`,"Hello from fleet"); if(msg&&phone) sendRealSms(phone,msg);};});
+        document.getElementById('selectAllDrivers').onclick=(e)=>document.querySelectorAll('.driver-checkbox').forEach(cb=>cb.checked=e.target.checked);
     }
-    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-    
-    // Simulated send (only logs)
-    function simulateSendToDriver(driver, messageText, isWarning = false) {
-        if(driver.suspended && !isWarning) { addLogEntry(driver.name, driver.phone, `[SUSPENDED] Not sent: ${messageText}`, "SMS"); return false; }
-        if(!driver.phone) { addLogEntry(driver.name, "NO_PHONE", `Failed: ${messageText}`, "SMS"); return false; }
-        addLogEntry(driver.name, driver.phone, messageText, "SMS");
-        return true;
+    function renderScheduledList(){let c=document.getElementById('scheduledListContainer'); if(scheduledMessages.length===0){c.innerHTML='<div class="text-gray-400 text-xs text-center">No pending jobs</div>'; return;} c.innerHTML=scheduledMessages.map(s=>{let grp=groups.find(g=>g.id===s.groupId)?.name||"deleted"; let td=s.recurring==='once'?new Date(s.scheduledTime).toLocaleString():`${s.recurring} at ${s.scheduledTime.split(':')[1]}`; return `<div class="bg-white dark:bg-gray-700 border rounded p-1 flex justify-between text-xs"><span>🕒 ${td} → ${escapeHtml(grp)}: ${escapeHtml(s.message.substring(0,25))}</span><button class="cancel-schedule-btn text-red-500" data-id="${s.id}"><i class="fas fa-times"></i></button></div>`;}).join('');}
+    let currentViolationDriverId=null; function showViolationModal(id){let d=drivers.find(d=>d.id===id); if(!d)return; currentViolationDriverId=id; let content=(d.violations||[]).map((v,i)=>`<div class="border-b py-1"><span class="text-[11px]">${new Date(v.date).toLocaleString()}</span><br>⚠️ ${i+1}: ${escapeHtml(v.reason)}</div>`).join('')||"No violations"; document.getElementById('violationModalContent').innerHTML=content; document.getElementById('violationModal').classList.remove('hidden'); document.getElementById('violationModal').classList.add('flex');}
+    function closeModal(){document.getElementById('violationModal').classList.add('hidden'); currentViolationDriverId=null;}
+    function updateUIsettings(){document.getElementById('autoWelcomeToggle').checked=autoWelcomeEnabled; document.getElementById('welcomeMessage').value=welcomeMsgText; document.getElementById('autoWarningSmsToggle').checked=autoWarningSms; document.getElementById('autoSuspendToggle').checked=autoSuspend; document.getElementById('suspendThreshold').value=suspendThreshold;}
+    function bindEvents(){
+        document.body.addEventListener('click',(e)=>{if(e.target.closest('.delete-driver-btn')){let id=e.target.closest('.delete-driver-btn').dataset.id; if(confirm("Delete?")){drivers=drivers.filter(d=>d.id!==id); saveAll(); renderAll();}} if(e.target.closest('.violation-btn'))reportViolation(e.target.closest('.violation-btn').dataset.id); if(e.target.closest('.view-violations-btn'))showViolationModal(e.target.closest('.view-violations-btn').dataset.id); if(e.target.closest('.suspend-toggle-btn'))toggleSuspend(e.target.closest('.suspend-toggle-btn').dataset.id); if(e.target.closest('.edit-driver-btn')){let id=e.target.closest('.edit-driver-btn').dataset.id; let d=drivers.find(d=>d.id===id); if(d){document.getElementById('driverName').value=d.name; document.getElementById('driverPhone').value=d.phone; document.getElementById('driverGroupSelect').value=d.groupId||""; document.getElementById('editDriverId').value=id; document.getElementById('addDriverBtn').innerHTML='<i class="fas fa-save"></i> Update'; document.getElementById('cancelDriverEdit').classList.remove('hidden');}} if(e.target.closest('.delete-group-btn')){let gid=e.target.closest('.delete-group-btn').dataset.id; if(confirm("Delete group?")){drivers.forEach(d=>{if(d.groupId===gid)d.groupId=null;}); groups=groups.filter(g=>g.id!==gid); saveAll(); renderAll();}} if(e.target.closest('.edit-group-btn')){let gid=e.target.closest('.edit-group-btn').dataset.id; let g=groups.find(g=>g.id===gid); if(g){document.getElementById('groupNameInput').value=g.name; document.getElementById('editGroupId').value=gid; document.getElementById('addGroupBtn').innerHTML='<i class="fas fa-save"></i> Update'; document.getElementById('cancelGroupEdit').classList.remove('hidden');}} if(e.target.closest('.cancel-schedule-btn'))removeSchedule(e.target.closest('.cancel-schedule-btn').dataset.id);});
+        document.getElementById('addDriverBtn').onclick=()=>{let name=document.getElementById('driverName').value.trim(), phone=document.getElementById('driverPhone').value.trim(), groupId=document.getElementById('driverGroupSelect').value||null, editId=document.getElementById('editDriverId').value; if(!name||!phone)return alert("Name & phone"); if(editId){let idx=drivers.findIndex(d=>d.id===editId); if(idx!==-1)drivers[idx]={...drivers[idx],name,phone,groupId};}else{let nd={id:genId(),name,phone,groupId,violations:[],suspended:false,joinDate:new Date().toISOString()}; drivers.push(nd); if(autoWelcomeEnabled)simulateSendToDriver(nd,welcomeMsgText);} saveAll(); renderAll(); document.getElementById('driverName').value=''; document.getElementById('driverPhone').value=''; document.getElementById('editDriverId').value=''; document.getElementById('addDriverBtn').innerHTML='<i class="fas fa-plus"></i> Add'; document.getElementById('cancelDriverEdit').classList.add('hidden');};
+        document.getElementById('cancelDriverEdit').onclick=()=>{document.getElementById('editDriverId').value=''; document.getElementById('driverName').value=''; document.getElementById('driverPhone').value=''; document.getElementById('addDriverBtn').innerHTML='<i class="fas fa-plus"></i> Add'; document.getElementById('cancelDriverEdit').classList.add('hidden');};
+        document.getElementById('addGroupBtn').onclick=()=>{let name=document.getElementById('groupNameInput').value.trim(), editId=document.getElementById('editGroupId').value; if(!name)return; if(editId){let g=groups.find(g=>g.id===editId); if(g)g.name=name;}else groups.push({id:genId(),name}); saveAll(); renderAll(); document.getElementById('groupNameInput').value=''; document.getElementById('editGroupId').value=''; document.getElementById('addGroupBtn').innerHTML='<i class="fas fa-plus-circle"></i> Create'; document.getElementById('cancelGroupEdit').classList.add('hidden');};
+        document.getElementById('cancelGroupEdit').onclick=()=>{document.getElementById('groupNameInput').value=''; document.getElementById('editGroupId').value=''; document.getElementById('addGroupBtn').innerHTML='<i class="fas fa-plus-circle"></i> Create'; document.getElementById('cancelGroupEdit').classList.add('hidden');};
+        document.getElementById('sendToGroupBtn').onclick=()=>{let gid=document.getElementById('instantGroupSelect').value, msg=document.getElementById('instantMessage').value.trim(); if(gid&&msg)simulateSendToGroup(gid,msg); else alert("Select group & message");};
+        document.getElementById('sendToSelectedBtn').onclick=()=>{let ids=[...document.querySelectorAll('.driver-checkbox:checked')].map(cb=>cb.value), msg=document.getElementById('instantMessage').value.trim(); if(ids.length&&msg)simulateSendToSelected(ids,msg); else alert("Select drivers & message");};
+        document.getElementById('sendToAllBtn').onclick=()=>{let msg=document.getElementById('instantMessage').value.trim(); if(msg)simulateSendToAll(msg); else alert("Message required");};
+        document.getElementById('scheduleTextBtn').onclick=()=>{let gid=document.getElementById('scheduleGroupSelect').value, msg=document.getElementById('scheduleMessage').value.trim(), rec=document.getElementById('recurringType').value, tm=document.getElementById('recurringTime').value; if(!gid||!msg)return alert("Group & message"); if(rec==='once'){let dt=document.getElementById('scheduleDatetime').value; if(!dt)return alert("Select datetime"); addSchedule(gid,msg,dt,'once');}else{if(!tm)return alert("Set time"); addSchedule(gid,msg,`${rec}:${tm}`,rec,tm);} document.getElementById('scheduleMessage').value='';};
+        document.getElementById('clearLogBtn').onclick=()=>{document.getElementById('messageLogContainer').innerHTML='<div class="text-center text-gray-400 text-sm py-6">📭 Log cleared.</div>';};
+        document.getElementById('darkModeToggle').onclick=()=>{document.body.classList.toggle('dark-mode'); darkMode=document.body.classList.contains('dark-mode'); localStorage.setItem('darkMode',darkMode);};
+        document.getElementById('addTemplateBtn').onclick=()=>{let name=document.getElementById('newTemplateName').value.trim(), text=document.getElementById('newTemplateText').value.trim(); if(name&&text)addTemplate(name,text);};
+        document.getElementById('autoWelcomeToggle').onchange=(e)=>{autoWelcomeEnabled=e.target.checked; saveAll();};
+        document.getElementById('welcomeMessage').onchange=(e)=>{welcomeMsgText=e.target.value; saveAll();};
+        document.getElementById('autoWarningSmsToggle').onchange=(e)=>{autoWarningSms=e.target.checked; saveAll();};
+        document.getElementById('autoSuspendToggle').onchange=(e)=>{autoSuspend=e.target.checked; saveAll();};
+        document.getElementById('suspendThreshold').onchange=(e)=>{suspendThreshold=parseInt(e.target.value)||3; saveAll();};
+        document.getElementById('closeModalBtn').onclick=closeModal;
+        document.getElementById('resetViolationsBtn').onclick=()=>{if(currentViolationDriverId)resetViolations(currentViolationDriverId);};
+        document.getElementById('unsuspendFromModalBtn').onclick=()=>{if(currentViolationDriverId){toggleSuspend(currentViolationDriverId); showViolationModal(currentViolationDriverId);}};
+        window.onclick=(e)=>{if(e.target===document.getElementById('violationModal'))closeModal();};
     }
-    function simulateSendToGroup(groupId, msg) { drivers.filter(d => d.groupId === groupId && !d.suspended).forEach(d => simulateSendToDriver(d, msg)); }
-    function simulateSendToSelected(ids, msg) { drivers.filter(d => ids.includes(d.id) && !d.suspended).forEach(d => simulateSendToDriver(d, msg)); }
-    function simulateSendToAll(msg) { drivers.forEach(d => simulateSendToDriver(d, msg)); }
-    
-    // REAL SMS via device: opens native SMS app
-    function sendRealSms(phone, message) {
-        if(!phone) { alert("No phone number for this driver."); return; }
-        let cleanPhone = phone.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
-        if(!cleanPhone.startsWith('+')) cleanPhone = '+' + cleanPhone;
-        const encodedMessage = encodeURIComponent(message);
-        window.location.href = `sms:${cleanPhone}?body=${encodedMessage}`;
-    }
-    
-    // Violation + auto-suspend logic
-    function reportViolation(driverId, reasonText) {
-        const driver = drivers.find(d => d.id === driverId);
-        if(!driver) return;
-        const reason = reasonText || prompt(`Violation reason for ${driver.name}:`, "Policy infraction");
-        if(!reason) return;
-        driver.violations.push({ reason: reason.substring(0,200), date: new Date().toISOString() });
-        const count = driver.violations.length;
-        const oldGroup = driver.groupId ? (groups.find(g=>g.id===driver.groupId)?.name || "none") : "none";
-        if(driver.groupId) driver.groupId = null;
-        if(autoWarningSms && count === 1) simulateSendToDriver(driver, `⚠️ WARNING: ${reason}. Removed from group.`, true);
-        if(autoSuspend && count >= suspendThreshold && !driver.suspended) {
-            driver.suspended = true;
-            simulateSendToDriver(driver, `🚫 AUTO-SUSPENDED: ${count} violations (threshold=${suspendThreshold}).`, true);
-            addLogEntry(driver.name, driver.phone, `Auto-suspended after ${count} violations`, "VIOLATION");
-        }
-        addLogEntry(driver.name, driver.phone, `Violation #${count}: ${reason} | Removed from "${oldGroup}"`, "VIOLATION");
-        saveAll(); renderAll();
-        alert(`Violation recorded. ${driver.suspended ? 'Driver suspended.' : ''}`);
-    }
-    function toggleSuspend(driverId) { let d = drivers.find(d=>d.id===driverId); if(d){ d.suspended = !d.suspended; addLogEntry(d.name, d.phone, d.suspended ? "Manually suspended" : "Reinstated", "VIOLATION"); saveAll(); renderAll(); } }
-    function resetViolations(driverId) { let d = drivers.find(d=>d.id===driverId); if(d && confirm("Reset all violations?")){ d.violations = []; addLogEntry(d.name, d.phone, "Violation history reset", "VIOLATION"); saveAll(); renderAll(); if(currentViolationDriverId===driverId) showViolationModal(driverId); } }
-    
-    // Scheduling (simulated)
-    function addSchedule(groupId, message, scheduledTimeISO, recurring = 'once', timeOfDay = null) {
-        if(!groupId || !message) return false;
-        let finalTime = recurring === 'once' ? scheduledTimeISO : `${recurring}:${timeOfDay}`;
-        scheduledMessages.push({ id: genId(), groupId, message, scheduledTime: finalTime, recurring, lastRun: null });
-        saveAll(); renderAll();
-        return true;
-    }
-    function removeSchedule(sid) { scheduledMessages = scheduledMessages.filter(s => s.id !== sid); saveAll(); renderAll(); }
-    function checkScheduled() {
-        const now = new Date();
-        let changed = false;
-        scheduledMessages = scheduledMessages.filter(s => {
-            if(s.recurring === 'once') {
-                if(new Date(s.scheduledTime) <= now) { simulateSendToGroup(s.groupId, s.message); return false; }
-                return true;
-            } else {
-                let shouldRun = false;
-                const today = new Date();
-                const lastRun = s.lastRun ? new Date(s.lastRun) : null;
-                if(s.recurring === 'daily') shouldRun = !lastRun || lastRun.toDateString() !== today.toDateString();
-                else if(s.recurring === 'weekly') shouldRun = !lastRun || (Math.floor((today - lastRun)/(86400000)) >= 7);
-                if(shouldRun && s.scheduledTime) {
-                    const [_, hourMin] = s.scheduledTime.split(':');
-                    const [hour, minute] = hourMin.split(':').map(Number);
-                    const runTime = new Date(today); runTime.setHours(hour, minute, 0, 0);
-                    if(now >= runTime) { simulateSendToGroup(s.groupId, s.message); s.lastRun = now.toISOString(); changed = true; }
-                }
-                return true;
-            }
-        });
-        if(changed) { saveAll(); renderAll(); }
-    }
-    
-    // Templates
-    function renderTemplates() { const container = document.getElementById('templateList'); container.innerHTML = templates.map(t => `<button class="template-btn bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm" data-text="${escapeHtml(t.text)}">${escapeHtml(t.name)}</button>`).join(''); document.querySelectorAll('.template-btn').forEach(btn => btn.onclick = () => { document.getElementById('instantMessage').value = btn.dataset.text; }); }
-    function addTemplate(name, text) { if(name && text) { templates.push({ name, text }); saveAll(); renderTemplates(); } }
-    
-    // Dashboard Chart
-    let chart;
-    function updateDashboard() {
-        document.getElementById('statTotalDrivers').innerText = drivers.length;
-        const totalViolations = drivers.reduce((s,d)=> s + (d.violations?.length||0),0);
-        document.getElementById('statViolations').innerText = totalViolations;
-        const suspendedCount = drivers.filter(d=>d.suspended).length;
-        document.getElementById('statSuspended').innerText = suspendedCount;
-        const compliance = drivers.length ? ((drivers.length - suspendedCount)/drivers.length*100).toFixed(1) : 100;
-        document.getElementById('statCompliance').innerText = compliance+'%';
-        if(chart) chart.destroy();
-        const ctx = document.getElementById('violationChart').getContext('2d');
-        chart = new Chart(ctx, { type: 'bar', data: { labels: drivers.map(d=>d.name.substring(0,10)), datasets: [{ label: 'Violations', data: drivers.map(d=>d.violations?.length||0), backgroundColor: '#f97316' }] }, options: { responsive: true, maintainAspectRatio: true } });
-    }
-    
-    function renderAll() {
-        renderGroupsAndDropdowns();
-        renderDriversTable();
-        renderScheduledList();
-        updateDashboard();
-        renderTemplates();
-        document.getElementById('driverCount').innerText = drivers.length;
-        document.getElementById('groupCount').innerText = groups.length;
-    }
-    function renderGroupsAndDropdowns() {
-        const opts = '<option value="">-- No Group --</option>' + groups.map(g=>`<option value="${g.id}">${escapeHtml(g.name)}</option>`).join('');
-        ['driverGroupSelect','instantGroupSelect','scheduleGroupSelect'].forEach(id => { let el=document.getElementById(id); if(el){ let val=el.value; el.innerHTML=opts; if(val && groups.some(g=>g.id===val)) el.value=val; } });
-        document.getElementById('groupsTableBody').innerHTML = groups.map(g=>`<tr><td class="px-3 py-1 font-medium">${escapeHtml(g.name)}</td><td class="text-center">${drivers.filter(d=>d.groupId===g.id).length}</td><td class="text-right"><button class="edit-group-btn text-blue-500 mr-1" data-id="${g.id}"><i class="fas fa-edit"></i></button><button class="delete-group-btn text-red-400" data-id="${g.id}"><i class="fas fa-trash"></i></button></td></tr>`).join('');
-    }
-    function renderDriversTable() {
-        const tbody = document.getElementById('driversTableBody');
-        tbody.innerHTML = drivers.map(d => {
-            const groupName = d.groupId ? (groups.find(g=>g.id===d.groupId)?.name||"—") : "— No group —";
-            const vCount = d.violations?.length||0;
-            let badges = `${vCount>0?`<span class="bg-red-100 text-red-800 text-xs px-1 rounded-full ml-1">${vCount} ⚖️</span>`:''}${d.suspended?'<span class="bg-yellow-100 text-yellow-800 text-xs px-1 rounded-full ml-1">⛔ Suspended</span>':''}`;
-            return `<tr><td class="px-3 py-2"><input type="checkbox" class="driver-checkbox" value="${d.id}"></td><td class="font-medium">${escapeHtml(d.name)} ${badges}</td><td class="text-xs">${escapeHtml(d.phone)}</td><td class="text-xs"><span class="bg-gray-100 dark:bg-gray-700 px-2 rounded-full">${escapeHtml(groupName)}</span></td><td class="text-center whitespace-nowrap">
-                <button class="edit-driver-btn text-indigo-500 mr-1" data-id="${d.id}" title="Edit"><i class="fas fa-pen"></i></button>
-                <button class="violation-btn text-red-600 mr-1" data-id="${d.id}" title="Report violation"><i class="fas fa-gavel"></i></button>
-                <button class="view-violations-btn text-amber-600 mr-1" data-id="${d.id}" title="History"><i class="fas fa-list"></i></button>
-                <button class="suspend-toggle-btn ${d.suspended?'text-green-600':'text-orange-600'} mr-1" data-id="${d.id}" title="${d.suspended?'Reinstate':'Suspend'}"><i class="fas ${d.suspended?'fa-play-circle':'fa-pause-circle'}"></i></button>
-                <button class="real-sms-btn" data-phone="${escapeHtml(d.phone)}" data-name="${escapeHtml(d.name)}" data-id="${d.id}" title="Send real SMS from your phone"><i class="fas fa-comment-dots"></i> SMS</button>
-                <button class="delete-driver-btn text-gray-400 ml-1" data-id="${d.id}" title="Delete"><i class="fas fa-trash-alt"></i></button>
-            </td></tr>`;
-        }).join('');
-        // Attach real SMS handlers
-        document.querySelectorAll('.real-sms-btn').forEach(btn => {
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                const phone = btn.dataset.phone;
-                const name = btn.dataset.name;
-                const msg = prompt(`📱 Send real SMS to ${name} (${phone})\n\nMessage:`, "Hello from fleet management");
-                if(msg && phone) sendRealSms(phone, msg);
-            };
-        });
-        document.getElementById('selectAllDrivers').onclick = (e) => document.querySelectorAll('.driver-checkbox').forEach(cb => cb.checked = e.target.checked);
-    }
-    function renderScheduledList() {
-        const container = document.getElementById('scheduledListContainer');
-        if(scheduledMessages.length===0){ container.innerHTML='<div class="text-gray-400 text-xs text-center">No pending jobs</div>'; return; }
-        container.innerHTML = scheduledMessages.map(s => {
-            const grp = groups.find(g=>g.id===s.groupId)?.name||"deleted";
-            let timeDisplay = s.recurring==='once' ? new Date(s.scheduledTime).toLocaleString() : `${s.recurring} at ${s.scheduledTime.split(':')[1]}`;
-            return `<div class="bg-white dark:bg-gray-700 border rounded p-1 flex justify-between text-xs"><div>🕒 ${timeDisplay} → ${escapeHtml(grp)}: ${escapeHtml(s.message.substring(0,30))}</div><button class="cancel-schedule-btn text-red-500" data-id="${s.id}"><i class="fas fa-times"></i></button></div>`;
-        }).join('');
-    }
-    
-    // Modal
-    let currentViolationDriverId = null;
-    function showViolationModal(driverId) { let d=drivers.find(d=>d.id===driverId); if(!d) return; currentViolationDriverId=driverId; document.getElementById('violationModalContent').innerHTML = (d.violations||[]).map((v,i)=>`<div class="border-b py-1"><span class="text-xs">${new Date(v.date).toLocaleString()}</span><br>⚠️ #${i+1}: ${escapeHtml(v.reason)}</div>`).join('')||"No violations"; document.getElementById('violationModal').classList.remove('hidden'); document.getElementById('violationModal').classList.add('flex'); }
-    function closeModal() { document.getElementById('violationModal').classList.add('hidden'); currentViolationDriverId=null; }
-    function updateUIsettings() { document.getElementById('autoWelcomeToggle').checked=autoWelcomeEnabled; document.getElementById('welcomeMessage').value=welcomeMsgText; document.getElementById('autoWarningSmsToggle').checked=autoWarningSms; document.getElementById('autoSuspendToggle').checked=autoSuspend; document.getElementById('suspendThreshold').value=suspendThreshold; }
-    
-    // Event binding
-    function bindEvents() {
-        document.body.addEventListener('click', (e) => {
-            if(e.target.closest('.delete-driver-btn')) { let id=e.target.closest('.delete-driver-btn').dataset.id; if(confirm("Delete?")){ drivers=drivers.filter(d=>d.id!==id); saveAll(); renderAll(); } }
-            if(e.target.closest('.violation-btn')) reportViolation(e.target.closest('.violation-btn').dataset.id);
-            if(e.target.closest('.view-violations-btn')) showViolationModal(e.target.closest('.view-violations-btn').dataset.id);
-            if(e.target.closest('.suspend-toggle-btn')) toggleSuspend(e.target.closest('.suspend-toggle-btn').dataset.id);
-            if(e.target.closest('.edit-driver-btn')) { let id=e.target.closest('.edit-driver-btn').dataset.id; let d=drivers.find(d=>d.id===id); if(d){ document.getElementById('driverName').value=d.name; document.getElementById('driverPhone').value=d.phone; document.getElementById('driverGroupSelect').value=d.groupId||""; document.getElementById('editDriverId').value=id; document.getElementById('addDriverBtn').innerHTML='<i class="fas fa-save"></i> Update'; document.getElementById('cancelDriverEdit').classList.remove('hidden'); } }
-            if(e.target.closest('.delete-group-btn')) { let gid=e.target.closest('.delete-group-btn').dataset.id; if(confirm("Delete group?")){ drivers.forEach(d=>{if(d.groupId===gid) d.groupId=null;}); groups=groups.filter(g=>g.id!==gid); saveAll(); renderAll(); } }
-            if(e.target.closest('.edit-group-btn')) { let gid=e.target.closest('.edit-group-btn').dataset.id; let g=groups.find(g=>g.id===gid); if(g){ document.getElementById('groupNameInput').value=g.name; document.getElementById('editGroupId').value=gid; document.getElementById('addGroupBtn').innerHTML='<i class="fas fa-save"></i> Update'; document.getElementById('cancelGroupEdit').classList.remove('hidden'); } }
-            if(e.target.closest('.cancel-schedule-btn')) removeSchedule(e.target.closest('.cancel-schedule-btn').dataset.id);
-        });
-        document.getElementById('addDriverBtn').onclick = () => { let name=document.getElementById('driverName').value.trim(), phone=document.getElementById('driverPhone').value.trim(), groupId=document.getElementById('driverGroupSelect').value||null, editId=document.getElementById('editDriverId').value; if(!name||!phone) return alert("Name & phone"); if(editId){ let idx=drivers.findIndex(d=>d.id===editId); if(idx!==-1) drivers[idx]={...drivers[idx], name, phone, groupId}; } else { drivers.push({ id: genId(), name, phone, groupId, violations: [], suspended: false, joinDate: new Date().toISOString() }); if(autoWelcomeEnabled) simulateSendToDriver(drivers[drivers.length-1], welcomeMsgText); } saveAll(); renderAll(); document.getElementById('driverName').value=''; document.getElementById('driverPhone').value=''; document.getElementById('editDriverId').value=''; document.getElementById('addDriverBtn').innerHTML='<i class="fas fa-plus"></i> Add'; document.getElementById('cancelDriverEdit').classList.add('hidden'); };
-        document.getElementById('cancelDriverEdit').onclick = () => { document.getElementById('editDriverId').value=''; document.getElementById('driverName').value=''; document.getElementById('driverPhone').value=''; document.getElementById('addDriverBtn').innerHTML='<i class="fas fa-plus"></i> Add'; document.getElementById('cancelDriverEdit').classList.add('hidden'); };
-        document.getElementById('addGroupBtn').onclick = () => { let name=document.getElementById('groupNameInput').value.trim(), editId=document.getElementById('editGroupId').value; if(!name) return; if(editId){ let g=groups.find(g=>g.id===editId); if(g) g.name=name; } else groups.push({ id: genId(), name }); saveAll(); renderAll(); document.getElementById('groupNameInput').value=''; document.getElementById('editGroupId').value=''; document.getElementById('addGroupBtn').innerHTML='<i class="fas fa-plus-circle"></i> Create'; document.getElementById('cancelGroupEdit').classList.add('hidden'); };
-        document.getElementById('cancelGroupEdit').onclick = () => { document.getElementById('groupNameInput').value=''; document.getElementById('editGroupId').value=''; document.getElementById('addGroupBtn').innerHTML='<i class="fas fa-plus-circle"></i> Create'; document.getElementById('cancelGroupEdit').classList.add('hidden'); };
-        document.getElementById('sendToGroupBtn').onclick = () => { let gid=document.getElementById('instantGroupSelect').value, msg=document.getElementById('instantMessage').value.trim(); if(gid && msg) simulateSendToGroup(gid, msg); else alert("Select group & message"); };
-        document.getElementById('sendToSelectedBtn').onclick = () => { let ids=[...document.querySelectorAll('.driver-checkbox:checked')].map(cb=>cb.value), msg=document.getElementById('instantMessage').value.trim(); if(ids.length && msg) simulateSendToSelected(ids, msg); else alert("Select drivers & message"); };
-        document.getElementById('sendToAllBtn').onclick = () => { let msg=document.getElementById('instantMessage').value.trim(); if(msg) simulateSendToAll(msg); else alert("Message required"); };
-        document.getElementById('scheduleTextBtn').onclick = () => { let gid=document.getElementById('scheduleGroupSelect').value, msg=document.getElementById('scheduleMessage').value.trim(), recurring=document.getElementById('recurringType').value, timeInput=document.getElementById('recurringTime').value; if(!gid||!msg) return alert("Group and message"); if(recurring==='once') { let dt=document.getElementById('scheduleDatetime').value; if(!dt) return alert("Select datetime"); addSchedule(gid, msg, dt, 'once'); } else { if(!timeInput) return alert("Set time for recurring"); addSchedule(gid, msg, `${recurring}:${timeInput}`, recurring, timeInput); } document.getElementById('scheduleMessage').value=''; };
-        document.getElementById('clearLogBtn').onclick = () => { document.getElementById('messageLogContainer').innerHTML='<div class="text-center text-gray-400 text-sm py-6">📭 Log cleared.</div>'; };
-        document.getElementById('darkModeToggle').onclick = () => { document.body.classList.toggle('dark-mode'); darkMode=document.body.classList.contains('dark-mode'); localStorage.setItem('darkMode', darkMode); };
-        document.getElementById('addTemplateBtn').onclick = () => { let name=document.getElementById('newTemplateName').value.trim(), text=document.getElementById('newTemplateText').value.trim(); if(name&&text) addTemplate(name, text); };
-        document.getElementById('autoWelcomeToggle').onchange = (e) => { autoWelcomeEnabled=e.target.checked; saveAll(); };
-        document.getElementById('welcomeMessage').onchange = (e) => { welcomeMsgText=e.target.value; saveAll(); };
-        document.getElementById('autoWarningSmsToggle').onchange = (e) => { autoWarningSms=e.target.checked; saveAll(); };
-        document.getElementById('autoSuspendToggle').onchange = (e) => { autoSuspend=e.target.checked; saveAll(); };
-        document.getElementById('suspendThreshold').onchange = (e) => { suspendThreshold=parseInt(e.target.value)||3; saveAll(); };
-        document.getElementById('closeModalBtn').onclick = closeModal;
-        document.getElementById('resetViolationsBtn').onclick = () => { if(currentViolationDriverId) resetViolations(currentViolationDriverId); };
-        document.getElementById('unsuspendFromModalBtn').onclick = () => { if(currentViolationDriverId) { toggleSuspend(currentViolationDriverId); showViolationModal(currentViolationDriverId); } };
-        window.onclick = (e) => { if(e.target===document.getElementById('violationModal')) closeModal(); };
-    }
-    
-    function init() { loadData(); bindEvents(); renderAll(); setInterval(checkScheduled, 30000); checkScheduled(); if(darkMode) document.body.classList.add('dark-mode'); }
+    function init(){loadData(); bindEvents(); renderAll(); setInterval(checkScheduled,30000); checkScheduled(); if(darkMode)document.body.classList.add('dark-mode');}
     init();
 </script>
 </body>
