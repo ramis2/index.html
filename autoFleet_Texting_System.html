@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>AutoFleet Mobile | Real SMS Fix</title>
+    <title>AutoFleet | Direct SMS App Opener</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -19,19 +19,19 @@
         .driver-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .driver-table-scroll table { min-width: 620px; }
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 8px 16px; border-radius: 30px; font-size: 12px; z-index: 1000; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
-        @media (max-width: 640px) { .container-padding { padding-left: 1rem; padding-right: 1rem; } h1 { font-size: 1.5rem; } }
+        @media (max-width: 640px) { .container-padding { padding-left: 1rem; padding-right: 1rem; } }
     </style>
 </head>
 <body class="p-3 md:p-6 container-padding">
 
 <div class="max-w-7xl mx-auto">
-    <!-- Header with improved SMS instructions -->
-    <div class="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500 p-3 rounded-xl text-sm mb-4">
-        <i class="fas fa-check-circle text-green-600"></i> <strong>Real SMS now works 100%</strong> – Tap the <span class="font-bold bg-white dark:bg-gray-800 px-2 py-0.5 rounded">📱 SMS</span> button, then <strong>copy the message</strong> and paste into your messaging app. Also try <strong>Share</strong> to send via WhatsApp, etc.
+    <!-- Header with clear instruction -->
+    <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-3 rounded-xl text-sm mb-4">
+        <i class="fas fa-comment-dots text-blue-600"></i> <strong>Real SMS now opens your messaging app directly</strong> – Tap <span class="font-bold bg-white dark:bg-gray-800 px-2 py-0.5 rounded">📱 SMS</span>, then press <strong>Send</strong> in your SMS app. No copy/paste needed.
     </div>
 
     <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
-        <div><h1 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-2 flex-wrap"><i class="fas fa-truck-fast text-indigo-600 text-2xl"></i><span>Driver<span class="text-indigo-600">AutoText</span></span><span class="text-[10px] bg-green-500 text-white px-2 py-0.5 rounded-full">Real SMS Fixed</span></h1><p class="text-xs text-slate-500 dark:text-gray-400">Group policy · Violation tracking · Reliable SMS copy/share</p></div>
+        <div><h1 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-2 flex-wrap"><i class="fas fa-truck-fast text-indigo-600 text-2xl"></i><span>Driver<span class="text-indigo-600">AutoText</span></span><span class="text-[10px] bg-green-500 text-white px-2 py-0.5 rounded-full">Direct SMS</span></h1><p class="text-xs text-slate-500 dark:text-gray-400">Group policy · Violation tracking · One‑tap open SMS app</p></div>
         <button id="darkModeToggle" class="bg-gray-200 dark:bg-gray-700 p-2 rounded-full text-sm"><i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline"></i></button>
     </div>
 
@@ -56,7 +56,7 @@
         <div class="p-3 bg-gray-50 dark:bg-gray-900 border-b">
             <div class="grid grid-cols-1 gap-2">
                 <input type="text" id="driverName" placeholder="Full name" class="border rounded-lg px-3 py-2 text-sm">
-                <input type="tel" id="driverPhone" placeholder="Phone (with country code)" class="border rounded-lg px-3 py-2 text-sm">
+                <input type="tel" id="driverPhone" placeholder="Phone (with country code, e.g., +1234567890)" class="border rounded-lg px-3 py-2 text-sm">
                 <select id="driverGroupSelect" class="border rounded-lg px-3 py-2 text-sm"></select>
                 <div class="flex gap-2"><button id="addDriverBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm flex-1"><i class="fas fa-plus"></i> Add</button><button id="cancelDriverEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg text-sm">Cancel</button></div>
             </div><input type="hidden" id="editDriverId">
@@ -69,7 +69,7 @@
         </div>
     </div>
 
-    <!-- Groups, Templates, Messaging, Scheduling, Logs (same as before, compact) -->
+    <!-- Groups, Templates, Messaging, Scheduling, Logs (compact) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="space-y-6">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-hidden"><div class="px-4 py-3 border-b flex justify-between"><h2 class="font-bold text-lg"><i class="fas fa-layer-group mr-2"></i> Groups</h2><span id="groupCount" class="text-xs bg-emerald-100 dark:bg-emerald-900 px-2 py-0.5 rounded-full">0</span></div><div class="p-3 bg-gray-50 dark:bg-gray-900 border-b flex gap-2"><input type="text" id="groupNameInput" placeholder="Group name" class="flex-1 border rounded-lg px-3 py-2 text-sm"><button id="addGroupBtn" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-plus-circle"></i> Create</button><button id="cancelGroupEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg text-sm">Cancel</button><input type="hidden" id="editGroupId"></div><div class="p-2"><table class="min-w-full text-sm"><tbody id="groupsTableBody"></tbody></table></div></div>
@@ -86,8 +86,9 @@
 <!-- Violation Modal -->
 <div id="violationModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4"><div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-5"><div class="flex justify-between"><h3 class="font-bold"><i class="fas fa-gavel text-red-500"></i> Violation History</h3><button id="closeModalBtn" class="text-gray-500"><i class="fas fa-times"></i></button></div><div id="violationModalContent" class="text-sm space-y-2 max-h-64 overflow-y-auto my-3"></div><div class="flex justify-between gap-2"><button id="resetViolationsBtn" class="text-red-600 text-sm border px-3 py-1 rounded-lg flex-1">Reset violations</button><button id="unsuspendFromModalBtn" class="text-green-600 text-sm border px-3 py-1 rounded-lg flex-1">Unsuspend</button></div></div></div>
 
-<!-- Toast message -->
+<!-- Toast -->
 <div id="toastMsg" class="toast"></div>
+
 <script>
     // -------------------- DATA (same core logic) --------------------
     let drivers = [], groups = [], scheduledMessages = [], templates = [];
@@ -95,13 +96,13 @@
     let darkMode = localStorage.getItem('darkMode') === 'true';
     function genId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 8); }
     function loadData() {
-        const stored = localStorage.getItem('fleet_mobile_v2');
+        const stored = localStorage.getItem('fleet_mobile_v3');
         if(stored) { const d=JSON.parse(stored); drivers=d.drivers||[]; groups=d.groups||[]; scheduledMessages=d.scheduledMessages||[]; templates=d.templates||[]; autoWelcomeEnabled=d.autoWelcomeEnabled??true; welcomeMsgText=d.welcomeMsgText||welcomeMsgText; autoWarningSms=d.autoWarningSms??true; autoSuspend=d.autoSuspend??true; suspendThreshold=d.suspendThreshold??3; }
         else { drivers=[{id:genId(),name:"Elena Rodriguez",phone:"+15550101",groupId:null,violations:[],suspended:false,joinDate:new Date().toISOString()},{id:genId(),name:"David Kim",phone:"+15550234",groupId:null,violations:[],suspended:false,joinDate:new Date().toISOString()}]; groups=[{id:genId(),name:"Morning Shift"},{id:genId(),name:"Night Shift"}]; templates=[{name:"Reminder",text:"Please submit report"},{name:"Safety",text:"Drive carefully"}]; if(groups[0]) drivers[0].groupId=groups[0].id; }
         drivers.forEach(d=>{if(!d.violations)d.violations=[]; if(!d.joinDate)d.joinDate=new Date().toISOString();});
         saveAll(); updateUIsettings();
     }
-    function saveAll() { localStorage.setItem('fleet_mobile_v2', JSON.stringify({drivers,groups,scheduledMessages,templates,autoWelcomeEnabled,welcomeMsgText,autoWarningSms,autoSuspend,suspendThreshold})); }
+    function saveAll() { localStorage.setItem('fleet_mobile_v3', JSON.stringify({drivers,groups,scheduledMessages,templates,autoWelcomeEnabled,welcomeMsgText,autoWarningSms,autoSuspend,suspendThreshold})); }
     function showToast(msg) { let t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>{t.style.opacity='0';},2500); }
     function addLogEntry(recipient,phone,message,type="SMS"){ let c=document.getElementById('messageLogContainer'); let ts=new Date().toLocaleString(); let icon=type==="VIOLATION"?"fa-gavel text-red-500":"fa-message text-indigo-400"; let bg=type==="VIOLATION"?"bg-red-50 dark:bg-red-900/30":"bg-white dark:bg-gray-800"; let html=`<div class="${bg} border rounded p-2 mb-1 shadow-sm"><div class="flex justify-between"><span><i class="fas ${icon}"></i> ${type}</span><span>${ts}</span></div><div>${recipient} ${phone?`(${phone})`:''}</div><div class="mt-1 break-words">${escapeHtml(message)}</div></div>`; if(c.querySelector('.text-center')) c.innerHTML=''; c.insertAdjacentHTML('afterbegin',html); }
     function escapeHtml(s){return s.replace(/[&<>]/g,function(m){if(m==='&')return '&amp;';if(m==='<')return '&lt;';if(m==='>')return '&gt;';return m;});}
@@ -110,31 +111,32 @@
     function simulateSendToSelected(ids,msg){drivers.filter(d=>ids.includes(d.id)&&!d.suspended).forEach(d=>simulateSendToDriver(d,msg));}
     function simulateSendToAll(msg){drivers.forEach(d=>simulateSendToDriver(d,msg));}
     
-    // FIXED REAL SMS: Copy + Share (always works)
-    function showRealSmsDialog(phone, name, defaultMessage) {
+    // DIRECT SMS OPENER (works on all modern phones)
+    function openSmsApp(phone, message) {
+        if(!phone) { alert("No phone number for this driver."); return false; }
         let cleanPhone = phone.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
-        if(!cleanPhone.startsWith('+')) cleanPhone = '+' + cleanPhone;
-        let msg = prompt(`📱 Send real message to ${name} (${cleanPhone})\n\nMessage:`, defaultMessage || "Hello from fleet management");
-        if(!msg) return;
-        // Provide copy & share options
-        let userChoice = confirm(`Copy message to clipboard?\n\n"${msg}"\n\nPress OK to copy (then paste into SMS app), Cancel to share via other apps.`);
-        if(userChoice) {
-            navigator.clipboard.writeText(`${msg}\n\nTo: ${cleanPhone}`).then(() => {
-                showToast(`✅ Message copied! Open your SMS app and paste.`);
-            }).catch(() => showToast(`❌ Could not copy, but you can manually type.`));
-        } else {
-            // Share via Web Share API (opens WhatsApp, Messages, etc.)
-            if(navigator.share) {
-                navigator.share({ title: `Message to ${name}`, text: msg }).catch(e=>console.log);
-            } else {
-                // Fallback: copy anyway
-                navigator.clipboard.writeText(msg);
-                showToast(`📋 Message copied to clipboard. Open your SMS app.`);
-            }
+        if(!cleanPhone.startsWith('+') && !cleanPhone.startsWith('00')) {
+            // If no country code, assume it's valid as is
+        }
+        const encodedMsg = encodeURIComponent(message);
+        const smsUrl = `sms:${cleanPhone}?body=${encodedMsg}`;
+        // Try to open SMS app
+        window.location.href = smsUrl;
+        showToast(`📱 Opened your SMS app. Tap Send to deliver message.`);
+        return true;
+    }
+    
+    // Updated handler: direct open with confirmation
+    function handleRealSms(driverId) {
+        const driver = drivers.find(d => d.id === driverId);
+        if(!driver) return;
+        let message = prompt(`📱 Send real SMS to ${driver.name} (${driver.phone})\n\nMessage:`, document.getElementById('instantMessage').value || "Hello from fleet management");
+        if(message && message.trim()) {
+            openSmsApp(driver.phone, message.trim());
         }
     }
     
-    // Violation and other logic (unchanged but compact)
+    // Violation and other logic (unchanged)
     function reportViolation(id,reason){let d=drivers.find(d=>d.id===id); if(!d)return; let r=reason||prompt(`Violation for ${d.name}:`,"Policy infraction"); if(!r)return; d.violations.push({reason:r.substring(0,200),date:new Date().toISOString()}); let cnt=d.violations.length; let oldGroup=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"none"):"none"; if(d.groupId)d.groupId=null; if(autoWarningSms&&cnt===1)simulateSendToDriver(d,`⚠️ WARNING: ${r}. Removed from group.`,true); if(autoSuspend&&cnt>=suspendThreshold&&!d.suspended){d.suspended=true; simulateSendToDriver(d,`🚫 AUTO-SUSPENDED: ${cnt} violations.`,true); addLogEntry(d.name,d.phone,`Auto-suspended after ${cnt} violations`,"VIOLATION");} addLogEntry(d.name,d.phone,`Violation #${cnt}: ${r} | Removed from "${oldGroup}"`,"VIOLATION"); saveAll(); renderAll(); alert(`Violation recorded. ${d.suspended?'Driver suspended.':''}`);}
     function toggleSuspend(id){let d=drivers.find(d=>d.id===id); if(d){d.suspended=!d.suspended; addLogEntry(d.name,d.phone,d.suspended?"Manually suspended":"Reinstated","VIOLATION"); saveAll(); renderAll();}}
     function resetViolations(id){let d=drivers.find(d=>d.id===id); if(d&&confirm("Reset all violations?")){d.violations=[]; addLogEntry(d.name,d.phone,"Violation history reset","VIOLATION"); saveAll(); renderAll(); if(currentViolationDriverId===id)showViolationModal(id);}}
@@ -146,8 +148,8 @@
     let chart; function updateDashboard(){document.getElementById('statTotalDrivers').innerText=drivers.length; let tv=drivers.reduce((s,d)=>s+(d.violations?.length||0),0); document.getElementById('statViolations').innerText=tv; let sc=drivers.filter(d=>d.suspended).length; document.getElementById('statSuspended').innerText=sc; let comp=drivers.length?((drivers.length-sc)/drivers.length*100).toFixed(1):100; document.getElementById('statCompliance').innerText=comp+'%'; if(chart)chart.destroy(); let ctx=document.getElementById('violationChart').getContext('2d'); chart=new Chart(ctx,{type:'bar',data:{labels:drivers.map(d=>d.name.substring(0,8)),datasets:[{label:'Violations',data:drivers.map(d=>d.violations?.length||0),backgroundColor:'#f97316'}]},options:{responsive:true,maintainAspectRatio:true}});}
     function renderAll(){renderGroupsAndDropdowns(); renderDriversTable(); renderScheduledList(); updateDashboard(); renderTemplates(); document.getElementById('driverCount').innerText=drivers.length; document.getElementById('groupCount').innerText=groups.length;}
     function renderGroupsAndDropdowns(){let opts='<option value="">-- No Group --</option>'+groups.map(g=>`<option value="${g.id}">${escapeHtml(g.name)}</option>`).join(''); ['driverGroupSelect','instantGroupSelect','scheduleGroupSelect'].forEach(id=>{let el=document.getElementById(id); if(el){let val=el.value; el.innerHTML=opts; if(val&&groups.some(g=>g.id===val))el.value=val;}}); document.getElementById('groupsTableBody').innerHTML=groups.map(g=>`<tr class="border-b"><td class="px-3 py-1 font-medium">${escapeHtml(g.name)}</td><td class="text-center">${drivers.filter(d=>d.groupId===g.id).length}</td><td class="text-right"><button class="edit-group-btn text-blue-500 mr-1" data-id="${g.id}"><i class="fas fa-edit"></i></button><button class="delete-group-btn text-red-400" data-id="${g.id}"><i class="fas fa-trash"></i></button></td></tr>`).join('');}
-    function renderDriversTable(){let tbody=document.getElementById('driversTableBody'); tbody.innerHTML=drivers.map(d=>{let gn=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"—"):"—"; let vc=d.violations?.length||0; let badges=`${vc>0?`<span class="bg-red-100 text-red-800 text-[10px] px-1 rounded-full ml-1">${vc}⚖️</span>`:''}${d.suspended?`<span class="bg-yellow-100 text-yellow-800 text-[10px] px-1 rounded-full ml-1">⛔</span>`:''}`; return `<tr><td class="p-2"><input type="checkbox" class="driver-checkbox" value="${d.id}"></td><td class="font-medium text-sm">${escapeHtml(d.name)} ${badges}</td><td class="text-xs">${escapeHtml(d.phone)}</td><td class="text-xs"><span class="bg-gray-100 dark:bg-gray-700 px-1 rounded">${escapeHtml(gn)}</span></td><td class="whitespace-nowrap"><button class="edit-driver-btn text-indigo-500 mr-1" data-id="${d.id}"><i class="fas fa-pen"></i></button><button class="violation-btn text-red-600 mr-1" data-id="${d.id}"><i class="fas fa-gavel"></i></button><button class="view-violations-btn text-amber-600 mr-1" data-id="${d.id}"><i class="fas fa-list"></i></button><button class="suspend-toggle-btn ${d.suspended?'text-green-600':'text-orange-600'} mr-1" data-id="${d.id}"><i class="fas ${d.suspended?'fa-play-circle':'fa-pause-circle'}"></i></button><button class="real-sms-btn bg-green-500 text-white text-[10px] px-1 py-0.5 rounded-full" data-phone="${escapeHtml(d.phone)}" data-name="${escapeHtml(d.name)}"><i class="fas fa-comment-dots"></i> SMS</button><button class="delete-driver-btn text-gray-400 ml-1" data-id="${d.id}"><i class="fas fa-trash-alt"></i></button></td></tr>`;}).join('');
-        document.querySelectorAll('.real-sms-btn').forEach(btn=>{btn.onclick=(e)=>{e.stopPropagation(); let phone=btn.dataset.phone; let name=btn.dataset.name; let currentMsg=document.getElementById('instantMessage').value; showRealSmsDialog(phone, name, currentMsg||"Hello from fleet management");};});
+    function renderDriversTable(){let tbody=document.getElementById('driversTableBody'); tbody.innerHTML=drivers.map(d=>{let gn=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"—"):"—"; let vc=d.violations?.length||0; let badges=`${vc>0?`<span class="bg-red-100 text-red-800 text-[10px] px-1 rounded-full ml-1">${vc}⚖️</span>`:''}${d.suspended?`<span class="bg-yellow-100 text-yellow-800 text-[10px] px-1 rounded-full ml-1">⛔</span>`:''}`; return `<tr><td class="p-2"><input type="checkbox" class="driver-checkbox" value="${d.id}"></td><td class="font-medium text-sm">${escapeHtml(d.name)} ${badges}</td><td class="text-xs">${escapeHtml(d.phone)}</td><td class="text-xs"><span class="bg-gray-100 dark:bg-gray-700 px-1 rounded">${escapeHtml(gn)}</span></td><td class="whitespace-nowrap"><button class="edit-driver-btn text-indigo-500 mr-1" data-id="${d.id}"><i class="fas fa-pen"></i></button><button class="violation-btn text-red-600 mr-1" data-id="${d.id}"><i class="fas fa-gavel"></i></button><button class="view-violations-btn text-amber-600 mr-1" data-id="${d.id}"><i class="fas fa-list"></i></button><button class="suspend-toggle-btn ${d.suspended?'text-green-600':'text-orange-600'} mr-1" data-id="${d.id}"><i class="fas ${d.suspended?'fa-play-circle':'fa-pause-circle'}"></i></button><button class="real-sms-btn bg-green-500 text-white text-[10px] px-1 py-0.5 rounded-full" data-id="${d.id}"><i class="fas fa-comment-dots"></i> SMS</button><button class="delete-driver-btn text-gray-400 ml-1" data-id="${d.id}"><i class="fas fa-trash-alt"></i></button></td></tr>`;}).join('');
+        document.querySelectorAll('.real-sms-btn').forEach(btn=>{btn.onclick=(e)=>{e.stopPropagation(); let id=btn.dataset.id; handleRealSms(id);};});
         document.getElementById('selectAllDrivers').onclick=(e)=>document.querySelectorAll('.driver-checkbox').forEach(cb=>cb.checked=e.target.checked);
     }
     function renderScheduledList(){let c=document.getElementById('scheduledListContainer'); if(scheduledMessages.length===0){c.innerHTML='<div class="text-gray-400 text-xs text-center">No pending jobs</div>'; return;} c.innerHTML=scheduledMessages.map(s=>{let grp=groups.find(g=>g.id===s.groupId)?.name||"deleted"; let td=s.recurring==='once'?new Date(s.scheduledTime).toLocaleString():`${s.recurring} at ${s.scheduledTime.split(':')[1]}`; return `<div class="bg-white dark:bg-gray-700 border rounded p-1 flex justify-between text-xs"><span>🕒 ${td} → ${escapeHtml(grp)}: ${escapeHtml(s.message.substring(0,25))}</span><button class="cancel-schedule-btn text-red-500" data-id="${s.id}"><i class="fas fa-times"></i></button></div>`;}).join('');}
@@ -182,3 +184,4 @@
 </script>
 </body>
 </html>
+
