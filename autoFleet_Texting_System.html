@@ -3,37 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>AutoFleet | SMS Works (Tap Send in Your App)</title>
+    <title>AutoFleet | SMS Opener + Copy Fallback</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: linear-gradient(135deg, #f5f7fc 0%, #eef2f9 100%); transition: background 0.3s; position: relative; }
+        * { font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fc 0%, #eef2f9 100%); transition: background 0.3s; }
         body.dark-mode { background: linear-gradient(135deg, #0f172a 0%, #0a0f1c 100%); }
-        .glass-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,0.4); transition: all 0.2s; border-radius: 1.5rem; }
+        .glass-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,0.4); border-radius: 1.5rem; }
         body.dark-mode .glass-card { background: rgba(30,41,59,0.85); border-color: rgba(71,85,105,0.5); }
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 40px; font-size: 12px; font-weight: 500; z-index: 1000; opacity: 0; transition: opacity 0.2s; pointer-events: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .driver-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .driver-table-scroll { overflow-x: auto; }
         .driver-table-scroll table { min-width: 620px; }
         .log-area { max-height: 300px; overflow-y: auto; }
-        .btn-sms { background: linear-gradient(100deg, #10b981, #059669); transition: 0.1s; }
-        .btn-sms:active { transform: scale(0.96); }
+        .btn-sms { background: linear-gradient(100deg, #10b981, #059669); }
     </style>
 </head>
-<body class="p-3 md:p-6 relative">
+<body class="p-3 md:p-6">
 
 <div class="max-w-7xl mx-auto relative z-10">
-    <!-- Clear instruction banner -->
-    <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-3 rounded-2xl text-sm mb-5 shadow-sm">
-        <i class="fas fa-info-circle text-blue-600"></i> 
-        <strong>How to send a real SMS:</strong> Tap <span class="font-bold bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full">📱 SMS</span> → enter your message → your messaging app <strong>automatically opens</strong> with the message ready. <u>Then tap the Send button in your app</u>. That's it.
+    <!-- ⭐ CRITICAL INSTRUCTION (big, clear) -->
+    <div class="bg-yellow-50 dark:bg-yellow-900/30 border-l-8 border-yellow-500 p-4 rounded-2xl text-sm mb-5 shadow-md">
+        <div class="flex items-start gap-3">
+            <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl"></i>
+            <div>
+                <strong class="text-base">📱 How to send a real SMS (important):</strong><br>
+                1️⃣ Tap the green <span class="font-bold bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full">📱 SMS</span> button next to a driver.<br>
+                2️⃣ Your <strong class="underline">messaging app will open</strong> with the message pre‑filled.<br>
+                3️⃣ <span class="bg-red-100 dark:bg-red-900/50 px-2 py-0.5 rounded font-bold">👉 YOU MUST TAP THE SEND BUTTON INSIDE YOUR MESSAGING APP 👈</span><br>
+                4️⃣ If that doesn’t work, use the <strong>copy button</strong> in the popup and paste into any chat app.
+            </div>
+        </div>
     </div>
 
     <!-- Header -->
     <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
-        <div><h1 class="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-700 to-blue-600 dark:from-indigo-400 dark:to-blue-400 bg-clip-text text-transparent"><i class="fas fa-truck-fast text-indigo-600 dark:text-indigo-400 mr-1"></i>Driver<span class="text-indigo-600 dark:text-indigo-300">AutoText</span> <span class="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full">Real SMS</span></h1><p class="text-xs text-slate-500">Policy · Groups · One‑tap SMS (then press Send)</p></div>
+        <div><h1 class="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-700 to-blue-600 bg-clip-text text-transparent"><i class="fas fa-truck-fast text-indigo-600 mr-1"></i>Driver<span class="text-indigo-600">AutoText</span> <span class="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full">Real SMS Ready</span></h1><p class="text-xs text-slate-500">Policy · Groups · One‑tap open SMS (then press Send)</p></div>
         <button id="darkModeToggle" class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm p-2 rounded-full shadow-md"><i class="fas fa-moon dark:hidden text-indigo-600"></i><i class="fas fa-sun hidden dark:inline text-yellow-400"></i></button>
     </div>
 
@@ -64,14 +71,13 @@
         </div>
         <div class="driver-table-scroll p-1">
             <table class="min-w-[620px] w-full text-sm">
-                <thead class="bg-gray-100/70 dark:bg-gray-800/50">几十年<th class="p-2"><input type="checkbox" id="selectAllDrivers"></th><th>Name</th><th>Phone</th><th>Group</th><th>Actions</th></tr>
-                </thead>
+                <thead class="bg-gray-100/70 dark:bg-gray-800/50">副产品<th class="p-2"><input type="checkbox" id="selectAllDrivers"></th><th>Name</th><th>Phone</th><th>Group</th><th>Actions</th></tr></thead>
                 <tbody id="driversTableBody"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- Two columns -->
+    <!-- Two columns for rest -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="space-y-6">
             <div class="glass-card shadow-md overflow-hidden"><div class="px-4 py-3 border-b"><h2 class="font-bold text-lg"><i class="fas fa-layer-group mr-2 text-emerald-500"></i> Groups</h2></div><div class="p-3 bg-white/30 border-b flex gap-2"><input type="text" id="groupNameInput" placeholder="Group name" class="flex-1 border rounded-lg px-3 py-2 text-sm bg-white/80"><button id="addGroupBtn" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-plus-circle"></i> Create</button><button id="cancelGroupEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg text-sm">Cancel</button><input type="hidden" id="editGroupId"></div><div class="p-2"><table class="min-w-full"><tbody id="groupsTableBody"></tbody></table></div></div>
@@ -87,35 +93,35 @@
     <div class="glass-card shadow-md mt-6"><div class="px-4 py-2 border-b flex justify-between"><h2 class="font-semibold"><i class="fas fa-history mr-2"></i> Activity Log (Simulated)</h2><button id="clearLogBtn" class="text-xs text-red-500">Clear</button></div><div class="log-area p-2 text-xs" id="messageLogContainer"><div class="text-center text-gray-400 py-6">📭 No activity yet.</div></div></div>
 </div>
 
-<!-- SMS Helper Modal (fallback) -->
+<!-- SMS Helper Modal (fallback + copy) -->
 <div id="smsHelperModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
     <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-5 shadow-2xl">
         <div class="flex justify-between"><h3 class="font-bold text-lg"><i class="fas fa-comment-dots text-green-600"></i> Send SMS</h3><button id="closeSmsModal" class="text-gray-500 text-2xl leading-5">&times;</button></div>
         <div class="my-3 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg break-all text-sm"><span class="font-bold">To:</span> <span id="smsModalPhone"></span><br><span class="font-bold">Message:</span> <span id="smsModalMsg"></span></div>
         <div class="flex flex-col gap-2">
             <button id="openSmsButton" class="bg-green-600 text-white py-2 rounded-xl font-semibold"><i class="fas fa-envelope-open-text"></i> Open SMS App (then tap Send)</button>
-            <button id="copySmsButton" class="bg-gray-600 text-white py-2 rounded-xl"><i class="fas fa-copy"></i> Copy to Clipboard (paste anywhere)</button>
+            <button id="copySmsButton" class="bg-gray-600 text-white py-2 rounded-xl"><i class="fas fa-copy"></i> Copy Message & Number (paste anywhere)</button>
         </div>
-        <p class="text-xs text-center text-gray-500 mt-3">Your messaging app will open with the message ready.<br><u>Don't forget to tap the Send button.</u></p>
+        <p class="text-xs text-center text-gray-500 mt-3">⚠️ <strong>Remember:</strong> After the SMS app opens, you <u>must tap the Send button</u> inside it.</p>
     </div>
 </div>
 
 <div id="toastMsg" class="toast"></div>
 
 <script>
-    // Data (same as before, fully functional)
+    // ------------- DATA (same as before, fully functional) -------------
     let drivers = [], groups = [], scheduledMessages = [], templates = [];
     let autoWelcomeEnabled = true, welcomeMsgText = "Welcome to the fleet!", autoWarningSms = true, autoSuspend = true, suspendThreshold = 3;
     let darkMode = localStorage.getItem('darkMode') === 'true';
     function genId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 8); }
     function loadData() {
-        const stored = localStorage.getItem('fleet_final_v5');
+        const stored = localStorage.getItem('fleet_final_v6');
         if(stored) { const d=JSON.parse(stored); drivers=d.drivers||[]; groups=d.groups||[]; scheduledMessages=d.scheduledMessages||[]; templates=d.templates||[]; autoWelcomeEnabled=d.autoWelcomeEnabled??true; welcomeMsgText=d.welcomeMsgText||welcomeMsgText; autoWarningSms=d.autoWarningSms??true; autoSuspend=d.autoSuspend??true; suspendThreshold=d.suspendThreshold??3; }
         else { drivers=[{id:genId(),name:"Elena Rodriguez",phone:"+15550101",groupId:null,violations:[],suspended:false,joinDate:new Date().toISOString()},{id:genId(),name:"David Kim",phone:"+15550234",groupId:null,violations:[],suspended:false,joinDate:new Date().toISOString()}]; groups=[{id:genId(),name:"Morning Shift"},{id:genId(),name:"Night Shift"}]; templates=[{name:"Reminder",text:"Please submit report"},{name:"Safety",text:"Drive carefully"}]; if(groups[0]) drivers[0].groupId=groups[0].id; }
         drivers.forEach(d=>{if(!d.violations)d.violations=[]; if(!d.joinDate)d.joinDate=new Date().toISOString();});
         saveAll(); updateUIsettings();
     }
-    function saveAll() { localStorage.setItem('fleet_final_v5', JSON.stringify({drivers,groups,scheduledMessages,templates,autoWelcomeEnabled,welcomeMsgText,autoWarningSms,autoSuspend,suspendThreshold})); }
+    function saveAll() { localStorage.setItem('fleet_final_v6', JSON.stringify({drivers,groups,scheduledMessages,templates,autoWelcomeEnabled,welcomeMsgText,autoWarningSms,autoSuspend,suspendThreshold})); }
     function showToast(msg) { let t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>{t.style.opacity='0';},2800); }
     function addLogEntry(recipient,phone,message,type="SMS"){ let c=document.getElementById('messageLogContainer'); let ts=new Date().toLocaleString(); let icon=type==="VIOLATION"?"fa-gavel text-red-500":"fa-message text-indigo-400"; let bg=type==="VIOLATION"?"bg-red-50/80 dark:bg-red-900/30":"bg-white/60 dark:bg-gray-800/60"; let html=`<div class="${bg} border rounded-lg p-2 mb-2 shadow-sm"><div class="flex justify-between"><span><i class="fas ${icon}"></i> ${type}</span><span>${ts}</span></div><div>${recipient} ${phone?`(${phone})`:''}</div><div class="mt-1 break-words">${escapeHtml(message)}</div></div>`; if(c.querySelector('.text-center')) c.innerHTML=''; c.insertAdjacentHTML('afterbegin',html); }
     function escapeHtml(s){return s.replace(/[&<>]/g,function(m){if(m==='&')return '&amp;';if(m==='<')return '&lt;';if(m==='>')return '&gt;';return m;});}
@@ -124,23 +130,22 @@
     function simulateSendToSelected(ids,msg){drivers.filter(d=>ids.includes(d.id)&&!d.suspended).forEach(d=>simulateSendToDriver(d,msg));}
     function simulateSendToAll(msg){drivers.forEach(d=>simulateSendToDriver(d,msg));}
     
-    // SMS with modal fallback
+    // SMS with modal and copy fallback
     let pendingSms = { phone: '', message: '' };
     function openSmsWithFallback(phone, message) {
         let cleanPhone = phone.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
         if(!cleanPhone.startsWith('+')) cleanPhone = '+' + cleanPhone;
         pendingSms = { phone: cleanPhone, message: message };
-        // Try to open directly first
-        const smsUrl = `sms:${cleanPhone}?body=${encodeURIComponent(message)}`;
-        window.location.href = smsUrl;
+        // Try to open SMS app
+        window.location.href = `sms:${cleanPhone}?body=${encodeURIComponent(message)}`;
         showToast(`📱 Opening SMS app... Remember to tap Send.`);
-        // Also show a modal as fallback in case the intent fails
+        // Show helper modal after a short delay
         setTimeout(() => {
             document.getElementById('smsModalPhone').innerText = pendingSms.phone;
             document.getElementById('smsModalMsg').innerText = pendingSms.message;
             document.getElementById('smsHelperModal').classList.remove('hidden');
             document.getElementById('smsHelperModal').classList.add('flex');
-        }, 500);
+        }, 400);
     }
     
     function handleRealSms(driverId) {
@@ -150,7 +155,7 @@
         if(msg && msg.trim()) openSmsWithFallback(driver.phone, msg.trim());
     }
     
-    // Violation logic (unchanged but compact)
+    // Violation and other logic (unchanged but compact)
     function reportViolation(id,reason){let d=drivers.find(d=>d.id===id); if(!d)return; let r=reason||prompt(`Violation for ${d.name}:`,"Policy infraction"); if(!r)return; d.violations.push({reason:r.substring(0,200),date:new Date().toISOString()}); let cnt=d.violations.length; let oldGroup=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"none"):"none"; if(d.groupId)d.groupId=null; if(autoWarningSms&&cnt===1)simulateSendToDriver(d,`⚠️ WARNING: ${r}. Removed from group.`,true); if(autoSuspend&&cnt>=suspendThreshold&&!d.suspended){d.suspended=true; simulateSendToDriver(d,`🚫 AUTO-SUSPENDED: ${cnt} violations.`,true); addLogEntry(d.name,d.phone,`Auto-suspended after ${cnt} violations`,"VIOLATION");} addLogEntry(d.name,d.phone,`Violation #${cnt}: ${r} | Removed from "${oldGroup}"`,"VIOLATION"); saveAll(); renderAll(); alert(`Violation recorded. ${d.suspended?'Driver suspended.':''}`);}
     function toggleSuspend(id){let d=drivers.find(d=>d.id===id); if(d){d.suspended=!d.suspended; addLogEntry(d.name,d.phone,d.suspended?"Manually suspended":"Reinstated","VIOLATION"); saveAll(); renderAll();}}
     function resetViolations(id){let d=drivers.find(d=>d.id===id); if(d&&confirm("Reset all violations?")){d.violations=[]; addLogEntry(d.name,d.phone,"Violation history reset","VIOLATION"); saveAll(); renderAll(); if(currentViolationDriverId===id)showViolationModal(id);}}
@@ -197,7 +202,7 @@
         // SMS modal buttons
         document.getElementById('closeSmsModal').onclick=()=>{document.getElementById('smsHelperModal').classList.add('hidden');};
         document.getElementById('openSmsButton').onclick=()=>{if(pendingSms.phone){window.location.href=`sms:${pendingSms.phone}?body=${encodeURIComponent(pendingSms.message)}`; showToast(`📱 Opening SMS app... Tap Send.`);}};
-        document.getElementById('copySmsButton').onclick=()=>{let text=`To: ${pendingSms.phone}\nMessage: ${pendingSms.message}`; navigator.clipboard.writeText(text); showToast(`✅ Copied! Paste into any messaging app.`);};
+        document.getElementById('copySmsButton').onclick=()=>{let text=`To: ${pendingSms.phone}\nMessage: ${pendingSms.message}`; navigator.clipboard.writeText(text); showToast(`✅ Copied! Paste into any messaging app and send.`);};
     }
     
     function init(){loadData(); bindEvents(); renderAll(); setInterval(checkScheduled,30000); checkScheduled(); if(darkMode)document.body.classList.add('dark-mode');}
