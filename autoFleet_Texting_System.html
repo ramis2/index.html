@@ -3,267 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>AutoFleet Premium | Stunning UI + Direct SMS</title>
+    <title>AutoFleet | SMS Works (Tap Send in Your App)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <style>
         * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        /* Premium background gradient with subtle noise */
-        body {
-            background: linear-gradient(135deg, #f5f7fc 0%, #eef2f9 100%);
-            transition: background 0.3s, color 0.2s;
-            position: relative;
-        }
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        /* Dark mode background */
-        body.dark-mode {
-            background: linear-gradient(135deg, #0f172a 0%, #0a0f1c 100%);
-        }
-        body.dark-mode::before {
-            background-image: radial-gradient(circle at 20% 30%, rgba(56, 189, 248, 0.08) 0%, transparent 60%);
-        }
-        
-        /* Glassmorphic cards */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(2px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            transition: all 0.25s ease;
-        }
-        body.dark-mode .glass-card {
-            background: rgba(30, 41, 59, 0.85);
-            border-color: rgba(71, 85, 105, 0.5);
-        }
-        .glass-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 0.95);
-        }
-        body.dark-mode .glass-card:hover {
-            background: rgba(51, 65, 85, 0.95);
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
-        body.dark-mode ::-webkit-scrollbar-track { background: #1e293b; }
-        body.dark-mode ::-webkit-scrollbar-thumb { background: #475569; }
-        
-        /* Log area styling */
-        .log-area { max-height: 300px; overflow-y: auto; }
+        body { background: linear-gradient(135deg, #f5f7fc 0%, #eef2f9 100%); transition: background 0.3s; position: relative; }
+        body.dark-mode { background: linear-gradient(135deg, #0f172a 0%, #0a0f1c 100%); }
+        .glass-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,0.4); transition: all 0.2s; border-radius: 1.5rem; }
+        body.dark-mode .glass-card { background: rgba(30,41,59,0.85); border-color: rgba(71,85,105,0.5); }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 40px; font-size: 12px; font-weight: 500; z-index: 1000; opacity: 0; transition: opacity 0.2s; pointer-events: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         .driver-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .driver-table-scroll table { min-width: 620px; }
-        
-        /* Smooth toast */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 500;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            pointer-events: none;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            backdrop-filter: blur(8px);
-        }
-        body.dark-mode .toast {
-            background: #0f172a;
-            border: 1px solid #334155;
-        }
-        
-        /* Neumorphic buttons */
-        .btn-primary {
-            background: linear-gradient(100deg, #4f46e5, #6366f1);
-            border: none;
-            transition: all 0.2s;
-        }
-        .btn-primary:hover {
-            transform: scale(0.98);
-            filter: brightness(1.05);
-        }
-        
-        /* Dashboard stat cards */
-        .stat-card {
-            background: linear-gradient(145deg, #ffffff, #f8fafc);
-            box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s;
-        }
-        body.dark-mode .stat-card {
-            background: linear-gradient(145deg, #1e293b, #0f172a);
-        }
-        
-        @media (max-width: 640px) {
-            .container-padding { padding-left: 1rem; padding-right: 1rem; }
-        }
+        .log-area { max-height: 300px; overflow-y: auto; }
+        .btn-sms { background: linear-gradient(100deg, #10b981, #059669); transition: 0.1s; }
+        .btn-sms:active { transform: scale(0.96); }
     </style>
 </head>
-<body class="p-3 md:p-6 container-padding relative">
+<body class="p-3 md:p-6 relative">
 
 <div class="max-w-7xl mx-auto relative z-10">
-    <!-- Header with gradient badge -->
-    <div class="bg-gradient-to-r from-indigo-50/80 to-blue-50/80 dark:from-indigo-950/40 dark:to-blue-950/40 backdrop-blur-sm border-l-4 border-indigo-500 p-3 rounded-2xl text-sm mb-5 shadow-sm">
-        <i class="fas fa-comment-dots text-indigo-600 dark:text-indigo-400 mr-1"></i> 
-        <strong class="dark:text-white">Real SMS:</strong> Tap <span class="font-bold bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full shadow-sm">📱 SMS</span> → your messaging app opens with pre‑filled message → just press <strong>Send</strong>.
+    <!-- Clear instruction banner -->
+    <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-3 rounded-2xl text-sm mb-5 shadow-sm">
+        <i class="fas fa-info-circle text-blue-600"></i> 
+        <strong>How to send a real SMS:</strong> Tap <span class="font-bold bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full">📱 SMS</span> → enter your message → your messaging app <strong>automatically opens</strong> with the message ready. <u>Then tap the Send button in your app</u>. That's it.
     </div>
 
-    <!-- Top bar -->
+    <!-- Header -->
     <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
-        <div>
-            <h1 class="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-700 to-blue-600 dark:from-indigo-400 dark:to-blue-400 bg-clip-text text-transparent flex items-center gap-2 flex-wrap">
-                <i class="fas fa-truck-fast text-indigo-600 dark:text-indigo-400 text-2xl"></i>
-                <span>Driver<span class="text-indigo-600 dark:text-indigo-300">AutoText</span></span>
-                <span class="text-[9px] bg-emerald-500 text-white px-2 py-0.5 rounded-full">Direct SMS</span>
-            </h1>
-            <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Policy enforcement · Group campaigns · One‑tap real SMS</p>
-        </div>
-        <button id="darkModeToggle" class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm p-2 rounded-full text-sm shadow-md"><i class="fas fa-moon dark:hidden text-indigo-600"></i><i class="fas fa-sun hidden dark:inline text-yellow-400"></i></button>
+        <div><h1 class="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-700 to-blue-600 dark:from-indigo-400 dark:to-blue-400 bg-clip-text text-transparent"><i class="fas fa-truck-fast text-indigo-600 dark:text-indigo-400 mr-1"></i>Driver<span class="text-indigo-600 dark:text-indigo-300">AutoText</span> <span class="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full">Real SMS</span></h1><p class="text-xs text-slate-500">Policy · Groups · One‑tap SMS (then press Send)</p></div>
+        <button id="darkModeToggle" class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm p-2 rounded-full shadow-md"><i class="fas fa-moon dark:hidden text-indigo-600"></i><i class="fas fa-sun hidden dark:inline text-yellow-400"></i></button>
     </div>
 
-    <!-- Dashboard stats with improved cards -->
+    <!-- Dashboard stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div class="stat-card rounded-2xl p-2 text-center"><i class="fas fa-users text-indigo-500 text-xl"></i><p class="text-2xl font-bold" id="statTotalDrivers">0</p><p class="text-[11px] text-slate-500">Drivers</p></div>
-        <div class="stat-card rounded-2xl p-2 text-center"><i class="fas fa-gavel text-red-500 text-xl"></i><p class="text-2xl font-bold" id="statViolations">0</p><p class="text-[11px] text-slate-500">Violations</p></div>
-        <div class="stat-card rounded-2xl p-2 text-center"><i class="fas fa-ban text-orange-500 text-xl"></i><p class="text-2xl font-bold" id="statSuspended">0</p><p class="text-[11px] text-slate-500">Suspended</p></div>
-        <div class="stat-card rounded-2xl p-2 text-center"><i class="fas fa-chart-line text-green-500 text-xl"></i><p class="text-2xl font-bold" id="statCompliance">100%</p><p class="text-[11px] text-slate-500">Compliance</p></div>
+        <div class="bg-white/70 dark:bg-gray-800/70 rounded-2xl shadow p-2 text-center"><i class="fas fa-users text-indigo-500 text-xl"></i><p class="text-2xl font-bold" id="statTotalDrivers">0</p><p class="text-[11px]">Drivers</p></div>
+        <div class="bg-white/70 dark:bg-gray-800/70 rounded-2xl shadow p-2 text-center"><i class="fas fa-gavel text-red-500 text-xl"></i><p class="text-2xl font-bold" id="statViolations">0</p><p class="text-[11px]">Violations</p></div>
+        <div class="bg-white/70 dark:bg-gray-800/70 rounded-2xl shadow p-2 text-center"><i class="fas fa-ban text-orange-500 text-xl"></i><p class="text-2xl font-bold" id="statSuspended">0</p><p class="text-[11px]">Suspended</p></div>
+        <div class="bg-white/70 dark:bg-gray-800/70 rounded-2xl shadow p-2 text-center"><i class="fas fa-chart-line text-green-500 text-xl"></i><p class="text-2xl font-bold" id="statCompliance">100%</p><p class="text-[11px]">Compliance</p></div>
     </div>
-    
-    <!-- Chart card -->
-    <div class="glass-card rounded-2xl shadow-lg p-3 mb-6">
-        <canvas id="violationChart" height="120" style="max-height: 160px;"></canvas>
+    <div class="glass-card shadow-lg p-3 mb-6"><canvas id="violationChart" height="120"></canvas></div>
+
+    <!-- Policy settings -->
+    <div class="glass-card shadow-md p-3 mb-6 flex flex-wrap gap-3 items-center justify-between">
+        <div class="flex flex-wrap gap-3"><label class="flex items-center gap-1 text-sm"><input type="checkbox" id="autoWelcomeToggle"> 🤖 Auto‑welcome</label><input type="text" id="welcomeMessage" value="Welcome to the fleet!" class="border rounded-lg px-2 py-1 text-sm w-36 bg-white/70"><label class="flex items-center gap-1 text-sm"><input type="checkbox" id="autoWarningSmsToggle" checked> 📱 Warning (sim)</label><label class="flex items-center gap-1 text-sm"><input type="checkbox" id="autoSuspendToggle" checked> ⛔ Auto‑suspend after <input type="number" id="suspendThreshold" value="3" min="1" max="10" class="w-12 border rounded text-center bg-white/70"> violations</label></div>
     </div>
 
-    <!-- Policy settings as a sleek bar -->
-    <div class="glass-card rounded-2xl shadow-md p-3 mb-6 flex flex-wrap gap-3 items-center justify-between">
-        <div class="flex flex-wrap gap-3 items-center">
-            <label class="flex items-center gap-1 text-sm"><input type="checkbox" id="autoWelcomeToggle" class="rounded"> 🤖 Auto‑welcome</label>
-            <input type="text" id="welcomeMessage" value="Welcome to the fleet!" class="border rounded-lg px-2 py-1 text-sm w-36 bg-white/70 dark:bg-gray-800/70">
-            <label class="flex items-center gap-1 text-sm"><input type="checkbox" id="autoWarningSmsToggle" checked> 📱 Warning (sim)</label>
-            <label class="flex items-center gap-1 text-sm"><input type="checkbox" id="autoSuspendToggle" checked> ⛔ Auto‑suspend after <input type="number" id="suspendThreshold" value="3" min="1" max="10" class="w-12 border rounded text-center bg-white/70"> violations</label>
-        </div>
-    </div>
-
-    <!-- Driver Directory card -->
-    <div class="glass-card rounded-2xl shadow-xl overflow-hidden mb-6">
-        <div class="px-4 py-3 border-b border-gray-200/50 dark:border-gray-700/50 flex justify-between items-center bg-white/40 dark:bg-gray-800/20">
-            <h2 class="font-bold text-lg"><i class="fas fa-users mr-2 text-indigo-500"></i> Drivers</h2>
-            <span id="driverCount" class="text-xs bg-indigo-100 dark:bg-indigo-900/60 px-2 py-0.5 rounded-full">0</span>
-        </div>
-        <div class="p-3 bg-white/30 dark:bg-gray-900/20 border-b border-gray-200/50">
+    <!-- Drivers table -->
+    <div class="glass-card shadow-xl overflow-hidden mb-6">
+        <div class="px-4 py-3 border-b flex justify-between items-center"><h2 class="font-bold text-lg"><i class="fas fa-users mr-2 text-indigo-500"></i> Drivers</h2><span id="driverCount" class="text-xs bg-indigo-100 dark:bg-indigo-900/60 px-2 py-0.5 rounded-full">0</span></div>
+        <div class="p-3 bg-white/30 dark:bg-gray-900/20 border-b">
             <div class="grid grid-cols-1 gap-2">
-                <input type="text" id="driverName" placeholder="Full name" class="border rounded-lg px-3 py-2 text-sm bg-white/80 dark:bg-gray-800/80">
-                <input type="tel" id="driverPhone" placeholder="Phone (e.g., +1234567890)" class="border rounded-lg px-3 py-2 text-sm bg-white/80 dark:bg-gray-800/80">
-                <select id="driverGroupSelect" class="border rounded-lg px-3 py-2 text-sm bg-white/80 dark:bg-gray-800/80"></select>
-                <div class="flex gap-2"><button id="addDriverBtn" class="btn-primary text-white px-4 py-2 rounded-lg text-sm flex-1"><i class="fas fa-plus"></i> Add</button><button id="cancelDriverEdit" class="hidden bg-gray-300 dark:bg-gray-700 px-3 py-2 rounded-lg text-sm">Cancel</button></div>
+                <input type="text" id="driverName" placeholder="Full name" class="border rounded-lg px-3 py-2 text-sm bg-white/80">
+                <input type="tel" id="driverPhone" placeholder="Phone (e.g., +1234567890)" class="border rounded-lg px-3 py-2 text-sm bg-white/80">
+                <select id="driverGroupSelect" class="border rounded-lg px-3 py-2 text-sm bg-white/80"></select>
+                <div class="flex gap-2"><button id="addDriverBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm flex-1"><i class="fas fa-plus"></i> Add</button><button id="cancelDriverEdit" class="hidden bg-gray-300 dark:bg-gray-700 px-3 py-2 rounded-lg text-sm">Cancel</button></div>
             </div><input type="hidden" id="editDriverId">
         </div>
         <div class="driver-table-scroll p-1">
             <table class="min-w-[620px] w-full text-sm">
-                <thead class="bg-gray-100/70 dark:bg-gray-800/50 sticky top-0"><tr><th class="p-2"><input type="checkbox" id="selectAllDrivers" class="rounded"></th><th>Name</th><th>Phone</th><th>Group</th><th>Actions</th></tr></thead>
+                <thead class="bg-gray-100/70 dark:bg-gray-800/50">几十年<th class="p-2"><input type="checkbox" id="selectAllDrivers"></th><th>Name</th><th>Phone</th><th>Group</th><th>Actions</th></tr>
+                </thead>
                 <tbody id="driversTableBody"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- Two column layout for rest -->
+    <!-- Two columns -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="space-y-6">
-            <!-- Groups card -->
-            <div class="glass-card rounded-2xl shadow-md overflow-hidden">
-                <div class="px-4 py-3 border-b border-gray-200/50 bg-white/40"><h2 class="font-bold text-lg"><i class="fas fa-layer-group mr-2 text-emerald-500"></i> Groups</h2></div>
-                <div class="p-3 bg-white/30 border-b flex gap-2"><input type="text" id="groupNameInput" placeholder="Group name" class="flex-1 border rounded-lg px-3 py-2 text-sm bg-white/80"><button id="addGroupBtn" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-plus-circle"></i> Create</button><button id="cancelGroupEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg text-sm">Cancel</button><input type="hidden" id="editGroupId"></div>
-                <div class="p-2"><table class="min-w-full text-sm"><tbody id="groupsTableBody"></tbody></table></div>
-            </div>
-            <!-- Templates -->
-            <div class="glass-card rounded-2xl shadow-md p-3">
-                <h2 class="font-bold text-lg mb-2"><i class="fas fa-templates text-purple-500"></i> Templates</h2>
-                <div class="flex flex-wrap gap-1 mb-2" id="templateList"></div>
-                <div class="flex flex-col gap-2"><input type="text" id="newTemplateName" placeholder="Name" class="border rounded-lg px-3 py-2 text-sm bg-white/80"><textarea id="newTemplateText" rows="1" placeholder="Message text" class="border rounded-lg px-3 py-2 text-sm bg-white/80"></textarea><button id="addTemplateBtn" class="bg-purple-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-save"></i> Save Template</button></div>
-            </div>
+            <div class="glass-card shadow-md overflow-hidden"><div class="px-4 py-3 border-b"><h2 class="font-bold text-lg"><i class="fas fa-layer-group mr-2 text-emerald-500"></i> Groups</h2></div><div class="p-3 bg-white/30 border-b flex gap-2"><input type="text" id="groupNameInput" placeholder="Group name" class="flex-1 border rounded-lg px-3 py-2 text-sm bg-white/80"><button id="addGroupBtn" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-plus-circle"></i> Create</button><button id="cancelGroupEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg text-sm">Cancel</button><input type="hidden" id="editGroupId"></div><div class="p-2"><table class="min-w-full"><tbody id="groupsTableBody"></tbody></table></div></div>
+            <div class="glass-card shadow-md p-3"><h2 class="font-bold text-lg mb-2"><i class="fas fa-templates text-purple-500"></i> Templates</h2><div class="flex flex-wrap gap-1 mb-2" id="templateList"></div><div class="flex flex-col gap-2"><input type="text" id="newTemplateName" placeholder="Name" class="border rounded-lg px-3 py-2 text-sm bg-white/80"><textarea id="newTemplateText" rows="1" placeholder="Message text" class="border rounded-lg px-3 py-2 text-sm bg-white/80"></textarea><button id="addTemplateBtn" class="bg-purple-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-save"></i> Save Template</button></div></div>
         </div>
         <div class="space-y-6">
-            <!-- Instant Messaging card -->
-            <div class="glass-card rounded-2xl shadow-md p-4">
-                <h2 class="font-bold text-lg mb-2"><i class="fas fa-paper-plane text-blue-500"></i> Instant Text (Simulated)</h2>
-                <select id="instantGroupSelect" class="w-full border rounded-xl p-2 mb-2 text-sm bg-white/80"></select>
-                <textarea id="instantMessage" rows="2" class="w-full border rounded-xl p-2 mb-2 text-sm bg-white/80" placeholder="Message..."></textarea>
-                <div class="grid grid-cols-2 gap-2">
-                    <button id="sendToGroupBtn" class="bg-blue-600 text-white py-2 rounded-xl text-sm shadow-md">Sim → Group</button>
-                    <button id="sendToSelectedBtn" class="bg-indigo-100 dark:bg-indigo-900/70 text-indigo-800 dark:text-indigo-200 py-2 rounded-xl text-sm">Sim → Selected</button>
-                    <button id="sendToAllBtn" class="bg-gray-200 dark:bg-gray-700 py-2 rounded-xl text-sm col-span-2">Sim → All Drivers</button>
-                </div>
-            </div>
-            <!-- Scheduling card -->
-            <div class="glass-card rounded-2xl shadow-md p-4">
-                <h2 class="font-bold text-lg mb-2"><i class="fas fa-clock text-amber-600"></i> Scheduled / Recurring (Sim)</h2>
-                <div class="space-y-2">
-                    <select id="scheduleGroupSelect" class="w-full border rounded p-2 text-sm bg-white/80"></select>
-                    <input type="datetime-local" id="scheduleDatetime" class="w-full border rounded p-2 text-sm bg-white/80">
-                    <div class="flex gap-2"><select id="recurringType" class="flex-1 border rounded p-2 text-sm bg-white/80"><option value="once">One-time</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select><input type="time" id="recurringTime" class="flex-1 border rounded p-2 text-sm bg-white/80"></div>
-                    <textarea id="scheduleMessage" rows="2" class="w-full border rounded p-2 text-sm bg-white/80" placeholder="Message..."></textarea>
-                    <button id="scheduleTextBtn" class="bg-amber-600 text-white w-full py-2 rounded-xl font-semibold text-sm"><i class="fas fa-calendar-alt"></i> Schedule</button>
-                </div>
-                <div class="mt-3"><div class="font-semibold text-sm">Pending jobs</div><div id="scheduledListContainer" class="max-h-32 overflow-y-auto text-xs space-y-1 mt-1"></div></div>
-            </div>
+            <div class="glass-card shadow-md p-4"><h2 class="font-bold text-lg mb-2"><i class="fas fa-paper-plane text-blue-500"></i> Instant Text (Simulated)</h2><select id="instantGroupSelect" class="w-full border rounded-xl p-2 mb-2 text-sm bg-white/80"></select><textarea id="instantMessage" rows="2" class="w-full border rounded-xl p-2 mb-2 text-sm bg-white/80" placeholder="Message..."></textarea><div class="grid grid-cols-2 gap-2"><button id="sendToGroupBtn" class="bg-blue-600 text-white py-2 rounded-xl text-sm">Sim → Group</button><button id="sendToSelectedBtn" class="bg-indigo-100 dark:bg-indigo-900/70 text-indigo-800 dark:text-indigo-200 py-2 rounded-xl text-sm">Sim → Selected</button><button id="sendToAllBtn" class="bg-gray-200 dark:bg-gray-700 py-2 rounded-xl text-sm col-span-2">Sim → All Drivers</button></div></div>
+            <div class="glass-card shadow-md p-4"><h2 class="font-bold text-lg mb-2"><i class="fas fa-clock text-amber-600"></i> Scheduled / Recurring (Sim)</h2><div class="space-y-2"><select id="scheduleGroupSelect" class="w-full border rounded p-2 text-sm bg-white/80"></select><input type="datetime-local" id="scheduleDatetime" class="w-full border rounded p-2 text-sm bg-white/80"><div class="flex gap-2"><select id="recurringType" class="flex-1 border rounded p-2 text-sm bg-white/80"><option value="once">One-time</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select><input type="time" id="recurringTime" class="flex-1 border rounded p-2 text-sm bg-white/80"></div><textarea id="scheduleMessage" rows="2" class="w-full border rounded p-2 text-sm bg-white/80" placeholder="Message..."></textarea><button id="scheduleTextBtn" class="bg-amber-600 text-white w-full py-2 rounded-xl font-semibold text-sm"><i class="fas fa-calendar-alt"></i> Schedule</button></div><div class="mt-3"><div class="font-semibold text-sm">Pending jobs</div><div id="scheduledListContainer" class="max-h-32 overflow-y-auto text-xs space-y-1 mt-1"></div></div></div>
         </div>
     </div>
 
     <!-- Activity Log -->
-    <div class="glass-card rounded-2xl shadow-md mt-6">
-        <div class="px-4 py-2 border-b border-gray-200/50 flex justify-between items-center">
-            <h2 class="font-semibold"><i class="fas fa-history mr-2"></i> Activity Log (Simulated SMS & Violations)</h2>
-            <button id="clearLogBtn" class="text-xs text-red-500 hover:text-red-700">Clear</button>
-        </div>
-        <div class="log-area p-2 text-xs" id="messageLogContainer"><div class="text-center text-gray-400 py-6">📭 No activity yet.</div></div>
-    </div>
+    <div class="glass-card shadow-md mt-6"><div class="px-4 py-2 border-b flex justify-between"><h2 class="font-semibold"><i class="fas fa-history mr-2"></i> Activity Log (Simulated)</h2><button id="clearLogBtn" class="text-xs text-red-500">Clear</button></div><div class="log-area p-2 text-xs" id="messageLogContainer"><div class="text-center text-gray-400 py-6">📭 No activity yet.</div></div></div>
 </div>
 
-<!-- Violation Modal with improved design -->
-<div id="violationModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+<!-- SMS Helper Modal (fallback) -->
+<div id="smsHelperModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
     <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-5 shadow-2xl">
-        <div class="flex justify-between items-center"><h3 class="font-bold text-lg"><i class="fas fa-gavel text-red-500"></i> Violation History</h3><button id="closeModalBtn" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button></div>
-        <div id="violationModalContent" class="text-sm space-y-2 max-h-64 overflow-y-auto my-3"></div>
-        <div class="flex justify-between gap-2"><button id="resetViolationsBtn" class="text-red-600 text-sm border border-red-300 px-3 py-1 rounded-lg flex-1">Reset violations</button><button id="unsuspendFromModalBtn" class="text-green-600 text-sm border border-green-300 px-3 py-1 rounded-lg flex-1">Unsuspend</button></div>
+        <div class="flex justify-between"><h3 class="font-bold text-lg"><i class="fas fa-comment-dots text-green-600"></i> Send SMS</h3><button id="closeSmsModal" class="text-gray-500 text-2xl leading-5">&times;</button></div>
+        <div class="my-3 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg break-all text-sm"><span class="font-bold">To:</span> <span id="smsModalPhone"></span><br><span class="font-bold">Message:</span> <span id="smsModalMsg"></span></div>
+        <div class="flex flex-col gap-2">
+            <button id="openSmsButton" class="bg-green-600 text-white py-2 rounded-xl font-semibold"><i class="fas fa-envelope-open-text"></i> Open SMS App (then tap Send)</button>
+            <button id="copySmsButton" class="bg-gray-600 text-white py-2 rounded-xl"><i class="fas fa-copy"></i> Copy to Clipboard (paste anywhere)</button>
+        </div>
+        <p class="text-xs text-center text-gray-500 mt-3">Your messaging app will open with the message ready.<br><u>Don't forget to tap the Send button.</u></p>
     </div>
 </div>
 
 <div id="toastMsg" class="toast"></div>
 
 <script>
-    // -------------------- DATA (same as before, fully functional) --------------------
+    // Data (same as before, fully functional)
     let drivers = [], groups = [], scheduledMessages = [], templates = [];
     let autoWelcomeEnabled = true, welcomeMsgText = "Welcome to the fleet!", autoWarningSms = true, autoSuspend = true, suspendThreshold = 3;
     let darkMode = localStorage.getItem('darkMode') === 'true';
     function genId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 8); }
     function loadData() {
-        const stored = localStorage.getItem('fleet_mobile_v4');
+        const stored = localStorage.getItem('fleet_final_v5');
         if(stored) { const d=JSON.parse(stored); drivers=d.drivers||[]; groups=d.groups||[]; scheduledMessages=d.scheduledMessages||[]; templates=d.templates||[]; autoWelcomeEnabled=d.autoWelcomeEnabled??true; welcomeMsgText=d.welcomeMsgText||welcomeMsgText; autoWarningSms=d.autoWarningSms??true; autoSuspend=d.autoSuspend??true; suspendThreshold=d.suspendThreshold??3; }
         else { drivers=[{id:genId(),name:"Elena Rodriguez",phone:"+15550101",groupId:null,violations:[],suspended:false,joinDate:new Date().toISOString()},{id:genId(),name:"David Kim",phone:"+15550234",groupId:null,violations:[],suspended:false,joinDate:new Date().toISOString()}]; groups=[{id:genId(),name:"Morning Shift"},{id:genId(),name:"Night Shift"}]; templates=[{name:"Reminder",text:"Please submit report"},{name:"Safety",text:"Drive carefully"}]; if(groups[0]) drivers[0].groupId=groups[0].id; }
         drivers.forEach(d=>{if(!d.violations)d.violations=[]; if(!d.joinDate)d.joinDate=new Date().toISOString();});
         saveAll(); updateUIsettings();
     }
-    function saveAll() { localStorage.setItem('fleet_mobile_v4', JSON.stringify({drivers,groups,scheduledMessages,templates,autoWelcomeEnabled,welcomeMsgText,autoWarningSms,autoSuspend,suspendThreshold})); }
+    function saveAll() { localStorage.setItem('fleet_final_v5', JSON.stringify({drivers,groups,scheduledMessages,templates,autoWelcomeEnabled,welcomeMsgText,autoWarningSms,autoSuspend,suspendThreshold})); }
     function showToast(msg) { let t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>{t.style.opacity='0';},2800); }
     function addLogEntry(recipient,phone,message,type="SMS"){ let c=document.getElementById('messageLogContainer'); let ts=new Date().toLocaleString(); let icon=type==="VIOLATION"?"fa-gavel text-red-500":"fa-message text-indigo-400"; let bg=type==="VIOLATION"?"bg-red-50/80 dark:bg-red-900/30":"bg-white/60 dark:bg-gray-800/60"; let html=`<div class="${bg} border rounded-lg p-2 mb-2 shadow-sm"><div class="flex justify-between"><span><i class="fas ${icon}"></i> ${type}</span><span>${ts}</span></div><div>${recipient} ${phone?`(${phone})`:''}</div><div class="mt-1 break-words">${escapeHtml(message)}</div></div>`; if(c.querySelector('.text-center')) c.innerHTML=''; c.insertAdjacentHTML('afterbegin',html); }
     function escapeHtml(s){return s.replace(/[&<>]/g,function(m){if(m==='&')return '&amp;';if(m==='<')return '&lt;';if(m==='>')return '&gt;';return m;});}
@@ -272,32 +124,42 @@
     function simulateSendToSelected(ids,msg){drivers.filter(d=>ids.includes(d.id)&&!d.suspended).forEach(d=>simulateSendToDriver(d,msg));}
     function simulateSendToAll(msg){drivers.forEach(d=>simulateSendToDriver(d,msg));}
     
-    // DIRECT SMS (works perfectly)
-    function openSmsApp(phone, message) {
-        if(!phone) { alert("No phone number"); return; }
+    // SMS with modal fallback
+    let pendingSms = { phone: '', message: '' };
+    function openSmsWithFallback(phone, message) {
         let cleanPhone = phone.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
-        if(!cleanPhone.startsWith('+') && !cleanPhone.startsWith('00')) cleanPhone = '+' + cleanPhone;
-        const encoded = encodeURIComponent(message);
-        window.location.href = `sms:${cleanPhone}?body=${encoded}`;
-        showToast(`📱 Opened your SMS app. Just tap Send.`);
+        if(!cleanPhone.startsWith('+')) cleanPhone = '+' + cleanPhone;
+        pendingSms = { phone: cleanPhone, message: message };
+        // Try to open directly first
+        const smsUrl = `sms:${cleanPhone}?body=${encodeURIComponent(message)}`;
+        window.location.href = smsUrl;
+        showToast(`📱 Opening SMS app... Remember to tap Send.`);
+        // Also show a modal as fallback in case the intent fails
+        setTimeout(() => {
+            document.getElementById('smsModalPhone').innerText = pendingSms.phone;
+            document.getElementById('smsModalMsg').innerText = pendingSms.message;
+            document.getElementById('smsHelperModal').classList.remove('hidden');
+            document.getElementById('smsHelperModal').classList.add('flex');
+        }, 500);
     }
+    
     function handleRealSms(driverId) {
         const driver = drivers.find(d => d.id === driverId);
         if(!driver) return;
         let msg = prompt(`📱 Real SMS to ${driver.name} (${driver.phone})\n\nMessage:`, document.getElementById('instantMessage').value || "Hello from fleet");
-        if(msg && msg.trim()) openSmsApp(driver.phone, msg.trim());
+        if(msg && msg.trim()) openSmsWithFallback(driver.phone, msg.trim());
     }
     
-    // Violation etc.
+    // Violation logic (unchanged but compact)
     function reportViolation(id,reason){let d=drivers.find(d=>d.id===id); if(!d)return; let r=reason||prompt(`Violation for ${d.name}:`,"Policy infraction"); if(!r)return; d.violations.push({reason:r.substring(0,200),date:new Date().toISOString()}); let cnt=d.violations.length; let oldGroup=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"none"):"none"; if(d.groupId)d.groupId=null; if(autoWarningSms&&cnt===1)simulateSendToDriver(d,`⚠️ WARNING: ${r}. Removed from group.`,true); if(autoSuspend&&cnt>=suspendThreshold&&!d.suspended){d.suspended=true; simulateSendToDriver(d,`🚫 AUTO-SUSPENDED: ${cnt} violations.`,true); addLogEntry(d.name,d.phone,`Auto-suspended after ${cnt} violations`,"VIOLATION");} addLogEntry(d.name,d.phone,`Violation #${cnt}: ${r} | Removed from "${oldGroup}"`,"VIOLATION"); saveAll(); renderAll(); alert(`Violation recorded. ${d.suspended?'Driver suspended.':''}`);}
     function toggleSuspend(id){let d=drivers.find(d=>d.id===id); if(d){d.suspended=!d.suspended; addLogEntry(d.name,d.phone,d.suspended?"Manually suspended":"Reinstated","VIOLATION"); saveAll(); renderAll();}}
     function resetViolations(id){let d=drivers.find(d=>d.id===id); if(d&&confirm("Reset all violations?")){d.violations=[]; addLogEntry(d.name,d.phone,"Violation history reset","VIOLATION"); saveAll(); renderAll(); if(currentViolationDriverId===id)showViolationModal(id);}}
     function addSchedule(gid,msg,dt,recurring='once',timeOfDay=null){if(!gid||!msg)return false; scheduledMessages.push({id:genId(),groupId:gid,message:msg,scheduledTime:recurring==='once'?dt:`${recurring}:${timeOfDay}`,recurring,lastRun:null}); saveAll(); renderAll(); return true;}
     function removeSchedule(sid){scheduledMessages=scheduledMessages.filter(s=>s.id!==sid); saveAll(); renderAll();}
     function checkScheduled(){let now=new Date(); let changed=false; scheduledMessages=scheduledMessages.filter(s=>{if(s.recurring==='once'){if(new Date(s.scheduledTime)<=now){simulateSendToGroup(s.groupId,s.message); return false;} return true;}else{let shouldRun=false; let today=new Date(); let lastRun=s.lastRun?new Date(s.lastRun):null; if(s.recurring==='daily')shouldRun=!lastRun||lastRun.toDateString()!==today.toDateString(); else if(s.recurring==='weekly')shouldRun=!lastRun||(Math.floor((today-lastRun)/(86400000))>=7); if(shouldRun&&s.scheduledTime){let [_,hm]=s.scheduledTime.split(':'); let [hour,minute]=hm.split(':').map(Number); let runTime=new Date(today); runTime.setHours(hour,minute,0,0); if(now>=runTime){simulateSendToGroup(s.groupId,s.message); s.lastRun=now.toISOString(); changed=true;}} return true;}}); if(changed){saveAll(); renderAll();}}
-    function renderTemplates(){let container=document.getElementById('templateList'); container.innerHTML=templates.map(t=>`<button class="template-btn bg-gray-200/70 dark:bg-gray-700/70 px-2 py-1 rounded-full text-xs hover:bg-gray-300 transition" data-text="${escapeHtml(t.text)}">${escapeHtml(t.name)}</button>`).join(''); document.querySelectorAll('.template-btn').forEach(btn=>btn.onclick=()=>{document.getElementById('instantMessage').value=btn.dataset.text;});}
+    function renderTemplates(){let container=document.getElementById('templateList'); container.innerHTML=templates.map(t=>`<button class="template-btn bg-gray-200/70 dark:bg-gray-700/70 px-2 py-1 rounded-full text-xs" data-text="${escapeHtml(t.text)}">${escapeHtml(t.name)}</button>`).join(''); document.querySelectorAll('.template-btn').forEach(btn=>btn.onclick=()=>{document.getElementById('instantMessage').value=btn.dataset.text;});}
     function addTemplate(name,text){if(name&&text){templates.push({name,text}); saveAll(); renderTemplates();}}
-    let chart; function updateDashboard(){document.getElementById('statTotalDrivers').innerText=drivers.length; let tv=drivers.reduce((s,d)=>s+(d.violations?.length||0),0); document.getElementById('statViolations').innerText=tv; let sc=drivers.filter(d=>d.suspended).length; document.getElementById('statSuspended').innerText=sc; let comp=drivers.length?((drivers.length-sc)/drivers.length*100).toFixed(1):100; document.getElementById('statCompliance').innerText=comp+'%'; if(chart)chart.destroy(); let ctx=document.getElementById('violationChart').getContext('2d'); chart=new Chart(ctx,{type:'bar',data:{labels:drivers.map(d=>d.name.substring(0,8)),datasets:[{label:'Violations',data:drivers.map(d=>d.violations?.length||0),backgroundColor:'rgba(99,102,241,0.7)',borderRadius:8}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top'}}}});}
+    let chart; function updateDashboard(){document.getElementById('statTotalDrivers').innerText=drivers.length; let tv=drivers.reduce((s,d)=>s+(d.violations?.length||0),0); document.getElementById('statViolations').innerText=tv; let sc=drivers.filter(d=>d.suspended).length; document.getElementById('statSuspended').innerText=sc; let comp=drivers.length?((drivers.length-sc)/drivers.length*100).toFixed(1):100; document.getElementById('statCompliance').innerText=comp+'%'; if(chart)chart.destroy(); let ctx=document.getElementById('violationChart').getContext('2d'); chart=new Chart(ctx,{type:'bar',data:{labels:drivers.map(d=>d.name.substring(0,8)),datasets:[{label:'Violations',data:drivers.map(d=>d.violations?.length||0),backgroundColor:'rgba(99,102,241,0.7)',borderRadius:8}]},options:{responsive:true,maintainAspectRatio:true}});}
     function renderAll(){renderGroupsAndDropdowns(); renderDriversTable(); renderScheduledList(); updateDashboard(); renderTemplates(); document.getElementById('driverCount').innerText=drivers.length; document.getElementById('groupCount').innerText=groups.length;}
     function renderGroupsAndDropdowns(){let opts='<option value="">-- No Group --</option>'+groups.map(g=>`<option value="${g.id}">${escapeHtml(g.name)}</option>`).join(''); ['driverGroupSelect','instantGroupSelect','scheduleGroupSelect'].forEach(id=>{let el=document.getElementById(id); if(el){let val=el.value; el.innerHTML=opts; if(val&&groups.some(g=>g.id===val))el.value=val;}}); document.getElementById('groupsTableBody').innerHTML=groups.map(g=>`<tr class="border-b border-gray-200/50"><td class="px-3 py-1 font-medium">${escapeHtml(g.name)}</td><td class="text-center">${drivers.filter(d=>d.groupId===g.id).length}</td><td class="text-right"><button class="edit-group-btn text-blue-500 mr-1" data-id="${g.id}"><i class="fas fa-edit"></i></button><button class="delete-group-btn text-red-400" data-id="${g.id}"><i class="fas fa-trash"></i></button></td></tr>`).join('');}
     function renderDriversTable(){let tbody=document.getElementById('driversTableBody'); tbody.innerHTML=drivers.map(d=>{let gn=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"—"):"—"; let vc=d.violations?.length||0; let badges=`${vc>0?`<span class="bg-red-100 dark:bg-red-900/60 text-red-800 dark:text-red-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">${vc}⚖️</span>`:''}${d.suspended?`<span class="bg-yellow-100 dark:bg-yellow-900/60 text-yellow-800 dark:text-yellow-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">⛔</span>`:''}`; return `<tr><td class="p-2"><input type="checkbox" class="driver-checkbox" value="${d.id}"></td><td class="font-medium text-sm">${escapeHtml(d.name)} ${badges}</td><td class="text-xs">${escapeHtml(d.phone)}</td><td class="text-xs"><span class="bg-gray-200/70 dark:bg-gray-700/70 px-2 py-0.5 rounded-full">${escapeHtml(gn)}</span></td><td class="whitespace-nowrap"><button class="edit-driver-btn text-indigo-500 mr-1" data-id="${d.id}"><i class="fas fa-pen"></i></button><button class="violation-btn text-red-600 mr-1" data-id="${d.id}"><i class="fas fa-gavel"></i></button><button class="view-violations-btn text-amber-600 mr-1" data-id="${d.id}"><i class="fas fa-list"></i></button><button class="suspend-toggle-btn ${d.suspended?'text-green-600':'text-orange-600'} mr-1" data-id="${d.id}"><i class="fas ${d.suspended?'fa-play-circle':'fa-pause-circle'}"></i></button><button class="real-sms-btn bg-gradient-to-r from-green-500 to-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm" data-id="${d.id}"><i class="fas fa-comment-dots"></i> SMS</button><button class="delete-driver-btn text-gray-400 ml-1" data-id="${d.id}"><i class="fas fa-trash-alt"></i></button></td></tr>`;}).join('');
@@ -305,12 +167,13 @@
         document.getElementById('selectAllDrivers').onclick=(e)=>document.querySelectorAll('.driver-checkbox').forEach(cb=>cb.checked=e.target.checked);
     }
     function renderScheduledList(){let c=document.getElementById('scheduledListContainer'); if(scheduledMessages.length===0){c.innerHTML='<div class="text-gray-400 text-xs text-center">No pending jobs</div>'; return;} c.innerHTML=scheduledMessages.map(s=>{let grp=groups.find(g=>g.id===s.groupId)?.name||"deleted"; let td=s.recurring==='once'?new Date(s.scheduledTime).toLocaleString():`${s.recurring} at ${s.scheduledTime.split(':')[1]}`; return `<div class="bg-white/50 dark:bg-gray-800/50 border rounded p-1 flex justify-between text-xs"><span>🕒 ${td} → ${escapeHtml(grp)}: ${escapeHtml(s.message.substring(0,25))}</span><button class="cancel-schedule-btn text-red-500" data-id="${s.id}"><i class="fas fa-times"></i></button></div>`;}).join('');}
-    let currentViolationDriverId=null; function showViolationModal(id){let d=drivers.find(d=>d.id===id); if(!d)return; currentViolationDriverId=id; let content=(d.violations||[]).map((v,i)=>`<div class="border-b border-gray-200 py-1"><span class="text-[11px]">${new Date(v.date).toLocaleString()}</span><br>⚠️ ${i+1}: ${escapeHtml(v.reason)}</div>`).join('')||"No violations"; document.getElementById('violationModalContent').innerHTML=content; document.getElementById('violationModal').classList.remove('hidden'); document.getElementById('violationModal').classList.add('flex');}
-    function closeModal(){document.getElementById('violationModal').classList.add('hidden'); currentViolationDriverId=null;}
+    let currentViolationDriverId=null; function showViolationModal(id){let d=drivers.find(d=>d.id===id); if(!d)return; currentViolationDriverId=id; let content=(d.violations||[]).map((v,i)=>`<div class="border-b py-1"><span class="text-[11px]">${new Date(v.date).toLocaleString()}</span><br>⚠️ ${i+1}: ${escapeHtml(v.reason)}</div>`).join('')||"No violations"; document.getElementById('violationModalContent').innerHTML=content; document.getElementById('violationModal').classList.remove('hidden'); document.getElementById('violationModal').classList.add('flex');}
+    function closeViolationModal(){document.getElementById('violationModal').classList.add('hidden'); currentViolationDriverId=null;}
     function updateUIsettings(){document.getElementById('autoWelcomeToggle').checked=autoWelcomeEnabled; document.getElementById('welcomeMessage').value=welcomeMsgText; document.getElementById('autoWarningSmsToggle').checked=autoWarningSms; document.getElementById('autoSuspendToggle').checked=autoSuspend; document.getElementById('suspendThreshold').value=suspendThreshold;}
+    
     function bindEvents(){
         document.body.addEventListener('click',(e)=>{if(e.target.closest('.delete-driver-btn')){let id=e.target.closest('.delete-driver-btn').dataset.id; if(confirm("Delete driver?")){drivers=drivers.filter(d=>d.id!==id); saveAll(); renderAll();}} if(e.target.closest('.violation-btn'))reportViolation(e.target.closest('.violation-btn').dataset.id); if(e.target.closest('.view-violations-btn'))showViolationModal(e.target.closest('.view-violations-btn').dataset.id); if(e.target.closest('.suspend-toggle-btn'))toggleSuspend(e.target.closest('.suspend-toggle-btn').dataset.id); if(e.target.closest('.edit-driver-btn')){let id=e.target.closest('.edit-driver-btn').dataset.id; let d=drivers.find(d=>d.id===id); if(d){document.getElementById('driverName').value=d.name; document.getElementById('driverPhone').value=d.phone; document.getElementById('driverGroupSelect').value=d.groupId||""; document.getElementById('editDriverId').value=id; document.getElementById('addDriverBtn').innerHTML='<i class="fas fa-save"></i> Update'; document.getElementById('cancelDriverEdit').classList.remove('hidden');}} if(e.target.closest('.delete-group-btn')){let gid=e.target.closest('.delete-group-btn').dataset.id; if(confirm("Delete group?")){drivers.forEach(d=>{if(d.groupId===gid)d.groupId=null;}); groups=groups.filter(g=>g.id!==gid); saveAll(); renderAll();}} if(e.target.closest('.edit-group-btn')){let gid=e.target.closest('.edit-group-btn').dataset.id; let g=groups.find(g=>g.id===gid); if(g){document.getElementById('groupNameInput').value=g.name; document.getElementById('editGroupId').value=gid; document.getElementById('addGroupBtn').innerHTML='<i class="fas fa-save"></i> Update'; document.getElementById('cancelGroupEdit').classList.remove('hidden');}} if(e.target.closest('.cancel-schedule-btn'))removeSchedule(e.target.closest('.cancel-schedule-btn').dataset.id);});
-        document.getElementById('addDriverBtn').onclick=()=>{let name=document.getElementById('driverName').value.trim(), phone=document.getElementById('driverPhone').value.trim(), groupId=document.getElementById('driverGroupSelect').value||null, editId=document.getElementById('editDriverId').value; if(!name||!phone)return alert("Name & phone required"); if(editId){let idx=drivers.findIndex(d=>d.id===editId); if(idx!==-1)drivers[idx]={...drivers[idx],name,phone,groupId};}else{let nd={id:genId(),name,phone,groupId,violations:[],suspended:false,joinDate:new Date().toISOString()}; drivers.push(nd); if(autoWelcomeEnabled)simulateSendToDriver(nd,welcomeMsgText);} saveAll(); renderAll(); document.getElementById('driverName').value=''; document.getElementById('driverPhone').value=''; document.getElementById('editDriverId').value=''; document.getElementById('addDriverBtn').innerHTML='<i class="fas fa-plus"></i> Add'; document.getElementById('cancelDriverEdit').classList.add('hidden');};
+        document.getElementById('addDriverBtn').onclick=()=>{let name=document.getElementById('driverName').value.trim(), phone=document.getElementById('driverPhone').value.trim(), groupId=document.getElementById('driverGroupSelect').value||null, editId=document.getElementById('editDriverId').value; if(!name||!phone)return alert("Name & phone"); if(editId){let idx=drivers.findIndex(d=>d.id===editId); if(idx!==-1)drivers[idx]={...drivers[idx],name,phone,groupId};}else{let nd={id:genId(),name,phone,groupId,violations:[],suspended:false,joinDate:new Date().toISOString()}; drivers.push(nd); if(autoWelcomeEnabled)simulateSendToDriver(nd,welcomeMsgText);} saveAll(); renderAll(); document.getElementById('driverName').value=''; document.getElementById('driverPhone').value=''; document.getElementById('editDriverId').value=''; document.getElementById('addDriverBtn').innerHTML='<i class="fas fa-plus"></i> Add'; document.getElementById('cancelDriverEdit').classList.add('hidden');};
         document.getElementById('cancelDriverEdit').onclick=()=>{document.getElementById('editDriverId').value=''; document.getElementById('driverName').value=''; document.getElementById('driverPhone').value=''; document.getElementById('addDriverBtn').innerHTML='<i class="fas fa-plus"></i> Add'; document.getElementById('cancelDriverEdit').classList.add('hidden');};
         document.getElementById('addGroupBtn').onclick=()=>{let name=document.getElementById('groupNameInput').value.trim(), editId=document.getElementById('editGroupId').value; if(!name)return; if(editId){let g=groups.find(g=>g.id===editId); if(g)g.name=name;}else groups.push({id:genId(),name}); saveAll(); renderAll(); document.getElementById('groupNameInput').value=''; document.getElementById('editGroupId').value=''; document.getElementById('addGroupBtn').innerHTML='<i class="fas fa-plus-circle"></i> Create'; document.getElementById('cancelGroupEdit').classList.add('hidden');};
         document.getElementById('cancelGroupEdit').onclick=()=>{document.getElementById('groupNameInput').value=''; document.getElementById('editGroupId').value=''; document.getElementById('addGroupBtn').innerHTML='<i class="fas fa-plus-circle"></i> Create'; document.getElementById('cancelGroupEdit').classList.add('hidden');};
@@ -326,11 +189,17 @@
         document.getElementById('autoWarningSmsToggle').onchange=(e)=>{autoWarningSms=e.target.checked; saveAll();};
         document.getElementById('autoSuspendToggle').onchange=(e)=>{autoSuspend=e.target.checked; saveAll();};
         document.getElementById('suspendThreshold').onchange=(e)=>{suspendThreshold=parseInt(e.target.value)||3; saveAll();};
-        document.getElementById('closeModalBtn').onclick=closeModal;
+        document.getElementById('closeModalBtn').onclick=closeViolationModal;
         document.getElementById('resetViolationsBtn').onclick=()=>{if(currentViolationDriverId)resetViolations(currentViolationDriverId);};
         document.getElementById('unsuspendFromModalBtn').onclick=()=>{if(currentViolationDriverId){toggleSuspend(currentViolationDriverId); showViolationModal(currentViolationDriverId);}};
-        window.onclick=(e)=>{if(e.target===document.getElementById('violationModal'))closeModal();};
+        window.onclick=(e)=>{if(e.target===document.getElementById('violationModal'))closeViolationModal();};
+        
+        // SMS modal buttons
+        document.getElementById('closeSmsModal').onclick=()=>{document.getElementById('smsHelperModal').classList.add('hidden');};
+        document.getElementById('openSmsButton').onclick=()=>{if(pendingSms.phone){window.location.href=`sms:${pendingSms.phone}?body=${encodeURIComponent(pendingSms.message)}`; showToast(`📱 Opening SMS app... Tap Send.`);}};
+        document.getElementById('copySmsButton').onclick=()=>{let text=`To: ${pendingSms.phone}\nMessage: ${pendingSms.message}`; navigator.clipboard.writeText(text); showToast(`✅ Copied! Paste into any messaging app.`);};
     }
+    
     function init(){loadData(); bindEvents(); renderAll(); setInterval(checkScheduled,30000); checkScheduled(); if(darkMode)document.body.classList.add('dark-mode');}
     init();
 </script>
