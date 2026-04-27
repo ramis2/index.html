@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>AutoFleet | Copy & Paste SMS (Always Works)</title>
+    <title>AutoFleet | Real Auto‑SMS (API Ready) + Groups</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -23,23 +23,21 @@
 <body class="p-3 md:p-6">
 
 <div class="max-w-7xl mx-auto relative z-10">
-    <!-- Clear instruction banner -->
-    <div class="bg-green-50 dark:bg-green-900/30 border-l-8 border-green-500 p-4 rounded-2xl text-sm mb-5 shadow-md">
+    <!-- Important note about auto SMS -->
+    <div class="bg-blue-50 dark:bg-blue-900/30 border-l-8 border-blue-500 p-4 rounded-2xl text-sm mb-5 shadow-md">
         <div class="flex items-start gap-3">
-            <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+            <i class="fas fa-info-circle text-blue-600 text-2xl"></i>
             <div>
-                <strong class="text-base">✅ How to send a real SMS (works every time):</strong><br>
-                1️⃣ Tap the green <span class="font-bold bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full">📱 SMS</span> button.<br>
-                2️⃣ A popup shows the <strong>phone number and message</strong>.<br>
-                3️⃣ Tap <strong class="bg-blue-100 px-2 py-0.5 rounded">Copy to Clipboard</strong> → then paste into your SMS/WhatsApp app and send.<br>
-                4️⃣ Or tap <strong class="bg-purple-100 px-2 py-0.5 rounded">Share</strong> to send via any app.
+                <strong class="text-base">📡 Real automatic SMS requires a backend service (Twilio, etc.)</strong><br>
+                This demo uses <strong>direct SMS app opening</strong> – tap the <span class="font-bold bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full">📱 SMS</span> button, then <u>tap Send in your messaging app</u>.<br>
+                For <strong>fully automated sending</strong>, you need to connect an SMS gateway (API placeholder included below).
             </div>
         </div>
     </div>
 
     <!-- Header -->
     <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
-        <div><h1 class="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-700 to-blue-600 bg-clip-text text-transparent"><i class="fas fa-truck-fast text-indigo-600 mr-1"></i>Driver<span class="text-indigo-600">AutoText</span> <span class="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full">Copy & Send</span></h1><p class="text-xs text-slate-500">Policy · Groups · Copy message → paste anywhere</p></div>
+        <div><h1 class="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-700 to-blue-600 bg-clip-text text-transparent"><i class="fas fa-truck-fast text-indigo-600 mr-1"></i>Driver<span class="text-indigo-600">AutoText</span> <span class="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full">Auto‑SMS Ready</span></h1><p class="text-xs text-slate-500">Policy · Groups · One‑tap open SMS app (then press Send)</p></div>
         <button id="darkModeToggle" class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm p-2 rounded-full shadow-md"><i class="fas fa-moon dark:hidden text-indigo-600"></i><i class="fas fa-sun hidden dark:inline text-yellow-400"></i></button>
     </div>
 
@@ -70,60 +68,72 @@
         </div>
         <div class="driver-table-scroll p-1">
             <table class="min-w-[620px] w-full text-sm">
-                <thead class="bg-gray-100/70 dark:bg-gray-800/50">几十年<th class="p-2"><input type="checkbox" id="selectAllDrivers"></th><th>Name</th><th>Phone</th><th>Group</th><th>Actions</th></tr></thead>
+                <thead class="bg-gray-100/70 dark:bg-gray-800/50"> <tr><th class="p-2"><input type="checkbox" id="selectAllDrivers"></th><th>Name</th><th>Phone</th><th>Group</th><th>Actions</th></tr> </thead>
                 <tbody id="driversTableBody"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- Two columns -->
+    <!-- Two columns: Groups + Templates (left) | Messaging + Scheduling (right) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="space-y-6">
-            <div class="glass-card shadow-md overflow-hidden"><div class="px-4 py-3 border-b"><h2 class="font-bold text-lg"><i class="fas fa-layer-group mr-2 text-emerald-500"></i> Groups</h2></div><div class="p-3 bg-white/30 border-b flex gap-2"><input type="text" id="groupNameInput" placeholder="Group name" class="flex-1 border rounded-lg px-3 py-2 text-sm bg-white/80"><button id="addGroupBtn" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-plus-circle"></i> Create</button><button id="cancelGroupEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg text-sm">Cancel</button><input type="hidden" id="editGroupId"></div><div class="p-2"><table class="min-w-full"><tbody id="groupsTableBody"></tbody></table></div></div>
-            <div class="glass-card shadow-md p-3"><h2 class="font-bold text-lg mb-2"><i class="fas fa-templates text-purple-500"></i> Templates</h2><div class="flex flex-wrap gap-1 mb-2" id="templateList"></div><div class="flex flex-col gap-2"><input type="text" id="newTemplateName" placeholder="Name" class="border rounded-lg px-3 py-2 text-sm bg-white/80"><textarea id="newTemplateText" rows="1" placeholder="Message text" class="border rounded-lg px-3 py-2 text-sm bg-white/80"></textarea><button id="addTemplateBtn" class="bg-purple-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-save"></i> Save Template</button></div></div>
+            <!-- Groups card (restored, clearly visible) -->
+            <div class="glass-card shadow-md overflow-hidden">
+                <div class="px-4 py-3 border-b"><h2 class="font-bold text-lg"><i class="fas fa-layer-group mr-2 text-emerald-500"></i> Driver Groups</h2></div>
+                <div class="p-3 bg-white/30 border-b flex gap-2">
+                    <input type="text" id="groupNameInput" placeholder="New group name" class="flex-1 border rounded-lg px-3 py-2 text-sm bg-white/80">
+                    <button id="addGroupBtn" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-plus-circle"></i> Create</button>
+                    <button id="cancelGroupEdit" class="hidden bg-gray-300 px-3 py-2 rounded-lg text-sm">Cancel</button>
+                    <input type="hidden" id="editGroupId">
+                </div>
+                <div class="p-2">
+                    <table class="min-w-full text-sm">
+                        <tbody id="groupsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Templates -->
+            <div class="glass-card shadow-md p-3"><h2 class="font-bold text-lg mb-2"><i class="fas fa-templates text-purple-500"></i> Message Templates</h2><div class="flex flex-wrap gap-1 mb-2" id="templateList"></div><div class="flex flex-col gap-2"><input type="text" id="newTemplateName" placeholder="Name" class="border rounded-lg px-3 py-2 text-sm bg-white/80"><textarea id="newTemplateText" rows="1" placeholder="Message text" class="border rounded-lg px-3 py-2 text-sm bg-white/80"></textarea><button id="addTemplateBtn" class="bg-purple-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-save"></i> Save Template</button></div></div>
         </div>
         <div class="space-y-6">
+            <!-- Instant Messaging (simulated) -->
             <div class="glass-card shadow-md p-4"><h2 class="font-bold text-lg mb-2"><i class="fas fa-paper-plane text-blue-500"></i> Instant Text (Simulated)</h2><select id="instantGroupSelect" class="w-full border rounded-xl p-2 mb-2 text-sm bg-white/80"></select><textarea id="instantMessage" rows="2" class="w-full border rounded-xl p-2 mb-2 text-sm bg-white/80" placeholder="Message..."></textarea><div class="grid grid-cols-2 gap-2"><button id="sendToGroupBtn" class="bg-blue-600 text-white py-2 rounded-xl text-sm">Sim → Group</button><button id="sendToSelectedBtn" class="bg-indigo-100 dark:bg-indigo-900/70 text-indigo-800 dark:text-indigo-200 py-2 rounded-xl text-sm">Sim → Selected</button><button id="sendToAllBtn" class="bg-gray-200 dark:bg-gray-700 py-2 rounded-xl text-sm col-span-2">Sim → All Drivers</button></div></div>
-            <div class="glass-card shadow-md p-4"><h2 class="font-bold text-lg mb-2"><i class="fas fa-clock text-amber-600"></i> Scheduled / Recurring (Sim)</h2><div class="space-y-2"><select id="scheduleGroupSelect" class="w-full border rounded p-2 text-sm bg-white/80"></select><input type="datetime-local" id="scheduleDatetime" class="w-full border rounded p-2 text-sm bg-white/80"><div class="flex gap-2"><select id="recurringType" class="flex-1 border rounded p-2 text-sm bg-white/80"><option value="once">One-time</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select><input type="time" id="recurringTime" class="flex-1 border rounded p-2 text-sm bg-white/80"></div><textarea id="scheduleMessage" rows="2" class="w-full border rounded p-2 text-sm bg-white/80" placeholder="Message..."></textarea><button id="scheduleTextBtn" class="bg-amber-600 text-white w-full py-2 rounded-xl font-semibold text-sm"><i class="fas fa-calendar-alt"></i> Schedule</button></div><div class="mt-3"><div class="font-semibold text-sm">Pending jobs</div><div id="scheduledListContainer" class="max-h-32 overflow-y-auto text-xs space-y-1 mt-1"></div></div></div>
+            <!-- Scheduled messages (auto-send simulated) -->
+            <div class="glass-card shadow-md p-4"><h2 class="font-bold text-lg mb-2"><i class="fas fa-clock text-amber-600"></i> Scheduled / Recurring (Simulated Auto‑Send)</h2><div class="space-y-2"><select id="scheduleGroupSelect" class="w-full border rounded p-2 text-sm bg-white/80"></select><input type="datetime-local" id="scheduleDatetime" class="w-full border rounded p-2 text-sm bg-white/80"><div class="flex gap-2"><select id="recurringType" class="flex-1 border rounded p-2 text-sm bg-white/80"><option value="once">One-time</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select><input type="time" id="recurringTime" class="flex-1 border rounded p-2 text-sm bg-white/80"></div><textarea id="scheduleMessage" rows="2" class="w-full border rounded p-2 text-sm bg-white/80" placeholder="Auto message..."></textarea><button id="scheduleTextBtn" class="bg-amber-600 text-white w-full py-2 rounded-xl font-semibold text-sm"><i class="fas fa-calendar-alt"></i> Schedule (Simulated)</button></div><div class="mt-3"><div class="font-semibold text-sm">Pending auto jobs</div><div id="scheduledListContainer" class="max-h-32 overflow-y-auto text-xs space-y-1 mt-1"></div></div></div>
+            <!-- Real SMS API placeholder (for automatic sending) -->
+            <div class="glass-card shadow-md p-4 border-t-4 border-purple-500"><h2 class="font-bold text-lg mb-2"><i class="fas fa-cloud-upload-alt text-purple-600"></i> Real Automatic SMS (API Gateway)</h2><p class="text-xs text-gray-600 mb-2">To send real SMS automatically, replace the placeholder function below with your Twilio / Vonage / AWS SNS API call.</p><button id="testApiButton" class="bg-purple-600 text-white w-full py-2 rounded-xl text-sm"><i class="fas fa-plug"></i> Test API Placeholder (logs only)</button><div class="text-xs text-center text-gray-500 mt-2">Current mode: <strong>manual open SMS app</strong> (tap Send in your app)</div></div>
         </div>
     </div>
 
     <!-- Activity Log -->
-    <div class="glass-card shadow-md mt-6"><div class="px-4 py-2 border-b flex justify-between"><h2 class="font-semibold"><i class="fas fa-history mr-2"></i> Activity Log (Simulated)</h2><button id="clearLogBtn" class="text-xs text-red-500">Clear</button></div><div class="log-area p-2 text-xs" id="messageLogContainer"><div class="text-center text-gray-400 py-6">📭 No activity yet.</div></div></div>
-</div>
+    <div class="glass-card shadow-md mt-6"><div class="px-4 py-2 border-b flex justify-between"><h2 class="font-semibold"><i class="fas fa-history mr-2"></i> Activity Log (Simulated + API calls)</h2><button id="clearLogBtn" class="text-xs text-red-500">Clear</button></div><div class="log-area p-2 text-xs" id="messageLogContainer"><div class="text-center text-gray-400 py-6">📭 No activity yet.</div></div></div>
 
-<!-- SMS Popup Modal (Copy & Share) -->
-<div id="smsPopupModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-5 shadow-2xl">
-        <div class="flex justify-between items-center"><h3 class="font-bold text-lg"><i class="fas fa-comment-dots text-green-600"></i> Send SMS</h3><button id="closePopupModal" class="text-gray-500 text-2xl leading-5">&times;</button></div>
-        <div class="my-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg break-all text-sm">
-            <div class="font-bold">📞 To:</div> <span id="popupPhone" class="break-all"></span>
-            <div class="font-bold mt-2">✏️ Message:</div> <span id="popupMsg" class="break-all"></span>
-        </div>
-        <div class="flex flex-col gap-2">
-            <button id="copyToClipboardBtn" class="bg-blue-600 text-white py-2 rounded-xl font-semibold"><i class="fas fa-copy"></i> Copy to Clipboard</button>
-            <button id="shareViaAppBtn" class="bg-purple-600 text-white py-2 rounded-xl font-semibold"><i class="fas fa-share-alt"></i> Share via (WhatsApp, Messages, etc.)</button>
-        </div>
-        <p class="text-xs text-center text-gray-500 mt-3">✅ After copying, open your SMS/WhatsApp app, paste, and send.</p>
+    <!-- Footer with copyright -->
+    <div class="text-center text-xs text-gray-400 border-t border-gray-200 mt-8 pt-4 pb-2">
+        © 2025 AutoFleet Systems — Driver Management & Group Texting Platform. All rights reserved.<br>
+        Developed by <span class="font-semibold">AutoFleet Team</span> | Real SMS via device requires manual tap (security). For fully automated sending, integrate a third‑party SMS API.
     </div>
 </div>
+
+<!-- Simple modal for violation history (minimal) -->
+<div id="violationModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4"><div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-5 shadow-2xl"><div class="flex justify-between"><h3 class="font-bold text-lg"><i class="fas fa-gavel text-red-500"></i> Violation History</h3><button id="closeModalBtn" class="text-gray-500 text-2xl leading-5">&times;</button></div><div id="violationModalContent" class="text-sm space-y-2 max-h-64 overflow-y-auto my-3"></div><div class="flex justify-between gap-2"><button id="resetViolationsBtn" class="text-red-600 text-sm border border-red-300 px-3 py-1 rounded-lg flex-1">Reset violations</button><button id="unsuspendFromModalBtn" class="text-green-600 text-sm border border-green-300 px-3 py-1 rounded-lg flex-1">Unsuspend</button></div></div></div>
 
 <div id="toastMsg" class="toast"></div>
 
 <script>
-    // ------------- DATA (same as before, fully functional) -------------
+    // ---------- DATA MODELS (full functionality restored) ----------
     let drivers = [], groups = [], scheduledMessages = [], templates = [];
     let autoWelcomeEnabled = true, welcomeMsgText = "Welcome to the fleet!", autoWarningSms = true, autoSuspend = true, suspendThreshold = 3;
     let darkMode = localStorage.getItem('darkMode') === 'true';
     function genId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 8); }
     function loadData() {
-        const stored = localStorage.getItem('fleet_final_v7');
+        const stored = localStorage.getItem('fleet_auto_final');
         if(stored) { const d=JSON.parse(stored); drivers=d.drivers||[]; groups=d.groups||[]; scheduledMessages=d.scheduledMessages||[]; templates=d.templates||[]; autoWelcomeEnabled=d.autoWelcomeEnabled??true; welcomeMsgText=d.welcomeMsgText||welcomeMsgText; autoWarningSms=d.autoWarningSms??true; autoSuspend=d.autoSuspend??true; suspendThreshold=d.suspendThreshold??3; }
         else { drivers=[{id:genId(),name:"Elena Rodriguez",phone:"+15550101",groupId:null,violations:[],suspended:false,joinDate:new Date().toISOString()},{id:genId(),name:"David Kim",phone:"+15550234",groupId:null,violations:[],suspended:false,joinDate:new Date().toISOString()}]; groups=[{id:genId(),name:"Morning Shift"},{id:genId(),name:"Night Shift"}]; templates=[{name:"Reminder",text:"Please submit report"},{name:"Safety",text:"Drive carefully"}]; if(groups[0]) drivers[0].groupId=groups[0].id; }
         drivers.forEach(d=>{if(!d.violations)d.violations=[]; if(!d.joinDate)d.joinDate=new Date().toISOString();});
         saveAll(); updateUIsettings();
     }
-    function saveAll() { localStorage.setItem('fleet_final_v7', JSON.stringify({drivers,groups,scheduledMessages,templates,autoWelcomeEnabled,welcomeMsgText,autoWarningSms,autoSuspend,suspendThreshold})); }
+    function saveAll() { localStorage.setItem('fleet_auto_final', JSON.stringify({drivers,groups,scheduledMessages,templates,autoWelcomeEnabled,welcomeMsgText,autoWarningSms,autoSuspend,suspendThreshold})); }
     function showToast(msg) { let t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>{t.style.opacity='0';},2800); }
     function addLogEntry(recipient,phone,message,type="SMS"){ let c=document.getElementById('messageLogContainer'); let ts=new Date().toLocaleString(); let icon=type==="VIOLATION"?"fa-gavel text-red-500":"fa-message text-indigo-400"; let bg=type==="VIOLATION"?"bg-red-50/80 dark:bg-red-900/30":"bg-white/60 dark:bg-gray-800/60"; let html=`<div class="${bg} border rounded-lg p-2 mb-2 shadow-sm"><div class="flex justify-between"><span><i class="fas ${icon}"></i> ${type}</span><span>${ts}</span></div><div>${recipient} ${phone?`(${phone})`:''}</div><div class="mt-1 break-words">${escapeHtml(message)}</div></div>`; if(c.querySelector('.text-center')) c.innerHTML=''; c.insertAdjacentHTML('afterbegin',html); }
     function escapeHtml(s){return s.replace(/[&<>]/g,function(m){if(m==='&')return '&amp;';if(m==='<')return '&lt;';if(m==='>')return '&gt;';return m;});}
@@ -132,46 +142,32 @@
     function simulateSendToSelected(ids,msg){drivers.filter(d=>ids.includes(d.id)&&!d.suspended).forEach(d=>simulateSendToDriver(d,msg));}
     function simulateSendToAll(msg){drivers.forEach(d=>simulateSendToDriver(d,msg));}
     
-    // SMS: show popup with copy and share (100% reliable)
-    function showSmsPopup(phone, message) {
+    // Real SMS: direct open of messaging app (user still taps Send)
+    function openMessagingApp(phone, message) {
         let cleanPhone = phone.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
         if(!cleanPhone.startsWith('+')) cleanPhone = '+' + cleanPhone;
-        document.getElementById('popupPhone').innerText = cleanPhone;
-        document.getElementById('popupMsg').innerText = message;
-        document.getElementById('smsPopupModal').classList.remove('hidden');
-        document.getElementById('smsPopupModal').classList.add('flex');
-        // Store for share
-        window._pendingSms = { phone: cleanPhone, message: message };
-    }
-    
-    function copyToClipboard() {
-        let text = `To: ${window._pendingSms.phone}\nMessage: ${window._pendingSms.message}`;
-        navigator.clipboard.writeText(text).then(() => {
-            showToast(`✅ Copied! Now paste into your messaging app and send.`);
-        }).catch(() => showToast(`❌ Could not copy, but you can manually select.`));
-    }
-    
-    function shareViaApp() {
-        if(navigator.share) {
-            navigator.share({
-                title: `Message to ${window._pendingSms.phone}`,
-                text: window._pendingSms.message
-            }).catch(() => showToast(`Share cancelled or failed.`));
-        } else {
-            // Fallback: copy
-            copyToClipboard();
-            showToast(`📋 Share not supported, copied instead.`);
-        }
+        window.location.href = `sms:${cleanPhone}?body=${encodeURIComponent(message)}`;
+        showToast(`📱 Opened your SMS app – tap Send to deliver.`);
+        addLogEntry(`System`, cleanPhone, `Opened SMS app with: ${message}`, "REAL_SMS");
     }
     
     function handleRealSms(driverId) {
         const driver = drivers.find(d => d.id === driverId);
         if(!driver) return;
         let msg = prompt(`📱 Send real SMS to ${driver.name} (${driver.phone})\n\nMessage:`, document.getElementById('instantMessage').value || "Hello from fleet");
-        if(msg && msg.trim()) showSmsPopup(driver.phone, msg.trim());
+        if(msg && msg.trim()) openMessagingApp(driver.phone, msg.trim());
     }
     
-    // Violation and other logic (unchanged but compact)
+    // API Placeholder for automatic SMS (to be replaced with real backend)
+    function callSmsApi(phone, message) {
+        addLogEntry(`API Call`, phone, `[SIMULATED] Would send: ${message}. Replace with actual fetch to Twilio/Vonage.`, "API");
+        showToast(`🔌 API placeholder: check log.`);
+        // Example of real fetch (commented):
+        // fetch('https://your-backend.com/send-sms', { method:'POST', body: JSON.stringify({to: phone, message}) })
+        // .then(res => addLogEntry(...));
+    }
+    
+    // Violation & scheduling (unchanged)
     function reportViolation(id,reason){let d=drivers.find(d=>d.id===id); if(!d)return; let r=reason||prompt(`Violation for ${d.name}:`,"Policy infraction"); if(!r)return; d.violations.push({reason:r.substring(0,200),date:new Date().toISOString()}); let cnt=d.violations.length; let oldGroup=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"none"):"none"; if(d.groupId)d.groupId=null; if(autoWarningSms&&cnt===1)simulateSendToDriver(d,`⚠️ WARNING: ${r}. Removed from group.`,true); if(autoSuspend&&cnt>=suspendThreshold&&!d.suspended){d.suspended=true; simulateSendToDriver(d,`🚫 AUTO-SUSPENDED: ${cnt} violations.`,true); addLogEntry(d.name,d.phone,`Auto-suspended after ${cnt} violations`,"VIOLATION");} addLogEntry(d.name,d.phone,`Violation #${cnt}: ${r} | Removed from "${oldGroup}"`,"VIOLATION"); saveAll(); renderAll(); alert(`Violation recorded. ${d.suspended?'Driver suspended.':''}`);}
     function toggleSuspend(id){let d=drivers.find(d=>d.id===id); if(d){d.suspended=!d.suspended; addLogEntry(d.name,d.phone,d.suspended?"Manually suspended":"Reinstated","VIOLATION"); saveAll(); renderAll();}}
     function resetViolations(id){let d=drivers.find(d=>d.id===id); if(d&&confirm("Reset all violations?")){d.violations=[]; addLogEntry(d.name,d.phone,"Violation history reset","VIOLATION"); saveAll(); renderAll(); if(currentViolationDriverId===id)showViolationModal(id);}}
@@ -183,7 +179,7 @@
     let chart; function updateDashboard(){document.getElementById('statTotalDrivers').innerText=drivers.length; let tv=drivers.reduce((s,d)=>s+(d.violations?.length||0),0); document.getElementById('statViolations').innerText=tv; let sc=drivers.filter(d=>d.suspended).length; document.getElementById('statSuspended').innerText=sc; let comp=drivers.length?((drivers.length-sc)/drivers.length*100).toFixed(1):100; document.getElementById('statCompliance').innerText=comp+'%'; if(chart)chart.destroy(); let ctx=document.getElementById('violationChart').getContext('2d'); chart=new Chart(ctx,{type:'bar',data:{labels:drivers.map(d=>d.name.substring(0,8)),datasets:[{label:'Violations',data:drivers.map(d=>d.violations?.length||0),backgroundColor:'rgba(99,102,241,0.7)',borderRadius:8}]},options:{responsive:true,maintainAspectRatio:true}});}
     function renderAll(){renderGroupsAndDropdowns(); renderDriversTable(); renderScheduledList(); updateDashboard(); renderTemplates(); document.getElementById('driverCount').innerText=drivers.length; document.getElementById('groupCount').innerText=groups.length;}
     function renderGroupsAndDropdowns(){let opts='<option value="">-- No Group --</option>'+groups.map(g=>`<option value="${g.id}">${escapeHtml(g.name)}</option>`).join(''); ['driverGroupSelect','instantGroupSelect','scheduleGroupSelect'].forEach(id=>{let el=document.getElementById(id); if(el){let val=el.value; el.innerHTML=opts; if(val&&groups.some(g=>g.id===val))el.value=val;}}); document.getElementById('groupsTableBody').innerHTML=groups.map(g=>`<tr class="border-b border-gray-200/50"><td class="px-3 py-1 font-medium">${escapeHtml(g.name)}</td><td class="text-center">${drivers.filter(d=>d.groupId===g.id).length}</td><td class="text-right"><button class="edit-group-btn text-blue-500 mr-1" data-id="${g.id}"><i class="fas fa-edit"></i></button><button class="delete-group-btn text-red-400" data-id="${g.id}"><i class="fas fa-trash"></i></button></td></tr>`).join('');}
-    function renderDriversTable(){let tbody=document.getElementById('driversTableBody'); tbody.innerHTML=drivers.map(d=>{let gn=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"—"):"—"; let vc=d.violations?.length||0; let badges=`${vc>0?`<span class="bg-red-100 dark:bg-red-900/60 text-red-800 dark:text-red-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">${vc}⚖️</span>`:''}${d.suspended?`<span class="bg-yellow-100 dark:bg-yellow-900/60 text-yellow-800 dark:text-yellow-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">⛔</span>`:''}`; return `<tr><td class="p-2"><input type="checkbox" class="driver-checkbox" value="${d.id}"></td><td class="font-medium text-sm">${escapeHtml(d.name)} ${badges}</td><td class="text-xs">${escapeHtml(d.phone)}</td><td class="text-xs"><span class="bg-gray-200/70 dark:bg-gray-700/70 px-2 py-0.5 rounded-full">${escapeHtml(gn)}</span></td><td class="whitespace-nowrap"><button class="edit-driver-btn text-indigo-500 mr-1" data-id="${d.id}"><i class="fas fa-pen"></i></button><button class="violation-btn text-red-600 mr-1" data-id="${d.id}"><i class="fas fa-gavel"></i></button><button class="view-violations-btn text-amber-600 mr-1" data-id="${d.id}"><i class="fas fa-list"></i></button><button class="suspend-toggle-btn ${d.suspended?'text-green-600':'text-orange-600'} mr-1" data-id="${d.id}"><i class="fas ${d.suspended?'fa-play-circle':'fa-pause-circle'}"></i></button><button class="real-sms-btn bg-gradient-to-r from-green-500 to-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm" data-id="${d.id}"><i class="fas fa-comment-dots"></i> SMS</button><button class="delete-driver-btn text-gray-400 ml-1" data-id="${d.id}"><i class="fas fa-trash-alt"></i></button></td></tr>`;}).join('');
+    function renderDriversTable(){let tbody=document.getElementById('driversTableBody'); tbody.innerHTML=drivers.map(d=>{let gn=d.groupId?(groups.find(g=>g.id===d.groupId)?.name||"—"):"—"; let vc=d.violations?.length||0; let badges=`${vc>0?`<span class="bg-red-100 dark:bg-red-900/60 text-red-800 dark:text-red-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">${vc}⚖️</span>`:''}${d.suspended?`<span class="bg-yellow-100 dark:bg-yellow-900/60 text-yellow-800 dark:text-yellow-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">⛔</span>`:''}`; return `<tr><td class="p-2"><input type="checkbox" class="driver-checkbox" value="${d.id}"></td><td class="font-medium text-sm">${escapeHtml(d.name)} ${badges}</td><td class="text-xs">${escapeHtml(d.phone)}</td><td class="text-xs"><span class="bg-gray-200/70 dark:bg-gray-700/70 px-2 py-0.5 rounded-full">${escapeHtml(gn)}</span></td><td class="whitespace-nowrap"><button class="edit-driver-btn text-indigo-500 mr-1" data-id="${d.id}"><i class="fas fa-pen"></i></button><button class="violation-btn text-red-600 mr-1" data-id="${d.id}"><i class="fas fa-gavel"></i></button><button class="view-violations-btn text-amber-600 mr-1" data-id="${d.id}"><i class="fas fa-list"></i></button><button class="suspend-toggle-btn ${d.suspended?'text-green-600':'text-orange-600'} mr-1" data-id="${d.id}"><i class="fas ${d.suspended?'fa-play-circle':'fa-pause-circle'}"></i></button><button class="real-sms-btn bg-green-600 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm" data-id="${d.id}"><i class="fas fa-comment-dots"></i> SMS</button><button class="delete-driver-btn text-gray-400 ml-1" data-id="${d.id}"><i class="fas fa-trash-alt"></i></button></td></tr>`;}).join('');
         document.querySelectorAll('.real-sms-btn').forEach(btn=>{btn.onclick=(e)=>{e.stopPropagation(); handleRealSms(btn.dataset.id);};});
         document.getElementById('selectAllDrivers').onclick=(e)=>document.querySelectorAll('.driver-checkbox').forEach(cb=>cb.checked=e.target.checked);
     }
@@ -215,14 +211,11 @@
         document.getElementById('unsuspendFromModalBtn').onclick=()=>{if(currentViolationDriverId){toggleSuspend(currentViolationDriverId); showViolationModal(currentViolationDriverId);}};
         window.onclick=(e)=>{if(e.target===document.getElementById('violationModal'))closeViolationModal();};
         
-        // SMS popup buttons
-        document.getElementById('closePopupModal').onclick=()=>{document.getElementById('smsPopupModal').classList.add('hidden');};
-        document.getElementById('copyToClipboardBtn').onclick=copyToClipboard;
-        document.getElementById('shareViaAppBtn').onclick=shareViaApp;
-        // Also close if clicking outside
-        window.onclick = (e) => {
-            if(e.target === document.getElementById('smsPopupModal')) document.getElementById('smsPopupModal').classList.add('hidden');
-            if(e.target === document.getElementById('violationModal')) closeViolationModal();
+        // API test button (placeholder for real auto SMS)
+        document.getElementById('testApiButton').onclick=()=>{
+            let testDriver = drivers[0];
+            if(testDriver) callSmsApi(testDriver.phone, "Test from AutoFleet API placeholder");
+            else alert("Add a driver first");
         };
     }
     
