@@ -3,764 +3,511 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Dispatching Management System</title>
+    <title>Cascade Taxi Dispatch - Driver Manager</title>
     <style>
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
         }
-        
         body {
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
+            background: #f0f4f8;
+            margin: 0;
             padding: 20px;
         }
-        
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            padding: 24px;
         }
-        
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 5px;
+            margin-top: 0;
+            color: #1e3a5f;
+            font-size: 1.8rem;
         }
-        
-        .subtitle {
-            font-size: 1rem;
-            opacity: 0.8;
-        }
-        
-        .main-content {
+        .toolbar {
             display: flex;
             flex-wrap: wrap;
-            padding: 20px;
+            gap: 12px;
+            margin-bottom: 24px;
+            align-items: center;
+            justify-content: space-between;
         }
-        
-        .form-section {
-            flex: 1;
-            min-width: 300px;
-            padding: 20px;
-            border-right: 1px solid #eee;
+        .search-box {
+            flex: 2;
+            min-width: 200px;
         }
-        
-        .data-section {
-            flex: 1;
-            min-width: 300px;
-            padding: 20px;
-        }
-        
-        .section-title {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #3498db;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #444;
-        }
-        
-        input, select, textarea {
+        .search-box input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 10px 16px;
+            border: 1px solid #ccc;
+            border-radius: 40px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s;
         }
-        
-        textarea {
-            min-height: 80px;
-            resize: vertical;
+        .search-box input:focus {
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 2px rgba(44,125,160,0.2);
         }
-        
-        .form-row {
-            display: flex;
-            gap: 15px;
+        .btn-add {
+            background: #2c7da0;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        
-        .form-row .form-group {
-            flex: 1;
+        .btn-add:hover {
+            background: #1f5e7a;
         }
-        
-        .financial-row {
+        .driver-form {
+            background: #e9f0f5;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 16px;
+            align-items: flex-end;
         }
-        
-        .financial-row .form-group {
+        .form-group {
             flex: 1;
-            min-width: 120px;
+            min-width: 150px;
         }
-        
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
             font-weight: 600;
-            font-size: 15px;
-            transition: all 0.3s ease;
+            margin-bottom: 6px;
+            color: #1e3a5f;
         }
-        
-        .btn-primary {
-            background-color: #3498db;
-            color: white;
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #bdd3e6;
+            border-radius: 12px;
+            font-size: 0.9rem;
         }
-        
-        .btn-primary:hover {
-            background-color: #2980b9;
-        }
-        
-        .btn-success {
-            background-color: #2ecc71;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background-color: #27ae60;
-        }
-        
-        .btn-warning {
-            background-color: #f39c12;
-            color: white;
-        }
-        
-        .btn-warning:hover {
-            background-color: #d68910;
-        }
-        
-        .button-group {
+        .form-actions {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
         }
-        
+        .btn-save, .btn-cancel {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-save {
+            background: #2c7da0;
+            color: white;
+        }
+        .btn-save:hover {
+            background: #1f5e7a;
+        }
+        .btn-cancel {
+            background: #adb5bd;
+            color: #1e2a3a;
+        }
+        .btn-cancel:hover {
+            background: #8c96a3;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        
         th, td {
-            padding: 12px 10px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            padding: 14px 12px;
+            border-bottom: 1px solid #e2e8f0;
         }
-        
         th {
-            background-color: #f8f9fa;
+            background: #f8fafc;
+            color: #1e3a5f;
             font-weight: 600;
-            color: #2c3e50;
         }
-        
         tr:hover {
-            background-color: #f9f9f9;
+            background: #f9fbfd;
         }
-        
-        .summary-box {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 6px;
-            margin-top: 20px;
-            border-left: 4px solid #3498db;
-        }
-        
-        .summary-title {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        
-        .summary-item {
+        .action-buttons {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
-        
-        .total-balance {
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
+        .btn-open, .btn-edit, .btn-delete {
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
         }
-        
-        .positive {
-            color: #27ae60;
+        .btn-open {
+            background: #d4e6f1;
+            color: #1f5e7a;
         }
-        
-        .negative {
-            color: #e74c3c;
+        .btn-edit {
+            background: #ffecb3;
+            color: #b45f06;
         }
-        
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            border-top: 1px solid #eee;
-            margin-top: 20px;
+        .btn-delete {
+            background: #ffe6e5;
+            color: #c0392b;
         }
-        
-        .alert {
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
+        .btn-open:hover {
+            background: #bdd3e6;
+        }
+        .btn-edit:hover {
+            background: #ffe0a3;
+        }
+        .btn-delete:hover {
+            background: #fcd5ce;
+        }
+        .modal {
             display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
         }
-        
-        .alert-success {
-            background-color: #d5edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 28px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.2);
         }
-        
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .modal-content h3 {
+            margin-top: 0;
         }
-        
-        @media (max-width: 768px) {
-            .form-section, .data-section {
-                border-right: none;
-                border-bottom: 1px solid #eee;
-            }
-            
-            .form-row, .financial-row {
-                flex-direction: column;
-                gap: 0;
-            }
+        .modal-content button {
+            margin-top: 16px;
+            background: #2c7da0;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+        }
+        @media (max-width: 700px) {
+            .driver-form { flex-direction: column; align-items: stretch; }
+            .form-actions { justify-content: flex-end; }
+            .action-buttons { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Cascade Taxi Cab CO. Management System</h1>
-            <p class="subtitle">Driver Registration & Financial Tracking | LibreOffice Integration</p>
-        </header>
-        
-        <div class="alert alert-success" id="successAlert">
-            Driver information saved successfully! Data ready for LibreOffice.
+<div class="container">
+    <h1>🚖 Cascade Taxi Dispatch – Driver Manager</h1>
+
+    <!-- Toolbar with search box -->
+    <div class="toolbar">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Search by name, phone, license or car model..." autocomplete="off">
         </div>
-        
-        <div class="alert alert-error" id="errorAlert">
-            Please fill in all required fields correctly.
-        </div>
-        
-        <div class="main-content">
-            <div class="form-section">
-                <h2 class="section-title">Driver Registration</h2>
-                
-                <form id="driverForm">
-                    <div class="form-group">
-                        <label for="driverId">Driver ID *</label>
-                        <input type="text" id="driverId" placeholder="DRV-001" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="cpncNumber">CPNC Number *</label>
-                            <input type="text" id="cpncNumber" placeholder="CPNC-12345" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="driverName">Driver's Name *</label>
-                            <input type="text" id="driverName" placeholder="John Doe" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="address">Address *</label>
-                        <input type="text" id="address" placeholder="123 Main St, City" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="areaCode">Area Code *</label>
-                            <input type="text" id="areaCode" placeholder="10001" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="telephone">Telephone *</label>
-                            <input type="tel" id="telephone" placeholder="(555) 123-4567" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="driver@example.com">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="registerDate">Register Date *</label>
-                        <input type="date" id="registerDate" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="carType">Car Type (Text Area)</label>
-                        <textarea id="carType" placeholder="Sedan, SUV, Minivan, etc."></textarea>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="carMake">Make *</label>
-                            <input type="text" id="carMake" placeholder="Toyota" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="carModel">Model *</label>
-                            <input type="text" id="carModel" placeholder="Camry" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="carYear">Year (Max 10 years old) *</label>
-                            <select id="carYear" required>
-                                <option value="">Select Year</option>
-                                <!-- Options will be filled by JavaScript -->
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="carColor">Color *</label>
-                            <input type="text" id="carColor" placeholder="Blue" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="plateNumber">Plate Number *</label>
-                            <input type="text" id="plateNumber" placeholder="ABC-123" required>
-                        </div>
-                    </div>
-                    
-                    <h3 class="section-title" style="margin-top: 30px;">Financial Information</h3>
-                    
-                    <div class="financial-row">
-                        <div class="form-group">
-                            <label for="amountDue">Amount Due ($)</label>
-                            <input type="number" id="amountDue" min="0" step="0.01" value="0.00">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="amountPaid">Amount Paid ($)</label>
-                            <input type="number" id="amountPaid" min="0" step="0.01" value="0.00">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="expenses">Expenses ($)</label>
-                            <input type="number" id="expenses" min="0" step="0.01" value="0.00">
-                        </div>
-                    </div>
-                    
-                    <div class="button-group">
-                        <button type="submit" class="btn btn-primary">Register Driver</button>
-                        <button type="button" class="btn btn-success" id="saveToLibreOffice">Save to LibreOffice</button>
-                        <button type="reset" class="btn btn-warning">Clear Form</button>
-                    </div>
-                </form>
-            </div>
-            
-            <div class="data-section">
-                <h2 class="section-title">Registered Drivers</h2>
-                
-                <div class="table-container">
-                    <table id="driversTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Telephone</th>
-                                <th>Balance</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="driversTableBody">
-                            <!-- Driver rows will be added here by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="summary-box">
-                    <div class="summary-title">Financial Summary</div>
-                    <div class="summary-item">
-                        <span>Total Amount Due:</span>
-                        <span id="totalDue">$0.00</span>
-                    </div>
-                    <div class="summary-item">
-                        <span>Total Amount Paid:</span>
-                        <span id="totalPaid">$0.00</span>
-                    </div>
-                    <div class="summary-item">
-                        <span>Total Expenses:</span>
-                        <span id="totalExpenses">$0.00</span>
-                    </div>
-                    <div class="summary-item">
-                        <span>Total Income:</span>
-                        <span id="totalIncome">$0.00</span>
-                    </div>
-                    <div class="summary-item total-balance">
-                        <span>Total Balance:</span>
-                        <span id="totalBalance">$0.00</span>
-                    </div>
-                </div>
-                
-                <div class="button-group">
-                    <button type="button" class="btn btn-primary" id="exportAllData">Export All Data to CSV</button>
-                    <button type="button" class="btn btn-warning" id="clearAllData">Clear All Data</button>
-                </div>
-            </div>
-        </div>
-        
-        <footer>
-            <p>Taxi Dispatching Program | Data stored in CSV format compatible with LibreOffice Calc</p>
-            <p>© 2025 Ja, Cascade Taxicab co Dispatch System. All data is stored locally in your browser.</p>
-        </footer>
+        <button class="btn-add" id="newDriverBtn">+ New Driver</button>
     </div>
 
-    <script>
-        // Initialize the application when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set today's date as default for registration date
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('registerDate').value = today;
-            
-            // Populate car year dropdown (last 10 years)
-            const yearSelect = document.getElementById('carYear');
-            const currentYear = new Date().getFullYear();
-            for (let year = currentYear; year >= currentYear - 10; year--) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearSelect.appendChild(option);
-            }
-            
-            // Load drivers from localStorage
-            loadDrivers();
-            
-            // Set up event listeners
-            document.getElementById('driverForm').addEventListener('submit', registerDriver);
-            document.getElementById('saveToLibreOffice').addEventListener('click', saveToLibreOffice);
-            document.getElementById('exportAllData').addEventListener('click', exportAllData);
-            document.getElementById('clearAllData').addEventListener('click', clearAllData);
-            
-            // Add event listeners to financial inputs to update calculations
-            document.getElementById('amountDue').addEventListener('input', updateFinancialSummary);
-            document.getElementById('amountPaid').addEventListener('input', updateFinancialSummary);
-            document.getElementById('expenses').addEventListener('input', updateFinancialSummary);
-        });
-        
-        // Driver data storage
-        let drivers = [];
-        
-        // Register a new driver
-        function registerDriver(event) {
-            event.preventDefault();
-            
-            // Get form values
-            const driverId = document.getElementById('driverId').value;
-            const cpncNumber = document.getElementById('cpncNumber').value;
-            const driverName = document.getElementById('driverName').value;
-            const address = document.getElementById('address').value;
-            const areaCode = document.getElementById('areaCode').value;
-            const telephone = document.getElementById('telephone').value;
-            const email = document.getElementById('email').value;
-            const registerDate = document.getElementById('registerDate').value;
-            const carType = document.getElementById('carType').value;
-            const carMake = document.getElementById('carMake').value;
-            const carModel = document.getElementById('carModel').value;
-            const carYear = document.getElementById('carYear').value;
-            const carColor = document.getElementById('carColor').value;
-            const plateNumber = document.getElementById('plateNumber').value;
-            const amountDue = parseFloat(document.getElementById('amountDue').value) || 0;
-            const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
-            const expenses = parseFloat(document.getElementById('expenses').value) || 0;
-            
-            // Calculate unpaid amount and balance
-            const unpaid = amountDue - amountPaid;
-            const totalIncome = amountPaid;
-            const totalBalance = totalIncome - expenses;
-            
-            // Create driver object
-            const driver = {
-                id: driverId,
-                cpncNumber,
-                name: driverName,
-                address,
-                areaCode,
-                telephone,
-                email,
-                registerDate,
-                carType,
-                carMake,
-                carModel,
-                carYear,
-                carColor,
-                plateNumber,
-                amountDue,
-                amountPaid,
-                unpaid,
-                expenses,
-                totalIncome,
-                totalBalance
-            };
-            
-            // Check if driver ID already exists
-            const existingIndex = drivers.findIndex(d => d.id === driverId);
-            if (existingIndex !== -1) {
-                // Update existing driver
-                drivers[existingIndex] = driver;
-                showAlert('Driver information updated successfully!', 'success');
-            } else {
-                // Add new driver
-                drivers.push(driver);
-                showAlert('Driver registered successfully!', 'success');
-            }
-            
-            // Save to localStorage
-            saveDrivers();
-            
-            // Update the table
-            updateDriversTable();
-            
-            // Update financial summary
-            updateFinancialSummary();
-            
-            // Reset form
-            document.getElementById('driverForm').reset();
-            document.getElementById('registerDate').value = new Date().toISOString().split('T')[0];
-        }
-        
-        // Update the drivers table
-        function updateDriversTable() {
-            const tableBody = document.getElementById('driversTableBody');
-            tableBody.innerHTML = '';
-            
-            drivers.forEach(driver => {
-                const row = document.createElement('tr');
-                
-                // Determine balance class
-                const balanceClass = driver.totalBalance >= 0 ? 'positive' : 'negative';
-                
-                row.innerHTML = `
-                    <td>${driver.id}</td>
-                    <td>${driver.name}</td>
-                    <td>${driver.telephone}</td>
-                    <td class="${balanceClass}">$${driver.totalBalance.toFixed(2)}</td>
-                    <td>
-                        <button onclick="editDriver('${driver.id}')" class="btn" style="padding: 5px 10px; font-size: 12px; background-color: #3498db; color: white; margin-right: 5px;">Edit</button>
-                        <button onclick="deleteDriver('${driver.id}')" class="btn" style="padding: 5px 10px; font-size: 12px; background-color: #e74c3c; color: white;">Delete</button>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-        }
-        
-        // Edit a driver
-        function editDriver(driverId) {
-            const driver = drivers.find(d => d.id === driverId);
-            if (!driver) return;
-            
-            // Fill form with driver data
-            document.getElementById('driverId').value = driver.id;
-            document.getElementById('cpncNumber').value = driver.cpncNumber;
-            document.getElementById('driverName').value = driver.name;
-            document.getElementById('address').value = driver.address;
-            document.getElementById('areaCode').value = driver.areaCode;
-            document.getElementById('telephone').value = driver.telephone;
-            document.getElementById('email').value = driver.email;
-            document.getElementById('registerDate').value = driver.registerDate;
-            document.getElementById('carType').value = driver.carType;
-            document.getElementById('carMake').value = driver.carMake;
-            document.getElementById('carModel').value = driver.carModel;
-            document.getElementById('carYear').value = driver.carYear;
-            document.getElementById('carColor').value = driver.carColor;
-            document.getElementById('plateNumber').value = driver.plateNumber;
-            document.getElementById('amountDue').value = driver.amountDue;
-            document.getElementById('amountPaid').value = driver.amountPaid;
-            document.getElementById('expenses').value = driver.expenses;
-            
-            // Scroll to form
-            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
-            
-            showAlert(`Editing driver: ${driver.name}`, 'success');
-        }
-        
-        // Delete a driver
-        function deleteDriver(driverId) {
-            if (confirm('Are you sure you want to delete this driver?')) {
-                drivers = drivers.filter(d => d.id !== driverId);
-                saveDrivers();
-                updateDriversTable();
-                updateFinancialSummary();
-                showAlert('Driver deleted successfully!', 'success');
-            }
-        }
-        
-        // Update financial summary
-        function updateFinancialSummary() {
-            // Calculate totals from all drivers
-            const totalDue = drivers.reduce((sum, driver) => sum + driver.amountDue, 0);
-            const totalPaid = drivers.reduce((sum, driver) => sum + driver.amountPaid, 0);
-            const totalExpenses = drivers.reduce((sum, driver) => sum + driver.expenses, 0);
-            const totalIncome = totalPaid;
-            const totalBalance = totalIncome - totalExpenses;
-            
-            // Update display
-            document.getElementById('totalDue').textContent = `$${totalDue.toFixed(2)}`;
-            document.getElementById('totalPaid').textContent = `$${totalPaid.toFixed(2)}`;
-            document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
-            document.getElementById('totalIncome').textContent = `$${totalIncome.toFixed(2)}`;
-            document.getElementById('totalBalance').textContent = `$${totalBalance.toFixed(2)}`;
-            
-            // Color code the total balance
-            const totalBalanceElement = document.getElementById('totalBalance');
-            totalBalanceElement.className = totalBalance >= 0 ? 'positive' : 'negative';
-        }
-        
-        // Save drivers to localStorage
-        function saveDrivers() {
-            localStorage.setItem('taxiDrivers', JSON.stringify(drivers));
-        }
-        
-        // Load drivers from localStorage
-        function loadDrivers() {
-            const savedDrivers = localStorage.getItem('taxiDrivers');
-            if (savedDrivers) {
-                drivers = JSON.parse(savedDrivers);
-                updateDriversTable();
-                updateFinancialSummary();
-            }
-        }
-        
-        // Save data in LibreOffice compatible format (CSV)
-        function saveToLibreOffice() {
-            if (drivers.length === 0) {
-                showAlert('No driver data to save!', 'error');
-                return;
-            }
-            
-            // Create CSV content
-            const headers = [
-                'ID', 'CPNC Number', 'Driver Name', 'Address', 'Area Code', 
-                'Telephone', 'Email', 'Register Date', 'Car Type', 'Make', 
-                'Model', 'Year', 'Color', 'Plate Number', 'Amount Due', 
-                'Amount Paid', 'Unpaid', 'Expenses', 'Total Income', 'Total Balance'
+    <!-- Driver form (add / edit) -->
+    <div class="driver-form" id="driverForm">
+        <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="driverName" placeholder="e.g. John Smith">
+        </div>
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="text" id="driverPhone" placeholder="+1 234 567 890">
+        </div>
+        <div class="form-group">
+            <label>License Plate</label>
+            <input type="text" id="driverLicense" placeholder="ABC-1234">
+        </div>
+        <div class="form-group">
+            <label>Car Model</label>
+            <input type="text" id="driverCarModel" placeholder="Toyota Camry">
+        </div>
+        <div class="form-actions">
+            <button class="btn-save" id="saveDriverBtn">💾 Save Driver</button>
+            <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Drivers table -->
+    <div style="overflow-x: auto;">
+        <table id="driversTable">
+            <thead>
+                <tr>
+                    <th>Name</th><th>Phone</th><th>License Plate</th><th>Car Model</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr class="no-data"><td colspan="5">No drivers found. Add your first driver!</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for "Open" driver details -->
+<div id="driverModal" class="modal">
+    <div class="modal-content">
+        <h3>🚕 Driver Details</h3>
+        <div id="modalDetails"></div>
+        <button id="closeModalBtn">Close</button>
+    </div>
+</div>
+
+<script>
+    // ------------------------------
+    // Data & storage helpers
+    // ------------------------------
+    let drivers = [];
+    let currentEditId = null;      // if not null -> editing mode
+
+    // Load from localStorage
+    function loadDrivers() {
+        const stored = localStorage.getItem('cascade_drivers');
+        if (stored) {
+            drivers = JSON.parse(stored);
+        } else {
+            // seed some demo drivers
+            drivers = [
+                { id: 'd1', name: 'Michael Chen', phone: '555-1234', license: 'XYZ9876', carModel: 'Honda Accord' },
+                { id: 'd2', name: 'Sarah O\'Connor', phone: '555-5678', license: 'ABC1234', carModel: 'Toyota Prius' },
+                { id: 'd3', name: 'David Kim', phone: '555-9999', license: 'LMN4567', carModel: 'Tesla Model 3' }
             ];
-            
-            // Convert driver data to CSV rows
-            const csvRows = drivers.map(driver => [
-                driver.id,
-                driver.cpncNumber,
-                driver.name,
-                driver.address,
-                driver.areaCode,
-                driver.telephone,
-                driver.email,
-                driver.registerDate,
-                driver.carType,
-                driver.carMake,
-                driver.carModel,
-                driver.carYear,
-                driver.carColor,
-                driver.plateNumber,
-                driver.amountDue.toFixed(2),
-                driver.amountPaid.toFixed(2),
-                driver.unpaid.toFixed(2),
-                driver.expenses.toFixed(2),
-                driver.totalIncome.toFixed(2),
-                driver.totalBalance.toFixed(2)
-            ]);
-            
-            // Combine headers and data
-            const csvContent = [
-                headers.join(','),
-                ...csvRows.map(row => row.join(','))
-            ].join('\n');
-            
-            // Create and download CSV file
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `taxi_drivers_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            showAlert('Data exported to CSV file. Open with LibreOffice Calc.', 'success');
+            saveToLocal();
         }
-        
-        // Export all data
-        function exportAllData() {
-            saveToLibreOffice();
+        renderTable();
+    }
+
+    function saveToLocal() {
+        localStorage.setItem('cascade_drivers', JSON.stringify(drivers));
+    }
+
+    // Helper: generate short id
+    function generateId() {
+        return Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+    }
+
+    // ------------------------------
+    // Form actions (Save as ADD or UPDATE)
+    // ------------------------------
+    function getFormData() {
+        return {
+            name: document.getElementById('driverName').value.trim(),
+            phone: document.getElementById('driverPhone').value.trim(),
+            license: document.getElementById('driverLicense').value.trim(),
+            carModel: document.getElementById('driverCarModel').value.trim()
+        };
+    }
+
+    function clearForm() {
+        document.getElementById('driverName').value = '';
+        document.getElementById('driverPhone').value = '';
+        document.getElementById('driverLicense').value = '';
+        document.getElementById('driverCarModel').value = '';
+        currentEditId = null;
+    }
+
+    function populateFormForEdit(driver) {
+        document.getElementById('driverName').value = driver.name;
+        document.getElementById('driverPhone').value = driver.phone;
+        document.getElementById('driverLicense').value = driver.license;
+        document.getElementById('driverCarModel').value = driver.carModel;
+        currentEditId = driver.id;
+    }
+
+    // Save (common button) - works for both add and update
+    function saveDriver() {
+        const { name, phone, license, carModel } = getFormData();
+        if (!name) {
+            alert("Driver name is required.");
+            return;
         }
-        
-        // Clear all data
-        function clearAllData() {
-            if (confirm('Are you sure you want to clear all driver data? This cannot be undone.')) {
-                drivers = [];
-                saveDrivers();
-                updateDriversTable();
-                updateFinancialSummary();
-                showAlert('All data cleared successfully!', 'success');
-            }
-        }
-        
-        // Show alert message
-        function showAlert(message, type) {
-            const successAlert = document.getElementById('successAlert');
-            const errorAlert = document.getElementById('errorAlert');
-            
-            if (type === 'success') {
-                successAlert.textContent = message;
-                successAlert.style.display = 'block';
-                errorAlert.style.display = 'none';
-                
-                // Hide after 5 seconds
-                setTimeout(() => {
-                    successAlert.style.display = 'none';
-                }, 5000);
+
+        if (currentEditId) {
+            // UPDATE existing driver
+            const index = drivers.findIndex(d => d.id === currentEditId);
+            if (index !== -1) {
+                drivers[index] = { ...drivers[index], name, phone, license, carModel };
+                saveToLocal();
+                renderTable();
+                clearForm();
+                alert("Driver updated successfully.");
             } else {
-                errorAlert.textContent = message;
-                errorAlert.style.display = 'block';
-                successAlert.style.display = 'none';
-                
-                // Hide after 5 seconds
-                setTimeout(() => {
-                    errorAlert.style.display = 'none';
-                }, 5000);
+                alert("Driver not found. Refreshing...");
+                clearForm();
+                renderTable();
             }
+        } else {
+            // ADD new driver
+            const newDriver = {
+                id: generateId(),
+                name: name,
+                phone: phone,
+                license: license,
+                carModel: carModel
+            };
+            drivers.push(newDriver);
+            saveToLocal();
+            renderTable();
+            clearForm();
+            alert("New driver added.");
         }
-    </script>
+    }
+
+    // Cancel edit: just clear form and reset edit mode
+    function cancelEdit() {
+        clearForm();
+    }
+
+    // ------------------------------
+    // Action Buttons: Open, Edit, Delete
+    // ------------------------------
+    function openDriverDetails(driver) {
+        const modal = document.getElementById('driverModal');
+        const detailsDiv = document.getElementById('modalDetails');
+        detailsDiv.innerHTML = `
+            <p><strong>Name:</strong> ${escapeHtml(driver.name)}</p>
+            <p><strong>Phone:</strong> ${escapeHtml(driver.phone || '—')}</p>
+            <p><strong>License Plate:</strong> ${escapeHtml(driver.license || '—')}</p>
+            <p><strong>Car Model:</strong> ${escapeHtml(driver.carModel || '—')}</p>
+            <p><strong>Driver ID:</strong> ${driver.id}</p>
+        `;
+        modal.style.display = 'flex';
+    }
+
+    function editDriver(driver) {
+        populateFormForEdit(driver);
+        // Scroll to form
+        document.getElementById('driverForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function deleteDriver(driverId) {
+        if (confirm("Are you sure you want to remove this driver?")) {
+            drivers = drivers.filter(d => d.id !== driverId);
+            saveToLocal();
+            renderTable();
+            if (currentEditId === driverId) clearForm(); // clear form if editing deleted driver
+        }
+    }
+
+    // simple escape to avoid XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // ------------------------------
+    // Search / Filter table
+    // ------------------------------
+    function filterDrivers(searchTerm) {
+        if (!searchTerm) return drivers;
+        const term = searchTerm.toLowerCase();
+        return drivers.filter(driver => 
+            driver.name.toLowerCase().includes(term) ||
+            (driver.phone && driver.phone.toLowerCase().includes(term)) ||
+            (driver.license && driver.license.toLowerCase().includes(term)) ||
+            (driver.carModel && driver.carModel.toLowerCase().includes(term))
+        );
+    }
+
+    function renderTable() {
+        const searchValue = document.getElementById('searchInput').value;
+        const filtered = filterDrivers(searchValue);
+        const tbody = document.getElementById('tableBody');
+        if (!filtered.length) {
+            tbody.innerHTML = '<tr class="no-data"><td colspan="5">🚫 No matching drivers found.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        filtered.forEach(driver => {
+            html += `
+                <tr>
+                    <td>${escapeHtml(driver.name)}</td>
+                    <td>${escapeHtml(driver.phone) || '—'}</td>
+                    <td>${escapeHtml(driver.license) || '—'}</td>
+                    <td>${escapeHtml(driver.carModel) || '—'}</td>
+                    <td class="action-buttons">
+                        <button class="btn-open" data-id="${driver.id}" data-action="open">👁️ Open</button>
+                        <button class="btn-edit" data-id="${driver.id}" data-action="edit">✏️ Edit</button>
+                        <button class="btn-delete" data-id="${driver.id}" data-action="delete">🗑️ Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+
+        // attach event listeners dynamically
+        tbody.querySelectorAll('.btn-open').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = btn.getAttribute('data-id');
+                const driver = drivers.find(d => d.id === id);
+                if (driver) openDriverDetails(driver);
+            });
+        });
+        tbody.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = btn.getAttribute('data-id');
+                const driver = drivers.find(d => d.id === id);
+                if (driver) editDriver(driver);
+            });
+        });
+        tbody.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = btn.getAttribute('data-id');
+                deleteDriver(id);
+            });
+        });
+    }
+
+    // ------------------------------
+    // Event binding & Modal close
+    // ------------------------------
+    document.getElementById('saveDriverBtn').addEventListener('click', saveDriver);
+    document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+    document.getElementById('newDriverBtn').addEventListener('click', () => {
+        clearForm();
+        document.getElementById('driverForm').scrollIntoView({ behavior: 'smooth' });
+    });
+    document.getElementById('searchInput').addEventListener('input', () => renderTable());
+
+    // Modal close
+    const modal = document.getElementById('driverModal');
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+
+    // Initial load
+    loadDrivers();
+</script>
 </body>
 </html>
