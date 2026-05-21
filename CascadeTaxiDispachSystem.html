@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cascade Taxi Dispatch - Drivers + Payments</title>
+    <title>Cascade Taxi - Driver Financial Tracker</title>
     <style>
         * {
             box-sizing: border-box;
@@ -29,163 +29,157 @@
         }
         h2 {
             color: #1e3a5f;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             margin: 1.5rem 0 1rem 0;
             border-left: 5px solid #2c7da0;
             padding-left: 15px;
         }
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 24px;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .search-box {
-            flex: 2;
-            min-width: 200px;
-        }
-        .search-box input {
-            width: 100%;
-            padding: 10px 16px;
-            border: 1px solid #ccc;
-            border-radius: 40px;
-            font-size: 1rem;
-            outline: none;
-        }
-        .search-box input:focus {
-            border-color: #2c7da0;
-            box-shadow: 0 0 0 2px rgba(44,125,160,0.2);
-        }
-        .btn-add, .btn-export {
-            background: #2c7da0;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-add:hover, .btn-export:hover {
-            background: #1f5e7a;
-        }
-        .driver-form, .payment-form-row {
+        .form-section {
             background: #e9f0f5;
             padding: 20px;
             border-radius: 20px;
             margin-bottom: 30px;
-            display: flex;
-            flex-wrap: wrap;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 16px;
-            align-items: flex-end;
+            margin-bottom: 20px;
         }
         .form-group {
-            flex: 1;
-            min-width: 150px;
+            display: flex;
+            flex-direction: column;
         }
         .form-group label {
-            display: block;
             font-size: 0.8rem;
             font-weight: 600;
             margin-bottom: 6px;
             color: #1e3a5f;
         }
         .form-group input, .form-group select {
-            width: 100%;
             padding: 10px 12px;
             border: 1px solid #bdd3e6;
             border-radius: 12px;
             font-size: 0.9rem;
         }
-        .form-actions {
-            display: flex;
+        .checkbox-group {
+            flex-direction: row;
+            align-items: center;
             gap: 10px;
         }
-        .btn-save, .btn-cancel, .btn-pay-add {
+        .checkbox-group label {
+            margin-bottom: 0;
+        }
+        .checkbox-group input {
+            width: 20px;
+            height: 20px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-primary, .btn-secondary, .btn-danger, .btn-success {
             border: none;
-            padding: 10px 20px;
+            padding: 10px 24px;
             border-radius: 40px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
         }
-        .btn-save, .btn-pay-add {
+        .btn-primary {
             background: #2c7da0;
             color: white;
         }
-        .btn-save:hover, .btn-pay-add:hover {
+        .btn-primary:hover {
             background: #1f5e7a;
         }
-        .btn-cancel {
-            background: #adb5bd;
-            color: #1e2a3a;
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-danger {
+            background: #c0392b;
+            color: white;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow-x: auto;
+            display: block;
         }
         th, td {
             text-align: left;
-            padding: 14px 12px;
+            padding: 12px 8px;
             border-bottom: 1px solid #e2e8f0;
+            font-size: 0.85rem;
         }
         th {
             background: #f8fafc;
             color: #1e3a5f;
+            position: sticky;
+            top: 0;
         }
         .action-buttons {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
-        .btn-open, .btn-edit, .btn-delete, .btn-pay-delete {
+        .btn-edit, .btn-delete {
             border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 0.7rem;
             cursor: pointer;
         }
-        .btn-open { background: #d4e6f1; color: #1f5e7a; }
-        .btn-edit { background: #ffecb3; color: #b45f06; }
-        .btn-delete, .btn-pay-delete { background: #ffe6e5; color: #c0392b; }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+        .btn-edit {
+            background: #ffecb3;
+            color: #b45f06;
         }
-        .modal-content {
-            background: white;
-            padding: 24px;
-            border-radius: 28px;
-            width: 400px;
-            max-width: 90%;
+        .btn-delete {
+            background: #ffe6e5;
+            color: #c0392b;
         }
-        .payment-summary {
-            background: #e6f4ea;
-            padding: 12px 20px;
-            border-radius: 20px;
-            margin-bottom: 20px;
+        .total-balance {
+            background: #1e3a5f;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+            font-size: 1.2rem;
             font-weight: bold;
-            display: inline-block;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .search-box {
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            width: 100%;
+            max-width: 300px;
+            padding: 10px 16px;
+            border: 1px solid #ccc;
+            border-radius: 40px;
+            font-size: 1rem;
         }
         .export-bar {
             display: flex;
             gap: 12px;
-            justify-content: flex-end;
-            margin-bottom: 12px;
+            margin: 20px 0;
             flex-wrap: wrap;
         }
-        .toast-msg {
+        .toast {
             position: fixed;
             bottom: 20px;
             left: 50%;
@@ -195,185 +189,395 @@
             padding: 12px 24px;
             border-radius: 40px;
             font-size: 0.9rem;
-            z-index: 2000;
+            z-index: 1000;
             display: none;
-            white-space: nowrap;
         }
-        @media (max-width: 700px) {
-            .driver-form, .payment-form-row { flex-direction: column; align-items: stretch; }
-            .toast-msg { white-space: normal; text-align: center; width: 90%; }
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            th, td { font-size: 0.75rem; padding: 8px 4px; }
+            .total-balance { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🚖 Cascade Taxi Dispatch – Full System</h1>
+    <h1>🚖 Cascade Taxi Dispatch - Financial Tracker</h1>
 
-    <!-- DRIVER SECTION -->
-    <div class="toolbar">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Search drivers...">
+    <!-- Add/Edit Driver Form -->
+    <div class="form-section">
+        <h2>📝 Driver Information</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>1. Full Name *</label>
+                <input type="text" id="driverName" placeholder="Driver full name">
+            </div>
+            <div class="form-group">
+                <label>2. CPNC (4 digits)</label>
+                <input type="text" id="cpnc" maxlength="4" placeholder="1234" pattern="[0-9]{4}">
+            </div>
+            <div class="form-group">
+                <label>3. Plate Number</label>
+                <input type="text" id="plateNumber" placeholder="ABC-1234">
+            </div>
+            <div class="form-group">
+                <label>4. Phone</label>
+                <input type="tel" id="phone" placeholder="+1 234 567 890">
+            </div>
+            <div class="form-group">
+                <label>5. License Plate (secondary)</label>
+                <input type="text" id="licensePlate" placeholder="License plate number">
+            </div>
+            <div class="form-group">
+                <label>6. Car Make & Model</label>
+                <input type="text" id="carMakeModel" placeholder="e.g., Toyota Camry 2020">
+            </div>
+            <div class="form-group">
+                <label>7. Model Year (last 10 years)</label>
+                <select id="modelYear">
+                    <option value="">Select year</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>8. Payment Due ($)</label>
+                <input type="number" id="paymentDue" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group checkbox-group">
+                <label>9. Unpaid</label>
+                <input type="checkbox" id="unpaid">
+            </div>
+            <div class="form-group">
+                <label>10. Expenses ($)</label>
+                <input type="number" id="expenses" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>11. Total Balance Due</label>
+                <input type="text" id="totalBalance" readonly style="background:#f0f0f0; font-weight:bold;">
+            </div>
         </div>
-        <button class="btn-add" id="newDriverBtn">+ New Driver</button>
-    </div>
-
-    <div class="driver-form" id="driverForm">
-        <div class="form-group"><label>Full Name *</label><input type="text" id="driverName" placeholder="e.g. John Smith"></div>
-        <div class="form-group"><label>Phone</label><input type="text" id="driverPhone" placeholder="+1 234 567 890"></div>
-        <div class="form-group"><label>License Plate</label><input type="text" id="driverLicense" placeholder="ABC-1234"></div>
-        <div class="form-group"><label>Car Model</label><input type="text" id="driverCarModel" placeholder="Toyota Camry"></div>
         <div class="form-actions">
-            <button class="btn-save" id="saveDriverBtn">💾 Save Driver</button>
-            <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
+            <button class="btn-primary" id="saveDriverBtn">💾 Save Driver</button>
+            <button class="btn-secondary" id="cancelBtn">Cancel</button>
         </div>
     </div>
 
-    <div style="overflow-x: auto;">
+    <!-- Search and Export -->
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Search by name, CPNC, or plate...">
+    </div>
+    
+    <div class="export-bar">
+        <button class="btn-success" id="exportToSheetsBtn">📎 Export to Google Sheets (CSV)</button>
+        <button class="btn-primary" id="copyToClipboardBtn">📋 Copy Table to Clipboard</button>
+    </div>
+
+    <!-- Summary Totals -->
+    <div class="total-balance">
+        <span>💰 Total Payment Due: $<span id="totalPaymentDue">0.00</span></span>
+        <span>⚠️ Total Unpaid: $<span id="totalUnpaid">0.00</span></span>
+        <span>📊 Total Expenses: $<span id="totalExpenses">0.00</span></span>
+        <span>🎯 GRAND TOTAL BALANCE: $<span id="grandTotalBalance">0.00</span></span>
+    </div>
+
+    <!-- Drivers Table -->
+    <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
         <table id="driversTable">
-            <thead><tr><th>Name</th><th>Phone</th><th>License Plate</th><th>Car Model</th><th>Actions</th></tr></thead>
-            <tbody id="tableBody"><tr class="no-data"><td colspan="5">No drivers found. Add your first driver!</td></tr></tbody>
+            <thead>
+                <tr>
+                    <th>Name</th><th>CPNC</th><th>Plate #</th><th>Phone</th><th>License Plate</th>
+                    <th>Car Model</th><th>Year</th><th>Payment Due</th><th>Unpaid</th><th>Expenses</th><th>Total Balance</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="12" style="text-align:center">No drivers added yet. Fill out the form above.</td></tr>
+            </tbody>
         </table>
-    </div>
-
-    <!-- PAYMENT SECTION -->
-    <div class="payment-panel">
-        <h2>💰 Payment Transactions</h2>
-        <div class="payment-form-row">
-            <div class="form-group"><label>Select Driver</label><select id="paymentDriverId"><option value="">-- Choose driver --</option></select></div>
-            <div class="form-group"><label>Amount ($)</label><input type="number" id="paymentAmount" step="0.01" placeholder="0.00"></div>
-            <div class="form-group"><label>Payment Method</label><select id="paymentMethod"><option value="Cash">💵 Cash</option><option value="Card">💳 Card</option><option value="Mobile">📱 Mobile</option><option value="Other">🔁 Other</option></select></div>
-            <div class="form-group"><label>Customer</label><input type="text" id="customerName" placeholder="Customer name"></div>
-            <div class="form-group"><label>Date</label><input type="date" id="paymentDate"></div>
-            <button class="btn-pay-add" id="addPaymentBtn">➕ Record Payment</button>
-        </div>
-        <div class="payment-summary" id="paymentTotalDisplay">💰 Total collected: $0.00</div>
-        
-        <!-- Export options for payments -->
-        <div class="export-bar">
-            <button class="btn-export" id="copyPaymentsBtn">📋 Copy Payments to Clipboard</button>
-            <button class="btn-export" id="savePaymentsTxtBtn">💾 Save Payments as .TXT</button>
-        </div>
-        
-        <div style="overflow-x: auto;">
-            <table id="paymentsTable">
-                <thead><tr><th>Date</th><th>Driver</th><th>Customer</th><th>Amount</th><th>Method</th><th>Actions</th></tr></thead>
-                <tbody id="paymentTableBody"><tr class="no-data"><td colspan="6">No payments recorded yet.</td></tr></tbody>
-            </table>
-        </div>
     </div>
 </div>
 
-<!-- Driver Details Modal -->
-<div id="driverModal" class="modal"><div class="modal-content"><h3>🚕 Driver Details</h3><div id="modalDetails"></div><button id="closeModalBtn">Close</button></div></div>
-
-<!-- Toast message -->
-<div id="toastMsg" class="toast-msg"></div>
+<div id="toast" class="toast"></div>
 
 <script>
-    // ------------------------------
-    // DRIVERS
-    // ------------------------------
+    // Load/Save data
     let drivers = [];
-    let currentEditId = null;
+    let editId = null;
 
-    function loadDrivers() {
-        const stored = localStorage.getItem('cascade_drivers');
-        if (stored) drivers = JSON.parse(stored);
-        else drivers = [
-            { id: 'd1', name: 'Michael Chen', phone: '555-1234', license: 'XYZ9876', carModel: 'Honda Accord' },
-            { id: 'd2', name: 'Sarah O\'Connor', phone: '555-5678', license: 'ABC1234', carModel: 'Toyota Prius' },
-            { id: 'd3', name: 'David Kim', phone: '555-9999', license: 'LMN4567', carModel: 'Tesla Model 3' }
-        ];
-        saveDriversToLocal();
-        renderDriverTable();
-        updatePaymentDriverDropdown();
+    // Populate year dropdown (last 10 years)
+    function populateYears() {
+        const select = document.getElementById('modelYear');
+        const currentYear = new Date().getFullYear();
+        for (let i = currentYear; i >= currentYear - 10; i--) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            select.appendChild(option);
+        }
     }
-    function saveDriversToLocal() { localStorage.setItem('cascade_drivers', JSON.stringify(drivers)); }
-    function generateId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 6); }
-    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
 
-    function renderDriverTable() {
-        const searchValue = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = drivers.filter(d => d.name.toLowerCase().includes(searchValue) || (d.phone && d.phone.includes(searchValue)) || (d.license && d.license.toLowerCase().includes(searchValue)) || (d.carModel && d.carModel.toLowerCase().includes(searchValue)));
+    // Calculate total balance
+    function calculateTotalBalance() {
+        const paymentDue = parseFloat(document.getElementById('paymentDue').value) || 0;
+        const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+        const total = paymentDue + expenses;
+        document.getElementById('totalBalance').value = total.toFixed(2);
+        return total;
+    }
+
+    // Auto-calculate on input change
+    document.getElementById('paymentDue').addEventListener('input', calculateTotalBalance);
+    document.getElementById('expenses').addEventListener('input', calculateTotalBalance);
+
+    // Generate unique ID
+    function generateId() {
+        return Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+    }
+
+    // Save to localStorage
+    function saveToLocal() {
+        localStorage.setItem('cascade_finance_drivers', JSON.stringify(drivers));
+    }
+
+    // Load from localStorage
+    function loadDrivers() {
+        const stored = localStorage.getItem('cascade_finance_drivers');
+        if (stored) {
+            drivers = JSON.parse(stored);
+        } else {
+            // Demo data
+            drivers = [
+                { id: 'd1', name: 'Michael Chen', cpnc: '1234', plateNumber: 'XYZ9876', phone: '555-1234', licensePlate: 'L12345', carMakeModel: 'Honda Accord', modelYear: '2022', paymentDue: 250.00, unpaid: true, expenses: 50.00, totalBalance: 300.00 },
+                { id: 'd2', name: 'Sarah O\'Connor', cpnc: '5678', plateNumber: 'ABC1234', phone: '555-5678', licensePlate: 'L67890', carMakeModel: 'Toyota Prius', modelYear: '2021', paymentDue: 180.00, unpaid: false, expenses: 30.00, totalBalance: 210.00 }
+            ];
+            drivers.forEach(d => { d.totalBalance = (d.paymentDue + d.expenses); });
+            saveToLocal();
+        }
+        renderTable();
+        updateTotals();
+    }
+
+    // Get form data
+    function getFormData() {
+        return {
+            name: document.getElementById('driverName').value.trim(),
+            cpnc: document.getElementById('cpnc').value.trim(),
+            plateNumber: document.getElementById('plateNumber').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            licensePlate: document.getElementById('licensePlate').value.trim(),
+            carMakeModel: document.getElementById('carMakeModel').value.trim(),
+            modelYear: document.getElementById('modelYear').value,
+            paymentDue: parseFloat(document.getElementById('paymentDue').value) || 0,
+            unpaid: document.getElementById('unpaid').checked,
+            expenses: parseFloat(document.getElementById('expenses').value) || 0,
+            totalBalance: parseFloat(document.getElementById('totalBalance').value) || 0
+        };
+    }
+
+    // Clear form
+    function clearForm() {
+        document.getElementById('driverName').value = '';
+        document.getElementById('cpnc').value = '';
+        document.getElementById('plateNumber').value = '';
+        document.getElementById('phone').value = '';
+        document.getElementById('licensePlate').value = '';
+        document.getElementById('carMakeModel').value = '';
+        document.getElementById('modelYear').value = '';
+        document.getElementById('paymentDue').value = '';
+        document.getElementById('unpaid').checked = false;
+        document.getElementById('expenses').value = '';
+        document.getElementById('totalBalance').value = '';
+        editId = null;
+        calculateTotalBalance();
+    }
+
+    // Fill form for edit
+    function fillFormForEdit(driver) {
+        document.getElementById('driverName').value = driver.name;
+        document.getElementById('cpnc').value = driver.cpnc;
+        document.getElementById('plateNumber').value = driver.plateNumber;
+        document.getElementById('phone').value = driver.phone;
+        document.getElementById('licensePlate').value = driver.licensePlate;
+        document.getElementById('carMakeModel').value = driver.carMakeModel;
+        document.getElementById('modelYear').value = driver.modelYear;
+        document.getElementById('paymentDue').value = driver.paymentDue;
+        document.getElementById('unpaid').checked = driver.unpaid;
+        document.getElementById('expenses').value = driver.expenses;
+        calculateTotalBalance();
+        editId = driver.id;
+    }
+
+    // Save driver (add or update)
+    function saveDriver() {
+        const data = getFormData();
+        if (!data.name) {
+            showToast("❌ Driver name is required!");
+            return;
+        }
+        if (data.cpnc && !/^\d{4}$/.test(data.cpnc)) {
+            showToast("❌ CPNC must be exactly 4 digits");
+            return;
+        }
+
+        if (editId) {
+            // Update existing
+            const index = drivers.findIndex(d => d.id === editId);
+            if (index !== -1) {
+                drivers[index] = { ...drivers[index], ...data, id: editId };
+                saveToLocal();
+                renderTable();
+                clearForm();
+                updateTotals();
+                showToast("✅ Driver updated successfully!");
+            }
+        } else {
+            // Add new
+            const newDriver = { ...data, id: generateId() };
+            drivers.push(newDriver);
+            saveToLocal();
+            renderTable();
+            clearForm();
+            updateTotals();
+            showToast("✅ New driver added!");
+        }
+    }
+
+    // Delete driver
+    function deleteDriver(id) {
+        if (confirm("Are you sure you want to delete this driver?")) {
+            drivers = drivers.filter(d => d.id !== id);
+            saveToLocal();
+            renderTable();
+            updateTotals();
+            if (editId === id) clearForm();
+            showToast("🗑️ Driver deleted");
+        }
+    }
+
+    // Edit driver
+    function editDriver(id) {
+        const driver = drivers.find(d => d.id === id);
+        if (driver) {
+            fillFormForEdit(driver);
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // Update summary totals
+    function updateTotals() {
+        const totalPaymentDue = drivers.reduce((sum, d) => sum + (d.paymentDue || 0), 0);
+        const totalUnpaid = drivers.reduce((sum, d) => sum + (d.unpaid ? (d.paymentDue || 0) : 0), 0);
+        const totalExpenses = drivers.reduce((sum, d) => sum + (d.expenses || 0), 0);
+        const grandTotal = drivers.reduce((sum, d) => sum + (d.totalBalance || 0), 0);
+        
+        document.getElementById('totalPaymentDue').textContent = totalPaymentDue.toFixed(2);
+        document.getElementById('totalUnpaid').textContent = totalUnpaid.toFixed(2);
+        document.getElementById('totalExpenses').textContent = totalExpenses.toFixed(2);
+        document.getElementById('grandTotalBalance').textContent = grandTotal.toFixed(2);
+    }
+
+    // Render table with search
+    function renderTable() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = drivers.filter(d => 
+            d.name.toLowerCase().includes(searchTerm) ||
+            d.cpnc.includes(searchTerm) ||
+            d.plateNumber.toLowerCase().includes(searchTerm)
+        );
+        
         const tbody = document.getElementById('tableBody');
-        if (!filtered.length) { tbody.innerHTML = '<tr class="no-data"><td colspan="5">🚫 No matching drivers.</td></tr>'; return; }
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="12" style="text-align:center">No drivers found. Add one above.</td></tr>';
+            return;
+        }
+        
         let html = '';
         filtered.forEach(driver => {
-            html += `<tr><td>${escapeHtml(driver.name)}</td><td>${escapeHtml(driver.phone) || '—'}</td><td>${escapeHtml(driver.license) || '—'}</td><td>${escapeHtml(driver.carModel) || '—'}</td>
-            <td class="action-buttons"><button class="btn-open" data-id="${driver.id}">👁️ Open</button>
-            <button class="btn-edit" data-id="${driver.id}">✏️ Edit</button>
-            <button class="btn-delete" data-id="${driver.id}">🗑️ Delete</button></td></tr>`;
+            html += `<tr>
+                <td>${escapeHtml(driver.name)}</td>
+                <td>${escapeHtml(driver.cpnc || '—')}</td>
+                <td>${escapeHtml(driver.plateNumber || '—')}</td>
+                <td>${escapeHtml(driver.phone || '—')}</td>
+                <td>${escapeHtml(driver.licensePlate || '—')}</td>
+                <td>${escapeHtml(driver.carMakeModel || '—')}</td>
+                <td>${driver.modelYear || '—'}</td>
+                <td>$${(driver.paymentDue || 0).toFixed(2)}</td>
+                <td>${driver.unpaid ? '⚠️ Yes' : '✅ No'}</td>
+                <td>$${(driver.expenses || 0).toFixed(2)}</td>
+                <td>$${(driver.totalBalance || 0).toFixed(2)}</td>
+                <td class="action-buttons">
+                    <button class="btn-edit" onclick="editDriver('${driver.id}')">✏️ Edit</button>
+                    <button class="btn-delete" onclick="deleteDriver('${driver.id}')">🗑️ Delete</button>
+                </td>
+            </tr>`;
         });
         tbody.innerHTML = html;
-        tbody.querySelectorAll('.btn-open').forEach(btn => btn.addEventListener('click', () => openDriverDetails(drivers.find(d => d.id === btn.dataset.id))));
-        tbody.querySelectorAll('.btn-edit').forEach(btn => btn.addEventListener('click', () => editDriver(drivers.find(d => d.id === btn.dataset.id))));
-        tbody.querySelectorAll('.btn-delete').forEach(btn => btn.addEventListener('click', () => deleteDriver(btn.dataset.id)));
     }
 
-    function openDriverDetails(driver) { if(!driver) return; document.getElementById('modalDetails').innerHTML = `<p><strong>Name:</strong> ${escapeHtml(driver.name)}</p><p><strong>Phone:</strong> ${escapeHtml(driver.phone||'—')}</p><p><strong>License:</strong> ${escapeHtml(driver.license||'—')}</p><p><strong>Car Model:</strong> ${escapeHtml(driver.carModel||'—')}</p><p><strong>ID:</strong> ${driver.id}</p>`; document.getElementById('driverModal').style.display='flex'; }
-    function editDriver(driver) { document.getElementById('driverName').value = driver.name; document.getElementById('driverPhone').value = driver.phone; document.getElementById('driverLicense').value = driver.license; document.getElementById('driverCarModel').value = driver.carModel; currentEditId = driver.id; document.getElementById('driverForm').scrollIntoView({ behavior: 'smooth' }); }
-    function deleteDriver(id) { if(confirm("Delete driver?")) { drivers = drivers.filter(d => d.id !== id); saveDriversToLocal(); renderDriverTable(); if(currentEditId === id) clearDriverForm(); updatePaymentDriverDropdown(); renderPaymentsTable(); } }
-    function clearDriverForm() { document.getElementById('driverName').value = ''; document.getElementById('driverPhone').value = ''; document.getElementById('driverLicense').value = ''; document.getElementById('driverCarModel').value = ''; currentEditId = null; }
-    function saveDriver() { const name = document.getElementById('driverName').value.trim(); if(!name) { alert("Name required"); return; } const phone = document.getElementById('driverPhone').value.trim(); const license = document.getElementById('driverLicense').value.trim(); const carModel = document.getElementById('driverCarModel').value.trim(); if(currentEditId) { const idx = drivers.findIndex(d => d.id === currentEditId); if(idx !== -1) { drivers[idx] = { ...drivers[idx], name, phone, license, carModel }; saveDriversToLocal(); renderDriverTable(); clearDriverForm(); showToast("Driver updated"); } } else { drivers.push({ id: generateId(), name, phone, license, carModel }); saveDriversToLocal(); renderDriverTable(); clearDriverForm(); showToast("Driver added"); } updatePaymentDriverDropdown(); }
-
-    // ------------------------------
-    // PAYMENTS
-    // ------------------------------
-    let payments = [];
-    function loadPayments() { const stored = localStorage.getItem('cascade_payments'); if(stored) payments = JSON.parse(stored); else payments = [ { id: 'p1', driverId: 'd1', driverName: 'Michael Chen', amount: 25.50, method: 'Cash', customer: 'Alice', date: '2025-06-20' }, { id: 'p2', driverId: 'd2', driverName: "Sarah O'Connor", amount: 18.75, method: 'Card', customer: 'Bob', date: '2025-06-21' } ]; savePaymentsToLocal(); renderPaymentsTable(); updateTotalDisplay(); }
-    function savePaymentsToLocal() { localStorage.setItem('cascade_payments', JSON.stringify(payments)); }
-    function updatePaymentDriverDropdown() { const select = document.getElementById('paymentDriverId'); select.innerHTML = '<option value="">-- Choose driver --</option>'; drivers.forEach(d => { select.innerHTML += `<option value="${d.id}">${escapeHtml(d.name)} (${d.license || 'no plate'})</option>`; }); }
-    function addPayment() { const driverId = document.getElementById('paymentDriverId').value; if(!driverId) { alert("Select driver"); return; } const amount = parseFloat(document.getElementById('paymentAmount').value); if(isNaN(amount) || amount <= 0) { alert("Valid amount > 0"); return; } const method = document.getElementById('paymentMethod').value; const customer = document.getElementById('customerName').value.trim() || "Anonymous"; let date = document.getElementById('paymentDate').value; if(!date) { date = new Date().toISOString().slice(0,10); document.getElementById('paymentDate').value = date; } const driver = drivers.find(d => d.id === driverId); const driverName = driver ? driver.name : "Unknown"; payments.push({ id: generateId(), driverId, driverName, amount, method, customer, date }); savePaymentsToLocal(); renderPaymentsTable(); updateTotalDisplay(); document.getElementById('paymentAmount').value = ''; document.getElementById('customerName').value = ''; showToast("Payment recorded ✓"); }
-    function deletePayment(id) { if(confirm("Delete payment?")) { payments = payments.filter(p => p.id !== id); savePaymentsToLocal(); renderPaymentsTable(); updateTotalDisplay(); showToast("Payment deleted"); } }
-    function updateTotalDisplay() { const total = payments.reduce((s,p) => s + p.amount, 0); document.getElementById('paymentTotalDisplay').innerHTML = `💰 Total collected: $${total.toFixed(2)}`; }
-    function renderPaymentsTable() { const tbody = document.getElementById('paymentTableBody'); if(!payments.length) { tbody.innerHTML = '<tr class="no-data"><td colspan="6">No payments recorded.</td></tr>'; return; } let html = ''; payments.forEach(p => { html += `<tr><td>${escapeHtml(p.date)}</td><td>${escapeHtml(p.driverName)}</td><td>${escapeHtml(p.customer)}</td><td>$${p.amount.toFixed(2)}</td><td>${escapeHtml(p.method)}</td><td><button class="btn-pay-delete" data-payid="${p.id}">🗑️ Delete</button></td></tr>`; }); tbody.innerHTML = html; tbody.querySelectorAll('.btn-pay-delete').forEach(btn => btn.addEventListener('click', () => deletePayment(btn.dataset.payid))); }
-
-    // ------------------------------
-    // SAVE PAYMENTS (phone-friendly)
-    // ------------------------------
-    function getPaymentsAsText() {
-        if (payments.length === 0) return "No payments recorded yet.";
-        let text = "CASCADE TAXI DISPATCH - PAYMENTS REPORT\n";
-        text += "=========================================\n";
-        text += "Date       | Driver              | Customer        | Amount  | Method\n";
-        text += "---------------------------------------------------------------\n";
-        payments.forEach(p => {
-            text += `${p.date.padEnd(10)} | ${p.driverName.padEnd(18)} | ${p.customer.padEnd(14)} | $${p.amount.toFixed(2).padEnd(6)} | ${p.method}\n`;
-        });
-        text += "=========================================\n";
-        const total = payments.reduce((s,p) => s + p.amount, 0);
-        text += `TOTAL COLLECTED: $${total.toFixed(2)}\n`;
-        text += `Generated: ${new Date().toLocaleString()}`;
-        return text;
-    }
-
-    function copyPaymentsToClipboard() {
-        const text = getPaymentsAsText();
-        navigator.clipboard.writeText(text).then(() => {
-            showToast("✅ Payments copied to clipboard! You can paste into Google Sheets or Notes.");
-        }).catch(() => {
-            alert("Could not copy. Select all text and copy manually.");
-        });
-    }
-
-    function savePaymentsAsTxt() {
-        const text = getPaymentsAsText();
-        const blob = new Blob([text], { type: 'text/plain;charset=utf-8;' });
+    // Export to CSV (Google Sheets compatible)
+    function exportToCSV() {
+        if (drivers.length === 0) {
+            showToast("No data to export!");
+            return;
+        }
+        
+        const headers = [
+            'Name', 'CPNC', 'Plate Number', 'Phone', 'License Plate',
+            'Car Make & Model', 'Model Year', 'Payment Due ($)', 'Unpaid', 'Expenses ($)', 'Total Balance ($)'
+        ];
+        
+        const rows = drivers.map(d => [
+            `"${d.name.replace(/"/g, '""')}"`,
+            `"${d.cpnc || ''}"`,
+            `"${d.plateNumber || ''}"`,
+            `"${d.phone || ''}"`,
+            `"${d.licensePlate || ''}"`,
+            `"${d.carMakeModel || ''}"`,
+            `"${d.modelYear || ''}"`,
+            d.paymentDue || 0,
+            d.unpaid ? 'Yes' : 'No',
+            d.expenses || 0,
+            d.totalBalance || 0
+        ]);
+        
+        const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.href = url;
         const now = new Date();
-        const filename = `cascade_payments_${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`;
+        const filename = `cascade_drivers_${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.csv`;
         link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        showToast(`💾 Saved as ${filename}`);
+        showToast(`📁 Exported to ${filename}`);
+    }
+
+    // Copy table to clipboard
+    function copyTableToClipboard() {
+        if (drivers.length === 0) {
+            showToast("No data to copy!");
+            return;
+        }
+        
+        let text = "CASCADE TAXI - DRIVER FINANCIAL REPORT\n";
+        text += "==================================================\n";
+        text += "Name\tCPNC\tPlate\tPhone\tLicense\tCar Model\tYear\tPayment Due\tUnpaid\tExpenses\tTotal Balance\n";
+        drivers.forEach(d => {
+            text += `${d.name}\t${d.cpnc || '-'}\t${d.plateNumber || '-'}\t${d.phone || '-'}\t${d.licensePlate || '-'}\t${d.carMakeModel || '-'}\t${d.modelYear || '-'}\t$${d.paymentDue || 0}\t${d.unpaid ? 'Yes' : 'No'}\t$${d.expenses || 0}\t$${d.totalBalance || 0}\n`;
+        });
+        text += "==================================================\n";
+        const total = drivers.reduce((s,d) => s + (d.totalBalance || 0), 0);
+        text += `GRAND TOTAL BALANCE: $${total.toFixed(2)}`;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("✅ Table copied to clipboard! Paste into Google Sheets or any text app.");
+        }).catch(() => {
+            alert("Could not copy. Select manually.");
+        });
     }
 
     function showToast(msg) {
-        const toast = document.getElementById('toastMsg');
+        const toast = document.getElementById('toast');
         toast.textContent = msg;
         toast.style.display = 'block';
         setTimeout(() => {
@@ -381,24 +585,21 @@
         }, 3000);
     }
 
-    // ------------------------------
-    // EVENT LISTENERS
-    // ------------------------------
-    document.getElementById('saveDriverBtn').addEventListener('click', saveDriver);
-    document.getElementById('cancelEditBtn').addEventListener('click', clearDriverForm);
-    document.getElementById('newDriverBtn').addEventListener('click', () => { clearDriverForm(); document.getElementById('driverForm').scrollIntoView({ behavior: 'smooth' }); });
-    document.getElementById('searchInput').addEventListener('input', renderDriverTable);
-    document.getElementById('addPaymentBtn').addEventListener('click', addPayment);
-    document.getElementById('copyPaymentsBtn').addEventListener('click', copyPaymentsToClipboard);
-    document.getElementById('savePaymentsTxtBtn').addEventListener('click', savePaymentsAsTxt);
-    document.getElementById('closeModalBtn').addEventListener('click', () => document.getElementById('driverModal').style.display = 'none');
-    window.addEventListener('click', (e) => { if (e.target === document.getElementById('driverModal')) document.getElementById('driverModal').style.display = 'none'; });
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
 
-    // set default date
-    document.getElementById('paymentDate').value = new Date().toISOString().slice(0,10);
-    // initialize
+    // Event listeners
+    document.getElementById('saveDriverBtn').addEventListener('click', saveDriver);
+    document.getElementById('cancelBtn').addEventListener('click', clearForm);
+    document.getElementById('searchInput').addEventListener('input', renderTable);
+    document.getElementById('exportToSheetsBtn').addEventListener('click', exportToCSV);
+    document.getElementById('copyToClipboardBtn').addEventListener('click', copyTableToClipboard);
+    
+    // Initialize
+    populateYears();
     loadDrivers();
-    loadPayments();
 </script>
 </body>
 </html>
