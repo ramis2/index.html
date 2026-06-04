@@ -3,27 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Phone Break - Screen Time Lock</title>
+    <title>Phone Break - Kids Screen Time Lock</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* Prevent accidental text selection like a kiosk */
+            user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
             background: #0b2b26;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             position: fixed;
-            touch-action: pan-x pan-y; /* allow basic scroll but no zoom interference */
         }
 
-        /* MAIN APP CONTAINER */
         .app-container {
             position: relative;
             width: 100%;
@@ -33,10 +31,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
         }
 
-        /* Normal active screen (unlocked / timer running) */
+        /* Main active screen */
         .active-screen {
             display: flex;
             flex-direction: column;
@@ -44,13 +41,13 @@
             justify-content: center;
             text-align: center;
             padding: 24px;
-            width: 100%;
+            width: 90%;
             max-width: 480px;
-            background: rgba(255,248,225,0.92);
+            background: rgba(255,248,225,0.95);
             backdrop-filter: blur(2px);
             border-radius: 64px 48px 64px 48px;
-            box-shadow: 0 25px 40px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.3);
-            transition: transform 0.2s;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.3);
+            position: relative;
         }
 
         .timer-circle {
@@ -75,7 +72,6 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .time-label {
@@ -83,7 +79,6 @@
             color: #ecd9b4;
             font-weight: 500;
             margin-top: 8px;
-            text-transform: uppercase;
         }
 
         .kid-message {
@@ -94,7 +89,6 @@
             padding: 12px 20px;
             border-radius: 60px;
             margin: 16px 0 10px;
-            width: fit-content;
         }
 
         .usage-text {
@@ -103,11 +97,10 @@
             background: #eef4e6;
             padding: 8px 16px;
             border-radius: 40px;
-            font-weight: 500;
         }
 
         .reset-btn {
-            margin-top: 28px;
+            margin-top: 20px;
             background: #ffb347;
             border: none;
             font-size: 1.2rem;
@@ -118,7 +111,6 @@
             cursor: pointer;
             box-shadow: 0 5px 0 #a35f1a;
             transition: 0.07s linear;
-            font-family: inherit;
         }
 
         .reset-btn:active {
@@ -126,7 +118,143 @@
             box-shadow: 0 3px 0 #a35f1a;
         }
 
-        /* LOCK SCREEN - full overlay, takes over everything */
+        /* Parent Setup Button (discreet, corner) */
+        .parent-gear {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+            border: 1px solid rgba(255,215,0,0.5);
+            transition: all 0.2s;
+        }
+
+        .parent-gear:active {
+            transform: scale(0.92);
+            background: rgba(0,0,0,0.8);
+        }
+
+        /* PIN Modal Overlay */
+        .pin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .pin-box {
+            background: #2c2c2c;
+            padding: 30px;
+            border-radius: 48px;
+            text-align: center;
+            width: 280px;
+            border: 1px solid gold;
+        }
+
+        .pin-box h3 {
+            color: gold;
+            margin-bottom: 20px;
+        }
+
+        .pin-input {
+            font-size: 2rem;
+            letter-spacing: 12px;
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+            background: #1a1a1a;
+            color: white;
+            border: 2px solid #ffb347;
+            border-radius: 20px;
+            font-family: monospace;
+            margin-bottom: 20px;
+        }
+
+        .pin-btn {
+            background: #ffb347;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .pin-error {
+            color: #ff8888;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2d2a24;
+            padding: 30px;
+            border-radius: 48px;
+            z-index: 2000;
+            width: 300px;
+            text-align: center;
+            border: 2px solid #ffb347;
+            box-shadow: 0 20px 40px black;
+        }
+
+        .settings-panel h3 {
+            color: #ffb347;
+            margin-bottom: 20px;
+        }
+
+        .settings-panel label {
+            color: white;
+            display: block;
+            margin: 15px 0 5px;
+        }
+
+        .settings-panel input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 30px;
+            border: none;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .settings-panel button {
+            margin-top: 20px;
+            background: #ffb347;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 40px;
+            font-weight: bold;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Lock Screen Overlay */
         .lock-overlay {
             position: fixed;
             top: 0;
@@ -140,165 +268,82 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            text-align: center;
-            color: white;
-            font-family: monospace;
-            transition: all 0.4s ease;
-            animation: fadeIn 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
 
         .lock-card {
             background: #1f1a15e6;
-            padding: 2.5rem 2rem;
+            padding: 2rem;
             border-radius: 68px;
             max-width: 340px;
-            width: 85%;
-            border: 1px solid rgba(255,200,100,0.6);
-            box-shadow: 0 30px 45px rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-        }
-
-        .lock-icon {
-            font-size: 5rem;
-            margin-bottom: 1rem;
-            filter: drop-shadow(2px 4px 10px rgba(0,0,0,0.4));
+            text-align: center;
         }
 
         .lock-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            background: linear-gradient(120deg, #ffb347, #ff7e05);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffb347;
+            margin: 15px 0;
         }
 
         .lock-message {
-            font-size: 1.35rem;
-            line-height: 1.4;
-            margin: 20px 0;
-            font-weight: 500;
-            color: #ffefcf;
+            color: white;
+            margin: 15px 0;
         }
 
-        .sleep-indicator {
-            font-size: 0.9rem;
-            margin-top: 25px;
-            padding: 10px;
-            background: #00000055;
+        .parent-unlock-btn {
+            background: #ff9f4a;
+            border: none;
+            padding: 12px 22px;
             border-radius: 60px;
-            display: inline-block;
-            width: auto;
-        }
-
-        .go-sleep-animation {
-            animation: pulse 1.2s infinite;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
         }
 
         @keyframes pulse {
-            0% { opacity: 0.6; text-shadow: 0 0 0px white;}
-            100% { opacity: 1; text-shadow: 0 0 6px #ffae70;}
+            0% { opacity: 0.6; }
+            100% { opacity: 1; text-shadow: 0 0 6px #ffae70; }
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; backdrop-filter: blur(0px);}
-            to { opacity: 1; backdrop-filter: blur(12px);}
-        }
-
-        /* hidden class for lock */
-        .hidden {
-            display: none;
-        }
-
-        /* prevent any background scrolling while locked */
-        body.lock-active {
-            overflow: hidden;
-            touch-action: none;
-        }
-
-        .small-note {
-            font-size: 0.7rem;
-            margin-top: 12px;
-            opacity: 0.7;
-        }
-
-        button {
-            background: none;
-            border: none;
-        }
-
-        /* responsive */
-        @media (max-width: 550px) {
-            .timer-circle {
-                width: 160px;
-                height: 160px;
-            }
-            .time-digits {
-                font-size: 3rem;
-            }
-            .kid-message {
-                font-size: 1.3rem;
-            }
-            .lock-title {
-                font-size: 1.8rem;
-            }
+        .sleep-indicator {
+            animation: pulse 1.2s infinite;
+            color: #ffcc88;
+            margin: 15px 0;
         }
     </style>
 </head>
 <body>
 
-<div class="app-container" id="appContainer">
-    <!-- Normal active interface (when session is active and not locked) -->
+<div class="app-container">
     <div id="activeScreen" class="active-screen">
         <div class="timer-circle">
             <div class="time-digits" id="timerDisplay">05:00</div>
             <div class="time-label">screen time left</div>
         </div>
-        <div class="kid-message">⭐ Keep it short, champ! ⭐</div>
-        <div class="usage-text" id="statusMessage">Time starts now. Use wisely.</div>
+        <div class="kid-message">⭐ Take a break, champ! ⭐</div>
+        <div class="usage-text" id="statusMessage">Enjoy your time wisely</div>
         <button id="resetTimerBtn" class="reset-btn">➕ New session</button>
-        <div class="small-note">⚠️ After timer ends → screen locks & device goes to sleep mode</div>
     </div>
 </div>
 
-<script>
-    // --------------------------------------------------------------
-    // Screen Time Manager: prevents kids from staying longer.
-    // Timer countdown (default 5 minutes = 300 seconds)
-    // After timeout → LOCK screen + show "overstaying" warning + trigger "sleep" behavior.
-    // Sleep effect: mimics screen going to sleep (visual dim + message).
-    // Also prevents any bypass: reset / new session only possible AFTER lock is cleared via parent? but we give a "reset"
-    // However: we want that when locked, child cannot just tap to unlock. The phone stays locked. But we provide a "parent unlock"?
-    // For kid prevention, we'll require a "long press" or hidden pattern? better: Only administrator (parent) can unlock by holding reset? but in practice,
-    // we can implement a "parent unlock code" that appears after lock. But specification: "lock the screen to show you are overstaying, and go to sleep."
-    // add an unlock mechanism that is not trivial for a kid: tap sequence? better: after lock screen shows message + sleep animation, and only way to restart
-    // is to press a big "WAKE UP / PARENT MODE" button with confirm? but to be safe, we can use a simple "Tap + Hold" for 3 seconds to reset session.
-    // That prevents kids from immediately resetting but allows parent reset. but also there's reset button on main screen, but if timer ends, lock appears
-    // no main screen visible so they can't press. So lock overlay has a "PARENT UNLOCK" button requiring long press.
-    // So we deliver full lock experience.
-    // Also define idle / background timers.
-    // --------------------------------------------------------------
+<!-- Parent gear icon (always visible) -->
+<div id="parentGear" class="parent-gear">⚙️</div>
 
-    // Configuration
-    const INITIAL_SECONDS = 5 * 60;  // 5 minutes (change for demo if you want shorter test: but 5 min is realistic for phone limit)
-    // For demo/testing: set to 10 seconds if needed? but keep 5 minutes as default. However we can allow dev param?
-    // Using 5 minutes ensures real limit. But to show functionality quickly we can reduce to 15 seconds? but requirement says "limited time on phone"
-    // better to keep default 5 minutes, but we can also add a query param / but no need – user sees countdown.
-    let timeLeftSeconds = INITIAL_SECONDS;
+<script>
+    // ---------- CONFIGURATION ----------
+    let currentMinutes = 5;     // default 5 minutes
+    let timeLeftSeconds = currentMinutes * 60;
     let timerInterval = null;
-    let isLocked = false;       // screen locked due to timeout
-    let isSleepActive = false;  // extra visual sleepy state
+    let isLocked = false;
     
     // DOM elements
-    const activeScreenDiv = document.getElementById('activeScreen');
-    const timerDisplaySpan = document.getElementById('timerDisplay');
-    const statusMsgSpan = document.getElementById('statusMessage');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const statusMsg = document.getElementById('statusMessage');
     const resetBtn = document.getElementById('resetTimerBtn');
-    const appContainer = document.getElementById('appContainer');
+    const parentGear = document.getElementById('parentGear');
     
-    // helper to format mm:ss
+    // Helper: format time
     function formatTime(seconds) {
         if (seconds < 0) seconds = 0;
         const mins = Math.floor(seconds / 60);
@@ -306,286 +351,210 @@
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
     
-    // update timer display and status message
-    function updateTimerUI() {
-        if (timerDisplaySpan) {
-            timerDisplaySpan.innerText = formatTime(timeLeftSeconds);
-        }
-        // Optional warning messages if under 60 seconds
-        if (timeLeftSeconds <= 60 && timeLeftSeconds > 0 && !isLocked) {
-            statusMsgSpan.innerText = `⚠️ Almost time! ${Math.ceil(timeLeftSeconds/60)} minute left, finish soon.`;
-            statusMsgSpan.style.background = "#ffecb3";
-        } else if (!isLocked && timeLeftSeconds > 60) {
-            statusMsgSpan.innerText = "📱 Have fun, but remember the break!";
-            statusMsgSpan.style.background = "#eef4e6";
-        } else if (!isLocked && timeLeftSeconds === 0) {
-            // fallback
+    function updateUI() {
+        if (timerDisplay) timerDisplay.innerText = formatTime(timeLeftSeconds);
+        if (!isLocked && timeLeftSeconds <= 60 && timeLeftSeconds > 0) {
+            statusMsg.innerText = `⚠️ Only ${Math.ceil(timeLeftSeconds/60)} minute left!`;
+        } else if (!isLocked) {
+            statusMsg.innerText = `📱 ${currentMinutes} min session active`;
         }
     }
     
-    // trigger LOCK + Sleep mode (full screen lock, show overstaying message, and simulate sleep)
-    function activateLockAndSleep() {
-        if (isLocked) return; // already locked
-        
-        // stop countdown timer
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        
-        isLocked = true;
-        
-        // hide active screen content but keep container background? we'll create lock overlay
-        // remove any existing lock overlay first to avoid duplicates
-        const existingLock = document.getElementById('screenLockOverlay');
-        if (existingLock) existingLock.remove();
-        
-        // Create lock overlay with "overstaying" message and "go to sleep" effect
-        const lockOverlay = document.createElement('div');
-        lockOverlay.id = 'screenLockOverlay';
-        lockOverlay.className = 'lock-overlay';
-        
-        // inner content: strong message + sleep visual / animation + parent unlock (long press)
-        lockOverlay.innerHTML = `
-            <div class="lock-card">
-                <div class="lock-icon">🔒⏰</div>
-                <div class="lock-title">TIME'S UP</div>
-                <div class="lock-message">
-                    🚫 You've been on the screen too long! 🚫<br>
-                    <strong>Overstaying is not healthy.</strong><br>
-                    Phone is going to sleep now.
-                </div>
-                <div class="sleep-indicator go-sleep-animation" id="sleepIndicator">
-                    😴 Entering deep sleep mode... 😴
-                </div>
-                <button id="parentUnlockBtn" style="background: #ff9f4a; border: none; padding: 12px 22px; border-radius: 60px; margin-top: 28px; font-weight: bold; font-size: 1.1rem; color: #281d0b; width: 80%; cursor: pointer; font-family: inherit; box-shadow: 0 4px 0 #804e1a; transition: 0.05s linear;">🔓 PARENT UNLOCK (Hold 3 sec)</button>
-                <div class="small-note" style="color: #ccc;">Hold button to unlock & new session</div>
-            </div>
-        `;
-        
-        document.body.appendChild(lockOverlay);
-        document.body.classList.add('lock-active');
-        
-        // also simulate "go to sleep": we could also dim the whole screen extra / or make a fake sleep effect.
-        // The "sleep indicator" pulses. Additionally, we can change background color of lock overlay gently to simulate power save.
-        // Also play a "sleep mode" by triggering request to keep screen? but we can send a visual "screen off" mimic: not actual system sleep, but browser can't turn off screen.
-        // However we can notify that device is going to sleep. As required: "show that you are overstaying on the screen, and go to sleep."
-        // Good: we add a sleep message and also we can make a "sleep wake" after some seconds? not needed: lock remains until parent long press.
-        
-        // Add long press event to parent unlock button (prevents kids from easily tapping)
-        const unlockBtn = document.getElementById('parentUnlockBtn');
-        if (unlockBtn) {
-            let pressTimer = null;
-            let isLongPressTriggered = false;
-            
-            const startPress = (e) => {
-                e.preventDefault();
-                if (pressTimer) clearTimeout(pressTimer);
-                isLongPressTriggered = false;
-                pressTimer = setTimeout(() => {
-                    // long press triggered after 3 seconds
-                    isLongPressTriggered = true;
-                    // Vibrate if supported (optional haptic feedback)
-                    if (navigator.vibrate) navigator.vibrate(200);
-                    unlockSessionAndReset();
-                }, 3000);
-            };
-            
-            const cancelPress = (e) => {
-                if (pressTimer) {
-                    clearTimeout(pressTimer);
-                    pressTimer = null;
-                }
-                // if not long press, show feedback but nothing else
-                if (!isLongPressTriggered) {
-                    // short touch feedback: change button text temporarily
-                    const originalText = unlockBtn.innerText;
-                    unlockBtn.innerText = '👆 Keep holding...';
-                    setTimeout(() => {
-                        if (unlockBtn) unlockBtn.innerText = originalText;
-                    }, 400);
-                }
-            };
-            
-            unlockBtn.addEventListener('mousedown', startPress);
-            unlockBtn.addEventListener('mouseup', cancelPress);
-            unlockBtn.addEventListener('mouseleave', cancelPress);
-            unlockBtn.addEventListener('touchstart', startPress, {passive: false});
-            unlockBtn.addEventListener('touchend', cancelPress);
-            unlockBtn.addEventListener('touchcancel', cancelPress);
-        }
-        
-        // also prevent touch events on overlay from leaking
-        lockOverlay.addEventListener('touchmove', (e) => e.preventDefault(), {passive: false});
-        lockOverlay.addEventListener('touchstart', (e) => { if(e.target === lockOverlay) e.preventDefault(); });
-        
-        // Add "sleep mode" extra: simulate dimming by body background style
-        document.body.style.background = "#000000";
-        // a fake "sleep" status: we can also try to change meta title or something
-        document.title = "💤 Phone Sleep Mode 💤";
-    }
-    
-    // unlock session and restart with fresh timer, removing lock overlay
-    function unlockSessionAndReset() {
-        if (!isLocked) return;
-        
-        // remove lock overlay
-        const lockOverlay = document.getElementById('screenLockOverlay');
-        if (lockOverlay) lockOverlay.remove();
-        document.body.classList.remove('lock-active');
-        document.body.style.background = ""; // revert
-        
-        // reset state variables
-        isLocked = false;
-        isSleepActive = false;
-        
-        // reset time to initial full duration
-        timeLeftSeconds = INITIAL_SECONDS;
-        updateTimerUI();
-        
-        // ensure active screen is visible (the main UI was never hidden, but lock was above)
-        // reset any status message style
-        statusMsgSpan.innerText = "✨ New session! Let's respect screen time ✨";
-        statusMsgSpan.style.background = "#eef4e6";
-        
-        // clear any previous timer, start fresh countdown
-        if (timerInterval) clearInterval(timerInterval);
-        startCountdown();
-        
-        document.title = "Phone Break - Screen Time";
-        
-        // small haptic if supported
-        if (navigator.vibrate) navigator.vibrate(100);
-    }
-    
-    // countdown logic (ticks every second)
+    // Start countdown timer
     function startCountdown() {
         if (timerInterval) clearInterval(timerInterval);
-        
         timerInterval = setInterval(() => {
-            // if locked, we should never tick (but safe check)
-            if (isLocked) {
-                // extra safety: clear interval when locked
-                if (timerInterval) clearInterval(timerInterval);
-                timerInterval = null;
-                return;
-            }
-            
+            if (isLocked) return;
             if (timeLeftSeconds <= 0) {
-                // Time's up -> lock and sleep immediately
-                if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                if (!isLocked) activateLockAndSleep();
+            } else {
+                timeLeftSeconds--;
+                updateUI();
+                if (timeLeftSeconds === 0) {
                     clearInterval(timerInterval);
                     timerInterval = null;
-                }
-                // ensure we don't double lock
-                if (!isLocked) {
-                    activateLockAndSleep();
-                }
-                return;
-            }
-            
-            timeLeftSeconds--;
-            updateTimerUI();
-            
-            // Additional: if time becomes 0, next tick will lock
-            if (timeLeftSeconds === 0) {
-                // edge: immediate lock in next cycle but we trigger lock now
-                if (!isLocked) {
-                    if (timerInterval) clearInterval(timerInterval);
-                    timerInterval = null;
-                    activateLockAndSleep();
+                    if (!isLocked) activateLockAndSleep();
                 }
             }
         }, 1000);
     }
     
-    // Reset function also from manual button click, BUT only if NOT locked. 
-    // If locked, the reset button is hidden behind overlay so can't click. So safe.
-    function manualReset() {
-        if (isLocked) return; // extra safeguard
-        
-        // stop current timer
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
+    // Reset session (call from parent or reset button)
+    function resetSession(newMinutes = null) {
+        if (newMinutes !== null && newMinutes > 0) {
+            currentMinutes = newMinutes;
         }
-        // reset seconds to full
-        timeLeftSeconds = INITIAL_SECONDS;
-        updateTimerUI();
-        statusMsgSpan.innerText = "🔄 Timer reset! Screen time renewed. Use wisely!";
-        statusMsgSpan.style.background = "#eef4e6";
+        timeLeftSeconds = currentMinutes * 60;
+        updateUI();
+        if (timerInterval) clearInterval(timerInterval);
         startCountdown();
-        // small animation to timer circle
-        const timerCircle = document.querySelector('.timer-circle');
-        if (timerCircle) {
-            timerCircle.style.transform = "scale(0.98)";
-            setTimeout(() => { if(timerCircle) timerCircle.style.transform = ""; }, 150);
-        }
+        if (statusMsg) statusMsg.innerText = `✨ New ${currentMinutes} min session ✨`;
     }
     
-    // Additional anti-tampering: prevent developer tools quick hacks? Not needed but we ensure main reset button works only when unlocked
-    resetBtn.addEventListener('click', () => {
-        if (!isLocked) {
-            manualReset();
-        }
-    });
+    // LOCK SCREEN with overstaying + sleep
+    function activateLockAndSleep() {
+        if (isLocked) return;
+        isLocked = true;
+        if (timerInterval) clearInterval(timerInterval);
+        
+        // Remove existing lock
+        const oldLock = document.getElementById('dynamicLockOverlay');
+        if (oldLock) oldLock.remove();
+        
+        const lockDiv = document.createElement('div');
+        lockDiv.id = 'dynamicLockOverlay';
+        lockDiv.className = 'lock-overlay';
+        lockDiv.innerHTML = `
+            <div class="lock-card">
+                <div style="font-size: 3rem;">🔒⏰😴</div>
+                <div class="lock-title">TIME'S UP!</div>
+                <div class="lock-message">
+                    🚫 You've been on the screen too long! 🚫<br>
+                    <strong>Overstaying is not healthy.</strong>
+                </div>
+                <div class="sleep-indicator">💤 Phone going to sleep mode... 💤</div>
+                <button id="parentUnlockLongPress" class="parent-unlock-btn">🔓 PARENT UNLOCK (hold 3 sec)</button>
+                <div style="color:#aaa; font-size:0.7rem; margin-top:12px;">Ask parent to hold button</div>
+            </div>
+        `;
+        document.body.appendChild(lockDiv);
+        
+        // Long press unlock
+        const unlockBtn = document.getElementById('parentUnlockLongPress');
+        let pressTimer = null;
+        const startHold = (e) => {
+            e.preventDefault();
+            pressTimer = setTimeout(() => {
+                // Unlock and reset
+                isLocked = false;
+                lockDiv.remove();
+                resetSession(currentMinutes);
+                if (navigator.vibrate) navigator.vibrate(200);
+            }, 3000);
+        };
+        const cancelHold = () => {
+            if (pressTimer) clearTimeout(pressTimer);
+        };
+        unlockBtn.addEventListener('mousedown', startHold);
+        unlockBtn.addEventListener('mouseup', cancelHold);
+        unlockBtn.addEventListener('mouseleave', cancelHold);
+        unlockBtn.addEventListener('touchstart', startHold, {passive: false});
+        unlockBtn.addEventListener('touchend', cancelHold);
+    }
     
-    // Also when page visibility changes? keep timer accurate but that's fine. Also prevent multiple timers
-    // background timer may be throttled but countdown still robust with setInterval.
-    // If page goes to sleep (mobile browser), the setInterval gets delayed, but once back it may cause over-limit? But to be safe we can check delta?
-    // improve reliability: if user leaves app and returns, we could compare Date but no big deal. Kids may try to minimize? But it's a feature: If they leave app
-    // time still passes in background, and when they return timer will show less or zero if deadline reached. That's still good.
-    // For extra robustness: we store start timestamp but not needed for purpose.
-    // Also adds a 'visibility' listener to avoid multiple intervals.
-    let hiddenTime = null;
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            // page hidden: nothing, timer continues (setInterval may slow but okay)
-        } else {
-            // page visible. If locked, keep lock, otherwise update UI exactly
-            if (!isLocked && timeLeftSeconds > 0) {
-                updateTimerUI();
-                // ensure timer is running
-                if (!timerInterval && timeLeftSeconds > 0 && !isLocked) {
-                    startCountdown();
-                }
-            } else if (!isLocked && timeLeftSeconds <= 0) {
-                if (!isLocked) activateLockAndSleep();
+    // ---------- PARENT SETUP (PIN protected) ----------
+    let waitingForPin = false;
+    let pendingSettingsCallback = null;
+    
+    function showPinModal(onSuccess) {
+        const modal = document.createElement('div');
+        modal.className = 'pin-modal';
+        modal.innerHTML = `
+            <div class="pin-box">
+                <h3>🔐 Parent Access</h3>
+                <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="****" inputmode="numeric">
+                <div>
+                    <button id="pinSubmitBtn" class="pin-btn">Submit</button>
+                    <button id="pinCancelBtn" class="pin-btn">Cancel</button>
+                </div>
+                <div id="pinErrorMsg" class="pin-error"></div>
+                <div style="color:#888; font-size:0.7rem; margin-top:12px;">Default PIN: 1234</div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        const pinInput = document.getElementById('pinInput');
+        const submitBtn = document.getElementById('pinSubmitBtn');
+        const cancelBtn = document.getElementById('pinCancelBtn');
+        const errorDiv = document.getElementById('pinErrorMsg');
+        
+        pinInput.focus();
+        
+        function verifyPin() {
+            if (pinInput.value === '1234') {
+                modal.remove();
+                if (onSuccess) onSuccess();
+            } else {
+                errorDiv.innerText = '❌ Wrong PIN! Try again (1234)';
+                pinInput.value = '';
+                pinInput.focus();
             }
         }
-    });
+        
+        submitBtn.onclick = verifyPin;
+        cancelBtn.onclick = () => modal.remove();
+        pinInput.onkeypress = (e) => { if (e.key === 'Enter') verifyPin(); };
+    }
     
-    // Prevent context menu and long press on main screen to avoid kids messing with dev tools (basic)
-    document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        return false;
-    });
+    // Show settings panel (only after correct PIN)
+    function showParentSettings() {
+        const settingsDiv = document.createElement('div');
+        settingsDiv.className = 'settings-panel';
+        settingsDiv.innerHTML = `
+            <h3>⚙️ Parent Settings</h3>
+            <label>Screen time limit (minutes):</label>
+            <input type="number" id="minutesInput" min="1" max="30" value="${currentMinutes}">
+            <label style="margin-top:10px;">⚠️ New session will restart timer</label>
+            <div>
+                <button id="saveSettingsBtn">Save & Apply</button>
+                <button id="closeSettingsBtn">Close</button>
+            </div>
+        `;
+        document.body.appendChild(settingsDiv);
+        
+        const minutesInput = document.getElementById('minutesInput');
+        const saveBtn = document.getElementById('saveSettingsBtn');
+        const closeBtn = document.getElementById('closeSettingsBtn');
+        
+        saveBtn.onclick = () => {
+            let newMin = parseInt(minutesInput.value);
+            if (isNaN(newMin)) newMin = 5;
+            if (newMin < 1) newMin = 1;
+            if (newMin > 30) newMin = 30;
+            currentMinutes = newMin;
+            // Reset timer with new duration (only if NOT locked)
+            if (!isLocked) {
+                resetSession(currentMinutes);
+            } else {
+                // if locked, just update for next unlock
+                timeLeftSeconds = currentMinutes * 60;
+            }
+            settingsDiv.remove();
+        };
+        closeBtn.onclick = () => settingsDiv.remove();
+    }
     
-    // Block keyboard shortcuts like F12, Ctrl+Shift+I (simple prevention)
-    window.addEventListener('keydown', function(e) {
+    // Parent gear click: request PIN, then show settings
+    parentGear.onclick = () => {
+        if (isLocked) {
+            // Can't access settings while locked (must unlock first)
+            alert("🔒 Phone is locked! Please unlock first using parent button on lock screen.");
+            return;
+        }
+        showPinModal(() => {
+            showParentSettings();
+        });
+    };
+    
+    // Manual reset button (kids can press, but it just restarts same timer)
+    resetBtn.onclick = () => {
+        if (!isLocked) {
+            resetSession(currentMinutes);
+        }
+    };
+    
+    // Block dev tools & context menu
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    window.addEventListener('keydown', e => {
         if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
             e.preventDefault();
-            return false;
         }
     });
     
-    // Also block pinch zoom (optional for better kiosk)
-    document.addEventListener('touchmove', function(e) {
-        if (e.scale && e.scale !== 1) e.preventDefault();
-    }, { passive: false });
-    
-    // start the timer on initial load
-    function init() {
-        startCountdown();
-        // ensure initial UI correct
-        updateTimerUI();
-        statusMsgSpan.innerText = "📱 Screen time active. Take breaks!";
-        // Not locked initially
-        isLocked = false;
-        document.body.classList.remove('lock-active');
-    }
-    
-    init();
+    // Initialize
+    resetSession(5);
 </script>
 </body>
 </html>
