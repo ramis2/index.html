@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🔒 Kid Lock - Screen Time</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0b2b26;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: fixed;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #1e4a4a 0%, #0e2a2a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .active-screen {
+            text-align: center;
+            padding: 24px;
+            width: 90%;
+            max-width: 480px;
+            background: rgba(255,248,225,0.95);
+            border-radius: 64px 48px 64px 48px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.3);
+        }
+
+        .timer-circle {
+            background: #1e2a2a;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            margin: 0 auto 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.4), inset 0 0 0 3px #ffd966;
+        }
+
+        .time-digits {
+            font-size: 3.2rem;
+            font-weight: 800;
+            font-family: monospace;
+            background: linear-gradient(135deg, #f9e7b3, #ffcf6e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .kid-message {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2d4a3b;
+            background: #fff3cf;
+            padding: 12px 20px;
+            border-radius: 60px;
+            margin: 16px 0;
+        }
+
+        .penalty-warning {
+            background: #ff6644;
+            color: white;
+            padding: 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
+        .reset-btn {
+            margin-top: 20px;
+            background: #ffb347;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 12px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        .parent-gear {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.5);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .lock-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000dd;
+            backdrop-filter: blur(12px);
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .lock-card {
+            background: #1f1a15e6;
+            padding: 2rem;
+            border-radius: 68px;
+            max-width: 340px;
+            text-align: center;
+        }
+
+        .parent-unlock-btn {
+            background: #ff9f4a;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 60px;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; text-shadow: 0 0 6px #ffae70; }
+        }
+
+        .sleep-indicator {
+            animation: pulse 1.2s infinite;
+            color: #ffcc88;
+            margin: 15px 0;
+        }
+
+        .pin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pin-box {
+            background: #2c2c2c;
+            padding: 30px;
+            border-radius: 48px;
+            text-align: center;
+            width: 280px;
+            border: 1px solid gold;
+        }
+
+        .pin-input {
+            font-size: 2rem;
+            letter-spacing: 12px;
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+            background: #1a1a1a;
+            color: white;
+            border: 2px solid #ffb347;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pin-btn {
+            background: #ffb347;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div id="activeScreen" class="active-screen">
+        <div class="timer-circle">
+            <div class="time-digits" id="timerDisplay">02:00:00</div>
+        </div>
+        <div class="kid-message">⭐ Screen Time Active ⭐</div>
+        <div id="statusMsg" class="usage-text" style="background:#eef4e6; padding:8px 16px; border-radius:40px;">2 hours remaining</div>
+        <div id="penaltyMsg" class="penalty-warning" style="display:none;"></div>
+        <button id="resetTimerBtn" class="reset-btn">➕ New Session</button>
+    </div>
+</div>
+
+<div id="parentGear" class="parent-gear">⚙️</div>
+
+<script>
+    // 2 HOURS DEFAULT
+    let currentMinutes = 120;
+    let timeLeftSeconds = currentMinutes * 60;
+    let timerInterval = null;
+    let isLocked = false;
+    let penaltyCounter = 0;
+
+    const timerDisplay = document.getElementById('timerDisplay');
+    const statusMsg = document.getElementById('statusMsg');
+    const penaltyMsg = document.getElementById('penaltyMsg');
+    const resetBtn = document.getElementById('resetTimerBtn');
+    const parentGear = document.getElementById('parentGear');
+
+    function formatTime(seconds) {
+        if (seconds < 0) seconds = 0;
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateUI() {
+        timerDisplay.innerText = formatTime(timeLeftSeconds);
+        if (!isLocked) {
+            statusMsg.innerText = `${currentMinutes} minutes remaining`;
+            if (timeLeftSeconds <= 300 && timeLeftSeconds > 0) {
+                statusMsg.innerText = `⚠️ Only ${Math.ceil(timeLeftSeconds/60)} minutes left!`;
+            }
+        }
+    }
+
+    function addPenalty(minutes) {
+        if (isLocked) return;
+        penaltyCounter++;
+        let penaltySeconds = minutes * 60;
+        timeLeftSeconds += penaltySeconds;
+        updateUI();
+        penaltyMsg.style.display = "block";
+        penaltyMsg.innerText = `⚠️ Leaving screen detected! +${minutes} min penalty (Penalty #${penaltyCounter})`;
+        setTimeout(() => {
+            if (penaltyMsg) penaltyMsg.style.display = "none";
+        }, 4000);
+        if (navigator.vibrate) navigator.vibrate(500);
+    }
+
+    function startCountdown() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (isLocked) return;
+            if (timeLeftSeconds <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                if (!isLocked) activateLockAndSleep();
+            } else {
+                timeLeftSeconds--;
+                updateUI();
+                if (timeLeftSeconds === 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    if (!isLocked) activateLockAndSleep();
+                }
+            }
+        }, 1000);
+    }
+
+    function resetSession(newMinutes = null) {
+        if (newMinutes !== null && newMinutes > 0) {
+            currentMinutes = newMinutes;
+        }
+        timeLeftSeconds = currentMinutes * 60;
+        penaltyCounter = 0;
+        updateUI();
+        if (timerInterval) clearInterval(timerInterval);
+        startCountdown();
+        statusMsg.innerText = `✨ New ${currentMinutes} min session ✨`;
+        penaltyMsg.style.display = "none";
+    }
+
+    function activateLockAndSleep() {
+        if (isLocked) return;
+        isLocked = true;
+        if (timerInterval) clearInterval(timerInterval);
+        
+        const oldLock = document.getElementById('dynamicLockOverlay');
+        if (oldLock) oldLock.remove();
+        
+        const lockDiv = document.createElement('div');
+        lockDiv.id = 'dynamicLockOverlay';
+        lockDiv.className = 'lock-overlay';
+        lockDiv.innerHTML = `
+            <div class="lock-card">
+                <div style="font-size: 3rem;">🔒⏰😴</div>
+                <div style="font-size: 2rem; font-weight: bold; color: #ffb347; margin: 15px 0;">TIME'S UP!</div>
+                <div class="lock-message" style="color: white;">🚫 Screen time finished! 🚫</div>
+                <div class="sleep-indicator">💤 Phone sleep mode... 💤</div>
+                <button id="parentUnlockLongPress" class="parent-unlock-btn">🔓 PARENT UNLOCK (hold 3 sec)</button>
+            </div>
+        `;
+        document.body.appendChild(lockDiv);
+        
+        const unlockBtn = document.getElementById('parentUnlockLongPress');
+        let pressTimer = null;
+        const startHold = (e) => {
+            e.preventDefault();
+            pressTimer = setTimeout(() => {
+                isLocked = false;
+                lockDiv.remove();
+                resetSession(currentMinutes);
+                if (navigator.vibrate) navigator.vibrate(200);
+            }, 3000);
+        };
+        const cancelHold = () => {
+            if (pressTimer) clearTimeout(pressTimer);
+        };
+        unlockBtn.addEventListener('mousedown', startHold);
+        unlockBtn.addEventListener('mouseup', cancelHold);
+        unlockBtn.addEventListener('mouseleave', cancelHold);
+        unlockBtn.addEventListener('touchstart', startHold, {passive: false});
+        unlockBtn.addEventListener('touchend', cancelHold);
+    }
+
+    // PIN PROTECTED PARENT SETTINGS
+    function showPinModal(onSuccess) {
+        const modal = document.createElement('div');
+        modal.className = 'pin-modal';
+        modal.innerHTML = `
+            <div class="pin-box">
+                <h3>🔐 Parent Access</h3>
+                <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="****" inputmode="numeric">
+                <div>
+                    <button id="pinSubmitBtn" class="pin-btn">Submit</button>
+                    <button id="pinCancelBtn" class="pin-btn">Cancel</button>
+                </div>
+                <div id="pinErrorMsg" style="color:#ff8888; margin-top:10px;"></div>
+                <div style="color:#888; font-size:0.7rem; margin-top:12px;">PIN: 1234</div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        const pinInput = document.getElementById('pinInput');
+        const submitBtn = document.getElementById('pinSubmitBtn');
+        const cancelBtn = document.getElementById('pinCancelBtn');
+        const errorDiv = document.getElementById('pinErrorMsg');
+        
+        pinInput.focus();
+        
+        function verifyPin() {
+            if (pinInput.value === '1234') {
+                modal.remove();
+                if (onSuccess) onSuccess();
+            } else {
+                errorDiv.innerText = '❌ Wrong PIN! Try 1234';
+                pinInput.value = '';
+                pinInput.focus();
+            }
+        }
+        
+        submitBtn.onclick = verifyPin;
+        cancelBtn.onclick = () => modal.remove();
+        pinInput.onkeypress = (e) => { if (e.key === 'Enter') verifyPin(); };
+    }
+
+    function showParentSettings() {
+        const settingsDiv = document.createElement('div');
+        settingsDiv.className = 'pin-modal';
+        settingsDiv.innerHTML = `
+            <div class="pin-box" style="width: 320px;">
+                <h3>⚙️ Settings</h3>
+                <label style="color:white;">Minutes (1-180):</label>
+                <input type="number" id="minutesInput" min="1" max="180" value="${currentMinutes}" style="width:100%; padding:10px; margin:10px 0; border-radius:20px;">
+                <div>
+                    <button id="saveSettingsBtn" class="pin-btn">Save</button>
+                    <button id="closeSettingsBtn" class="pin-btn">Close</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(settingsDiv);
+        
+        const minutesInput = document.getElementById('minutesInput');
+        const saveBtn = document.getElementById('saveSettingsBtn');
+        const closeBtn = document.getElementById('closeSettingsBtn');
+        
+        saveBtn.onclick = () => {
+            let newMin = parseInt(minutesInput.value);
+            if (isNaN(newMin)) newMin = 120;
+            if (newMin < 1) newMin = 1;
+            if (newMin > 180) newMin = 180;
+            currentMinutes = newMin;
+            if (!isLocked) {
+                resetSession(currentMinutes);
+            }
+            settingsDiv.remove();
+        };
+        closeBtn.onclick = () => settingsDiv.remove();
+    }
+
+    parentGear.onclick = () => {
+        if (isLocked) {
+            alert("🔒 Phone locked! Unlock first.");
+            return;
+        }
+        showPinModal(() => { showParentSettings(); });
+    };
+
+    resetBtn.onclick = () => {
+        if (!isLocked) {
+            resetSession(currentMinutes);
+        }
+    };
+
+    // ANTI-LEAVE FEATURES
+    // 1. Detect when kid leaves the browser tab
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && !isLocked) {
+            addPenalty(5); // +5 minutes penalty for leaving
+        }
+    });
+
+    // 2. Block back button in browser
+    history.pushState(null, null, location.href);
+    window.addEventListener('popstate', function () {
+        if (!isLocked) {
+            addPenalty(5);
+            history.pushState(null, null, location.href);
+        }
+    });
+
+    // 3. Block context menu (right click)
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // 4. Block F12 / Dev tools
+    window.addEventListener('keydown', e => {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+            e.preventDefault();
+            addPenalty(10);
+        }
+    });
+
+    // 5. Disable pull-to-refresh
+    let touchStartY = 0;
+    document.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+    });
+    document.addEventListener('touchmove', (e) => {
+        const scrollTop = document.documentElement.scrollTop;
+        if (touchStartY > 50 && scrollTop === 0 && e.cancelable) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    // START
+    resetSession(120);
+</script>
+</body>
+</html>
