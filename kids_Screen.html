@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Phone Break - Kids Screen Time Lock</title>
+    <title>Phone Break - Kids Screen Time Lock (2 Hours)</title>
     <style>
         * {
             margin: 0;
@@ -31,6 +31,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow-y: auto;
         }
 
         /* Main active screen */
@@ -48,12 +49,13 @@
             border-radius: 64px 48px 64px 48px;
             box-shadow: 0 25px 40px rgba(0,0,0,0.3);
             position: relative;
+            margin: 20px auto;
         }
 
         .timer-circle {
             background: #1e2a2a;
-            width: 200px;
-            height: 200px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -64,7 +66,7 @@
         }
 
         .time-digits {
-            font-size: 4.2rem;
+            font-size: 3.5rem;
             font-weight: 800;
             font-family: monospace;
             letter-spacing: 4px;
@@ -118,7 +120,7 @@
             box-shadow: 0 3px 0 #a35f1a;
         }
 
-        /* Parent Setup Button (discreet, corner) */
+        /* Parent Setup Button */
         .parent-gear {
             position: fixed;
             bottom: 20px;
@@ -140,11 +142,29 @@
 
         .parent-gear:active {
             transform: scale(0.92);
-            background: rgba(0,0,0,0.8);
         }
 
-        /* PIN Modal Overlay */
-        .pin-modal {
+        /* Help Button */
+        .help-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+            border: 1px solid rgba(255,215,0,0.5);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -152,23 +172,91 @@
             height: 100%;
             background: rgba(0,0,0,0.95);
             backdrop-filter: blur(10px);
-            z-index: 1000;
+            z-index: 2000;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
         }
 
-        .pin-box {
+        .modal-content {
+            background: #2d2a24;
+            border-radius: 48px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            border: 2px solid #ffb347;
+        }
+
+        .modal-content h2 {
+            color: #ffb347;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            color: #ffd966;
+            margin: 20px 0 10px;
+        }
+
+        .modal-content p {
+            color: white;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .step-box {
+            background: #1e1b16;
+            padding: 15px;
+            border-radius: 24px;
+            margin: 15px 0;
+            border-left: 4px solid #ffb347;
+        }
+
+        .step-title {
+            color: #ffb347;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .close-modal {
+            background: #ffb347;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .pin-modal, .settings-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pin-box, .settings-box {
             background: #2c2c2c;
             padding: 30px;
             border-radius: 48px;
             text-align: center;
-            width: 280px;
+            width: 320px;
             border: 1px solid gold;
         }
 
-        .pin-box h3 {
+        .pin-box h3, .settings-box h3 {
             color: gold;
             margin-bottom: 20px;
         }
@@ -187,7 +275,7 @@
             margin-bottom: 20px;
         }
 
-        .pin-btn {
+        .pin-btn, .settings-btn {
             background: #ffb347;
             border: none;
             padding: 10px 20px;
@@ -197,64 +285,11 @@
             cursor: pointer;
         }
 
-        .pin-error {
-            color: #ff8888;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-
-        /* Settings Panel */
-        .settings-panel {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #2d2a24;
-            padding: 30px;
-            border-radius: 48px;
-            z-index: 2000;
-            width: 300px;
-            text-align: center;
-            border: 2px solid #ffb347;
-            box-shadow: 0 20px 40px black;
-        }
-
-        .settings-panel h3 {
-            color: #ffb347;
-            margin-bottom: 20px;
-        }
-
-        .settings-panel label {
-            color: white;
-            display: block;
-            margin: 15px 0 5px;
-        }
-
-        .settings-panel input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 30px;
-            border: none;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-
-        .settings-panel button {
-            margin-top: 20px;
-            background: #ffb347;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 40px;
-            font-weight: bold;
-            margin: 10px;
-            cursor: pointer;
-        }
-
         .hidden {
             display: none !important;
         }
 
-        /* Lock Screen Overlay */
+        /* Lock Screen */
         .lock-overlay {
             position: fixed;
             top: 0;
@@ -263,7 +298,7 @@
             height: 100%;
             background: #000000dd;
             backdrop-filter: blur(12px);
-            z-index: 1000;
+            z-index: 1500;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -276,18 +311,6 @@
             border-radius: 68px;
             max-width: 340px;
             text-align: center;
-        }
-
-        .lock-title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ffb347;
-            margin: 15px 0;
-        }
-
-        .lock-message {
-            color: white;
-            margin: 15px 0;
         }
 
         .parent-unlock-btn {
@@ -311,6 +334,29 @@
             color: #ffcc88;
             margin: 15px 0;
         }
+
+        .warning-badge {
+            background: #ff4444;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        @media (max-width: 550px) {
+            .timer-circle {
+                width: 180px;
+                height: 180px;
+            }
+            .time-digits {
+                font-size: 2.5rem;
+            }
+            .kid-message {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -318,21 +364,24 @@
 <div class="app-container">
     <div id="activeScreen" class="active-screen">
         <div class="timer-circle">
-            <div class="time-digits" id="timerDisplay">05:00</div>
+            <div class="time-digits" id="timerDisplay">02:00:00</div>
             <div class="time-label">screen time left</div>
         </div>
         <div class="kid-message">⭐ Take a break, champ! ⭐</div>
-        <div class="usage-text" id="statusMessage">Enjoy your time wisely</div>
+        <div class="usage-text" id="statusMessage">2 hours of screen time</div>
         <button id="resetTimerBtn" class="reset-btn">➕ New session</button>
+        <div class="warning-badge">⚠️ For full lock: tap "?" button</div>
     </div>
 </div>
 
-<!-- Parent gear icon (always visible) -->
+<!-- Buttons -->
 <div id="parentGear" class="parent-gear">⚙️</div>
+<div id="helpBtn" class="help-btn">❓</div>
 
 <script>
     // ---------- CONFIGURATION ----------
-    let currentMinutes = 5;     // default 5 minutes
+    // DEFAULT: 2 HOURS (120 minutes)
+    let currentMinutes = 120;     // 2 hours
     let timeLeftSeconds = currentMinutes * 60;
     let timerInterval = null;
     let isLocked = false;
@@ -342,25 +391,33 @@
     const statusMsg = document.getElementById('statusMessage');
     const resetBtn = document.getElementById('resetTimerBtn');
     const parentGear = document.getElementById('parentGear');
+    const helpBtn = document.getElementById('helpBtn');
     
-    // Helper: format time
     function formatTime(seconds) {
         if (seconds < 0) seconds = 0;
-        const mins = Math.floor(seconds / 60);
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
+        
+        if (hours > 0) {
+            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
     
     function updateUI() {
         if (timerDisplay) timerDisplay.innerText = formatTime(timeLeftSeconds);
-        if (!isLocked && timeLeftSeconds <= 60 && timeLeftSeconds > 0) {
-            statusMsg.innerText = `⚠️ Only ${Math.ceil(timeLeftSeconds/60)} minute left!`;
+        if (!isLocked && timeLeftSeconds <= 300 && timeLeftSeconds > 0) {
+            // Warning when 5 minutes or less remaining
+            const minsLeft = Math.ceil(timeLeftSeconds / 60);
+            statusMsg.innerText = `⚠️ Only ${minsLeft} minute${minsLeft > 1 ? 's' : ''} left!`;
+            statusMsg.style.background = "#ffe0b3";
         } else if (!isLocked) {
             statusMsg.innerText = `📱 ${currentMinutes} min session active`;
+            statusMsg.style.background = "#eef4e6";
         }
     }
     
-    // Start countdown timer
     function startCountdown() {
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => {
@@ -381,7 +438,6 @@
         }, 1000);
     }
     
-    // Reset session (call from parent or reset button)
     function resetSession(newMinutes = null) {
         if (newMinutes !== null && newMinutes > 0) {
             currentMinutes = newMinutes;
@@ -390,16 +446,17 @@
         updateUI();
         if (timerInterval) clearInterval(timerInterval);
         startCountdown();
-        if (statusMsg) statusMsg.innerText = `✨ New ${currentMinutes} min session ✨`;
+        if (statusMsg) {
+            statusMsg.innerText = `✨ New ${currentMinutes} min session ✨`;
+            statusMsg.style.background = "#eef4e6";
+        }
     }
     
-    // LOCK SCREEN with overstaying + sleep
     function activateLockAndSleep() {
         if (isLocked) return;
         isLocked = true;
         if (timerInterval) clearInterval(timerInterval);
         
-        // Remove existing lock
         const oldLock = document.getElementById('dynamicLockOverlay');
         if (oldLock) oldLock.remove();
         
@@ -409,8 +466,8 @@
         lockDiv.innerHTML = `
             <div class="lock-card">
                 <div style="font-size: 3rem;">🔒⏰😴</div>
-                <div class="lock-title">TIME'S UP!</div>
-                <div class="lock-message">
+                <div style="font-size: 2rem; font-weight: bold; color: #ffb347; margin: 15px 0;">TIME'S UP!</div>
+                <div class="lock-message" style="color: white;">
                     🚫 You've been on the screen too long! 🚫<br>
                     <strong>Overstaying is not healthy.</strong>
                 </div>
@@ -421,13 +478,11 @@
         `;
         document.body.appendChild(lockDiv);
         
-        // Long press unlock
         const unlockBtn = document.getElementById('parentUnlockLongPress');
         let pressTimer = null;
         const startHold = (e) => {
             e.preventDefault();
             pressTimer = setTimeout(() => {
-                // Unlock and reset
                 isLocked = false;
                 lockDiv.remove();
                 resetSession(currentMinutes);
@@ -444,10 +499,75 @@
         unlockBtn.addEventListener('touchend', cancelHold);
     }
     
-    // ---------- PARENT SETUP (PIN protected) ----------
-    let waitingForPin = false;
-    let pendingSettingsCallback = null;
+    // ---------- HELP MODAL (Guided Access Instructions) ----------
+    function showHelpModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h2>🔒 How to REALLY lock the phone</h2>
+                <p style="color: #ff8888; text-align: center; margin-bottom: 15px;">
+                    ⚠️ A website CANNOT lock the home button by itself!<br>
+                    Use your phone's built-in feature below:
+                </p>
+                
+                <h3>📱 For iPhone / iPad (Guided Access)</h3>
+                <div class="step-box">
+                    <div class="step-title">Step 1:</div>
+                    <p>Go to <strong>Settings → Accessibility → Guided Access</strong></p>
+                </div>
+                <div class="step-box">
+                    <div class="step-title">Step 2:</div>
+                    <p>Turn ON Guided Access and set a <strong>passcode</strong></p>
+                </div>
+                <div class="step-box">
+                    <div class="step-title">Step 3:</div>
+                    <p>Open this webpage, then <strong>triple-click the side button</strong></p>
+                </div>
+                <div class="step-box">
+                    <div class="step-title">Step 4:</div>
+                    <p>Tap <strong>"Start"</strong> in the top-right corner</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-title">✅ Result:</div>
+                    <p>Home button is DISABLED! Phone locked to this screen.</p>
+                </div>
+                
+                <h3>🤖 For Android (Screen Pinning)</h3>
+                <div class="step-box">
+                    <div class="step-title">Step 1:</div>
+                    <p>Go to <strong>Settings → Security → Screen Pinning</strong></p>
+                </div>
+                <div class="step-box">
+                    <div class="step-title">Step 2:</div>
+                    <p>Turn ON Screen Pinning</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-title">Step 3:</div>
+                    <p>Open Chrome, go to this webpage, tap <strong>Overview button</strong></p>
+                </div>
+                <div class="step-box">
+                    <div class="step-title">Step 4:</div>
+                    <p>Tap the <strong>pin icon</strong> on the browser window</p>
+                </div>
+                
+                <h3>🔓 How to Exit (Parent Only)</h3>
+                <div class="step-box">
+                    <div class="step-title">iPhone/iPad:</div>
+                    <p><strong>Triple-click side button</strong> → Enter passcode → Tap "End"</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-title">Android:</div>
+                    <p>Press and hold <strong>Back + Overview buttons</strong> together</p>
+                </div>
+                
+                <button class="close-modal" onclick="this.closest('.modal-overlay').remove()">Got it! Close</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
     
+    // ---------- PARENT SETUP (PIN protected) ----------
     function showPinModal(onSuccess) {
         const modal = document.createElement('div');
         modal.className = 'pin-modal';
@@ -488,18 +608,19 @@
         pinInput.onkeypress = (e) => { if (e.key === 'Enter') verifyPin(); };
     }
     
-    // Show settings panel (only after correct PIN)
     function showParentSettings() {
         const settingsDiv = document.createElement('div');
         settingsDiv.className = 'settings-panel';
         settingsDiv.innerHTML = `
-            <h3>⚙️ Parent Settings</h3>
-            <label>Screen time limit (minutes):</label>
-            <input type="number" id="minutesInput" min="1" max="30" value="${currentMinutes}">
-            <label style="margin-top:10px;">⚠️ New session will restart timer</label>
-            <div>
-                <button id="saveSettingsBtn">Save & Apply</button>
-                <button id="closeSettingsBtn">Close</button>
+            <div class="settings-box" style="width: 320px;">
+                <h3>⚙️ Parent Settings</h3>
+                <label style="color:white;">Screen time limit (minutes):</label>
+                <input type="number" id="minutesInput" min="1" max="120" value="${currentMinutes}" style="width:100%; padding:10px; margin:10px 0; border-radius:20px; font-size:1rem;">
+                <label style="color:white; font-size:0.8rem;">💡 60 min = 1 hour | 90 min = 1.5 hr | 120 min = 2 hours</label>
+                <div style="margin-top:20px;">
+                    <button id="saveSettingsBtn" class="settings-btn">Save & Apply</button>
+                    <button id="closeSettingsBtn" class="settings-btn">Close</button>
+                </div>
             </div>
         `;
         document.body.appendChild(settingsDiv);
@@ -510,15 +631,13 @@
         
         saveBtn.onclick = () => {
             let newMin = parseInt(minutesInput.value);
-            if (isNaN(newMin)) newMin = 5;
+            if (isNaN(newMin)) newMin = 120;
             if (newMin < 1) newMin = 1;
-            if (newMin > 30) newMin = 30;
+            if (newMin > 120) newMin = 120;
             currentMinutes = newMin;
-            // Reset timer with new duration (only if NOT locked)
             if (!isLocked) {
                 resetSession(currentMinutes);
             } else {
-                // if locked, just update for next unlock
                 timeLeftSeconds = currentMinutes * 60;
             }
             settingsDiv.remove();
@@ -526,10 +645,9 @@
         closeBtn.onclick = () => settingsDiv.remove();
     }
     
-    // Parent gear click: request PIN, then show settings
+    // Event listeners
     parentGear.onclick = () => {
         if (isLocked) {
-            // Can't access settings while locked (must unlock first)
             alert("🔒 Phone is locked! Please unlock first using parent button on lock screen.");
             return;
         }
@@ -538,7 +656,10 @@
         });
     };
     
-    // Manual reset button (kids can press, but it just restarts same timer)
+    helpBtn.onclick = () => {
+        showHelpModal();
+    };
+    
     resetBtn.onclick = () => {
         if (!isLocked) {
             resetSession(currentMinutes);
@@ -553,8 +674,15 @@
         }
     });
     
-    // Initialize
-    resetSession(5);
+    // Detect when user leaves the browser (for awareness)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && !isLocked) {
+            console.log("⚠️ Browser went to background - timer still running!");
+        }
+    });
+    
+    // Initialize with 2 hours (120 minutes)
+    resetSession(120);
 </script>
 </body>
 </html>
