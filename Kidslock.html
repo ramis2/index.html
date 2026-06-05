@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🔒 Kid Lock - Screen Time</title>
+    <title>🔒 KID LOCK - Screen Time Guardian</title>
     <style>
         * {
             margin: 0;
@@ -27,7 +27,6 @@
             height: 100%;
             background: linear-gradient(145deg, #1e4a4a 0%, #0e2a2a 100%);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
@@ -75,6 +74,15 @@
             margin: 16px 0;
         }
 
+        .usage-text {
+            font-size: 1rem;
+            color: #2c5a4a;
+            background: #eef4e6;
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
         .penalty-warning {
             background: #ff6644;
             color: white;
@@ -82,6 +90,13 @@
             border-radius: 20px;
             font-size: 0.8rem;
             margin-top: 10px;
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
         .reset-btn {
@@ -93,6 +108,13 @@
             padding: 12px 28px;
             border-radius: 50px;
             cursor: pointer;
+            box-shadow: 0 5px 0 #a35f1a;
+            transition: 0.07s linear;
+        }
+
+        .reset-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #a35f1a;
         }
 
         .parent-gear {
@@ -100,6 +122,7 @@
             bottom: 20px;
             right: 20px;
             background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
             width: 48px;
             height: 48px;
             border-radius: 50%;
@@ -109,6 +132,7 @@
             font-size: 24px;
             cursor: pointer;
             z-index: 100;
+            border: 1px solid rgba(255,215,0,0.5);
         }
 
         .lock-overlay {
@@ -132,6 +156,13 @@
             border-radius: 68px;
             max-width: 340px;
             text-align: center;
+        }
+
+        .lock-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffb347;
+            margin: 15px 0;
         }
 
         .parent-unlock-btn {
@@ -163,6 +194,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
             z-index: 3000;
             display: flex;
             align-items: center;
@@ -176,6 +208,11 @@
             text-align: center;
             width: 280px;
             border: 1px solid gold;
+        }
+
+        .pin-box h3 {
+            color: gold;
+            margin-bottom: 20px;
         }
 
         .pin-input {
@@ -197,78 +234,143 @@
             padding: 10px 20px;
             margin: 5px;
             border-radius: 30px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        .hidden { display: none; }
+        .badge {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            color: #ffcc88;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
+
+<div class="badge" id="sessionBadge">🔒 Session Active</div>
 
 <div class="app-container">
     <div id="activeScreen" class="active-screen">
         <div class="timer-circle">
             <div class="time-digits" id="timerDisplay">02:00:00</div>
         </div>
-        <div class="kid-message">⭐ Screen Time Active ⭐</div>
-        <div id="statusMsg" class="usage-text" style="background:#eef4e6; padding:8px 16px; border-radius:40px;">2 hours remaining</div>
+        <div class="kid-message">⭐ Ask Parent for PIN to Exit ⭐</div>
+        <div class="usage-text" id="statusMsg">2 hours remaining</div>
         <div id="penaltyMsg" class="penalty-warning" style="display:none;"></div>
-        <button id="resetTimerBtn" class="reset-btn">➕ New Session</button>
+        <button id="resetTimerBtn" class="reset-btn">🔄 Reset Session</button>
     </div>
 </div>
 
 <div id="parentGear" class="parent-gear">⚙️</div>
 
 <script>
-    // 2 HOURS DEFAULT
-    let currentMinutes = 120;
+    // ========== PERSISTENT TIMER USING localStorage ==========
+    let currentMinutes = 120;  // 2 hours default
     let timeLeftSeconds = currentMinutes * 60;
     let timerInterval = null;
     let isLocked = false;
-    let penaltyCounter = 0;
-
+    let startTime = null;
+    
+    // DOM elements
     const timerDisplay = document.getElementById('timerDisplay');
     const statusMsg = document.getElementById('statusMsg');
     const penaltyMsg = document.getElementById('penaltyMsg');
     const resetBtn = document.getElementById('resetTimerBtn');
     const parentGear = document.getElementById('parentGear');
-
+    const sessionBadge = document.getElementById('sessionBadge');
+    
+    // Format time (HH:MM:SS)
     function formatTime(seconds) {
         if (seconds < 0) seconds = 0;
         const hours = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
-        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        if (hours > 0) {
+            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
-
+    
+    // SAVE timer to localStorage (so it survives leaving the page)
+    function saveTimer() {
+        if (!isLocked) {
+            localStorage.setItem('kidlock_timeLeft', timeLeftSeconds);
+            localStorage.setItem('kidlock_timestamp', Date.now());
+            localStorage.setItem('kidlock_minutes', currentMinutes);
+        }
+    }
+    
+    // LOAD timer from localStorage (when returning to page)
+    function loadSavedTimer() {
+        const savedTime = localStorage.getItem('kidlock_timeLeft');
+        const savedTimestamp = localStorage.getItem('kidlock_timestamp');
+        const savedMinutes = localStorage.getItem('kidlock_minutes');
+        
+        if (savedMinutes && !isNaN(parseInt(savedMinutes))) {
+            currentMinutes = parseInt(savedMinutes);
+        }
+        
+        if (savedTime && savedTimestamp && !isLocked) {
+            const elapsed = Math.floor((Date.now() - parseInt(savedTimestamp)) / 1000);
+            let remaining = parseInt(savedTime) - elapsed;
+            
+            if (remaining > 0) {
+                timeLeftSeconds = remaining;
+            } else {
+                timeLeftSeconds = 0;
+                activateLockAndSleep();
+                return false;
+            }
+        } else {
+            timeLeftSeconds = currentMinutes * 60;
+        }
+        
+        updateUI();
+        return true;
+    }
+    
     function updateUI() {
         timerDisplay.innerText = formatTime(timeLeftSeconds);
         if (!isLocked) {
-            statusMsg.innerText = `${currentMinutes} minutes remaining`;
             if (timeLeftSeconds <= 300 && timeLeftSeconds > 0) {
-                statusMsg.innerText = `⚠️ Only ${Math.ceil(timeLeftSeconds/60)} minutes left!`;
+                statusMsg.innerText = `⚠️ ${Math.ceil(timeLeftSeconds/60)} minutes left!`;
+            } else {
+                statusMsg.innerText = `${currentMinutes} minutes remaining`;
             }
         }
     }
-
-    function addPenalty(minutes) {
+    
+    // Penalty system - ADDS time (punishment for leaving)
+    function addPenalty(minutes, reason) {
         if (isLocked) return;
-        penaltyCounter++;
+        
         let penaltySeconds = minutes * 60;
         timeLeftSeconds += penaltySeconds;
         updateUI();
+        saveTimer();
+        
         penaltyMsg.style.display = "block";
-        penaltyMsg.innerText = `⚠️ Leaving screen detected! +${minutes} min penalty (Penalty #${penaltyCounter})`;
+        penaltyMsg.innerText = `⚠️ ${reason}! +${minutes} min penalty ⚠️`;
+        
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        
         setTimeout(() => {
             if (penaltyMsg) penaltyMsg.style.display = "none";
-        }, 4000);
-        if (navigator.vibrate) navigator.vibrate(500);
+        }, 5000);
     }
-
+    
     function startCountdown() {
         if (timerInterval) clearInterval(timerInterval);
+        
         timerInterval = setInterval(() => {
             if (isLocked) return;
+            
             if (timeLeftSeconds <= 0) {
                 clearInterval(timerInterval);
                 timerInterval = null;
@@ -276,6 +378,8 @@
             } else {
                 timeLeftSeconds--;
                 updateUI();
+                saveTimer();
+                
                 if (timeLeftSeconds === 0) {
                     clearInterval(timerInterval);
                     timerInterval = null;
@@ -284,24 +388,37 @@
             }
         }, 1000);
     }
-
+    
     function resetSession(newMinutes = null) {
         if (newMinutes !== null && newMinutes > 0) {
             currentMinutes = newMinutes;
         }
         timeLeftSeconds = currentMinutes * 60;
-        penaltyCounter = 0;
         updateUI();
+        saveTimer();
+        
         if (timerInterval) clearInterval(timerInterval);
         startCountdown();
+        
         statusMsg.innerText = `✨ New ${currentMinutes} min session ✨`;
+        sessionBadge.innerText = "🔒 Session Active";
         penaltyMsg.style.display = "none";
+        
+        // Force reload of saved time
+        localStorage.setItem('kidlock_timeLeft', timeLeftSeconds);
+        localStorage.setItem('kidlock_timestamp', Date.now());
     }
-
+    
     function activateLockAndSleep() {
         if (isLocked) return;
         isLocked = true;
+        
         if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+        
+        // Clear saved timer since session is over
+        localStorage.removeItem('kidlock_timeLeft');
+        sessionBadge.innerText = "🔒 LOCKED";
         
         const oldLock = document.getElementById('dynamicLockOverlay');
         if (oldLock) oldLock.remove();
@@ -312,16 +429,18 @@
         lockDiv.innerHTML = `
             <div class="lock-card">
                 <div style="font-size: 3rem;">🔒⏰😴</div>
-                <div style="font-size: 2rem; font-weight: bold; color: #ffb347; margin: 15px 0;">TIME'S UP!</div>
+                <div class="lock-title">TIME'S UP!</div>
                 <div class="lock-message" style="color: white;">🚫 Screen time finished! 🚫</div>
-                <div class="sleep-indicator">💤 Phone sleep mode... 💤</div>
+                <div class="sleep-indicator">💤 PHONE SLEEP MODE 💤</div>
                 <button id="parentUnlockLongPress" class="parent-unlock-btn">🔓 PARENT UNLOCK (hold 3 sec)</button>
+                <div style="color:#aaa; font-size:0.7rem; margin-top:12px;">Only parent can unlock</div>
             </div>
         `;
         document.body.appendChild(lockDiv);
         
         const unlockBtn = document.getElementById('parentUnlockLongPress');
         let pressTimer = null;
+        
         const startHold = (e) => {
             e.preventDefault();
             pressTimer = setTimeout(() => {
@@ -331,23 +450,25 @@
                 if (navigator.vibrate) navigator.vibrate(200);
             }, 3000);
         };
+        
         const cancelHold = () => {
             if (pressTimer) clearTimeout(pressTimer);
         };
+        
         unlockBtn.addEventListener('mousedown', startHold);
         unlockBtn.addEventListener('mouseup', cancelHold);
         unlockBtn.addEventListener('mouseleave', cancelHold);
         unlockBtn.addEventListener('touchstart', startHold, {passive: false});
         unlockBtn.addEventListener('touchend', cancelHold);
     }
-
-    // PIN PROTECTED PARENT SETTINGS
+    
+    // ========== PARENT PIN PROTECTION ==========
     function showPinModal(onSuccess) {
         const modal = document.createElement('div');
         modal.className = 'pin-modal';
         modal.innerHTML = `
             <div class="pin-box">
-                <h3>🔐 Parent Access</h3>
+                <h3>🔐 Parent Access Only</h3>
                 <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="****" inputmode="numeric">
                 <div>
                     <button id="pinSubmitBtn" class="pin-btn">Submit</button>
@@ -371,9 +492,10 @@
                 modal.remove();
                 if (onSuccess) onSuccess();
             } else {
-                errorDiv.innerText = '❌ Wrong PIN! Try 1234';
+                errorDiv.innerText = '❌ Wrong PIN! (Use 1234)';
                 pinInput.value = '';
                 pinInput.focus();
+                if (navigator.vibrate) navigator.vibrate(300);
             }
         }
         
@@ -381,16 +503,17 @@
         cancelBtn.onclick = () => modal.remove();
         pinInput.onkeypress = (e) => { if (e.key === 'Enter') verifyPin(); };
     }
-
+    
     function showParentSettings() {
         const settingsDiv = document.createElement('div');
         settingsDiv.className = 'pin-modal';
         settingsDiv.innerHTML = `
             <div class="pin-box" style="width: 320px;">
-                <h3>⚙️ Settings</h3>
-                <label style="color:white;">Minutes (1-180):</label>
+                <h3>⚙️ Parent Settings</h3>
+                <label style="color:white;">Screen time (minutes):</label>
                 <input type="number" id="minutesInput" min="1" max="180" value="${currentMinutes}" style="width:100%; padding:10px; margin:10px 0; border-radius:20px;">
-                <div>
+                <label style="color:#aaa; font-size:0.8rem;">60=1hr | 120=2hr | 180=3hr</label>
+                <div style="margin-top:20px;">
                     <button id="saveSettingsBtn" class="pin-btn">Save</button>
                     <button id="closeSettingsBtn" class="pin-btn">Close</button>
                 </div>
@@ -415,63 +538,111 @@
         };
         closeBtn.onclick = () => settingsDiv.remove();
     }
-
+    
     parentGear.onclick = () => {
         if (isLocked) {
-            alert("🔒 Phone locked! Unlock first.");
+            alert("🔒 Phone is LOCKED! Use the unlock button on screen.");
             return;
         }
         showPinModal(() => { showParentSettings(); });
     };
-
+    
     resetBtn.onclick = () => {
         if (!isLocked) {
-            resetSession(currentMinutes);
+            showPinModal(() => { 
+                resetSession(currentMinutes);
+            });
         }
     };
-
-    // ANTI-LEAVE FEATURES
-    // 1. Detect when kid leaves the browser tab
+    
+    // ========== AGGRESSIVE ANTI-LEAVE SYSTEM ==========
+    
+    // 1. Save timer constantly
+    setInterval(saveTimer, 1000);
+    
+    // 2. Detect page visibility change (leaving tab/app)
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden && !isLocked) {
-            addPenalty(5); // +5 minutes penalty for leaving
+        if (document.hidden) {
+            // Kid left the page
+            localStorage.setItem('kidlock_leftTime', Date.now());
+            sessionBadge.innerText = "⚠️ DON'T LEAVE!";
+        } else {
+            // Kid came back
+            const leftTime = localStorage.getItem('kidlock_leftTime');
+            if (leftTime && !isLocked) {
+                const awaySeconds = Math.floor((Date.now() - parseInt(leftTime)) / 1000);
+                if (awaySeconds > 5) {
+                    // Add penalty proportional to time away
+                    const penaltyMin = Math.max(2, Math.floor(awaySeconds / 30));
+                    addPenalty(penaltyMin, `You left for ${awaySeconds} seconds`);
+                }
+                localStorage.removeItem('kidlock_leftTime');
+                sessionBadge.innerText = "🔒 Session Active";
+            }
+            loadSavedTimer();
         }
     });
-
-    // 2. Block back button in browser
+    
+    // 3. Block back button
     history.pushState(null, null, location.href);
-    window.addEventListener('popstate', function () {
+    window.addEventListener('popstate', function() {
         if (!isLocked) {
-            addPenalty(5);
+            addPenalty(5, "Back button pressed");
+            history.pushState(null, null, location.href);
+        } else {
             history.pushState(null, null, location.href);
         }
     });
-
-    // 3. Block context menu (right click)
+    
+    // 4. Block context menu
     document.addEventListener('contextmenu', e => e.preventDefault());
-
-    // 4. Block F12 / Dev tools
+    
+    // 5. Block Dev Tools
     window.addEventListener('keydown', e => {
         if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
             e.preventDefault();
-            addPenalty(10);
+            addPenalty(10, "Dev tools blocked");
+            return false;
         }
     });
-
-    // 5. Disable pull-to-refresh
+    
+    // 6. Disable pull-to-refresh
     let touchStartY = 0;
     document.addEventListener('touchstart', (e) => {
         touchStartY = e.touches[0].clientY;
     });
     document.addEventListener('touchmove', (e) => {
         const scrollTop = document.documentElement.scrollTop;
-        if (touchStartY > 50 && scrollTop === 0 && e.cancelable) {
+        if (touchStartY < 100 && scrollTop === 0 && e.cancelable) {
             e.preventDefault();
         }
     }, { passive: false });
-
-    // START
-    resetSession(120);
+    
+    // 7. Detect when app goes to background (mobile)
+    window.addEventListener('pagehide', () => {
+        saveTimer();
+        localStorage.setItem('kidlock_hideTime', Date.now());
+    });
+    
+    window.addEventListener('pageshow', () => {
+        const hideTime = localStorage.getItem('kidlock_hideTime');
+        if (hideTime && !isLocked) {
+            const awaySeconds = Math.floor((Date.now() - parseInt(hideTime)) / 1000);
+            if (awaySeconds > 10) {
+                const penaltyMin = Math.min(5, Math.floor(awaySeconds / 60) + 1);
+                addPenalty(penaltyMin, `App was closed for ${awaySeconds}s`);
+            }
+            localStorage.removeItem('kidlock_hideTime');
+        }
+        loadSavedTimer();
+        if (timerInterval === null && !isLocked && timeLeftSeconds > 0) {
+            startCountdown();
+        }
+    });
+    
+    // ========== INITIALIZE ==========
+    loadSavedTimer();
+    startCountdown();
 </script>
 </body>
 </html>
