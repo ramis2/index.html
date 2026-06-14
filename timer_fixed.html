@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🔒 Fixed - Screen Time Lock</title>
+    <title>🔒 FINAL - Screen Time Lock</title>
     <style>
         * {
             margin: 0;
@@ -196,12 +196,6 @@
             border-radius: 20px;
             margin-bottom: 20px;
         }
-
-        .reset-notice {
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 15px;
-        }
     </style>
 </head>
 <body>
@@ -211,34 +205,62 @@
         <div class="timer-circle">
             <div class="time-digits" id="timerDisplay">02:00:00</div>
         </div>
-        <div class="message">🔒 Watch YouTube normally</div>
-        <div class="status" id="statusMsg">Timer running in background</div>
+        <div class="message">🔒 YouTube Time Lock</div>
+        <div class="status" id="statusMsg">Timer running</div>
         <div id="penaltyMsg" class="penalty-badge" style="display:none;"></div>
-        <button id="resetBtn">🔄 Reset Timer (Parent Only)</button>
-        <div class="reset-notice" id="resetNotice"></div>
+        <button id="resetBtn">🔄 NEW SESSION (Parent PIN)</button>
     </div>
 </div>
 
 <div id="gearBtn" class="gear">⚙️</div>
 
 <script>
-    // ========== CONFIGURATION ==========
-    let totalMinutes = 120;           // 2 hours default (change to 1 for testing)
-    let secondsLeft = totalMinutes * 60;
-    let timerInterval = null;
+    // ========== SIMPLE STORAGE - NO AUTO RESET ==========
+    
+    // Get stored values or use defaults
+    let totalMinutes = parseInt(localStorage.getItem('final_total_minutes')) || 120;
+    let secondsLeft = parseInt(localStorage.getItem('final_seconds_left'));
+    let isExpired = localStorage.getItem('final_is_expired') === 'true';
     let isLocked = false;
-    let isExpired = false;            // NEW: track if timer has expired
-    let penaltyCount = 0;
+    let penaltyCount = parseInt(localStorage.getItem('final_penalty_count')) || 0;
+    let lastSavedTime = parseInt(localStorage.getItem('final_saved_timestamp')) || 0;
+    
+    // If no stored seconds, initialize
+    if (isNaN(secondsLeft) || secondsLeft === null || secondsLeft <= 0) {
+        if (isExpired) {
+            secondsLeft = 0;
+        } else {
+            secondsLeft = totalMinutes * 60;
+        }
+    }
+    
+    // Adjust for time passed while away
+    if (!isExpired && secondsLeft > 0 && lastSavedTime > 0) {
+        const now = Date.now();
+        const elapsedSeconds = Math.floor((now - lastSavedTime) / 1000);
+        if (elapsedSeconds > 0 && elapsedSeconds < secondsLeft) {
+            secondsLeft = secondsLeft - elapsedSeconds;
+        } else if (elapsedSeconds >= secondsLeft) {
+            secondsLeft = 0;
+            isExpired = true;
+        }
+        // Save the corrected time
+        localStorage.setItem('final_seconds_left', secondsLeft);
+        localStorage.setItem('final_is_expired', isExpired);
+    }
+    
+    // Update timestamp to NOW
+    localStorage.setItem('final_saved_timestamp', Date.now());
     
     // DOM elements
     const timerDisplay = document.getElementById('timerDisplay');
-    const statusMsg = document.getElementById('statusMsg');
+    const statusMsgSpan = document.getElementById('statusMsg');
     const penaltyMsgDiv = document.getElementById('penaltyMsg');
     const resetBtn = document.getElementById('resetBtn');
     const gearBtn = document.getElementById('gearBtn');
-    const resetNotice = document.getElementById('resetNotice');
     
-    // Format time HH:MM:SS
+    let timerInterval = null;
+    
     function formatTime(seconds) {
         if (seconds < 0) seconds = 0;
         const h = Math.floor(seconds / 3600);
@@ -251,74 +273,34 @@
     }
     
     function updateDisplay() {
-        timerDisplay.innerText = formatTime(secondsLeft);
-        if (isExpired || (secondsLeft <= 0 && !isLocked)) {
+        if (isExpired || secondsLeft <= 0) {
             timerDisplay.innerText = "00:00:00";
-            statusMsg.innerText = "⛔ TIME EXPIRED - YouTube LOCKED ⛔";
-        } else if (!isLocked) {
-            if (secondsLeft <= 300 && secondsLeft > 0) {
-                statusMsg.innerText = `⚠️ ${Math.ceil(secondsLeft/60)} minutes left!`;
-            } else {
-                statusMsg.innerText = `Timer running in background`;
-            }
-        }
-    }
-    
-    // Save to localStorage
-    function saveState() {
-        if (!isLocked && !isExpired) {
-            localStorage.setItem('fixed_timer_seconds', secondsLeft);
-            localStorage.setItem('fixed_timer_minutes', totalMinutes);
-            localStorage.setItem('fixed_timer_penalty', penaltyCount);
-            localStorage.setItem('fixed_timer_saveTime', Date.now());
-            localStorage.setItem('fixed_timer_expired', 'false');
-        } else if (isExpired) {
-            localStorage.setItem('fixed_timer_expired', 'true');
-        }
-    }
-    
-    // Load saved state
-    function loadState() {
-        const savedSeconds = localStorage.getItem('fixed_timer_seconds');
-        const savedMinutes = localStorage.getItem('fixed_timer_minutes');
-        const savedPenalty = localStorage.getItem('fixed_timer_penalty');
-        const savedTime = localStorage.getItem('fixed_timer_saveTime');
-        const wasExpired = localStorage.getItem('fixed_timer_expired');
-        
-        // If timer was expired before, stay expired
-        if (wasExpired === 'true') {
-            isExpired = true;
-            secondsLeft = 0;
-            updateDisplay();
-            return false;
-        }
-        
-        if (savedMinutes && !isNaN(parseInt(savedMinutes))) {
-            totalMinutes = parseInt(savedMinutes);
-        }
-        if (savedPenalty && !isNaN(parseInt(savedPenalty))) {
-            penaltyCount = parseInt(savedPenalty);
-        }
-        
-        if (savedSeconds && savedTime && !isLocked && !isExpired) {
-            const elapsed = Math.floor((Date.now() - parseInt(savedTime)) / 1000);
-            let remaining = parseInt(savedSeconds) - elapsed;
-            if (remaining > 0) {
-                secondsLeft = remaining;
-            } else {
-                secondsLeft = 0;
+            statusMsgSpan.innerText = "⛔ TIME EXPIRED - YouTube LOCKED ⛔";
+            if (!isExpired && secondsLeft <= 0) {
                 isExpired = true;
-                updateDisplay();
-                return false;
+                localStorage.setItem('final_is_expired', 'true');
+                activateLock();
             }
-        } else if (!isExpired) {
-            secondsLeft = totalMinutes * 60;
+        } else {
+            timerDisplay.innerText = formatTime(secondsLeft);
+            if (secondsLeft <= 300) {
+                statusMsgSpan.innerText = `⚠️ ${Math.ceil(secondsLeft/60)} minutes left!`;
+            } else {
+                statusMsgSpan.innerText = `Timer running · ${Math.ceil(secondsLeft/60)} min remaining`;
+            }
         }
-        updateDisplay();
-        return true;
     }
     
-    // Add penalty
+    function saveState() {
+        if (!isLocked) {
+            localStorage.setItem('final_total_minutes', totalMinutes);
+            localStorage.setItem('final_seconds_left', secondsLeft);
+            localStorage.setItem('final_is_expired', isExpired);
+            localStorage.setItem('final_penalty_count', penaltyCount);
+            localStorage.setItem('final_saved_timestamp', Date.now());
+        }
+    }
+    
     function addPenalty(minutes, reason) {
         if (isLocked || isExpired) return;
         penaltyCount++;
@@ -329,40 +311,39 @@
         penaltyMsgDiv.style.display = "block";
         penaltyMsgDiv.innerText = `⚠️ ${reason}! +${minutes} min penalty (#${penaltyCount}) ⚠️`;
         if (navigator.vibrate) navigator.vibrate([300,200,300]);
-        setTimeout(() => { penaltyMsgDiv.style.display = "none"; }, 5000);
+        setTimeout(() => { penaltyMsgDiv.style.display = "none"; }, 4000);
     }
     
-    // Main countdown
     function startCountdown() {
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-            if (isLocked || isExpired) return;
-            if (secondsLeft <= 0) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                isExpired = true;
-                updateDisplay();
-                saveState();
-                activateLock();
-            } else {
-                secondsLeft--;
-                updateDisplay();
-                saveState();
-                if (secondsLeft === 0) {
-                    clearInterval(timerInterval);
-                    timerInterval = null;
+            if (isLocked) return;
+            if (isExpired || secondsLeft <= 0) {
+                if (!isExpired) {
                     isExpired = true;
+                    localStorage.setItem('final_is_expired', 'true');
                     updateDisplay();
-                    saveState();
                     activateLock();
                 }
+                return;
+            }
+            secondsLeft--;
+            updateDisplay();
+            saveState();
+            if (secondsLeft <= 0) {
+                isExpired = true;
+                localStorage.setItem('final_is_expired', 'true');
+                updateDisplay();
+                activateLock();
             }
         }, 1000);
     }
     
-    // Reset timer (parent only)
     function resetSession(newMinutes = null) {
-        if (newMinutes !== null && newMinutes > 0) totalMinutes = newMinutes;
+        if (newMinutes !== null && newMinutes > 0) {
+            totalMinutes = newMinutes;
+            localStorage.setItem('final_total_minutes', totalMinutes);
+        }
         secondsLeft = totalMinutes * 60;
         isExpired = false;
         isLocked = false;
@@ -371,13 +352,13 @@
         saveState();
         if (timerInterval) clearInterval(timerInterval);
         startCountdown();
-        statusMsg.innerText = `Timer running in background`;
         penaltyMsgDiv.style.display = "none";
-        resetNotice.innerText = "✅ Timer reset! New session started.";
-        setTimeout(() => { resetNotice.innerText = ""; }, 3000);
+        
+        // Remove lock if present
+        const existingLock = document.getElementById('globalLockOverlay');
+        if (existingLock) existingLock.remove();
     }
     
-    // ========== LOCK SCREEN ==========
     function activateLock() {
         if (isLocked) return;
         isLocked = true;
@@ -394,8 +375,7 @@
                 <div style="font-size: 3rem;">🔒⏰😴</div>
                 <div style="font-size: 2rem; font-weight: bold; color: #ffb347; margin: 15px 0;">TIME'S UP!</div>
                 <div style="color: white; margin: 10px 0;">YouTube is now LOCKED</div>
-                <div style="color: #ffcc88; margin: 10px 0;">Penalties given: ${penaltyCount}</div>
-                <div style="color: #ff8888; margin: 10px 0;">Press and HOLD to unlock</div>
+                <div style="color: #ffcc88; margin: 10px 0;">Penalties: ${penaltyCount}</div>
                 <button id="globalUnlockBtn" class="unlock-btn">🔓 PARENT UNLOCK (hold 3 sec)</button>
             </div>
         `;
@@ -408,10 +388,8 @@
             pressTimer = setTimeout(() => {
                 isLocked = false;
                 lockDiv.remove();
-                // Do NOT auto-reset! Just close lock, but timer stays at 0
-                // Parent must manually press Reset button
-                statusMsg.innerText = "⛔ TIME EXPIRED - Press Reset to start new session ⛔";
-                timerDisplay.innerText = "00:00:00";
+                // Timer stays at 0 - parent must press reset
+                statusMsgSpan.innerText = "⛔ TIME EXPIRED - Press NEW SESSION to start ⛔";
                 if (navigator.vibrate) navigator.vibrate(200);
             }, 3000);
         };
@@ -423,7 +401,7 @@
         unlockBtn.addEventListener('touchend', cancelHold);
     }
     
-    // ========== PARENT PIN PROTECTION ==========
+    // Parent PIN modal
     function showPinModal(onSuccess) {
         const modal = document.createElement('div');
         modal.className = 'pin-modal';
@@ -480,13 +458,14 @@
             if (newMin < 1) newMin = 1;
             if (newMin > 180) newMin = 180;
             totalMinutes = newMin;
+            localStorage.setItem('final_total_minutes', totalMinutes);
             modal.remove();
         };
         closeBtn.onclick = () => modal.remove();
     }
     
     gearBtn.onclick = () => {
-        if (isLocked) { alert("🔒 Phone is locked! Unlock first."); return; }
+        if (isLocked) { alert("🔒 Phone locked! Unlock first."); return; }
         showPinModal(() => showSettings());
     };
     
@@ -498,24 +477,44 @@
         showPinModal(() => resetSession(totalMinutes));
     };
     
-    // ========== PENALTY FOR LEAVING ==========
+    // Penalties for leaving
+    let wasHidden = false;
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden && !isLocked && !isExpired) {
-            addPenalty(5, "App switched");
-        } else if (!document.hidden && !isLocked && !isExpired) {
-            loadState();
-            if (timerInterval === null && secondsLeft > 0) startCountdown();
+        if (document.hidden) {
+            wasHidden = true;
+            saveState();
+        } else if (wasHidden && !isLocked && !isExpired) {
+            // Reload state when coming back
+            const savedSec = localStorage.getItem('final_seconds_left');
+            const savedExpired = localStorage.getItem('final_is_expired') === 'true';
+            if (savedSec !== null && !savedExpired) {
+                let newSec = parseInt(savedSec);
+                if (!isNaN(newSec) && newSec > 0 && newSec < secondsLeft) {
+                    // Time passed while away - penalty
+                    const diff = secondsLeft - newSec;
+                    if (diff > 5) {
+                        addPenalty(5, "Left the app");
+                    }
+                    secondsLeft = newSec;
+                } else if (newSec <= 0) {
+                    isExpired = true;
+                }
+            }
+            updateDisplay();
+            if (timerInterval === null && !isExpired && secondsLeft > 0) startCountdown();
+            wasHidden = false;
         }
     });
     
     window.addEventListener('pagehide', () => {
         saveState();
-        if (!isLocked && !isExpired) addPenalty(5, "Tab closed");
     });
     
     window.addEventListener('pageshow', () => {
-        loadState();
-        if (timerInterval === null && !isLocked && !isExpired && secondsLeft > 0) startCountdown();
+        if (!isLocked && !isExpired && secondsLeft > 0) {
+            if (timerInterval === null) startCountdown();
+        }
+        updateDisplay();
     });
     
     // Block back button
@@ -525,17 +524,10 @@
         history.pushState(null, null, location.href);
     });
     
-    // Disable context menu & dev tools
     document.addEventListener('contextmenu', e => e.preventDefault());
-    window.addEventListener('keydown', e => {
-        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'))) {
-            e.preventDefault();
-            addPenalty(10, "Dev tools");
-        }
-    });
     
-    // Start everything
-    loadState();
+    // Start
+    updateDisplay();
     startCountdown();
 </script>
 </body>
