@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🔒 Background Timer - Locks YouTube</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #0b2b26;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: fixed;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #1e4a4a 0%, #0e2a2a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .card {
+            text-align: center;
+            padding: 32px 24px;
+            width: 90%;
+            max-width: 450px;
+            background: rgba(255,248,225,0.95);
+            border-radius: 64px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.3);
+        }
+
+        .timer-circle {
+            background: #1e2a2a;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            margin: 0 auto 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.4), inset 0 0 0 3px #ffd966;
+        }
+
+        .time-digits {
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: monospace;
+            background: linear-gradient(135deg, #f9e7b3, #ffcf6e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .message {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2d4a3b;
+            background: #fff3cf;
+            padding: 12px 20px;
+            border-radius: 60px;
+            margin: 16px 0;
+        }
+
+        .status {
+            font-size: 1rem;
+            color: #2c5a4a;
+            background: #eef4e6;
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
+        .penalty-badge {
+            background: #ff6644;
+            color: white;
+            padding: 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 12px;
+        }
+
+        button {
+            margin-top: 20px;
+            background: #ffb347;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 12px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #a35f1a;
+            transition: 0.07s linear;
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #a35f1a;
+        }
+
+        .gear {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .lock-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000dd;
+            backdrop-filter: blur(12px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .lock-card {
+            background: #1f1a15e6;
+            padding: 2rem;
+            border-radius: 68px;
+            max-width: 340px;
+            text-align: center;
+        }
+
+        .unlock-btn {
+            background: #ff9f4a;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 60px;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .pin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pin-box {
+            background: #2c2c2c;
+            padding: 30px;
+            border-radius: 48px;
+            text-align: center;
+            width: 280px;
+            border: 1px solid gold;
+        }
+
+        .pin-input {
+            font-size: 2rem;
+            letter-spacing: 12px;
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+            background: #1a1a1a;
+            color: white;
+            border: 2px solid #ffb347;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="timer-circle">
+            <div class="time-digits" id="timerDisplay">02:00:00</div>
+        </div>
+        <div class="message">🔒 Watch YouTube normally</div>
+        <div class="status" id="statusMsg">Timer running in background</div>
+        <div id="penaltyMsg" class="penalty-badge" style="display:none;"></div>
+        <button id="resetBtn">🔄 Reset (Parent PIN)</button>
+    </div>
+</div>
+
+<div id="gearBtn" class="gear">⚙️</div>
+
+<script>
+    // ========== CONFIGURATION ==========
+    let totalMinutes = 120;           // 2 hours default
+    let secondsLeft = totalMinutes * 60;
+    let timerInterval = null;
+    let isLocked = false;
+    let penaltyCount = 0;
+    
+    // DOM elements
+    const timerDisplay = document.getElementById('timerDisplay');
+    const statusMsg = document.getElementById('statusMsg');
+    const penaltyMsgDiv = document.getElementById('penaltyMsg');
+    const resetBtn = document.getElementById('resetBtn');
+    const gearBtn = document.getElementById('gearBtn');
+    
+    // Format time HH:MM:SS
+    function formatTime(seconds) {
+        if (seconds < 0) seconds = 0;
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        if (h > 0) {
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+        return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+    
+    function updateDisplay() {
+        timerDisplay.innerText = formatTime(secondsLeft);
+        if (!isLocked) {
+            if (secondsLeft <= 300 && secondsLeft > 0) {
+                statusMsg.innerText = `⚠️ ${Math.ceil(secondsLeft/60)} minutes left!`;
+            } else {
+                statusMsg.innerText = `Timer running in background`;
+            }
+        }
+    }
+    
+    // Save to localStorage (so timer survives device sleep, tab switches, etc.)
+    function saveState() {
+        if (!isLocked) {
+            localStorage.setItem('bg_timer_seconds', secondsLeft);
+            localStorage.setItem('bg_timer_minutes', totalMinutes);
+            localStorage.setItem('bg_timer_penalty', penaltyCount);
+            localStorage.setItem('bg_timer_saveTime', Date.now());
+        }
+    }
+    
+    // Load saved state (when returning to the page)
+    function loadState() {
+        const savedSeconds = localStorage.getItem('bg_timer_seconds');
+        const savedMinutes = localStorage.getItem('bg_timer_minutes');
+        const savedPenalty = localStorage.getItem('bg_timer_penalty');
+        const savedTime = localStorage.getItem('bg_timer_saveTime');
+        
+        if (savedMinutes && !isNaN(parseInt(savedMinutes))) {
+            totalMinutes = parseInt(savedMinutes);
+        }
+        if (savedPenalty && !isNaN(parseInt(savedPenalty))) {
+            penaltyCount = parseInt(savedPenalty);
+        }
+        
+        if (savedSeconds && savedTime && !isLocked) {
+            const elapsed = Math.floor((Date.now() - parseInt(savedTime)) / 1000);
+            let remaining = parseInt(savedSeconds) - elapsed;
+            if (remaining > 0) {
+                secondsLeft = remaining;
+            } else {
+                secondsLeft = 0;
+                if (!isLocked) activateLock();
+                return false;
+            }
+        } else {
+            secondsLeft = totalMinutes * 60;
+        }
+        updateDisplay();
+        return true;
+    }
+    
+    // Add penalty (punishes attempts to bypass)
+    function addPenalty(minutes, reason) {
+        if (isLocked) return;
+        penaltyCount++;
+        secondsLeft += minutes * 60;
+        updateDisplay();
+        saveState();
+        
+        penaltyMsgDiv.style.display = "block";
+        penaltyMsgDiv.innerText = `⚠️ ${reason}! +${minutes} min penalty (#${penaltyCount}) ⚠️`;
+        if (navigator.vibrate) navigator.vibrate([300,200,300]);
+        setTimeout(() => { penaltyMsgDiv.style.display = "none"; }, 5000);
+    }
+    
+    // Main countdown (runs every second, even in background)
+    function startCountdown() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (isLocked) return;
+            if (secondsLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                if (!isLocked) activateLock();
+            } else {
+                secondsLeft--;
+                updateDisplay();
+                saveState();
+                if (secondsLeft === 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    if (!isLocked) activateLock();
+                }
+            }
+        }, 1000);
+    }
+    
+    function resetSession(newMinutes = null) {
+        if (newMinutes !== null && newMinutes > 0) totalMinutes = newMinutes;
+        secondsLeft = totalMinutes * 60;
+        penaltyCount = 0;
+        updateDisplay();
+        saveState();
+        if (timerInterval) clearInterval(timerInterval);
+        startCountdown();
+        statusMsg.innerText = `Timer running in background`;
+        penaltyMsgDiv.style.display = "none";
+    }
+    
+    // ========== LOCK SCREEN (appears over YouTube) ==========
+    function activateLock() {
+        if (isLocked) return;
+        isLocked = true;
+        if (timerInterval) clearInterval(timerInterval);
+        localStorage.removeItem('bg_timer_seconds');
+        
+        const existingLock = document.getElementById('globalLockOverlay');
+        if (existingLock) existingLock.remove();
+        
+        const lockDiv = document.createElement('div');
+        lockDiv.id = 'globalLockOverlay';
+        lockDiv.className = 'lock-overlay';
+        lockDiv.innerHTML = `
+            <div class="lock-card">
+                <div style="font-size: 3rem;">🔒⏰😴</div>
+                <div style="font-size: 2rem; font-weight: bold; color: #ffb347; margin: 15px 0;">SCREEN TIME OVER</div>
+                <div style="color: white; margin: 10px 0;">YouTube is now locked</div>
+                <div style="color: #ffcc88; margin: 10px 0;">Penalties: ${penaltyCount}</div>
+                <button id="globalUnlockBtn" class="unlock-btn">🔓 PARENT UNLOCK (hold 3 sec)</button>
+            </div>
+        `;
+        document.body.appendChild(lockDiv);
+        
+        const unlockBtn = document.getElementById('globalUnlockBtn');
+        let pressTimer = null;
+        const startHold = (e) => {
+            e.preventDefault();
+            pressTimer = setTimeout(() => {
+                isLocked = false;
+                lockDiv.remove();
+                resetSession(totalMinutes);
+                if (navigator.vibrate) navigator.vibrate(200);
+            }, 3000);
+        };
+        const cancelHold = () => { if (pressTimer) clearTimeout(pressTimer); };
+        unlockBtn.addEventListener('mousedown', startHold);
+        unlockBtn.addEventListener('mouseup', cancelHold);
+        unlockBtn.addEventListener('mouseleave', cancelHold);
+        unlockBtn.addEventListener('touchstart', startHold, {passive: false});
+        unlockBtn.addEventListener('touchend', cancelHold);
+    }
+    
+    // ========== PARENT PIN PROTECTION ==========
+    function showPinModal(onSuccess) {
+        const modal = document.createElement('div');
+        modal.className = 'pin-modal';
+        modal.innerHTML = `
+            <div class="pin-box">
+                <h3 style="color:gold;">🔐 Parent Access</h3>
+                <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="****" inputmode="numeric">
+                <button id="pinSubmitBtn" class="unlock-btn" style="margin-top:10px;">Submit</button>
+                <button id="pinCancelBtn" class="unlock-btn" style="background:#888;">Cancel</button>
+                <div id="pinErrorMsg" style="color:#ff8888; margin-top:10px;"></div>
+                <div style="color:#888; font-size:0.7rem; margin-top:12px;">PIN: 1234</div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        const pinInput = document.getElementById('pinInput');
+        const submitBtn = document.getElementById('pinSubmitBtn');
+        const cancelBtn = document.getElementById('pinCancelBtn');
+        const errorDiv = document.getElementById('pinErrorMsg');
+        pinInput.focus();
+        const verify = () => {
+            if (pinInput.value === '1234') {
+                modal.remove();
+                if (onSuccess) onSuccess();
+            } else {
+                errorDiv.innerText = '❌ Wrong PIN!';
+                pinInput.value = '';
+                pinInput.focus();
+            }
+        };
+        submitBtn.onclick = verify;
+        cancelBtn.onclick = () => modal.remove();
+        pinInput.onkeypress = (e) => { if (e.key === 'Enter') verify(); };
+    }
+    
+    function showSettings() {
+        const modal = document.createElement('div');
+        modal.className = 'pin-modal';
+        modal.innerHTML = `
+            <div class="pin-box" style="width:320px;">
+                <h3 style="color:gold;">⚙️ Settings</h3>
+                <label style="color:white;">Minutes (1-180):</label>
+                <input type="number" id="minutesInput" min="1" max="180" value="${totalMinutes}" style="width:100%; padding:10px; margin:10px 0; border-radius:20px;">
+                <button id="saveBtn" class="unlock-btn">Save</button>
+                <button id="closeBtn" class="unlock-btn" style="background:#888;">Close</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        const minutesInput = document.getElementById('minutesInput');
+        const saveBtn = document.getElementById('saveBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        saveBtn.onclick = () => {
+            let newMin = parseInt(minutesInput.value);
+            if (isNaN(newMin)) newMin = 120;
+            if (newMin < 1) newMin = 1;
+            if (newMin > 180) newMin = 180;
+            totalMinutes = newMin;
+            if (!isLocked) resetSession(totalMinutes);
+            modal.remove();
+        };
+        closeBtn.onclick = () => modal.remove();
+    }
+    
+    gearBtn.onclick = () => {
+        if (isLocked) { alert("Phone is locked! Unlock first."); return; }
+        showPinModal(() => showSettings());
+    };
+    
+    resetBtn.onclick = () => {
+        if (!isLocked) showPinModal(() => resetSession(totalMinutes));
+    };
+    
+    // ========== PENALTY FOR LEAVING ==========
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && !isLocked) {
+            addPenalty(5, "App switched");
+        } else if (!document.hidden && !isLocked) {
+            loadState();
+            if (timerInterval === null && secondsLeft > 0) startCountdown();
+        }
+    });
+    
+    window.addEventListener('pagehide', () => {
+        saveState();
+        if (!isLocked) addPenalty(5, "Tab closed");
+    });
+    
+    window.addEventListener('pageshow', () => {
+        loadState();
+        if (timerInterval === null && !isLocked && secondsLeft > 0) startCountdown();
+    });
+    
+    // Block back button
+    history.pushState(null, null, location.href);
+    window.addEventListener('popstate', () => {
+        if (!isLocked) addPenalty(5, "Back button");
+        history.pushState(null, null, location.href);
+    });
+    
+    // Disable context menu & dev tools
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    window.addEventListener('keydown', e => {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'))) {
+            e.preventDefault();
+            addPenalty(10, "Dev tools");
+        }
+    });
+    
+    // Start everything
+    loadState();
+    startCountdown();
+</script>
+</body>
+</html>
