@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Elegant Calculus Calculator</title>
+    <!-- Font & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            padding: 1.5rem;
+            /* 
+               🌟 Beautiful, phone-friendly background:
+               Uses a soft, warm gradient that looks great on all screens.
+               Includes a subtle radial glow and a gentle noise texture for depth.
+            */
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(180, 210, 255, 0.4) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 220, 200, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(200, 230, 255, 0.2) 0%, transparent 50%),
+                linear-gradient(145deg, #f5f9ff 0%, #e8edf8 100%);
+            background-attachment: fixed;
+            /* subtle animated grain overlay (optional, adds texture) */
+            position: relative;
+        }
+
+        /* 
+           Optional: a soft, animated shimmer that adds life without being distracting.
+           This is a subtle moving gradient that works beautifully on phones.
+        */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(255,255,255,0.10) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: 0;
+            animation: softShimmer 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes softShimmer {
+            0% {
+                opacity: 0.6;
+                transform: scale(1) rotate(0deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1.05) rotate(2deg);
+            }
+        }
+
+        .calculator-card {
+            max-width: 720px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px) saturate(1.2);
+            -webkit-backdrop-filter: blur(16px) saturate(1.2);
+            border-radius: 56px;
+            padding: 2.5rem 2.2rem;
+            box-shadow: 
+                0 30px 60px -20px rgba(0, 20, 40, 0.25),
+                0 12px 30px -8px rgba(0, 0, 0, 0.08),
+                inset 0 1px 2px rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #0b1a33;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            padding-bottom: 0.8rem;
+        }
+
+        h1 i {
+            color: #2d6cdf;
+            font-size: 1.9rem;
+            background: rgba(45, 108, 223, 0.08);
+            padding: 0.4rem 0.6rem;
+            border-radius: 18px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 1.2rem 1.5rem;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.02), 0 6px 12px -8px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.7);
+            margin-bottom: 1.8rem;
+        }
+
+        .input-group label {
+            font-weight: 500;
+            color: #1f3a6b;
+            font-size: 0.95rem;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-group label i {
+            color: #2d6cdf;
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        .input-group input {
+            flex: 2 1 200px;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 60px;
+            background: white;
+            font-family: 'Inter', monospace;
+            font-size: 0.95rem;
+            font-weight: 450;
+            color: #0b1a33;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02), inset 0 0 0 1px rgba(0,0,0,0.02);
+            transition: all 0.2s;
+            outline: 1px solid transparent;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .input-group input:focus {
+            outline: 1px solid #2d6cdf;
+            box-shadow: 0 4px 12px rgba(45, 108, 223, 0.08);
+            background: #ffffff;
+        }
+
+        .input-group input::placeholder {
+            color: #a0b3d0;
+            font-weight: 300;
+        }
+
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .btn {
+            font-family: 'Inter', sans-serif;
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            background: white;
+            color: #1f3a6b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02), 0 2px 4px rgba(0,0,0,0.02);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.15s ease;
+            border: 1px solid rgba(255,255,255,0.5);
+            backdrop-filter: blur(2px);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        .btn i {
+            font-size: 0.95rem;
+            opacity: 0.7;
+        }
+
+        .btn-primary {
+            background: #1f3a6b;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 18px -6px rgba(31, 58, 107, 0.25);
+        }
+
+        .btn-primary i {
+            opacity: 0.9;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2a4a82;
+            transform: scale(0.97);
+            box-shadow: 0 10px 22px -8px rgba(31, 58, 107, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.94);
+            background: #0f2a4f;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(31, 58, 107, 0.12);
+            backdrop-filter: blur(2px);
+        }
+
+        .btn-outline:hover {
+            background: rgba(45, 108, 223, 0.04);
+            border-color: #2d6cdf;
+        }
+
+        .btn-clear {
+            color: #6b7f9e;
+        }
+
+        .btn-clear:hover {
+            background: rgba(200, 70, 70, 0.04);
+            border-color: rgba(200, 70, 70, 0.2);
+            color: #b13e3e;
+        }
+
+        .result-area {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(6px);
+            border-radius: 40px;
+            padding: 1.5rem 1.8rem;
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.02);
+            margin-top: 0.2rem;
+        }
+
+        .result-line {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.3rem 1rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .result-line:last-of-type {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 500;
+            color: #38547b;
+            min-width: 90px;
+            font-size: 0.9rem;
+            letter-spacing: -0.01em;
+        }
+
+        .result-value {
+            font-family: 'Inter', monospace;
+            font-weight: 500;
+            font-size: 1.2rem;
+            color: #0b1a33;
+            word-break: break-all;
+            background: rgba(255,255,255,0.3);
+            padding: 0.2rem 0.8rem;
+            border-radius: 60px;
+            display: inline-block;
+        }
+
+        .result-value .highlight {
+            color: #2d6cdf;
+        }
+
+        .result-value .light {
+            font-weight: 300;
+            color: #5d73a0;
+        }
+
+        .empty-state {
+            color: #869bbd;
+            font-weight: 350;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.2rem 0;
+        }
+
+        .empty-state i {
+            font-size: 1.2rem;
+            opacity: 0.4;
+        }
+
+        .footer {
+            margin-top: 1.8rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem 1.5rem;
+            font-size: 0.75rem;
+            color: #8fa2c5;
+        }
+
+        .footer .copyright {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .footer .copyright i {
+            opacity: 0.5;
+            font-size: 0.8rem;
+        }
+
+        .footer .instructions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1.2rem;
+            align-items: center;
+        }
+
+        .footer .instructions span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255,255,255,0.3);
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            backdrop-filter: blur(2px);
+        }
+
+        .footer .instructions i {
+            opacity: 0.6;
+            font-size: 0.7rem;
+        }
+
+        .footer .instructions .key {
+            font-family: 'Inter', monospace;
+            font-weight: 500;
+            background: rgba(0,0,0,0.04);
+            padding: 0 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        /* 📱 Extra love for phones */
+        @media (max-width: 500px) {
+            body {
+                padding: 0.8rem;
+                align-items: flex-start;
+                padding-top: 1.5rem;
+            }
+
+            .calculator-card {
+                padding: 1.5rem 1rem;
+                border-radius: 40px;
+                backdrop-filter: blur(20px) saturate(1.3);
+                -webkit-backdrop-filter: blur(20px) saturate(1.3);
+                box-shadow: 
+                    0 20px 40px -12px rgba(0, 20, 40, 0.2),
+                    0 8px 20px -6px rgba(0, 0, 0, 0.06),
+                    inset 0 1px 2px rgba(255, 255, 255, 0.7);
+            }
+
+            h1 {
+                font-size: 1.4rem;
+                gap: 0.4rem;
+                margin-bottom: 1rem;
+            }
+
+            h1 i {
+                font-size: 1.4rem;
+                padding: 0.3rem 0.5rem;
+            }
+
+            .input-group {
+                padding: 0.8rem 1rem;
+                gap: 0.6rem;
+                border-radius: 32px;
+                margin-bottom: 1.2rem;
+            }
+
+            .input-group label {
+                font-size: 0.8rem;
+                min-width: 60px;
+            }
+
+            .input-group input {
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+                flex: 1 1 140px;
+                min-width: 120px;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.6rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .btn-group {
+                justify-content: center;
+                gap: 0.4rem;
+            }
+
+            .btn {
+                padding: 0.6rem 0.9rem;
+                font-size: 0.8rem;
+                border-radius: 40px;
+                flex: 1 1 auto;
+                min-width: 80px;
+            }
+
+            .btn i {
+                font-size: 0.8rem;
+            }
+
+            .result-area {
+                padding: 1rem 1.2rem;
+                border-radius: 32px;
+            }
+
+            .result-line {
+                padding: 0.4rem 0;
+                gap: 0.2rem 0.6rem;
+            }
+
+            .result-label {
+                font-size: 0.75rem;
+                min-width: 70px;
+            }
+
+            .result-value {
+                font-size: 0.95rem;
+                padding: 0.1rem 0.6rem;
+                word-break: break-word;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 0.6rem;
+                margin-top: 1.2rem;
+                padding-top: 0.8rem;
+                font-size: 0.7rem;
+            }
+
+            .footer .instructions {
+                justify-content: center;
+                gap: 0.4rem 0.8rem;
+            }
+
+            .footer .instructions span {
+                padding: 0.15rem 0.6rem;
+                font-size: 0.7rem;
+            }
+
+            /* softer background on phones for battery + readability */
+            body {
+                background: 
+                    radial-gradient(ellipse at 30% 30%, rgba(200, 220, 255, 0.5) 0%, transparent 60%),
+                    radial-gradient(ellipse at 70% 80%, rgba(255, 225, 210, 0.3) 0%, transparent 50%),
+                    linear-gradient(160deg, #f0f5fe 0%, #e6ecf7 100%);
+                background-attachment: fixed;
+            }
+
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle at 40% 50%, rgba(255,255,255,0.1) 0%, transparent 60%);
+                pointer-events: none;
+                z-index: 0;
+                animation: softShimmer 15s ease-in-out infinite alternate;
+            }
+        }
+
+        /* very small phones */
+        @media (max-width: 380px) {
+            .calculator-card {
+                padding: 1rem 0.8rem;
+                border-radius: 32px;
+            }
+
+            .btn {
+                font-size: 0.7rem;
+                padding: 0.5rem 0.6rem;
+                min-width: 60px;
+            }
+
+            .result-value {
+                font-size: 0.8rem;
+            }
+
+            .result-label {
+                min-width: 60px;
+                font-size: 0.7rem;
+            }
+        }
+
+        /* landscape phones */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 0.5rem;
+                align-items: center;
+            }
+            .calculator-card {
+                padding: 1rem 1.2rem;
+                border-radius: 32px;
+                max-width: 600px;
+            }
+            h1 {
+                font-size: 1.2rem;
+                margin-bottom: 0.5rem;
+                padding-bottom: 0.4rem;
+            }
+            .input-group {
+                padding: 0.5rem 0.8rem;
+                margin-bottom: 0.8rem;
+            }
+            .action-bar {
+                margin-bottom: 0.8rem;
+            }
+            .result-area {
+                padding: 0.8rem 1rem;
+            }
+            .result-line {
+                padding: 0.2rem 0;
+            }
+            .footer {
+                margin-top: 0.8rem;
+                padding-top: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-card">
+        <h1>
+            <i class="fas fa-calculator"></i> 
+            calculus · elegant
+        </h1>
+
+        <!-- Input row -->
+        <div class="input-group">
+            <label for="functionInput"><i class="fas fa-fw fa-superscript"></i> f(x) =</label>
+            <input type="text" id="functionInput" placeholder="e.g. x^2 + 3*x - 1" value="x^2 + sin(x)">
+        </div>
+
+        <!-- Action buttons -->
+        <div class="action-bar">
+            <div class="btn-group">
+                <button class="btn btn-primary" id="deriveBtn"><i class="fas fa-dragon"></i> derivative</button>
+                <button class="btn btn-primary" id="integrateBtn"><i class="fas fa-integral"></i> integral</button>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-outline" id="evalBtn"><i class="fas fa-play"></i> evaluate</button>
+                <button class="btn btn-clear" id="clearBtn"><i class="fas fa-undo-alt"></i> clear</button>
+            </div>
+        </div>
+
+        <!-- Results panel -->
+        <div class="result-area" id="resultArea">
+            <div class="result-line">
+                <span class="result-label"><i class="fas fa-arrow-right" style="opacity:0.5; margin-right:8px;"></i>function</span>
+                <span class="result-value" id="displayFunction">f(x) = x² + sin(x)</span>
+            </div>
+            <div class="result-line">
+                <span class="result-label"><i class="fas fa-arrow-right" style="opacity:0.5; margin-right:8px;"></i>derivative</span>
+                <span class="result-value" id="displayDerivative"><span class="light">—</span></span>
+            </div>
+            <div class="result-line">
+                <span class="result-label"><i class="fas fa-arrow-right" style="opacity:0.5; margin-right:8px;"></i>integral</span>
+                <span class="result-value" id="displayIntegral"><span class="light">—</span></span>
+            </div>
+            <div class="result-line" style="border-bottom: none; padding-bottom: 0.2rem;">
+                <span class="result-label"><i class="fas fa-arrow-right" style="opacity:0.5; margin-right:8px;"></i>evaluate</span>
+                <span class="result-value" id="displayEval"><span class="light">at x = ?</span></span>
+            </div>
+        </div>
+
+        <!-- Footer: Copyright + Instructions -->
+        <div class="footer">
+            <div class="copyright">
+                <i class="far fa-copyright"></i> 
+                2026 ·By Jamal Ahmed elegant calculus · MIT
+            </div>
+            <div class="instructions">
+                <span><i class="fas fa-edit"></i> type function</span>
+                <span><i class="fas fa-arrow-right"></i> press <span class="key">↵</span> to evaluate</span>
+                <span><i class="fas fa-undo-alt"></i> clear resets</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // DOM refs
+            const functionInput = document.getElementById('functionInput');
+            const displayFunction = document.getElementById('displayFunction');
+            const displayDerivative = document.getElementById('displayDerivative');
+            const displayIntegral = document.getElementById('displayIntegral');
+            const displayEval = document.getElementById('displayEval');
+
+            const deriveBtn = document.getElementById('deriveBtn');
+            const integrateBtn = document.getElementById('integrateBtn');
+            const evalBtn = document.getElementById('evalBtn');
+            const clearBtn = document.getElementById('clearBtn');
+
+            // ---------- helper: safe math parsing ----------
+            function safeEvaluate(expr, xVal) {
+                try {
+                    let sanitized = expr.replace(/\^/g, '**');
+                    const allowed = /^[\d\sx+\-*/()^.,sin cos tan log exp sqrt abs PI E]+$/i;
+                    if (!allowed.test(sanitized.replace(/\b(sin|cos|tan|log|exp|sqrt|abs|PI|E)\b/gi, ''))) {
+                        return { error: 'invalid expression' };
+                    }
+                    const fn = new Function('x', `
+                        const PI = Math.PI;
+                        const E = Math.E;
+                        const sin = Math.sin;
+                        const cos = Math.cos;
+                        const tan = Math.tan;
+                        const log = Math.log;
+                        const exp = Math.exp;
+                        const sqrt = Math.sqrt;
+                        const abs = Math.abs;
+                        return (${sanitized});
+                    `);
+                    const result = fn(xVal);
+                    if (typeof result !== 'number' || !isFinite(result)) return { error: 'invalid result' };
+                    return { value: result };
+                } catch (e) {
+                    return { error: 'syntax error' };
+                }
+            }
+
+            // ----- Symbolic derivative (naive) -----
+            function symbolicDerivative(expr) {
+                let f = expr.trim().replace(/\s/g, '');
+                if (f === 'x') return '1';
+                if (f === 'sin(x)') return 'cos(x)';
+                if (f === 'cos(x)') return '-sin(x)';
+                if (f === 'tan(x)') return 'sec(x)^2';
+                if (f === 'exp(x)') return 'exp(x)';
+                if (f === 'log(x)') return '1/x';
+                if (f === 'sqrt(x)') return '1/(2*sqrt(x))';
+                if (f === 'abs(x)') return 'sign(x)';
+                
+                const powerMatch = f.match(/^x\^([\d.]+)$/);
+                if (powerMatch) {
+                    const n = parseFloat(powerMatch[1]);
+                    if (!isNaN(n)) {
+                        if (n === 0) return '0';
+                        if (n === 1) return '1';
+                        return `${n}*x^${n-1}`;
+                    }
+                }
+                if (!isNaN(parseFloat(f)) && !isNaN(f)) return '0';
+                if (f.includes('+')) {
+                    const parts = f.split('+').map(s => s.trim());
+                    if (parts.length === 2) {
+                        const d1 = symbolicDerivative(parts[0]);
+                        const d2 = symbolicDerivative(parts[1]);
+                        if (d1 && d2) return `${d1}+${d2}`;
+                    }
+                }
+                const productMatch = f.match(/^([a-zA-Z0-9\(\)]+)\*([a-zA-Z0-9\(\)]+)$/);
+                if (productMatch) {
+                    const u = productMatch[1];
+                    const v = productMatch[2];
+                    const du = symbolicDerivative(u);
+                    const dv = symbolicDerivative(v);
+                    if (du && dv) return `(${du}*${v}+${u}*${dv})`;
+                }
+                return 'not implemented';
+            }
+
+            // ----- Numeric derivative (central difference) -----
+            function numericDerivative(expr, xVal) {
+                const h = 0.0001;
+                const f1 = safeEvaluate(expr, xVal + h);
+                const f2 = safeEvaluate(expr, xVal - h);
+                if (f1.error || f2.error) return { error: 'eval error' };
+                return { value: (f1.value - f2.value) / (2 * h) };
+            }
+
+            // ----- Numeric integral (simpson) -----
+            function numericIntegral(expr, a, b, n = 200) {
+                if (a > b) { const tmp = a; a = b; b = tmp; }
+                const h = (b - a) / n;
+                let sum = 0;
+                for (let i = 0; i <= n; i++) {
+                    const x = a + i * h;
+                    const res = safeEvaluate(expr, x);
+                    if (res.error) return { error: 'eval error' };
+                    const y = res.value;
+                    if (i === 0 || i === n) sum += y;
+                    else if (i % 2 === 0) sum += 2 * y;
+                    else sum += 4 * y;
+                }
+                return { value: (h / 3) * sum };
+            }
+
+            // ----- UI update helpers -----
+            function updateDisplay(funcStr) {
+                displayFunction.textContent = `f(x) = ${funcStr}`;
+            }
+
+            function setDerivative(text) {
+                displayDerivative.innerHTML = text;
+            }
+
+            function setIntegral(text) {
+                displayIntegral.innerHTML = text;
+            }
+
+            function setEval(text) {
+                displayEval.innerHTML = text;
+            }
+
+            function clearResults() {
+                setDerivative('<span class="light">—</span>');
+                setIntegral('<span class="light">—</span>');
+                setEval('<span class="light">at x = ?</span>');
+            }
+
+            // ----- Main actions -----
+            function onDerive() {
+                const expr = functionInput.value.trim() || 'x';
+                updateDisplay(expr);
+                let sym = symbolicDerivative(expr);
+                if (sym && sym !== 'not implemented') {
+                    setDerivative(`d/dx = ${sym}`);
+                } else {
+                    const num = numericDerivative(expr, 1);
+                    if (num.error) {
+                        setDerivative(`⚠️ ${num.error}`);
+                    } else {
+                        setDerivative(`≈ ${num.value.toFixed(6)}  (at x=1)`);
+                    }
+                }
+            }
+
+            function onIntegrate() {
+                const expr = functionInput.value.trim() || 'x';
+                updateDisplay(expr);
+                const res = numericIntegral(expr, 0, 1);
+                if (res.error) {
+                    setIntegral(`⚠️ ${res.error}`);
+                } else {
+                    setIntegral(`∫₀¹ ≈ ${res.value.toFixed(6)}`);
+                }
+            }
+
+            function onEvaluate() {
+                const expr = functionInput.value.trim() || 'x';
+                updateDisplay(expr);
+                const xVal = 1.0;
+                const res = safeEvaluate(expr, xVal);
+                if (res.error) {
+                    setEval(`⚠️ ${res.error}`);
+                } else {
+                    setEval(`f(1) = ${res.value.toFixed(6)}`);
+                }
+            }
+
+            function onClear() {
+                functionInput.value = '';
+                displayFunction.textContent = 'f(x) = …';
+                clearResults();
+            }
+
+            // ----- Event listeners -----
+            deriveBtn.addEventListener('click', onDerive);
+            integrateBtn.addEventListener('click', onIntegrate);
+            evalBtn.addEventListener('click', onEvaluate);
+            clearBtn.addEventListener('click', onClear);
+
+            // initial default display
+            updateDisplay('x² + sin(x)');
+            clearResults();
+
+            functionInput.addEventListener('input', function() {
+                const val = this.value.trim();
+                if (val) {
+                    displayFunction.textContent = `f(x) = ${val}`;
+                } else {
+                    displayFunction.textContent = 'f(x) = …';
+                }
+            });
+
+            functionInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    onEvaluate();
+                }
+            });
+
+        })();
+    </script>
+</body>
+</html>
