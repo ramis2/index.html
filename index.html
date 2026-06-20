@@ -1,199 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>IT Data-Entry Portal</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-  :root{
-    --green:#10b981;          /* emerald-500 */
-    --greenDark:#047857;      /* emerald-700 */
-    --greenLight:#d1fae5;     /* emerald-100 */
-    --textDark:#111827;
-    --textLight:#f9fafb;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Arial,sans-serif}
-  body{display:flex;flex-direction:column;min-height:100vh;background:#f3f4f6;color:var(--textDark)}
-
-  /* ---------- TOP BAR ---------- */
-  .topbar{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:.5rem 1rem;background:var(--textLight);border-bottom:1px solid #e5e7eb;
-  }
-  .topbar .logo{font-size:1.25rem;font-weight:700;color:var(--greenDark);}
-  .topbar .cmdBtn{
-    background:var(--green);color:#fff;border:none;padding:.5rem 1.25rem;
-    border-radius:.375rem;cursor:pointer;font-weight:600;
-  }
-  .topbar .cmdBtn:hover{background:var(--greenDark);}
-
-  /* ---------- TOP MENU ---------- */
-  .topMenu{
-    display:flex;align-items:center;background:var(--green);
-    color:#fff;padding:0 1rem;box-shadow:0 2px 4px rgba(0,0,0,.1);
-  }
-  .topMenu a{
-    padding:.75rem 1rem;color:#fff;text-decoration:none;font-weight:500;
-  }
-  .topMenu a:hover{background:rgba(0,0,0,.1);}
-  .hamburger{display:none;font-siz\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\e:1.5rem;cursor:pointer;color:#fff;margin-left:auto;}
-  @media(max-width:768px){.hamburger{display:block;}}
-
-  /* ---------- WRAPPER FOR SIDE + MAIN ---------- */
-  .wrapper{display:flex;flex:1;}
-
-  /* ---------- SIDE MENU ---------- */
-  .sideMenu{
-    width:220px;background:var(--greenLight);padding:1rem;
-    border-right:1px solid #e5e7eb;transition:transform .3s;
-  }
-  .sideMenu h3{margin-bottom:.5rem;color:var(--greenDark);}
-  .sideMenu ul{list-style:none;}
-  .sideMenu li{margin:.25rem 0;}
-  .sideMenu a{
-    display:block;padding:.5rem .75rem;border-radius:.375rem;
-    text-decoration:none;color:var(--textDark);
-  }
-  .sideMenu a:hover{background:var(--green);color:#fff;}
-  @media(max-width:768px){
-    .sideMenu{position:absolute;top:0;left:0;height:100%;transform:translateX(-100%);z-index:10;}
-    .sideMenu.open{transform:translateX(0);}
-  }
-
-  /* ---------- MAIN CONTENT ---------- */
-  main{flex:1;padding:2rem;}
-  h1{margin-bottom:1rem;color:var(--greenDark);}
-  .formCard{
-    max-width:480px;background:#fff;border:1px solid #e5e7eb;
-    border-radius:.5rem;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05);
-  }
-  .formCard label{display:block;margin:.75rem 0 .25rem;font-weight:600;}
-  .formCard input, .formCard select{
-    width:100%;padding:.5rem;border:1px solid #d1d5db;border-radius:.375rem;
-  }
-  .saveBtn{
-    margin-top:1.25rem;background:var(--green);color:#fff;border:none;
-    padding:.6rem 1.5rem;border-radius:.375rem;font-size:1rem;cursor:pointer;
-  }
-  .saveBtn:hover{background:var(--greenDark);}
-  #feedback{margin-top:1rem;color:var(--greenDark);font-weight:600;}
-
-  /* ---------- FOOTER ---------- */
-  footer{
-    text-align:center;padding:1rem;font-size:.875rem;
-    border-top:1px solid #e5e7eb;background:#fff;color:#6b7280;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>My Homework</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- ========== TOP BAR ========== -->
-<header class="topbar">
-  <div class="icons/home.svg">IT&nbsp;Logo</div>
-  <button class="cmdBtn" onclick="alert('Command executed')">Command</button>
-</header>
-
-<!-- ========== TOP MENU ========== -->
-<nav class="topMenu">
-  <a href="#">Home</a>
-  <a href="#">Search</a>
-  <a href="#">Data Connect</a>
-  <a href="#">Libra-Cal</a>
-  <a href="#">Save Form</a>
-  <span class="hamburger" onclick="toggleSide()">☰</span>
-</nav>
-
-<!-- ========== WRAPPER ========== -->
-<div class="wrapper">
-
-  <!-- side menu -->
-  <aside class="sideMenu" id="sideMenu">
-    <h3>Quick Links</h3>
-    <ul>
-      <li><a href="Test1.html">Dashboard</a></li>
-      <li><a href="#">Reports</a></li>
-      <li><a href="#">Settings</a></li>
-    </ul>
-  </aside>
-
-  <!-- main -->
-  <main>
-    <h1>Data Entry Form</h1>
-
-    <div class="formCard">
-      <label>Name</label>
-      <input type="text" id="inpName" placeholder="e.g. Maya Patel">
-
-      <label>E-mail</label>
-      <input type="email" id="inpEmail" placeholder="e.g. maya@example.com">
-
-      <label>Telephone</label>
-      <input type="tel" id="inpTel" placeholder="e.g. +1-555-123-4567">
-
-      <label>Date</label>
-      <select id="ddDay"></select>
-
-      <label>Month</label>
-      <select id="ddMonth"></select>
-
-      <label>Year</label>
-      <select id="ddYear"></select>
-
-      <button class="saveBtn" onclick="saveForm()">Save to Libra-Cal</button>
+    <!-- INSTALL PROMPT -->
+    <div id="install-banner" class="hidden">
+        <span>📲 Add to Home Screen for offline use</span>
+        <button id="install-btn">Install</button>
+        <button id="dismiss-install">✕</button>
     </div>
 
-    <div id="feedback"></div>
-  </main>
-</div>
+    <!-- PASSWORD LOCK (Parent Mode) -->
+    <div id="lock-screen" class="hidden">
+        <div class="lock-box">
+            <h2>🔒 Parent Mode</h2>
+            <p>Enter PIN to access settings</p>
+            <input type="password" id="parent-pin" maxlength="4" placeholder="0000">
+            <button id="unlock-btn">Unlock</button>
+            <button id="back-to-app" class="secondary">Back to App</button>
+        </div>
+    </div>
 
-<!-- ========== FOOTER ========== -->
-<footer>IT Data-Entry Portal © <span id="yr"></span></footer>
+    <!-- MAIN APP -->
+    <div id="app">
+        <header>
+            <div class="header-left">
+                <h1>📚 My Homework</h1>
+                <span id="date-display"></span>
+            </div>
+            <div class="header-right">
+                <div id="timer" title="Tap to start focus timer">⏱️ 25:00</div>
+                <button id="parent-toggle" title="Parent Settings">⚙️</button>
+            </div>
+        </header>
 
-<script>
-/* ========== LIBRA-CAL STORAGE ========== */
-window.libraCal = window.libraCal || [];   // <-- replace with real API later
+        <!-- STATS BAR -->
+        <div id="stats-bar">
+            <div class="stat">
+                <span id="completed-count">0</span>
+                <small>Done</small>
+            </div>
+            <div class="stat">
+                <span id="pending-count">0</span>
+                <small>To Do</small>
+            </div>
+            <div class="stat">
+                <span id="streak-count">🔥 0</span>
+                <small>Streak</small>
+            </div>
+            <div class="stat">
+                <span id="time-used">0h 0m</span>
+                <small>Today</small>
+            </div>
+        </div>
 
-/* ========== POPULATE DATE DROPDOWNS ========== */
-const day   = document.getElementById('ddDay');
-const month = document.getElementById('ddMonth');
-const year  = document.getElementById('ddYear');
+        <!-- SUBJECT TABS -->
+        <nav id="subjects">
+            <button class="subject-btn active" data-subject="math">🔢 Math</button>
+            <button class="subject-btn" data-subject="science">🔬 Science</button>
+            <button class="subject-btn" data-subject="english">📖 English</button>
+            <button class="subject-btn" data-subject="history">🏛️ History</button>
+            <button class="subject-btn" data-subject="other">📌 Other</button>
+        </nav>
 
-for(let d=1;d<=31;d++){let o=document.createElement('option');o.value=d;o.text=d;day.appendChild(o);}
-const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-months.forEach((m,i)=>{let o=document.createElement('option');o.value=i+1;o.text=m;month.appendChild(o);});
-const yNow=new Date().getFullYear();
-for(let y=yNow-10;y<=yNow+10;y++){let o=document.createElement('option');o.value=y;o.text=y;year.appendChild(o);}
-day.value  = new Date().getDate();
-month.value= new Date().getMonth()+1;
-year.value = yNow;
+        <!-- TASK LIST -->
+        <main id="task-list">
+            <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <p>No homework yet!</p>
+                <p class="empty-hint">Add your first task below</p>
+            </div>
+        </main>
 
-/* ========== SAVE ROUTINE ========== */
-function saveForm(){
-  const entry = {
-    name:  document.getElementById('inpName').value.trim(),
-    email: document.getElementById('inpEmail').value.trim(),
-    tel:   document.getElementById('inpTel').value.trim(),
-    date:  `${day.value.padStart(2,'0')}-${month.value.padStart(2,'0')}-${year.value}`
-  };
+        <!-- ADD TASK -->
+        <div id="add-task-bar">
+            <input type="text" id="new-task-text" placeholder="What homework do you have?">
+            <input type="date" id="new-task-due">
+            <button id="add-btn">➕</button>
+        </div>
+    </div>
 
-  /* basic validation */
-  if(!entry.name || !entry.email){ alert('Name and e-mail are required.'); return; }
+    <!-- PARENT DASHBOARD -->
+    <div id="parent-dashboard" class="hidden">
+        <header>
+            <h1>👨‍👩‍👧 Parent Dashboard</h1>
+            <button id="close-parent">✕ Close</button>
+        </header>
 
-  /* push to Libra-Cal */
-  window.libraCal.push(entry);
+        <div class="parent-section">
+            <h3>⏰ Daily Time Limit</h3>
+            <div class="setting-row">
+                <label>Limit (hours):</label>
+                <input type="number" id="time-limit" min="0.5" max="8" step="0.5" value="2">
+            </div>
+            <div class="setting-row">
+                <label>Current usage today:</label>
+                <span id="parent-time-used">0h 0m</span>
+            </div>
+        </div>
 
-  /* visual feedback */
-  document.getElementById('feedback').textContent =
-    `Saved “${entry.name}” on ${entry.date}  (total entries: ${libraCal.length})`;
-}
+        <div class="parent-section">
+            <h3>📊 This Week's Activity</h3>
+            <div id="weekly-chart"></div>
+        </div>
 
-/* ========== SMALL-SCREEN SIDE TOGGLE ========== */
-function toggleSide(){
-  document.getElementById('sideMenu').classList.toggle('open');
-}
+        <div class="parent-section">
+            <h3>✅ Completed Tasks</h3>
+            <div id="parent-task-list"></div>
+        </div>
 
-/* ========== FOOTER YEAR ========== */
-document.getElementById('yr').textContent = new Date().getFullYear();
-</script>
+        <div class="parent-section">
+            <h3>🔐 Change PIN</h3>
+            <input type="password" id="new-pin" maxlength="4" placeholder="New 4-digit PIN">
+            <button id="save-pin">Save PIN</button>
+        </div>
+
+        <div class="parent-section danger">
+            <h3>⚠️ Reset All Data</h3>
+            <button id="reset-data" class="danger-btn">Clear All Homework Data</button>
+        </div>
+    </div>
+
+    <!-- TIME LIMIT REACHED SCREEN -->
+    <div id="time-limit-screen" class="hidden">
+        <div class="limit-box">
+            <div class="limit-icon">⏰</div>
+            <h2>Daily Limit Reached!</h2>
+            <p>You've used your screen time for today.</p>
+            <p class="limit-sub">Great job on your homework! Come back tomorrow.</p>
+            <button id="override-limit" class="hidden">Parent Override</button>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION -->
+    <div id="notification" class="hidden"></div>
+
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log('SW registered'))
+                .catch(err => console.log('SW failed', err));
+        }
+    </script>
 </body>
 </html>
