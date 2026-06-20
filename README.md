@@ -74,7 +74,7 @@ The app now appears on the home screen like any other app. It opens full-screen 
 
 ### First Time: Change the PIN
 
-Default PIN is `0000`. **Change it immediately:**
+Default PIN is `0001`. **Change it immediately:**
 
 1. Open the app on the kid's phone
 2. Tap the **⚙️ gear icon** (top right)
