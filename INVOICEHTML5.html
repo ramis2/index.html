@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice · printable PDF</title>
+  <style>
+    /* === reset & base === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #e6e9ef;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .invoice {
+      max-width: 1000px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+      padding: 2rem 2.5rem;
+    }
+
+    /* === PRINT — one page === */
+    @media print {
+      body {
+        background: white;
+        padding: 0.1in;
+        display: block;
+        min-height: auto;
+      }
+      .invoice {
+        max-width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0.08in 0.12in;
+        background: white;
+      }
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      [contenteditable="true"] {
+        border: 1px solid transparent !important;
+        background: transparent !important;
+        outline: none !important;
+      }
+      .invoice { font-size: 10.5pt; }
+      .invoice-header h1 { font-size: 1.4rem; }
+      .invoice-table th, .invoice-table td {
+        padding: 0.25rem 0.4rem;
+        font-size: 9.5pt;
+      }
+      .bill-to { padding: 0.4rem 0.8rem; }
+      .invoice-footer { margin-top: 0.6rem; padding-top: 0.4rem; }
+      .totals-wrapper { margin-top: 0.2rem; padding-top: 0.3rem; }
+      .total-row { font-size: 9.5pt; padding: 0.15rem 0; }
+      .total-row.grand { font-size: 10.5pt; padding-top: 0.3rem; }
+      .invoice-meta p { font-size: 8.5pt; line-height: 1.3; }
+      .logo-placeholder {
+        width: 60px !important;
+        height: 60px !important;
+        padding: 4px !important;
+      }
+      .logo-placeholder img {
+        max-width: 100% !important;
+        max-height: 100% !important;
+      }
+    }
+
+    /* === utilities === */
+    .print-only { display: none; }
+    .flex-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; }
+
+    [contenteditable="true"] {
+      outline: none;
+      border: 1px solid transparent;
+      padding: 0.05rem 0.15rem;
+      border-radius: 3px;
+      transition: border 0.15s, background 0.15s;
+      background: transparent;
+      display: inline-block;
+      min-width: 10px;
+    }
+    [contenteditable="true"]:hover {
+      background: #f2f7ff;
+      border-color: #b6cbe5;
+    }
+    [contenteditable="true"]:focus {
+      background: #ffffff;
+      border-color: #3b7cff;
+      box-shadow: 0 0 0 3px rgba(59, 124, 255, 0.15);
+    }
+
+    /* === LOGO PLACEHOLDER — CLICKABLE === */
+    .logo-placeholder {
+      width: 80px;
+      height: 80px;
+      border: 2px dashed #c0d0e5;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8faff;
+      color: #7a92b0;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      transition: border 0.2s, background 0.2s;
+      cursor: pointer;
+      overflow: hidden;
+      padding: 6px;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .logo-placeholder:hover {
+      border-color: #3b7cff;
+      background: #f0f6ff;
+    }
+    .logo-placeholder .icon {
+      font-size: 1.6rem;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .logo-placeholder img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 6px;
+      display: block;
+    }
+    .logo-placeholder.has-logo {
+      border: 2px solid #e5edf5;
+      background: #ffffff;
+    }
+    .logo-placeholder.has-logo:hover {
+      border-color: #3b7cff;
+    }
+
+    /* === header === */
+    .invoice-header {
+      border-bottom: 2px solid #eef2f6;
+      padding-bottom: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .logo h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #0b1e33;
+    }
+    .logo span { color: #3b7cff; }
+    .invoice-meta { text-align: right; }
+    .invoice-meta .badge {
+      background: #f3f6fc;
+      padding: 0.15rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #1e3a6b;
+      display: inline-block;
+      margin-bottom: 0.25rem;
+      border: 1px solid #d0dae8;
+    }
+    .invoice-meta p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #1f2a3f;
+    }
+
+    /* === bill to / from === */
+    .bill-to {
+      background: #f8faff;
+      padding: 0.8rem 1.2rem;
+      border-radius: 12px;
+      border: 1px solid #e5edf5;
+    }
+    .bill-to strong {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #3b5d8c;
+      margin-bottom: 0.1rem;
+    }
+    .bill-to .client-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0a1c32;
+    }
+    .bill-to p {
+      margin: 0.1rem 0;
+      color: #1f2a3f;
+      line-height: 1.4;
+      font-size: 0.9rem;
+    }
+
+    .from-box {
+      flex: 1;
+      background: #fafcff;
+      border-radius: 12px;
+      padding: 0.6rem 1rem;
+      border: 1px solid #e5edf5;
+      align-self: stretch;
+      font-size: 0.85rem;
+    }
+    .from-box .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #3b5d8c;
+    }
+    .from-box .company {
+      font-weight: 600;
+      color: #0a1c32;
+      margin-top: 0.1rem;
+    }
+    .from-box .detail {
+      color: #2b4a6f;
+      margin-top: 0.2rem;
+    }
+
+    /* === TABLE — STRICTLY ALIGNED === */
+    .invoice-table-wrap {
+      overflow-x: auto;
+      margin: 1rem 0 1rem 0;
+      border-radius: 12px;
+      border: 1px solid #e9edf4;
+    }
+
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      table-layout: fixed;
+    }
+
+    .invoice-table .col-desc { width: 50%; }
+    .invoice-table .col-qty { width: 15%; }
+    .invoice-table .col-price { width: 20%; }
+    .invoice-table .col-amount { width: 15%; }
+
+    .invoice-table th {
+      background: #f2f6fd;
+      color: #14273e;
+      font-weight: 600;
+      padding: 0.6rem 0.8rem;
+      border-bottom: 2px solid #d6e0ec;
+    }
+    .invoice-table th.col-desc { text-align: left; }
+    .invoice-table th.col-qty,
+    .invoice-table th.col-price,
+    .invoice-table th.col-amount {
+      text-align: right;
+    }
+
+    .invoice-table td {
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px solid #e5eaf2;
+      color: #1f2a3f;
+      vertical-align: middle;
+    }
+    .invoice-table tr:last-child td { border-bottom: none; }
+
+    .invoice-table td.col-desc { text-align: left; }
+    .invoice-table td.col-qty,
+    .invoice-table td.col-price,
+    .invoice-table td.col-amount {
+      text-align: right !important;
+    }
+
+    .invoice-table .sub-desc {
+      font-size: 0.8rem;
+      color: #4b5b74;
+      display: block;
+      padding-left: 0.2rem;
+    }
+
+    /* === totals (auto-calc) === */
+    .totals-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      margin-top: 0.2rem;
+      padding-top: 0.6rem;
+      border-top: 2px solid #e0e7ef;
+    }
+    .totals-grid {
+      width: 260px;
+      max-width: 100%;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0;
+      font-size: 0.9rem;
+    }
+    .total-row.grand {
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-top: 2px solid #cfdae8;
+      margin-top: 0.2rem;
+      padding-top: 0.5rem;
+      color: #0b1e33;
+    }
+    .total-row .label { color: #314a6b; }
+    .total-row .value { font-weight: 500; }
+    .total-row.grand .value { font-weight: 700; }
+
+    /* === footer === */
+    .invoice-footer {
+      margin-top: 1.2rem;
+      padding-top: 0.6rem;
+      border-top: 2px solid #eef2f6;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #4b5b74;
+    }
+    .invoice-footer .terms { max-width: 60%; }
+    .invoice-footer .payment-info { text-align: right; }
+    .invoice-footer .payment-info span {
+      background: #f2f6fc;
+      padding: 0.1rem 0.6rem;
+      border-radius: 40px;
+      font-weight: 500;
+      color: #1f3a62;
+    }
+    .tip-logo-placeholder {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f4fe;
+      border-radius: 40px;
+      padding: 0.1rem 0.8rem 0.1rem 0.5rem;
+      gap: 0.3rem;
+      border: 1px dashed #a0b8d4;
+      color: #1f3a62;
+      font-weight: 500;
+      font-size: 0.7rem;
+      letter-spacing: 0.02em;
+    }
+    .tip-logo-placeholder .icon { font-size: 1rem; line-height: 1; }
+    .copyright {
+      font-size: 0.7rem;
+      color: #6b7e9b;
+      letter-spacing: 0.02em;
+    }
+
+    .print-btn {
+      background: #0b1e33;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.5rem 1.6rem;
+      border-radius: 60px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+      border: 1px solid #1f3a62;
+    }
+    .print-btn:hover { background: #1f3a62; }
+
+    @media (max-width: 650px) {
+      .invoice { padding: 1rem; }
+      .flex-row { flex-direction: column; align-items: stretch; }
+      .invoice-meta { text-align: left; margin-top: 0.3rem; }
+      .totals-wrapper { align-items: stretch; }
+      .totals-grid { width: 100%; }
+      .invoice-footer { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+      .invoice-footer .terms { max-width: 100%; }
+      .invoice-footer .payment-info { text-align: left; width: 100%; }
+      .invoice-table .col-desc { width: 40%; }
+      .invoice-table .col-qty { width: 18%; }
+      .invoice-table .col-price { width: 22%; }
+      .invoice-table .col-amount { width: 20%; }
+      .logo-placeholder {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="invoice">
+
+  <div class="print-only" style="text-align:center; margin-bottom:0.2rem; font-size:0.7rem; color:#6b7b93;">
+    INVOICE · GENERATED FROM HTML5
+  </div>
+
+  <!-- ===== LOGO PLACEHOLDER — CLICK TO UPLOAD ===== -->
+  <div class="logo-placeholder" id="logoPlaceholder" title="Click to upload your logo">
+    <span class="icon">🖼</span>
+    Click to<br>upload
+  </div>
+  <!-- hidden file input -->
+  <input type="file" id="logoInput" accept="image/*" style="display:none;">
+
+  <!-- ===== HEADER ===== -->
+  <div class="invoice-header flex-row">
+    <div class="logo">
+      <h1>
+        <span contenteditable="true" spellcheck="false">invo</span><span>.</span><span contenteditable="true" spellcheck="false">flow</span>
+      </h1>
+      <div style="font-size:0.8rem; color:#3f5779; letter-spacing:0.3px;">
+        <span contenteditable="true" spellcheck="false">professional · clean · print</span>
+      </div>
+    </div>
+    <div class="invoice-meta">
+      <span class="badge" contenteditable="true" spellcheck="false">INVOICE #INV-2026-001</span>
+      <p><strong>Issue date:</strong> <span contenteditable="true" spellcheck="false">June 27, 2026</span></p>
+      <p><strong>Due date:</strong> <span contenteditable="true" spellcheck="false">July 11, 2026</span></p>
+    </div>
+  </div>
+
+  <!-- ===== BILL TO + FROM ===== -->
+  <div class="flex-row" style="gap:1.2rem; align-items: stretch;">
+    <div class="bill-to" style="flex:2;">
+      <strong>Bill to</strong>
+      <div class="client-name" contenteditable="true" spellcheck="false">Aurora Solutions Ltd.</div>
+      <p contenteditable="true" spellcheck="false">14 Innovation Drive, Suite 200<br>San Francisco, CA 94105</p>
+      <p style="margin-top:0.2rem;"><span style="font-weight:500;">ATTN:</span> <span contenteditable="true" spellcheck="false">James Chen</span> · <span style="color:#2b4b77;" contenteditable="true" spellcheck="false">j.chen@aurora.dev</span></p>
+    </div>
+    <div class="from-box">
+      <div class="label">Invoice from</div>
+      <div class="company" contenteditable="true" spellcheck="false">invo.flow Inc.</div>
+      <div class="detail" contenteditable="true" spellcheck="false">123 Design St, NYC</div>
+      <div class="detail" contenteditable="true" spellcheck="false">hello@invo.flow · +1 (555) 000-9999</div>
+    </div>
+  </div>
+
+  <!-- ===== TABLE — FIXED ALIGNMENT ===== -->
+  <div class="invoice-table-wrap">
+    <table class="invoice-table" id="invoiceTable">
+      <thead>
+        <tr>
+          <th class="col-desc">Item / description</th>
+          <th class="col-qty">Quantity</th>
+          <th class="col-price">Unit price</th>
+          <th class="col-amount">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-desc" contenteditable="true" spellcheck="false">
+            <strong>UI/UX Design System</strong>
+            <span class="sub-desc">Component library + 40+ screens</span>
+          </td>
+          <td class="col-qty" contenteditable="true" spellcheck="false">1</td>
+          <td class="col-price" contenteditable="true" spellcheck="false">2450.00</td>
+          <td class="col-amount">$2,450.00</td>
+        </tr>
+        <tr>
+          <td class="col-desc" contenteditable="true" spellcheck="false">
+            <strong>Frontend development</strong>
+            <span class="sub-desc">Next.js · TypeScript · responsive</span>
+          </td>
+          <td class="col-qty" contenteditable="true" spellcheck="false">40</td>
+          <td class="col-price" contenteditable="true" spellcheck="false">95.00</td>
+          <td class="col-amount">$3,800.00</td>
+        </tr>
+        <tr>
+          <td class="col-desc" contenteditable="true" spellcheck="false">
+            <strong>API integration & testing</strong>
+            <span class="sub-desc">REST · GraphQL · Postman</span>
+          </td>
+          <td class="col-qty" contenteditable="true" spellcheck="false">12</td>
+          <td class="col-price" contenteditable="true" spellcheck="false">130.00</td>
+          <td class="col-amount">$1,560.00</td>
+        </tr>
+        <tr>
+          <td class="col-desc" contenteditable="true" spellcheck="false">
+            <strong>Project management & support</strong>
+            <span class="sub-desc">Sprint planning · weekly sync</span>
+          </td>
+          <td class="col-qty" contenteditable="true" spellcheck="false">1</td>
+          <td class="col-price" contenteditable="true" spellcheck="false">600.00</td>
+          <td class="col-amount">$600.00</td>
+        </tr>
+        <tr>
+          <td class="col-desc" contenteditable="true" spellcheck="false">
+            <strong>Additional service</strong>
+            <span class="sub-desc">(click to edit)</span>
+          </td>
+          <td class="col-qty" contenteditable="true" spellcheck="false">0</td>
+          <td class="col-price" contenteditable="true" spellcheck="false">0.00</td>
+          <td class="col-amount">$0.00</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== TOTALS (auto-calc) ===== -->
+  <div class="totals-wrapper">
+    <div class="totals-grid">
+      <div class="total-row">
+        <span class="label">Subtotal</span>
+        <span class="value subtotal-val">$8,410.00</span>
+      </div>
+      <div class="total-row">
+        <span class="label">Tax (8.5%)</span>
+        <span class="value tax-val">$714.85</span>
+      </div>
+      <div class="total-row">
+        <span class="label">Discount</span>
+        <span class="value discount-val" contenteditable="true" spellcheck="false">$200.00</span>
+      </div>
+      <div class="total-row grand">
+        <span class="label">Total USD</span>
+        <span class="value grand-val">$8,924.85</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NOTES ===== -->
+  <div style="display:flex; flex-wrap:wrap; justify-content:space-between; margin-top:0.8rem; gap:0.3rem; font-size:0.85rem; color:#2a3f5c; background:#f6faff; padding:0.5rem 1rem; border-radius:12px; border:1px solid #e5edf5;">
+    <div><span style="font-weight:600;">📎 Notes:</span> <span contenteditable="true" spellcheck="false">Thank you for your business. Payment is due within 14 days.</span></div>
+    <div><span style="font-weight:600;">🏦 Reference:</span> <span contenteditable="true" spellcheck="false">INV-2026-001 · Aurora</span></div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <div class="invoice-footer">
+    <div class="terms" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem;">
+      <span style="font-weight:500;">Terms & conditions</span>
+      <span style="color:#6b7e9b;">All services delivered as per agreement. Late payments may incur 1.5% monthly fee.</span>
+      <span class="copyright">© 2026 by Jamal Ahmed 0598 invo.flow · all rights reserved</span>
+    </div>
+    <div class="payment-info" style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; justify-content: flex-end;">
+      <span>💳 Pay securely</span>
+      <span class="tip-logo-placeholder" contenteditable="true" spellcheck="false">
+        <span class="icon">💡</span> TIP · placeholder
+      </span>
+    </div>
+  </div>
+
+  <!-- ===== PRINT BUTTON ===== -->
+  <div style="display: flex; justify-content: flex-end; margin-top: 1rem;" class="no-print">
+    <button class="print-btn" onclick="window.print()">
+      <span style="font-size:1.1rem;">🖨️</span> Print / PDF
+    </button>
+  </div>
+
+  <div style="margin-top: 0.3rem; text-align: right; font-size: 0.65rem; color: #8899b3;" class="no-print">
+    ✏️ Edit any text · totals update automatically · click logo to upload
+  </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+  (function() {
+    // --- LOGO UPLOAD ---
+    const logoPlaceholder = document.getElementById('logoPlaceholder');
+    const logoInput = document.getElementById('logoInput');
+
+    if (logoPlaceholder && logoInput) {
+      // Click placeholder -> open file picker
+      logoPlaceholder.addEventListener('click', function(e) {
+        // If user clicks on the image inside, it still triggers the click on the placeholder.
+        // The file input click will be triggered.
+        logoInput.click();
+      });
+
+      // When a file is selected
+      logoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            // Clear the placeholder and insert an image
+            logoPlaceholder.innerHTML = `<img src="${ev.target.result}" alt="Company Logo">`;
+            logoPlaceholder.classList.add('has-logo');
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // --- AUTO-CALCULATE TOTALS ---
+    const taxRate = 0.085;
+
+    function parseCurrency(text) {
+      if (!text) return 0;
+      const cleaned = text.replace(/[^0-9.]/g, '');
+      const val = parseFloat(cleaned);
+      return isNaN(val) ? 0 : val;
+    }
+
+    function formatCurrency(amount) {
+      return '$' + amount.toFixed(2);
+    }
+
+    function calculateTotals() {
+      const table = document.getElementById('invoiceTable');
+      if (!table) return;
+      const rows = table.querySelectorAll('tbody tr');
+      let subtotal = 0;
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 4) return;
+        const qtyEl = cells[1];
+        const priceEl = cells[2];
+        const amountEl = cells[3];
+
+        const qty = parseCurrency(qtyEl.innerText);
+        const price = parseCurrency(priceEl.innerText);
+        const rowTotal = qty * price;
+        subtotal += rowTotal;
+
+        amountEl.innerText = formatCurrency(rowTotal);
+      });
+
+      const subtotalSpan = document.querySelector('.subtotal-val');
+      if (subtotalSpan) subtotalSpan.innerText = formatCurrency(subtotal);
+
+      const tax = subtotal * taxRate;
+      const taxSpan = document.querySelector('.tax-val');
+      if (taxSpan) taxSpan.innerText = formatCurrency(tax);
+
+      const discountSpan = document.querySelector('.discount-val');
+      let discount = parseCurrency(discountSpan.innerText);
+      if (!discountSpan.innerText.startsWith('$')) {
+        discountSpan.innerText = formatCurrency(discount);
+      }
+
+      const grandTotal = subtotal + tax - discount;
+      const grandSpan = document.querySelector('.grand-val');
+      if (grandSpan) grandSpan.innerText = formatCurrency(grandTotal);
+    }
+
+    function attachEvents() {
+      const editable = document.querySelectorAll('#invoiceTable td[contenteditable="true"], .discount-val');
+      editable.forEach(el => {
+        el.removeEventListener('input', calculateTotals);
+        el.removeEventListener('blur', calculateTotals);
+        el.addEventListener('input', calculateTotals);
+        el.addEventListener('blur', calculateTotals);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      attachEvents();
+      calculateTotals();
+    });
+
+    document.addEventListener('focusout', function(e) {
+      if (e.target.closest && e.target.closest('[contenteditable="true"]')) {
+        calculateTotals();
+      }
+    });
+  })();
+</script>
+</body>
+</html>
