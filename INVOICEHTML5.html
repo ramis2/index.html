@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Invoice · printable PDF</title>
   <style>
-    /* === reset & base === */
     * {
       margin: 0;
       padding: 0;
@@ -31,7 +30,7 @@
       padding: 2rem 2.5rem;
     }
 
-    /* === PRINT — one page === */
+    /* --- PRINT STYLES --- */
     @media print {
       body {
         background: white;
@@ -46,25 +45,51 @@
         padding: 0.08in 0.12in;
         background: white;
       }
-      .no-print { display: none !important; }
-      .print-only { display: block !important; }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
       [contenteditable="true"] {
         border: 1px solid transparent !important;
         background: transparent !important;
         outline: none !important;
       }
-      .invoice { font-size: 10.5pt; }
-      .invoice-header h1 { font-size: 1.4rem; }
-      .invoice-table th, .invoice-table td {
+      .invoice {
+        font-size: 10.5pt;
+      }
+      .invoice-header h1 {
+        font-size: 1.4rem;
+      }
+      .invoice-table th,
+      .invoice-table td {
         padding: 0.25rem 0.4rem;
         font-size: 9.5pt;
       }
-      .bill-to { padding: 0.4rem 0.8rem; }
-      .invoice-footer { margin-top: 0.6rem; padding-top: 0.4rem; }
-      .totals-wrapper { margin-top: 0.2rem; padding-top: 0.3rem; }
-      .total-row { font-size: 9.5pt; padding: 0.15rem 0; }
-      .total-row.grand { font-size: 10.5pt; padding-top: 0.3rem; }
-      .invoice-meta p { font-size: 8.5pt; line-height: 1.3; }
+      .bill-to {
+        padding: 0.4rem 0.8rem;
+      }
+      .invoice-footer {
+        margin-top: 0.6rem;
+        padding-top: 0.4rem;
+      }
+      .totals-wrapper {
+        margin-top: 0.2rem;
+        padding-top: 0.3rem;
+      }
+      .total-row {
+        font-size: 9.5pt;
+        padding: 0.15rem 0;
+      }
+      .total-row.grand {
+        font-size: 10.5pt;
+        padding-top: 0.3rem;
+      }
+      .invoice-meta p {
+        font-size: 8.5pt;
+        line-height: 1.3;
+      }
       .logo-placeholder {
         width: 60px !important;
         height: 60px !important;
@@ -74,11 +99,25 @@
         max-width: 100% !important;
         max-height: 100% !important;
       }
+      .extra-note-row td {
+        padding: 0.1rem 0.4rem !important;
+        font-size: 8pt !important;
+      }
+      .add-note-btn {
+        display: none !important;
+      }
     }
 
-    /* === utilities === */
-    .print-only { display: none; }
-    .flex-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; }
+    /* --- utilities --- */
+    .print-only {
+      display: none;
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
 
     [contenteditable="true"] {
       outline: none;
@@ -100,7 +139,7 @@
       box-shadow: 0 0 0 3px rgba(59, 124, 255, 0.15);
     }
 
-    /* === LOGO PLACEHOLDER — CLICKABLE === */
+    /* --- LOGO --- */
     .logo-placeholder {
       width: 80px;
       height: 80px;
@@ -147,7 +186,7 @@
       border-color: #3b7cff;
     }
 
-    /* === header === */
+    /* --- HEADER --- */
     .invoice-header {
       border-bottom: 2px solid #eef2f6;
       padding-bottom: 0.6rem;
@@ -159,8 +198,12 @@
       letter-spacing: -0.02em;
       color: #0b1e33;
     }
-    .logo span { color: #3b7cff; }
-    .invoice-meta { text-align: right; }
+    .logo span {
+      color: #3b7cff;
+    }
+    .invoice-meta {
+      text-align: right;
+    }
     .invoice-meta .badge {
       background: #f3f6fc;
       padding: 0.15rem 1rem;
@@ -178,7 +221,7 @@
       color: #1f2a3f;
     }
 
-    /* === bill to / from === */
+    /* --- BILL TO / FROM --- */
     .bill-to {
       background: #f8faff;
       padding: 0.8rem 1.2rem;
@@ -230,7 +273,7 @@
       margin-top: 0.2rem;
     }
 
-    /* === TABLE — STRICTLY ALIGNED === */
+    /* --- TABLE --- */
     .invoice-table-wrap {
       overflow-x: auto;
       margin: 1rem 0 1rem 0;
@@ -245,10 +288,18 @@
       table-layout: fixed;
     }
 
-    .invoice-table .col-desc { width: 50%; }
-    .invoice-table .col-qty { width: 15%; }
-    .invoice-table .col-price { width: 20%; }
-    .invoice-table .col-amount { width: 15%; }
+    .invoice-table .col-desc {
+      width: 50%;
+    }
+    .invoice-table .col-qty {
+      width: 15%;
+    }
+    .invoice-table .col-price {
+      width: 20%;
+    }
+    .invoice-table .col-amount {
+      width: 15%;
+    }
 
     .invoice-table th {
       background: #f2f6fd;
@@ -257,36 +308,93 @@
       padding: 0.6rem 0.8rem;
       border-bottom: 2px solid #d6e0ec;
     }
-    .invoice-table th.col-desc { text-align: left; }
+    .invoice-table th.col-desc {
+      text-align: left;
+    }
     .invoice-table th.col-qty,
     .invoice-table th.col-price,
     .invoice-table th.col-amount {
-      text-align: right;
+      text-align: right !important;
+      padding-right: 1.8rem !important;
     }
 
     .invoice-table td {
       padding: 0.6rem 0.8rem;
       border-bottom: 1px solid #e5eaf2;
-      color: #1f2a3f;
       vertical-align: middle;
     }
-    .invoice-table tr:last-child td { border-bottom: none; }
+    .invoice-table tr:last-child td {
+      border-bottom: none;
+    }
 
-    .invoice-table td.col-desc { text-align: left; }
+    .invoice-table td.col-desc {
+      text-align: left;
+      padding-left: 0.8rem;
+      vertical-align: middle;
+    }
     .invoice-table td.col-qty,
     .invoice-table td.col-price,
     .invoice-table td.col-amount {
       text-align: right !important;
+      padding-right: 1.8rem !important;
+      padding-left: 0.2rem !important;
+      vertical-align: middle;
     }
 
-    .invoice-table .sub-desc {
+    /* --- one-line description + "add note" --- */
+    .item-title {
+      font-weight: 600;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+    .add-note-btn {
+      background: none;
+      border: none;
+      color: #3b7cff;
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 0.1rem 0.4rem;
+      border-radius: 12px;
+      transition: background 0.15s;
+      font-weight: 500;
+    }
+    .add-note-btn:hover {
+      background: #eef4ff;
+    }
+    .extra-note-row td {
+      padding: 0.2rem 0.8rem 0.6rem 0.8rem !important;
+      border-bottom: 1px solid #e5eaf2;
+      background: #fafcff;
+    }
+    .extra-note-row .note-content {
       font-size: 0.8rem;
-      color: #4b5b74;
+      color: #3f5a7a;
+      background: #f2f7ff;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      min-height: 1.6rem;
+      border: 1px dashed #c0d0e5;
+      width: 100%;
       display: block;
-      padding-left: 0.2rem;
+    }
+    .extra-note-row .note-content:empty::before {
+      content: "Click to add extra details…";
+      color: #9aafc9;
+      font-style: italic;
+    }
+    .extra-note-row .remove-note-btn {
+      background: none;
+      border: none;
+      color: #b0c4dd;
+      font-size: 0.7rem;
+      cursor: pointer;
+      margin-left: 0.4rem;
+    }
+    .extra-note-row .remove-note-btn:hover {
+      color: #d14c4c;
     }
 
-    /* === totals (auto-calc) === */
+    /* --- totals --- */
     .totals-wrapper {
       display: flex;
       flex-direction: column;
@@ -313,11 +421,17 @@
       padding-top: 0.5rem;
       color: #0b1e33;
     }
-    .total-row .label { color: #314a6b; }
-    .total-row .value { font-weight: 500; }
-    .total-row.grand .value { font-weight: 700; }
+    .total-row .label {
+      color: #314a6b;
+    }
+    .total-row .value {
+      font-weight: 500;
+    }
+    .total-row.grand .value {
+      font-weight: 700;
+    }
 
-    /* === footer === */
+    /* --- footer --- */
     .invoice-footer {
       margin-top: 1.2rem;
       padding-top: 0.6rem;
@@ -329,8 +443,12 @@
       font-size: 0.8rem;
       color: #4b5b74;
     }
-    .invoice-footer .terms { max-width: 60%; }
-    .invoice-footer .payment-info { text-align: right; }
+    .invoice-footer .terms {
+      max-width: 60%;
+    }
+    .invoice-footer .payment-info {
+      text-align: right;
+    }
     .invoice-footer .payment-info span {
       background: #f2f6fc;
       padding: 0.1rem 0.6rem;
@@ -352,7 +470,10 @@
       font-size: 0.7rem;
       letter-spacing: 0.02em;
     }
-    .tip-logo-placeholder .icon { font-size: 1rem; line-height: 1; }
+    .tip-logo-placeholder .icon {
+      font-size: 1rem;
+      line-height: 1;
+    }
     .copyright {
       font-size: 0.7rem;
       color: #6b7e9b;
@@ -374,21 +495,61 @@
       transition: background 0.2s;
       border: 1px solid #1f3a62;
     }
-    .print-btn:hover { background: #1f3a62; }
+    .print-btn:hover {
+      background: #1f3a62;
+    }
 
+    /* --- responsive --- */
     @media (max-width: 650px) {
-      .invoice { padding: 1rem; }
-      .flex-row { flex-direction: column; align-items: stretch; }
-      .invoice-meta { text-align: left; margin-top: 0.3rem; }
-      .totals-wrapper { align-items: stretch; }
-      .totals-grid { width: 100%; }
-      .invoice-footer { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
-      .invoice-footer .terms { max-width: 100%; }
-      .invoice-footer .payment-info { text-align: left; width: 100%; }
-      .invoice-table .col-desc { width: 40%; }
-      .invoice-table .col-qty { width: 18%; }
-      .invoice-table .col-price { width: 22%; }
-      .invoice-table .col-amount { width: 20%; }
+      .invoice {
+        padding: 1rem;
+      }
+      .flex-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .invoice-meta {
+        text-align: left;
+        margin-top: 0.3rem;
+      }
+      .totals-wrapper {
+        align-items: stretch;
+      }
+      .totals-grid {
+        width: 100%;
+      }
+      .invoice-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+      }
+      .invoice-footer .terms {
+        max-width: 100%;
+      }
+      .invoice-footer .payment-info {
+        text-align: left;
+        width: 100%;
+      }
+      .invoice-table .col-desc {
+        width: 40%;
+      }
+      .invoice-table .col-qty {
+        width: 18%;
+      }
+      .invoice-table .col-price {
+        width: 22%;
+      }
+      .invoice-table .col-amount {
+        width: 20%;
+      }
+      .invoice-table th.col-qty,
+      .invoice-table th.col-price,
+      .invoice-table th.col-amount,
+      .invoice-table td.col-qty,
+      .invoice-table td.col-price,
+      .invoice-table td.col-amount {
+        padding-right: 0.8rem !important;
+      }
       .logo-placeholder {
         width: 60px;
         height: 60px;
@@ -397,273 +558,369 @@
   </style>
 </head>
 <body>
-<div class="invoice">
+  <div class="invoice">
 
-  <div class="print-only" style="text-align:center; margin-bottom:0.2rem; font-size:0.7rem; color:#6b7b93;">
-    INVOICE · GENERATED FROM HTML5
-  </div>
+    <div class="print-only" style="text-align:center; margin-bottom:0.2rem; font-size:0.7rem; color:#6b7b93;">
+      INVOICE · GENERATED FROM HTML5
+    </div>
 
-  <!-- ===== LOGO PLACEHOLDER — CLICK TO UPLOAD ===== -->
-  <div class="logo-placeholder" id="logoPlaceholder" title="Click to upload your logo">
-    <span class="icon">🖼</span>
-    Click to<br>upload
-  </div>
-  <!-- hidden file input -->
-  <input type="file" id="logoInput" accept="image/*" style="display:none;">
+    <!-- LOGO -->
+    <div class="logo-placeholder" id="logoPlaceholder" title="Click to upload your logo">
+      <span class="icon">🖼</span>
+      Click to<br>upload
+    </div>
+    <input type="file" id="logoInput" accept="image/*" style="display:none;">
 
-  <!-- ===== HEADER ===== -->
-  <div class="invoice-header flex-row">
-    <div class="logo">
-      <h1>
-        <span contenteditable="true" spellcheck="false">invo</span><span>.</span><span contenteditable="true" spellcheck="false">flow</span>
-      </h1>
-      <div style="font-size:0.8rem; color:#3f5779; letter-spacing:0.3px;">
-        <span contenteditable="true" spellcheck="false">professional · clean · print</span>
+    <!-- HEADER -->
+    <div class="invoice-header flex-row">
+      <div class="logo">
+        <h1>
+          <span contenteditable="true" spellcheck="false">invo</span><span>.</span><span contenteditable="true" spellcheck="false">flow</span>
+        </h1>
+        <div style="font-size:0.8rem; color:#3f5779; letter-spacing:0.3px;">
+          <span contenteditable="true" spellcheck="false">professional · clean · print</span>
+        </div>
+      </div>
+      <div class="invoice-meta">
+        <span class="badge" contenteditable="true" spellcheck="false">INVOICE #INV-2026-001</span>
+        <p><strong>Issue date:</strong> <span contenteditable="true" spellcheck="false">June 27, 2026</span></p>
+        <p><strong>Due date:</strong> <span contenteditable="true" spellcheck="false">July 11, 2026</span></p>
       </div>
     </div>
-    <div class="invoice-meta">
-      <span class="badge" contenteditable="true" spellcheck="false">INVOICE #INV-2026-001</span>
-      <p><strong>Issue date:</strong> <span contenteditable="true" spellcheck="false">June 27, 2026</span></p>
-      <p><strong>Due date:</strong> <span contenteditable="true" spellcheck="false">July 11, 2026</span></p>
-    </div>
-  </div>
 
-  <!-- ===== BILL TO + FROM ===== -->
-  <div class="flex-row" style="gap:1.2rem; align-items: stretch;">
-    <div class="bill-to" style="flex:2;">
-      <strong>Bill to</strong>
-      <div class="client-name" contenteditable="true" spellcheck="false">Aurora Solutions Ltd.</div>
-      <p contenteditable="true" spellcheck="false">14 Innovation Drive, Suite 200<br>San Francisco, CA 94105</p>
-      <p style="margin-top:0.2rem;"><span style="font-weight:500;">ATTN:</span> <span contenteditable="true" spellcheck="false">James Chen</span> · <span style="color:#2b4b77;" contenteditable="true" spellcheck="false">j.chen@aurora.dev</span></p>
-    </div>
-    <div class="from-box">
-      <div class="label">Invoice from</div>
-      <div class="company" contenteditable="true" spellcheck="false">invo.flow Inc.</div>
-      <div class="detail" contenteditable="true" spellcheck="false">123 Design St, NYC</div>
-      <div class="detail" contenteditable="true" spellcheck="false">hello@invo.flow · +1 (555) 000-9999</div>
-    </div>
-  </div>
-
-  <!-- ===== TABLE — FIXED ALIGNMENT ===== -->
-  <div class="invoice-table-wrap">
-    <table class="invoice-table" id="invoiceTable">
-      <thead>
-        <tr>
-          <th class="col-desc">Item / description</th>
-          <th class="col-qty">Quantity</th>
-          <th class="col-price">Unit price</th>
-          <th class="col-amount">Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="col-desc" contenteditable="true" spellcheck="false">
-            <strong>UI/UX Design System</strong>
-            <span class="sub-desc">Component library + 40+ screens</span>
-          </td>
-          <td class="col-qty" contenteditable="true" spellcheck="false">1</td>
-          <td class="col-price" contenteditable="true" spellcheck="false">2450.00</td>
-          <td class="col-amount">$2,450.00</td>
-        </tr>
-        <tr>
-          <td class="col-desc" contenteditable="true" spellcheck="false">
-            <strong>Frontend development</strong>
-            <span class="sub-desc">Next.js · TypeScript · responsive</span>
-          </td>
-          <td class="col-qty" contenteditable="true" spellcheck="false">40</td>
-          <td class="col-price" contenteditable="true" spellcheck="false">95.00</td>
-          <td class="col-amount">$3,800.00</td>
-        </tr>
-        <tr>
-          <td class="col-desc" contenteditable="true" spellcheck="false">
-            <strong>API integration & testing</strong>
-            <span class="sub-desc">REST · GraphQL · Postman</span>
-          </td>
-          <td class="col-qty" contenteditable="true" spellcheck="false">12</td>
-          <td class="col-price" contenteditable="true" spellcheck="false">130.00</td>
-          <td class="col-amount">$1,560.00</td>
-        </tr>
-        <tr>
-          <td class="col-desc" contenteditable="true" spellcheck="false">
-            <strong>Project management & support</strong>
-            <span class="sub-desc">Sprint planning · weekly sync</span>
-          </td>
-          <td class="col-qty" contenteditable="true" spellcheck="false">1</td>
-          <td class="col-price" contenteditable="true" spellcheck="false">600.00</td>
-          <td class="col-amount">$600.00</td>
-        </tr>
-        <tr>
-          <td class="col-desc" contenteditable="true" spellcheck="false">
-            <strong>Additional service</strong>
-            <span class="sub-desc">(click to edit)</span>
-          </td>
-          <td class="col-qty" contenteditable="true" spellcheck="false">0</td>
-          <td class="col-price" contenteditable="true" spellcheck="false">0.00</td>
-          <td class="col-amount">$0.00</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ===== TOTALS (auto-calc) ===== -->
-  <div class="totals-wrapper">
-    <div class="totals-grid">
-      <div class="total-row">
-        <span class="label">Subtotal</span>
-        <span class="value subtotal-val">$8,410.00</span>
+    <!-- BILL TO + FROM -->
+    <div class="flex-row" style="gap:1.2rem; align-items: stretch;">
+      <div class="bill-to" style="flex:2;">
+        <strong>Bill to</strong>
+        <div class="client-name" contenteditable="true" spellcheck="false">Aurora Solutions Ltd.</div>
+        <p contenteditable="true" spellcheck="false">14 Innovation Drive, Suite 200<br>San Francisco, CA 94105</p>
+        <p style="margin-top:0.2rem;"><span style="font-weight:500;">ATTN:</span> <span contenteditable="true" spellcheck="false">James Chen</span> · <span style="color:#2b4b77;" contenteditable="true" spellcheck="false">j.chen@aurora.dev</span></p>
       </div>
-      <div class="total-row">
-        <span class="label">Tax (8.5%)</span>
-        <span class="value tax-val">$714.85</span>
-      </div>
-      <div class="total-row">
-        <span class="label">Discount</span>
-        <span class="value discount-val" contenteditable="true" spellcheck="false">$200.00</span>
-      </div>
-      <div class="total-row grand">
-        <span class="label">Total USD</span>
-        <span class="value grand-val">$8,924.85</span>
+      <div class="from-box">
+        <div class="label">Invoice from</div>
+        <div class="company" contenteditable="true" spellcheck="false">invo.flow Inc.</div>
+        <div class="detail" contenteditable="true" spellcheck="false">123 Design St, NYC</div>
+        <div class="detail" contenteditable="true" spellcheck="false">hello@invo.flow · +1 (555) 000-9999</div>
       </div>
     </div>
-  </div>
 
-  <!-- ===== NOTES ===== -->
-  <div style="display:flex; flex-wrap:wrap; justify-content:space-between; margin-top:0.8rem; gap:0.3rem; font-size:0.85rem; color:#2a3f5c; background:#f6faff; padding:0.5rem 1rem; border-radius:12px; border:1px solid #e5edf5;">
-    <div><span style="font-weight:600;">📎 Notes:</span> <span contenteditable="true" spellcheck="false">Thank you for your business. Payment is due within 14 days.</span></div>
-    <div><span style="font-weight:600;">🏦 Reference:</span> <span contenteditable="true" spellcheck="false">INV-2026-001 · Aurora</span></div>
-  </div>
-
-  <!-- ===== FOOTER ===== -->
-  <div class="invoice-footer">
-    <div class="terms" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem;">
-      <span style="font-weight:500;">Terms & conditions</span>
-      <span style="color:#6b7e9b;">All services delivered as per agreement. Late payments may incur 1.5% monthly fee.</span>
-      <span class="copyright">© 2026 by Jamal Ahmed 0598 invo.flow · all rights reserved</span>
+    <!-- TABLE -->
+    <div class="invoice-table-wrap">
+      <table class="invoice-table" id="invoiceTable">
+        <thead>
+          <tr>
+            <th class="col-desc">Item / description</th>
+            <th class="col-qty">Quantity</th>
+            <th class="col-price">Unit price</th>
+            <th class="col-amount">Amount</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- rows will be injected by JavaScript to keep consistency -->
+        </tbody>
+      </table>
     </div>
-    <div class="payment-info" style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; justify-content: flex-end;">
-      <span>💳 Pay securely</span>
-      <span class="tip-logo-placeholder" contenteditable="true" spellcheck="false">
-        <span class="icon">💡</span> TIP · placeholder
-      </span>
+
+    <!-- TOTALS -->
+    <div class="totals-wrapper">
+      <div class="totals-grid">
+        <div class="total-row">
+          <span class="label">Subtotal</span>
+          <span class="value subtotal-val">$1,355.00</span>
+        </div>
+        <div class="total-row">
+          <span class="label">Tax (8.5%)</span>
+          <span class="value tax-val">$115.18</span>
+        </div>
+        <div class="total-row">
+          <span class="label">Discount</span>
+          <span class="value discount-val" contenteditable="true" spellcheck="false">$200.00</span>
+        </div>
+        <div class="total-row grand">
+          <span class="label">Total USD</span>
+          <span class="value grand-val">$1,270.18</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; margin-top:0.8rem; gap:0.3rem; font-size:0.85rem; color:#2a3f5c; background:#f6faff; padding:0.5rem 1rem; border-radius:12px; border:1px solid #e5edf5;">
+      <div><span style="font-weight:600;">📎 Notes:</span> <span contenteditable="true" spellcheck="false">Thank you for your business. Payment is due within 14 days.</span></div>
+      <div><span style="font-weight:600;">🏦 Reference:</span> <span contenteditable="true" spellcheck="false">INV-2026-001 · Aurora</span></div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="invoice-footer">
+      <div class="terms" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem;">
+        <span style="font-weight:500;">Terms & conditions</span>
+        <span style="color:#6b7e9b;">All services delivered as per agreement. Late payments may incur 1.5% monthly fee.</span>
+        <span class="copyright">© 2026 Jamal Ahmed 0598 invo.flow · all rights reserved</span>
+      </div>
+      <div class="payment-info" style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; justify-content: flex-end;">
+        <span>💳 Pay securely</span>
+        <span class="tip-logo-placeholder" contenteditable="true" spellcheck="false">
+          <span class="icon">💡</span> TIP · placeholder
+        </span>
+      </div>
+    </div>
+
+    <!-- PRINT BUTTON -->
+    <div style="display: flex; justify-content: flex-end; margin-top: 1rem;" class="no-print">
+      <button class="print-btn" onclick="window.print()">
+        <span style="font-size:1.1rem;">🖨️</span> Print / PDF
+      </button>
+    </div>
+
+    <div style="margin-top: 0.3rem; text-align: right; font-size: 0.65rem; color: #8899b3;" class="no-print">
+      ✏️ Click any text to edit · click "➕ Add note" for extra details · totals auto‑update
     </div>
   </div>
 
-  <!-- ===== PRINT BUTTON ===== -->
-  <div style="display: flex; justify-content: flex-end; margin-top: 1rem;" class="no-print">
-    <button class="print-btn" onclick="window.print()">
-      <span style="font-size:1.1rem;">🖨️</span> Print / PDF
-    </button>
-  </div>
-
-  <div style="margin-top: 0.3rem; text-align: right; font-size: 0.65rem; color: #8899b3;" class="no-print">
-    ✏️ Edit any text · totals update automatically · click logo to upload
-  </div>
-</div>
-
-<!-- ===== SCRIPTS ===== -->
-<script>
-  (function() {
-    // --- LOGO UPLOAD ---
-    const logoPlaceholder = document.getElementById('logoPlaceholder');
-    const logoInput = document.getElementById('logoInput');
-
-    if (logoPlaceholder && logoInput) {
-      // Click placeholder -> open file picker
-      logoPlaceholder.addEventListener('click', function(e) {
-        // If user clicks on the image inside, it still triggers the click on the placeholder.
-        // The file input click will be triggered.
-        logoInput.click();
-      });
-
-      // When a file is selected
-      logoInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(ev) {
-            // Clear the placeholder and insert an image
-            logoPlaceholder.innerHTML = `<img src="${ev.target.result}" alt="Company Logo">`;
-            logoPlaceholder.classList.add('has-logo');
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-    }
-
-    // --- AUTO-CALCULATE TOTALS ---
-    const taxRate = 0.085;
-
-    function parseCurrency(text) {
-      if (!text) return 0;
-      const cleaned = text.replace(/[^0-9.]/g, '');
-      const val = parseFloat(cleaned);
-      return isNaN(val) ? 0 : val;
-    }
-
-    function formatCurrency(amount) {
-      return '$' + amount.toFixed(2);
-    }
-
-    function calculateTotals() {
-      const table = document.getElementById('invoiceTable');
-      if (!table) return;
-      const rows = table.querySelectorAll('tbody tr');
-      let subtotal = 0;
-
-      rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length < 4) return;
-        const qtyEl = cells[1];
-        const priceEl = cells[2];
-        const amountEl = cells[3];
-
-        const qty = parseCurrency(qtyEl.innerText);
-        const price = parseCurrency(priceEl.innerText);
-        const rowTotal = qty * price;
-        subtotal += rowTotal;
-
-        amountEl.innerText = formatCurrency(rowTotal);
-      });
-
-      const subtotalSpan = document.querySelector('.subtotal-val');
-      if (subtotalSpan) subtotalSpan.innerText = formatCurrency(subtotal);
-
-      const tax = subtotal * taxRate;
-      const taxSpan = document.querySelector('.tax-val');
-      if (taxSpan) taxSpan.innerText = formatCurrency(tax);
-
-      const discountSpan = document.querySelector('.discount-val');
-      let discount = parseCurrency(discountSpan.innerText);
-      if (!discountSpan.innerText.startsWith('$')) {
-        discountSpan.innerText = formatCurrency(discount);
+  <script>
+    (function() {
+      // ----- LOGO UPLOAD -----
+      const logoPlaceholder = document.getElementById('logoPlaceholder');
+      const logoInput = document.getElementById('logoInput');
+      if (logoPlaceholder && logoInput) {
+        logoPlaceholder.addEventListener('click', function(e) {
+          logoInput.click();
+        });
+        logoInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+              logoPlaceholder.innerHTML = '<img src="' + ev.target.result + '" alt="Company Logo">';
+              logoPlaceholder.classList.add('has-logo');
+            };
+            reader.readAsDataURL(file);
+          }
+        });
       }
 
-      const grandTotal = subtotal + tax - discount;
-      const grandSpan = document.querySelector('.grand-val');
-      if (grandSpan) grandSpan.innerText = formatCurrency(grandTotal);
-    }
+      // ----- INITIAL DATA -----
+      const items = [
+        { title: 'UI/UX Design System', qty: 1, price: 245.00, note: 'Component library + 40+ screens' },
+        { title: 'Frontend development', qty: 4, price: 95.00, note: 'Next.js · TypeScript · responsive' },
+        { title: 'API integration & testing', qty: 1, price: 130.00, note: 'REST · GraphQL · Postman' },
+        { title: 'Project management & support', qty: 1, price: 600.00, note: 'Sprint planning · weekly sync' },
+        { title: 'Additional service', qty: 0, price: 0.00, note: '(click to edit)' }
+      ];
 
-    function attachEvents() {
-      const editable = document.querySelectorAll('#invoiceTable td[contenteditable="true"], .discount-val');
-      editable.forEach(el => {
-        el.removeEventListener('input', calculateTotals);
-        el.removeEventListener('blur', calculateTotals);
-        el.addEventListener('input', calculateTotals);
-        el.addEventListener('blur', calculateTotals);
-      });
-    }
+      const tableBody = document.getElementById('tableBody');
 
-    document.addEventListener('DOMContentLoaded', function() {
-      attachEvents();
-      calculateTotals();
-    });
+      // ----- HELPER: create a row with note -----
+      function createItemRow(item, index) {
+        const tr = document.createElement('tr');
+        tr.dataset.index = index;
 
-    document.addEventListener('focusout', function(e) {
-      if (e.target.closest && e.target.closest('[contenteditable="true"]')) {
+        // Description cell
+        const tdDesc = document.createElement('td');
+        tdDesc.className = 'col-desc';
+        tdDesc.style.verticalAlign = 'middle';
+
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'item-title';
+        titleSpan.contentEditable = 'true';
+        titleSpan.spellcheck = 'false';
+        titleSpan.textContent = item.title;
+
+        const addBtn = document.createElement('button');
+        addBtn.className = 'add-note-btn no-print';
+        addBtn.textContent = '➕ Add note';
+        addBtn.type = 'button';
+        addBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toggleNoteRow(tr, index);
+        });
+
+        tdDesc.appendChild(titleSpan);
+        tdDesc.appendChild(addBtn);
+
+        // Quantity
+        const tdQty = document.createElement('td');
+        tdQty.className = 'col-qty';
+        tdQty.contentEditable = 'true';
+        tdQty.spellcheck = 'false';
+        tdQty.textContent = item.qty;
+
+        // Unit price
+        const tdPrice = document.createElement('td');
+        tdPrice.className = 'col-price';
+        tdPrice.contentEditable = 'true';
+        tdPrice.spellcheck = 'false';
+        tdPrice.textContent = item.price.toFixed(2);
+
+        // Amount (will be auto-calc)
+        const tdAmount = document.createElement('td');
+        tdAmount.className = 'col-amount';
+        tdAmount.textContent = '$' + (item.qty * item.price).toFixed(2);
+
+        tr.appendChild(tdDesc);
+        tr.appendChild(tdQty);
+        tr.appendChild(tdPrice);
+        tr.appendChild(tdAmount);
+
+        // Store reference to note content
+        tr._noteText = item.note || '';
+        tr._noteRow = null; // will hold the extra row if added
+
+        // If there is a note, automatically show it
+        if (item.note && item.note.trim() !== '') {
+          // we'll add the note row after insertion
+          setTimeout(() => {
+            toggleNoteRow(tr, index, true);
+          }, 0);
+        }
+
+        return tr;
+      }
+
+      // ----- TOGGLE NOTE ROW -----
+      function toggleNoteRow(mainRow, index, forceShow) {
+        const existing = mainRow._noteRow;
+        if (existing && !forceShow) {
+          // remove it
+          existing.remove();
+          mainRow._noteRow = null;
+          // update the button text
+          const btn = mainRow.querySelector('.add-note-btn');
+          if (btn) btn.textContent = '➕ Add note';
+          return;
+        }
+
+        // If already exists and forceShow is true, do nothing
+        if (existing) return;
+
+        // Create note row
+        const noteRow = document.createElement('tr');
+        noteRow.className = 'extra-note-row';
+        const td = document.createElement('td');
+        td.setAttribute('colspan', '4');
+        td.style.padding = '0.2rem 0.8rem 0.6rem 0.8rem';
+
+        const noteDiv = document.createElement('div');
+        noteDiv.className = 'note-content';
+        noteDiv.contentEditable = 'true';
+        noteDiv.spellcheck = 'false';
+        noteDiv.textContent = mainRow._noteText || '';
+
+        // Remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-note-btn no-print';
+        removeBtn.textContent = '✕';
+        removeBtn.type = 'button';
+        removeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          // clear note text
+          mainRow._noteText = '';
+          noteDiv.textContent = '';
+          // we keep the row but empty; user can add later
+        });
+
+        td.appendChild(noteDiv);
+        td.appendChild(removeBtn);
+        noteRow.appendChild(td);
+
+        // Insert after main row
+        mainRow.parentNode.insertBefore(noteRow, mainRow.nextSibling);
+        mainRow._noteRow = noteRow;
+
+        // update button text
+        const btn = mainRow.querySelector('.add-note-btn');
+        if (btn) btn.textContent = '✏️ Edit note';
+
+        // Save note content on input
+        noteDiv.addEventListener('input', function() {
+          mainRow._noteText = noteDiv.textContent;
+        });
+      }
+
+      // ----- BUILD TABLE -----
+      function buildTable() {
+        tableBody.innerHTML = '';
+        items.forEach((item, idx) => {
+          const row = createItemRow(item, idx);
+          tableBody.appendChild(row);
+        });
+        // Attach input events for auto-calc
+        attachCalculationEvents();
         calculateTotals();
       }
-    });
-  })();
-</script>
+
+      // ----- AUTO-CALC TOTALS -----
+      function parseCurrency(text) {
+        if (!text) return 0;
+        const cleaned = text.replace(/[^0-9.]/g, '');
+        const val = parseFloat(cleaned);
+        return isNaN(val) ? 0 : val;
+      }
+
+      function formatCurrency(amount) {
+        return '$' + amount.toFixed(2);
+      }
+
+      function calculateTotals() {
+        const rows = tableBody.querySelectorAll('tr:not(.extra-note-row)');
+        let subtotal = 0;
+        rows.forEach(row => {
+          const cells = row.querySelectorAll('td');
+          if (cells.length < 4) return;
+          const qtyEl = cells[1];
+          const priceEl = cells[2];
+          const amountEl = cells[3];
+          const qty = parseCurrency(qtyEl.textContent);
+          const price = parseCurrency(priceEl.textContent);
+          const total = qty * price;
+          subtotal += total;
+          amountEl.textContent = formatCurrency(total);
+        });
+
+        document.querySelector('.subtotal-val').textContent = formatCurrency(subtotal);
+        const tax = subtotal * 0.085;
+        document.querySelector('.tax-val').textContent = formatCurrency(tax);
+
+        const discountSpan = document.querySelector('.discount-val');
+        let discount = parseCurrency(discountSpan.textContent);
+        if (!discountSpan.textContent.startsWith('$')) {
+          discountSpan.textContent = formatCurrency(discount);
+        }
+
+        const grand = subtotal + tax - discount;
+        document.querySelector('.grand-val').textContent = formatCurrency(grand);
+      }
+
+      function attachCalculationEvents() {
+        const editableCells = tableBody.querySelectorAll('td[contenteditable="true"]');
+        editableCells.forEach(cell => {
+          cell.removeEventListener('input', calculateTotals);
+          cell.removeEventListener('blur', calculateTotals);
+          cell.addEventListener('input', calculateTotals);
+          cell.addEventListener('blur', calculateTotals);
+        });
+        const discountSpan = document.querySelector('.discount-val');
+        if (discountSpan) {
+          discountSpan.removeEventListener('input', calculateTotals);
+          discountSpan.removeEventListener('blur', calculateTotals);
+          discountSpan.addEventListener('input', calculateTotals);
+          discountSpan.addEventListener('blur', calculateTotals);
+        }
+      }
+
+      // initial build
+      buildTable();
+
+      // Also recalc on any focusout in editable fields
+      document.addEventListener('focusout', function(e) {
+        if (e.target.closest && e.target.closest('[contenteditable="true"]')) {
+          calculateTotals();
+        }
+      });
+
+      // Expose functions for any future use
+      window.calculateTotals = calculateTotals;
+
+    })();
+  </script>
 </body>
 </html>
