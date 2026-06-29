@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Invoice</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .invoice-container {
+            width: 210mm;
+            min-height: 297mm;
+            background: #ffffff;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Elegant top accent bar */
+        .top-accent {
+            height: 6px;
+            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        /* Header Section */
+        .header {
+            padding: 40px 50px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .logo-section {
+            flex: 1;
+        }
+
+        .logo-placeholder {
+            width: 180px;
+            height: 70px;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 12px;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logo-placeholder:hover {
+            border-color: #0f3460;
+            color: #0f3460;
+        }
+
+        .logo-placeholder img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .invoice-title-section {
+            text-align: right;
+        }
+
+        .invoice-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 700;
+            color: #1a1a2e;
+            letter-spacing: 8px;
+            margin-bottom: 15px;
+        }
+
+        .invoice-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .meta-value {
+            font-size: 14px;
+            color: #1a1a2e;
+            font-weight: 600;
+            min-width: 120px;
+            text-align: right;
+            padding: 4px 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        /* Menu Bar */
+        .menu-bar {
+            background: #1a1a2e;
+            padding: 12px 50px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .menu-item {
+            color: #fff;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            color: #e94560;
+        }
+
+        .menu-item::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #e94560;
+            transition: width 0.3s ease;
+        }
+
+        .menu-item:hover::after {
+            width: 100%;
+        }
+
+        /* Company & Client Info */
+        .info-section {
+            padding: 35px 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-block {
+            max-width: 280px;
+        }
+
+        .info-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #e94560;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .info-content {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .info-content strong {
+            color: #1a1a2e;
+            font-size: 15px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Invoice Table */
+        .table-section {
+            padding: 0 50px;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .invoice-table thead {
+            background: #1a1a2e;
+        }
+
+        .invoice-table th {
+            color: #fff;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
+            padding: 16px 20px;
+            text-align: left;
+        }
+
+        .invoice-table th:last-child,
+        .invoice-table td:last-child {
+            text-align: right;
+        }
+
+        .invoice-table th:nth-child(3),
+        .invoice-table td:nth-child(3),
+        .invoice-table th:nth-child(4),
+        .invoice-table td:nth-child(4) {
+            text-align: center;
+        }
+
+        .invoice-table tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s ease;
+        }
+
+        .invoice-table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .invoice-table td {
+            padding: 18px 20px;
+            font-size: 13px;
+            color: #444;
+            vertical-align: top;
+        }
+
+        .invoice-table td strong {
+            color: #1a1a2e;
+        }
+
+        .invoice-table tbody tr:nth-child(even) {
+            background: #fafbfc;
+        }
+
+        /* Description cell - expanded for more content */
+        .desc-cell {
+            min-width: 280px;
+        }
+
+        .desc-title {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .desc-detail {
+            font-size: 11px;
+            color: #888;
+            line-height: 1.6;
+            max-width: 260px;
+        }
+
+        /* Add Row Button */
+        .add-row-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 15px 50px;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: 1px dashed #ccc;
+            border-radius: 6px;
+            color: #666;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .add-row-btn:hover {
+            background: #1a1a2e;
+            color: #fff;
+            border-style: solid;
+            border-color: #1a1a2e;
+        }
+
+        .add-row-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Delete row button */
+        .delete-row {
+            opacity: 0;
+            color: #e94560;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 5px;
+            transition: opacity 0.2s ease;
+        }
+
+        .invoice-table tbody tr:hover .delete-row {
+            opacity: 1;
+        }
+
+        .delete-row:hover {
+            color: #c0392b;
+        }
+
+        /* Totals Section */
+        .totals-section {
+            padding: 30px 50px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .totals-block {
+            width: 320px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total-row.grand-total {
+            border-top: 2px solid #1a1a2e;
+            border-bottom: 2px solid #1a1a2e;
+            margin-top: 5px;
+            padding: 15px 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            padding: 20px 50px 40px;
+        }
+
+        .notes-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .notes-content {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #f8f9fa;
+            padding: 20px 50px;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copyright {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .copyright-placeholder {
+            color: #bbb;
+            font-style: italic;
+        }
+
+        .footer-accent {
+            width: 40px;
+            height: 3px;
+            background: #e94560;
+        }
+
+        /* Editable fields styling */
+        [contenteditable="true"] {
+            outline: none;
+            border-bottom: 1px dashed transparent;
+            transition: all 0.2s ease;
+            cursor: text;
+        }
+
+        [contenteditable="true"]:hover {
+            border-bottom: 1px dashed #ccc;
+            background: #fffef0;
+        }
+
+        [contenteditable="true"]:focus {
+            border-bottom: 1px solid #0f3460;
+            background: #fffef0;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+                width: 100%;
+                min-height: auto;
+            }
+
+            [contenteditable="true"] {
+                border-bottom: none !important;
+                background: transparent !important;
+            }
+
+            .menu-bar {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .invoice-table thead {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .top-accent {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .footer-accent {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .add-row-btn,
+            .delete-row {
+                display: none !important;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="top-accent"></div>
+
+        <!-- Header with Logo and Invoice Info -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo-placeholder" onclick="document.getElementById('logoInput').click()">
+                    <span id="logoText">📎 Click to Add Logo</span>
+                    <img id="logoImg" style="display:none;" alt="Company Logo">
+                </div>
+                <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="loadLogo(event)">
+            </div>
+
+            <div class="invoice-title-section">
+                <div class="invoice-title">INVOICE</div>
+                <div class="invoice-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Invoice #</span>
+                        <span class="meta-value" contenteditable="true">INV-2026-001</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Date</span>
+                        <span class="meta-value" contenteditable="true">June 28, 2026</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Due Date</span>
+                        <span class="meta-value" contenteditable="true">July 28, 2026</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Menu -->
+        <div class="menu-bar">
+            <div class="menu-item">Dashboard</div>
+            <div class="menu-item">Invoices</div>
+            <div class="menu-item">Clients</div>
+            <div class="menu-item">Reports</div>
+            <div class="menu-item">Settings</div>
+        </div>
+
+        <!-- Company & Client Information -->
+        <div class="info-section">
+            <div class="info-block">
+                <div class="info-label">From</div>
+                <div class="info-content" contenteditable="true">
+                    <strong>Your Company Name</strong>
+                    123 Business Street<br>
+                    Suite 100<br>
+                    New York, NY 10001<br>
+                    contact@yourcompany.com
+                </div>
+            </div>
+
+            <div class="info-block" style="text-align: right;">
+                <div class="info-label">Bill To</div>
+                <div class="info-content" contenteditable="true">
+                    <strong>Client Company Name</strong>
+                    456 Client Avenue<br>
+                    Floor 5<br>
+                    Los Angeles, CA 90001<br>
+                    client@example.com
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Items Table -->
+        <div class="table-section">
+            <table class="invoice-table" id="invoiceTable">
+                <thead>
+                    <tr>
+                        <th style="width: 42%;">Description</th>
+                        <th style="width: 13%;">Quantity</th>
+                        <th style="width: 20%;">Unit Price</th>
+                        <th style="width: 25%;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td class="desc-cell">
+                            <div class="desc-title" contenteditable="true">Web Design Services</div>
+                            <div class="desc-detail" contenteditable="true">Complete homepage redesign with modern UI/UX principles, responsive layout, and mobile optimization. Includes 3 rounds of revisions and final asset delivery.</div>
+                        </td>
+                        <td contenteditable="true">1</td>
+                        <td contenteditable="true">$2,500.00</td>
+                        <td>
+                            <span contenteditable="true">$2,500.00</span>
+                            <span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="desc-cell">
+                            <div class="desc-title" contenteditable="true">Development Hours</div>
+                            <div class="desc-detail" contenteditable="true">Frontend implementation using React and Tailwind CSS. Backend API integration with Node.js. Includes code review and deployment to staging environment.</div>
+                        </td>
+                        <td contenteditable="true">40</td>
+                        <td contenteditable="true">$85.00</td>
+                        <td>
+                            <span contenteditable="true">$3,400.00</span>
+                            <span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="desc-cell">
+                            <div class="desc-title" contenteditable="true">Hosting Setup</div>
+                            <div class="desc-detail" contenteditable="true">Dedicated server configuration on AWS EC2 with load balancer, CDN setup via CloudFront, automated backups, and SSL certificate installation.</div>
+                        </td>
+                        <td contenteditable="true">1</td>
+                        <td contenteditable="true">$350.00</td>
+                        <td>
+                            <span contenteditable="true">$350.00</span>
+                            <span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="desc-cell">
+                            <div class="desc-title" contenteditable="true">SSL Certificate</div>
+                            <div class="desc-detail" contenteditable="true">Premium Extended Validation (EV) SSL certificate with warranty coverage, installation, and annual renewal management.</div>
+                        </td>
+                        <td contenteditable="true">1</td>
+                        <td contenteditable="true">$120.00</td>
+                        <td>
+                            <span contenteditable="true">$120.00</span>
+                            <span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Add Row Button -->
+        <button class="add-row-btn" onclick="addRow()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add New Item
+        </button>
+
+        <!-- Totals -->
+        <div class="totals-section">
+            <div class="totals-block">
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <span contenteditable="true">$6,370.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Tax (10%)</span>
+                    <span contenteditable="true">$637.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Discount</span>
+                    <span contenteditable="true">-$0.00</span>
+                </div>
+                <div class="total-row grand-total">
+                    <span>Total</span>
+                    <span contenteditable="true">$7,007.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="notes-section">
+            <div class="notes-title">Notes & Terms</div>
+            <div class="notes-content" contenteditable="true">
+                Payment is due within 30 days of invoice date. Late payments subject to 1.5% monthly service charge. Please make checks payable to Your Company Name or wire transfer to the account provided separately.
+            </div>
+        </div>
+
+        <!-- Footer with Copyright -->
+        <div class="footer">
+            <div class="copyright">
+                <span class="copyright-placeholder" contenteditable="true">© 2026 Your Company Name. All rights reserved.</span>
+            </div>
+            <div class="footer-accent"></div>
+        </div>
+    </div>
+
+    <script>
+        function loadLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('logoImg');
+                    const text = document.getElementById('logoText');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    text.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addRow() {
+            const tbody = document.getElementById('tableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="desc-cell">
+                    <div class="desc-title" contenteditable="true">New Item</div>
+                    <div class="desc-detail" contenteditable="true">Enter item description here...</div>
+                </td>
+                <td contenteditable="true">1</td>
+                <td contenteditable="true">$0.00</td>
+                <td>
+                    <span contenteditable="true">$0.00</span>
+                    <span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+
+            // Scroll to the new row
+            newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Focus on the title
+            setTimeout(() => {
+                newRow.querySelector('.desc-title').focus();
+            }, 300);
+        }
+
+        function deleteRow(btn) {
+            const row = btn.closest('tr');
+            const tbody = document.getElementById('tableBody');
+
+            if (tbody.children.length > 1) {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    row.remove();
+                }, 200);
+            } else {
+                alert('You must have at least one item row.');
+            }
+        }
+    </script>
+</body>
+</html>
