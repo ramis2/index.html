@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elegant Invoice</title>
+    <title>Elegant Invoice - Auto Calculate</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -32,13 +32,11 @@
             overflow: hidden;
         }
 
-        /* Elegant top accent bar */
         .top-accent {
             height: 6px;
             background: linear-gradient(90deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         }
 
-        /* Header Section */
         .header {
             padding: 40px 50px 30px;
             display: flex;
@@ -121,7 +119,6 @@
             border-radius: 4px;
         }
 
-        /* Menu Bar */
         .menu-bar {
             background: #1a1a2e;
             padding: 12px 50px;
@@ -158,7 +155,6 @@
             width: 100%;
         }
 
-        /* Company & Client Info */
         .info-section {
             padding: 35px 50px;
             display: flex;
@@ -191,7 +187,6 @@
             margin-bottom: 5px;
         }
 
-        /* Invoice Table */
         .table-section {
             padding: 0 50px;
         }
@@ -252,7 +247,6 @@
             background: #fafbfc;
         }
 
-        /* Description cell - expanded for more content */
         .desc-cell {
             min-width: 280px;
         }
@@ -271,7 +265,30 @@
             max-width: 260px;
         }
 
-        /* Add Row Button */
+        .qty-input, .price-input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            color: #444;
+            transition: border-color 0.2s ease;
+        }
+
+        .qty-input:focus, .price-input:focus {
+            outline: none;
+            border-color: #0f3460;
+            background: #fffef0;
+        }
+
+        .amount-cell {
+            font-weight: 600;
+            color: #1a1a2e;
+            font-size: 14px;
+        }
+
         .add-row-btn {
             display: inline-flex;
             align-items: center;
@@ -295,12 +312,6 @@
             border-color: #1a1a2e;
         }
 
-        .add-row-btn svg {
-            width: 14px;
-            height: 14px;
-        }
-
-        /* Delete row button */
         .delete-row {
             opacity: 0;
             color: #e94560;
@@ -308,6 +319,7 @@
             font-size: 16px;
             padding: 0 5px;
             transition: opacity 0.2s ease;
+            margin-left: 8px;
         }
 
         .invoice-table tbody tr:hover .delete-row {
@@ -318,7 +330,6 @@
             color: #c0392b;
         }
 
-        /* Totals Section */
         .totals-section {
             padding: 30px 50px;
             display: flex;
@@ -348,7 +359,28 @@
             color: #1a1a2e;
         }
 
-        /* Notes Section */
+        .total-value {
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .tax-input, .discount-input {
+            width: 100px;
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            text-align: right;
+            color: #444;
+        }
+
+        .tax-input:focus, .discount-input:focus {
+            outline: none;
+            border-color: #0f3460;
+            background: #fffef0;
+        }
+
         .notes-section {
             padding: 20px 50px 40px;
         }
@@ -368,7 +400,6 @@
             font-style: italic;
         }
 
-        /* Footer */
         .footer {
             position: absolute;
             bottom: 0;
@@ -398,7 +429,6 @@
             background: #e94560;
         }
 
-        /* Editable fields styling */
         [contenteditable="true"] {
             outline: none;
             border-bottom: 1px dashed transparent;
@@ -416,7 +446,6 @@
             background: #fffef0;
         }
 
-        /* Print Styles */
         @media print {
             body {
                 background: #fff;
@@ -458,6 +487,17 @@
             .delete-row {
                 display: none !important;
             }
+
+            .qty-input, .price-input, .tax-input, .discount-input {
+                border: none;
+                background: transparent;
+                padding: 0;
+                text-align: right;
+            }
+
+            .qty-input {
+                text-align: center;
+            }
         }
 
         @page {
@@ -470,7 +510,6 @@
     <div class="invoice-container">
         <div class="top-accent"></div>
 
-        <!-- Header with Logo and Invoice Info -->
         <div class="header">
             <div class="logo-section">
                 <div class="logo-placeholder" onclick="document.getElementById('logoInput').click()">
@@ -499,7 +538,6 @@
             </div>
         </div>
 
-        <!-- Top Menu -->
         <div class="menu-bar">
             <div class="menu-item">Dashboard</div>
             <div class="menu-item">Invoices</div>
@@ -508,7 +546,6 @@
             <div class="menu-item">Settings</div>
         </div>
 
-        <!-- Company & Client Information -->
         <div class="info-section">
             <div class="info-block">
                 <div class="info-label">From</div>
@@ -533,13 +570,12 @@
             </div>
         </div>
 
-        <!-- Invoice Items Table -->
         <div class="table-section">
             <table class="invoice-table" id="invoiceTable">
                 <thead>
                     <tr>
-                        <th style="width: 42%;">Description</th>
-                        <th style="width: 13%;">Quantity</th>
+                        <th style="width: 40%;">Description</th>
+                        <th style="width: 15%;">Quantity</th>
                         <th style="width: 20%;">Unit Price</th>
                         <th style="width: 25%;">Amount</th>
                     </tr>
@@ -548,87 +584,76 @@
                     <tr>
                         <td class="desc-cell">
                             <div class="desc-title" contenteditable="true">Web Design Services</div>
-                            <div class="desc-detail" contenteditable="true">Complete homepage redesign with modern UI/UX principles, responsive layout, and mobile optimization. Includes 3 rounds of revisions and final asset delivery.</div>
+                            <div class="desc-detail" contenteditable="true">Complete homepage redesign with modern UI/UX principles, responsive layout, and mobile optimization.</div>
                         </td>
-                        <td contenteditable="true">1</td>
-                        <td contenteditable="true">$2,500.00</td>
-                        <td>
-                            <span contenteditable="true">$2,500.00</span>
-                            <span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span>
-                        </td>
+                        <td><input type="number" class="qty-input" value="1" min="0" step="1" onchange="calculateRow(this)"></td>
+                        <td><input type="text" class="price-input" value="2500.00" onchange="calculateRow(this)"></td>
+                        <td class="amount-cell">$2,500.00<span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span></td>
                     </tr>
                     <tr>
                         <td class="desc-cell">
                             <div class="desc-title" contenteditable="true">Development Hours</div>
-                            <div class="desc-detail" contenteditable="true">Frontend implementation using React and Tailwind CSS. Backend API integration with Node.js. Includes code review and deployment to staging environment.</div>
+                            <div class="desc-detail" contenteditable="true">Frontend implementation using React and Tailwind CSS. Backend API integration with Node.js.</div>
                         </td>
-                        <td contenteditable="true">40</td>
-                        <td contenteditable="true">$85.00</td>
-                        <td>
-                            <span contenteditable="true">$3,400.00</span>
-                            <span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span>
-                        </td>
+                        <td><input type="number" class="qty-input" value="40" min="0" step="1" onchange="calculateRow(this)"></td>
+                        <td><input type="text" class="price-input" value="85.00" onchange="calculateRow(this)"></td>
+                        <td class="amount-cell">$3,400.00<span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span></td>
                     </tr>
                     <tr>
                         <td class="desc-cell">
                             <div class="desc-title" contenteditable="true">Hosting Setup</div>
-                            <div class="desc-detail" contenteditable="true">Dedicated server configuration on AWS EC2 with load balancer, CDN setup via CloudFront, automated backups, and SSL certificate installation.</div>
+                            <div class="desc-detail" contenteditable="true">Dedicated server configuration on AWS EC2 with load balancer and CDN setup.</div>
                         </td>
-                        <td contenteditable="true">1</td>
-                        <td contenteditable="true">$350.00</td>
-                        <td>
-                            <span contenteditable="true">$350.00</span>
-                            <span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span>
-                        </td>
+                        <td><input type="number" class="qty-input" value="1" min="0" step="1" onchange="calculateRow(this)"></td>
+                        <td><input type="text" class="price-input" value="350.00" onchange="calculateRow(this)"></td>
+                        <td class="amount-cell">$350.00<span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span></td>
                     </tr>
                     <tr>
                         <td class="desc-cell">
                             <div class="desc-title" contenteditable="true">SSL Certificate</div>
-                            <div class="desc-detail" contenteditable="true">Premium Extended Validation (EV) SSL certificate with warranty coverage, installation, and annual renewal management.</div>
+                            <div class="desc-detail" contenteditable="true">Premium Extended Validation (EV) SSL certificate with warranty coverage.</div>
                         </td>
-                        <td contenteditable="true">1</td>
-                        <td contenteditable="true">$120.00</td>
-                        <td>
-                            <span contenteditable="true">$120.00</span>
-                            <span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span>
-                        </td>
+                        <td><input type="number" class="qty-input" value="1" min="0" step="1" onchange="calculateRow(this)"></td>
+                        <td><input type="text" class="price-input" value="120.00" onchange="calculateRow(this)"></td>
+                        <td class="amount-cell">$120.00<span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span></td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- Add Row Button -->
         <button class="add-row-btn" onclick="addRow()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
             Add New Item
         </button>
 
-        <!-- Totals -->
         <div class="totals-section">
             <div class="totals-block">
                 <div class="total-row">
                     <span>Subtotal</span>
-                    <span contenteditable="true">$6,370.00</span>
+                    <span class="total-value" id="subtotal">$6,370.00</span>
                 </div>
                 <div class="total-row">
-                    <span>Tax (10%)</span>
-                    <span contenteditable="true">$637.00</span>
+                    <span>Tax Rate</span>
+                    <span><input type="number" class="tax-input" id="taxRate" value="10" min="0" max="100" step="0.01" onchange="calculateTotals()">%</span>
+                </div>
+                <div class="total-row">
+                    <span>Tax Amount</span>
+                    <span class="total-value" id="taxAmount">$637.00</span>
                 </div>
                 <div class="total-row">
                     <span>Discount</span>
-                    <span contenteditable="true">-$0.00</span>
+                    <span>$<input type="text" class="discount-input" id="discount" value="0.00" onchange="calculateTotals()"></span>
                 </div>
                 <div class="total-row grand-total">
                     <span>Total</span>
-                    <span contenteditable="true">$7,007.00</span>
+                    <span class="total-value" id="grandTotal">$7,007.00</span>
                 </div>
             </div>
         </div>
 
-        <!-- Notes -->
         <div class="notes-section">
             <div class="notes-title">Notes & Terms</div>
             <div class="notes-content" contenteditable="true">
@@ -636,7 +661,6 @@
             </div>
         </div>
 
-        <!-- Footer with Copyright -->
         <div class="footer">
             <div class="copyright">
                 <span class="copyright-placeholder" contenteditable="true">© 2026 Jamal Ahmed 0598. All rights reserved.</span>
@@ -646,6 +670,43 @@
     </div>
 
     <script>
+        function formatCurrency(num) {
+            return '$' + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function parseCurrency(str) {
+            return parseFloat(str.replace(/[$,]/g, '')) || 0;
+        }
+
+        function calculateRow(element) {
+            const row = element.closest('tr');
+            const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+            const price = parseFloat(row.querySelector('.price-input').value) || 0;
+            const amount = qty * price;
+
+            const amountCell = row.querySelector('.amount-cell');
+            const deleteBtn = amountCell.querySelector('.delete-row');
+            amountCell.innerHTML = formatCurrency(amount) + amountCell.querySelector('.delete-row').outerHTML;
+
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            let subtotal = 0;
+            document.querySelectorAll('.amount-cell').forEach(cell => {
+                subtotal += parseCurrency(cell.childNodes[0].textContent);
+            });
+
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+            const taxAmount = subtotal * (taxRate / 100);
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const grandTotal = subtotal + taxAmount - discount;
+
+            document.getElementById('subtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('taxAmount').textContent = formatCurrency(taxAmount);
+            document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
+        }
+
         function loadLogo(event) {
             const file = event.target.files[0];
             if (file) {
@@ -669,22 +730,19 @@
                     <div class="desc-title" contenteditable="true">New Item</div>
                     <div class="desc-detail" contenteditable="true">Enter item description here...</div>
                 </td>
-                <td contenteditable="true">1</td>
-                <td contenteditable="true">$0.00</td>
-                <td>
-                    <span contenteditable="true">$0.00</span>
-                    <span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span>
-                </td>
+                <td><input type="number" class="qty-input" value="1" min="0" step="1" onchange="calculateRow(this)"></td>
+                <td><input type="text" class="price-input" value="0.00" onchange="calculateRow(this)"></td>
+                <td class="amount-cell">$0.00<span class="delete-row" onclick="deleteRow(this)" title="Remove row">×</span></td>
             `;
             tbody.appendChild(newRow);
 
-            // Scroll to the new row
             newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-            // Focus on the title
             setTimeout(() => {
                 newRow.querySelector('.desc-title').focus();
             }, 300);
+
+            calculateTotals();
         }
 
         function deleteRow(btn) {
@@ -696,11 +754,17 @@
                 row.style.transform = 'translateX(-20px)';
                 setTimeout(() => {
                     row.remove();
+                    calculateTotals();
                 }, 200);
             } else {
                 alert('You must have at least one item row.');
             }
         }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateTotals();
+        });
     </script>
 </body>
 </html>
