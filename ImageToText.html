@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Image to Text – Fixed Language Support</title>
+    <title>Image to Text – with Notepad</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
     </script>
     <style>
@@ -92,6 +92,13 @@
         .btn-secondary:hover:not(:disabled) {
             background: #cbd5e1;
         }
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+        .btn-success:hover:not(:disabled) {
+            background: #16a34a;
+        }
         .progress-wrapper {
             width: 100%;
             background: #e2e8f0;
@@ -136,15 +143,11 @@
             margin-top: 0.5rem;
             justify-content: flex-end;
             align-items: center;
+            flex-wrap: wrap;
         }
         .result-actions button {
             padding: 0.3rem 1rem;
             font-size: 0.85rem;
-            background: #e2e8f0;
-            color: #1e293b;
-        }
-        .result-actions button:hover:not(:disabled) {
-            background: #cbd5e1;
         }
         .copy-feedback {
             font-size: 0.8rem;
@@ -156,6 +159,51 @@
         .copy-feedback.show {
             opacity: 1;
         }
+
+        /* ---- New Notepad Styles ---- */
+        .notepad-wrapper {
+            margin-top: 1.8rem;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 1.5rem;
+        }
+        .notepad-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+        }
+        .notepad-header label {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .notepad-header .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .notepad-header .actions button {
+            padding: 0.25rem 1rem;
+            font-size: 0.8rem;
+        }
+        #notepad {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #cbd5e1;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: vertical;
+            background: white;
+            min-height: 120px;
+        }
+        #notepad:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 1px;
+            border-color: transparent;
+        }
+
         .footer {
             font-size: 0.8rem;
             color: #94a3b8;
@@ -182,16 +230,16 @@
 </head>
 <body>
     <div class="card">
-        <h1>📄 Image to Text</h1>
+        <h1>📄 Image to Text + Notepad</h1>
         <p>
-            Upload an image. OCR runs <strong>entirely in your browser</strong>.
+            Upload an image to extract text, then edit or paste additional content in the notepad below.
         </p>
         <div class="warning-note">
-            ⚠️ <strong>Note on Oromo/Amharic:</strong> The default Tesseract.js CDN may not include these language packs. 
-            If they fail to load, the tool will show an error. For best results, try <strong>English</strong> or the 
-            <strong>English+Amharic</strong> / <strong>English+Oromo</strong> combined options below.
+            ⚠️ <strong>Note on Oromo/Amharic:</strong> If standalone packs fail, try
+            <strong>English+Amharic</strong> or <strong>English+Oromo</strong>.
         </div>
 
+        <!-- Upload Area -->
         <div class="upload-area" id="dropZone">
             <input type="file" id="fileInput" accept="image/*" />
             <div>
@@ -205,11 +253,11 @@
 
         <img id="preview" alt="Uploaded image preview" />
 
+        <!-- Controls -->
         <div class="controls">
             <label for="langSelect" style="font-weight: 500;">Language:</label>
             <select id="langSelect" class="lang-select">
                 <option value="eng">English</option>
-                <!-- Combined options (fallback if pure Amh/Orm fail) -->
                 <option value="eng+amh">English + Amharic (አማርኛ)</option>
                 <option value="eng+orm">English + Oromo (Afaan Oromoo)</option>
                 <option value="amh">Amharic (አማርኛ) – standalone</option>
@@ -226,21 +274,36 @@
                 <option value="spa">Spanish (Español)</option>
             </select>
             <button id="extractBtn" disabled>⚡ Extract Text</button>
-            <button id="clearBtn" class="btn-secondary">🗑️ Clear</button>
+            <button id="clearBtn" class="btn-secondary">🗑️ Clear All</button>
         </div>
 
+        <!-- Progress -->
         <div class="progress-wrapper" id="progressWrapper">
             <div class="progress-bar" id="progressBar"></div>
         </div>
         <div id="status">Ready. Select an image to begin.</div>
 
+        <!-- OCR Result (Read-only) -->
         <div class="result-wrapper">
             <div id="result">Extracted text will appear here…</div>
             <div class="result-actions">
                 <span class="copy-feedback" id="copyFeedback">✅ Copied!</span>
-                <button id="copyBtn" disabled>📋 Copy Text</button>
+                <button id="copyBtn" disabled>📋 Copy to Clipboard</button>
+                <button id="sendToNotepadBtn" disabled class="btn-success">📝 Copy to Notepad</button>
             </div>
         </div>
+
+        <!-- ===== NEW NOTEPAD ===== -->
+        <div class="notepad-wrapper">
+            <div class="notepad-header">
+                <label for="notepad">📝 Notepad (Editable)</label>
+                <div class="actions">
+                    <button id="clearNotepadBtn" class="btn-secondary">🗑️ Clear</button>
+                </div>
+            </div>
+            <textarea id="notepad" rows="5" placeholder="Paste or edit your text here... (Ctrl+V / Cmd+V works)"></textarea>
+        </div>
+
         <div class="footer">
             Powered by Tesseract.js v5 — No server uploads, fully private.
         </div>
@@ -261,6 +324,9 @@
             const langSelect = document.getElementById('langSelect');
             const copyBtn = document.getElementById('copyBtn');
             const copyFeedback = document.getElementById('copyFeedback');
+            const sendToNotepadBtn = document.getElementById('sendToNotepadBtn');
+            const clearNotepadBtn = document.getElementById('clearNotepadBtn');
+            const notepad = document.getElementById('notepad');
 
             let currentImageFile = null;
             let isProcessing = false;
@@ -285,10 +351,12 @@
             function enableUI(enabled) {
                 extractBtn.disabled = !enabled || !currentImageFile || isProcessing;
                 if (!currentImageFile) extractBtn.disabled = true;
-                copyBtn.disabled = !lastExtractedText || isProcessing;
+                const hasText = lastExtractedText && lastExtractedText.length > 0;
+                copyBtn.disabled = !hasText || isProcessing;
+                sendToNotepadBtn.disabled = !hasText || isProcessing;
             }
 
-            // --- Copy ---
+            // --- Copy to system clipboard ---
             function copyExtractedText() {
                 const text = lastExtractedText;
                 if (!text) return;
@@ -298,6 +366,7 @@
                         setTimeout(() => copyFeedback.classList.remove('show'), 2000);
                     })
                     .catch(() => {
+                        // Fallback
                         const range = document.createRange();
                         range.selectNodeContents(resultDiv);
                         const sel = window.getSelection();
@@ -311,6 +380,16 @@
                             setStatus('Copy failed. Please select and copy manually.', true);
                         }
                     });
+            }
+
+            // --- Send extracted text to Notepad ---
+            function sendToNotepad() {
+                if (lastExtractedText) {
+                    notepad.value = lastExtractedText;
+                    setStatus('✅ Text copied to notepad. Edit it freely below.');
+                } else {
+                    setStatus('⚠️ No extracted text to send.', true);
+                }
             }
 
             // --- Load image ---
@@ -329,19 +408,21 @@
                     resultDiv.textContent = 'Extracted text will appear here…';
                     enableUI(true);
                     copyBtn.disabled = true;
+                    sendToNotepadBtn.disabled = true;
                 };
                 reader.onerror = () => setStatus('Failed to read file.', true);
                 reader.readAsDataURL(file);
                 return true;
             }
 
-            // --- OCR with improved error handling for missing languages ---
+            // --- OCR ---
             async function performOCR() {
                 if (!currentImageFile || isProcessing) return;
 
                 resultDiv.textContent = 'Processing…';
                 lastExtractedText = '';
                 copyBtn.disabled = true;
+                sendToNotepadBtn.disabled = true;
                 isProcessing = true;
                 extractBtn.disabled = true;
                 setProgress(0);
@@ -354,7 +435,6 @@
                 try {
                     const result = await Tesseract.recognize(imageUrl, lang, {
                         logger: (m) => {
-                            // Detect if language data fails to load
                             if (m.status && m.status.includes('failed')) {
                                 loadFailed = true;
                             }
@@ -369,27 +449,22 @@
                             } else if (m.status === 'loading language traineddata') {
                                 setStatus(`Loading language data (${lang})…`);
                             } else if (m.status) {
-                                // Catch any other status, especially errors
                                 setStatus(m.status);
                             }
                         }
                     });
 
-                    // Check if we got a valid result
                     const text = result.data.text.trim();
                     lastExtractedText = text;
 
-                    if (loadFailed) {
-                        // If we detected a failure but somehow got text, still show it
-                        if (text.length === 0) {
-                            throw new Error(
-                                `Failed to load language data for "${lang}". The Tesseract.js CDN may not have this language pack. Please try "English" or a combined option.`);
-                        }
+                    if (loadFailed && text.length === 0) {
+                        throw new Error(
+                            `Failed to load language data for "${lang}". Try "English" or a combined option.`);
                     }
 
                     if (text.length === 0) {
                         resultDiv.textContent =
-                            '⚠️ No text detected in this image. Try a clearer image, or switch to English if the language pack failed to load.';
+                            '⚠️ No text detected. Try a clearer image, or switch to English if the language pack failed.';
                         setStatus('Finished — no text found.', false);
                     } else {
                         resultDiv.textContent = text;
@@ -397,14 +472,14 @@
                     }
                     setProgress(100);
                     copyBtn.disabled = (text.length === 0);
+                    sendToNotepadBtn.disabled = (text.length === 0);
 
                 } catch (error) {
                     console.error('OCR Error:', error);
-                    // Give a user-friendly message for missing language data
                     let userMsg = error.message || 'Unknown OCR error.';
                     if (userMsg.includes('Failed to load') || userMsg.includes('404') || userMsg.includes('network')) {
                         userMsg =
-                            `❌ Language pack "${lang}" could not be loaded from the CDN. Please select "English" or one of the combined options (English+Amharic / English+Oromo) which may work better.`;
+                            `❌ Language pack "${lang}" could not be loaded. Please select "English" or one of the combined options.`;
                     } else {
                         userMsg = `❌ Error: ${userMsg}`;
                     }
@@ -412,6 +487,7 @@
                     setStatus('OCR failed. See result box for details.', true);
                     setProgress(null);
                     copyBtn.disabled = true;
+                    sendToNotepadBtn.disabled = true;
                 } finally {
                     isProcessing = false;
                     enableUI(true);
@@ -454,10 +530,12 @@
                 preview.style.display = 'none';
                 preview.src = '';
                 resultDiv.textContent = 'Extracted text will appear here…';
+                notepad.value = ''; // Clear notepad too
                 setStatus('Ready. Select an image to begin.');
                 setProgress(null);
                 enableUI(false);
                 copyBtn.disabled = true;
+                sendToNotepadBtn.disabled = true;
                 isProcessing = false;
                 copyFeedback.classList.remove('show');
             });
@@ -470,8 +548,14 @@
             });
 
             copyBtn.addEventListener('click', copyExtractedText);
+            sendToNotepadBtn.addEventListener('click', sendToNotepad);
 
-            // Paste support
+            clearNotepadBtn.addEventListener('click', () => {
+                notepad.value = '';
+                setStatus('Notepad cleared.');
+            });
+
+            // Paste support for images (globally)
             document.addEventListener('paste', (e) => {
                 const items = e.clipboardData?.items;
                 if (!items) return;
@@ -487,9 +571,10 @@
             enableUI(false);
             setProgress(null);
             copyBtn.disabled = true;
-            console.log('📸 Image to Text ready (with language fallback handling).');
+            sendToNotepadBtn.disabled = true;
+            console.log('📸 Image to Text + Notepad ready.');
         })();
     </script>
-@ Jamal 0598.
+©  Jamal 0598
 </body>
 </html>
