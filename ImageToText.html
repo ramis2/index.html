@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image to Text – Fixed Language Support</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        body {
+            max-width: 820px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            background: #f7f9fc;
+            color: #1e293b;
+        }
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        .upload-area input {
+            display: none;
+        }
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            display: none;
+            border: 1px solid #e2e8f0;
+        }
+        .controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+            align-items: center;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        button:hover:not(:disabled) {
+            background: #2563eb;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: #cbd5e1;
+        }
+        .progress-wrapper {
+            width: 100%;
+            background: #e2e8f0;
+            border-radius: 999px;
+            height: 6px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #3b82f6;
+            border-radius: 999px;
+            transition: width 0.2s;
+        }
+        #status {
+            font-size: 0.9rem;
+            color: #64748b;
+            min-height: 1.5rem;
+        }
+        .result-wrapper {
+            margin-top: 1rem;
+            position: relative;
+        }
+        #result {
+            background: #f1f5f9;
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            min-height: 60px;
+            border: 1px solid #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            user-select: text;
+        }
+        .result-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .result-actions button {
+            padding: 0.3rem 1rem;
+            font-size: 0.85rem;
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .result-actions button:hover:not(:disabled) {
+            background: #cbd5e1;
+        }
+        .copy-feedback {
+            font-size: 0.8rem;
+            color: #16a34a;
+            margin-right: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .copy-feedback.show {
+            opacity: 1;
+        }
+        .footer {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .lang-select {
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-size: 0.95rem;
+        }
+        .warning-note {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            margin: 0.5rem 0;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📄 Image to Text</h1>
+        <p>
+            Upload an image. OCR runs <strong>entirely in your browser</strong>.
+        </p>
+        <div class="warning-note">
+            ⚠️ <strong>Note on Oromo/Amharic:</strong> The default Tesseract.js CDN may not include these language packs. 
+            If they fail to load, the tool will show an error. For best results, try <strong>English</strong> or the 
+            <strong>English+Amharic</strong> / <strong>English+Oromo</strong> combined options below.
+        </div>
+
+        <div class="upload-area" id="dropZone">
+            <input type="file" id="fileInput" accept="image/*" />
+            <div>
+                <span style="font-size: 2rem; display: block;">🖼️</span>
+                <strong>Click or drag &amp; drop</strong>
+                <p style="margin: 0.25rem 0 0; color: #64748b; font-size: 0.9rem;">
+                    Supported: JPG, PNG, WebP, BMP
+                </p>
+            </div>
+        </div>
+
+        <img id="preview" alt="Uploaded image preview" />
+
+        <div class="controls">
+            <label for="langSelect" style="font-weight: 500;">Language:</label>
+            <select id="langSelect" class="lang-select">
+                <option value="eng">English</option>
+                <!-- Combined options (fallback if pure Amh/Orm fail) -->
+                <option value="eng+amh">English + Amharic (አማርኛ)</option>
+                <option value="eng+orm">English + Oromo (Afaan Oromoo)</option>
+                <option value="amh">Amharic (አማርኛ) – standalone</option>
+                <option value="orm">Oromo (Afaan Oromoo) – standalone</option>
+                <option value="ara">Arabic (العربية)</option>
+                <option value="chi_sim">Chinese (Simplified)</option>
+                <option value="deu">German (Deutsch)</option>
+                <option value="fra">French (Français)</option>
+                <option value="ita">Italian (Italiano)</option>
+                <option value="jpn">Japanese (日本語)</option>
+                <option value="kor">Korean (한국어)</option>
+                <option value="por">Portuguese (Português)</option>
+                <option value="rus">Russian (Русский)</option>
+                <option value="spa">Spanish (Español)</option>
+            </select>
+            <button id="extractBtn" disabled>⚡ Extract Text</button>
+            <button id="clearBtn" class="btn-secondary">🗑️ Clear</button>
+        </div>
+
+        <div class="progress-wrapper" id="progressWrapper">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div id="status">Ready. Select an image to begin.</div>
+
+        <div class="result-wrapper">
+            <div id="result">Extracted text will appear here…</div>
+            <div class="result-actions">
+                <span class="copy-feedback" id="copyFeedback">✅ Copied!</span>
+                <button id="copyBtn" disabled>📋 Copy Text</button>
+            </div>
+        </div>
+        <div class="footer">
+            Powered by Tesseract.js v5 — No server uploads, fully private.
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // --- DOM refs ---
+            const fileInput = document.getElementById('fileInput');
+            const dropZone = document.getElementById('dropZone');
+            const preview = document.getElementById('preview');
+            const extractBtn = document.getElementById('extractBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            const progressWrapper = document.getElementById('progressWrapper');
+            const progressBar = document.getElementById('progressBar');
+            const langSelect = document.getElementById('langSelect');
+            const copyBtn = document.getElementById('copyBtn');
+            const copyFeedback = document.getElementById('copyFeedback');
+
+            let currentImageFile = null;
+            let isProcessing = false;
+            let lastExtractedText = '';
+
+            // --- Helpers ---
+            function setStatus(msg, isError = false) {
+                statusDiv.textContent = msg;
+                statusDiv.style.color = isError ? '#ef4444' : '#64748b';
+            }
+
+            function setProgress(pct) {
+                if (pct === undefined || pct === null) {
+                    progressWrapper.style.display = 'none';
+                    return;
+                }
+                progressWrapper.style.display = 'block';
+                const clamped = Math.min(100, Math.max(0, pct));
+                progressBar.style.width = clamped + '%';
+            }
+
+            function enableUI(enabled) {
+                extractBtn.disabled = !enabled || !currentImageFile || isProcessing;
+                if (!currentImageFile) extractBtn.disabled = true;
+                copyBtn.disabled = !lastExtractedText || isProcessing;
+            }
+
+            // --- Copy ---
+            function copyExtractedText() {
+                const text = lastExtractedText;
+                if (!text) return;
+                navigator.clipboard.writeText(text)
+                    .then(() => {
+                        copyFeedback.classList.add('show');
+                        setTimeout(() => copyFeedback.classList.remove('show'), 2000);
+                    })
+                    .catch(() => {
+                        const range = document.createRange();
+                        range.selectNodeContents(resultDiv);
+                        const sel = window.getSelection();
+                        sel?.removeAllRanges();
+                        sel?.addRange(range);
+                        try {
+                            document.execCommand('copy');
+                            copyFeedback.classList.add('show');
+                            setTimeout(() => copyFeedback.classList.remove('show'), 2000);
+                        } catch (_) {
+                            setStatus('Copy failed. Please select and copy manually.', true);
+                        }
+                    });
+            }
+
+            // --- Load image ---
+            function loadImageFile(file) {
+                if (!file || !file.type.startsWith('image/')) {
+                    setStatus('Please select a valid image file.', true);
+                    return false;
+                }
+                currentImageFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    setStatus(`Loaded: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
+                    lastExtractedText = '';
+                    resultDiv.textContent = 'Extracted text will appear here…';
+                    enableUI(true);
+                    copyBtn.disabled = true;
+                };
+                reader.onerror = () => setStatus('Failed to read file.', true);
+                reader.readAsDataURL(file);
+                return true;
+            }
+
+            // --- OCR with improved error handling for missing languages ---
+            async function performOCR() {
+                if (!currentImageFile || isProcessing) return;
+
+                resultDiv.textContent = 'Processing…';
+                lastExtractedText = '';
+                copyBtn.disabled = true;
+                isProcessing = true;
+                extractBtn.disabled = true;
+                setProgress(0);
+                setStatus('Initializing OCR engine…');
+
+                const lang = langSelect.value;
+                const imageUrl = preview.src;
+                let loadFailed = false;
+
+                try {
+                    const result = await Tesseract.recognize(imageUrl, lang, {
+                        logger: (m) => {
+                            // Detect if language data fails to load
+                            if (m.status && m.status.includes('failed')) {
+                                loadFailed = true;
+                            }
+                            if (m.status === 'recognizing text') {
+                                const pct = Math.round(m.progress * 100);
+                                setProgress(pct);
+                                setStatus(`Recognizing: ${pct}%`);
+                            } else if (m.status === 'loading tesseract core') {
+                                setStatus('Loading OCR engine (first time may take a few seconds)…');
+                            } else if (m.status === 'initializing tesseract') {
+                                setStatus('Initializing…');
+                            } else if (m.status === 'loading language traineddata') {
+                                setStatus(`Loading language data (${lang})…`);
+                            } else if (m.status) {
+                                // Catch any other status, especially errors
+                                setStatus(m.status);
+                            }
+                        }
+                    });
+
+                    // Check if we got a valid result
+                    const text = result.data.text.trim();
+                    lastExtractedText = text;
+
+                    if (loadFailed) {
+                        // If we detected a failure but somehow got text, still show it
+                        if (text.length === 0) {
+                            throw new Error(
+                                `Failed to load language data for "${lang}". The Tesseract.js CDN may not have this language pack. Please try "English" or a combined option.`);
+                        }
+                    }
+
+                    if (text.length === 0) {
+                        resultDiv.textContent =
+                            '⚠️ No text detected in this image. Try a clearer image, or switch to English if the language pack failed to load.';
+                        setStatus('Finished — no text found.', false);
+                    } else {
+                        resultDiv.textContent = text;
+                        setStatus(`✅ Extracted ${text.split(/\s+/).length} words.`);
+                    }
+                    setProgress(100);
+                    copyBtn.disabled = (text.length === 0);
+
+                } catch (error) {
+                    console.error('OCR Error:', error);
+                    // Give a user-friendly message for missing language data
+                    let userMsg = error.message || 'Unknown OCR error.';
+                    if (userMsg.includes('Failed to load') || userMsg.includes('404') || userMsg.includes('network')) {
+                        userMsg =
+                            `❌ Language pack "${lang}" could not be loaded from the CDN. Please select "English" or one of the combined options (English+Amharic / English+Oromo) which may work better.`;
+                    } else {
+                        userMsg = `❌ Error: ${userMsg}`;
+                    }
+                    resultDiv.textContent = userMsg;
+                    setStatus('OCR failed. See result box for details.', true);
+                    setProgress(null);
+                    copyBtn.disabled = true;
+                } finally {
+                    isProcessing = false;
+                    enableUI(true);
+                    setTimeout(() => {
+                        if (!isProcessing) setProgress(null);
+                    }, 1500);
+                }
+            }
+
+            // --- Event listeners ---
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files?.length) loadImageFile(e.target.files[0]);
+                fileInput.value = '';
+            });
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#3b82f6';
+                dropZone.style.background = '#eff6ff';
+            });
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#cbd5e1';
+                dropZone.style.background = '#f8fafc';
+            });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#cbd5e1';
+                dropZone.style.background = '#f8fafc';
+                if (e.dataTransfer.files?.length) loadImageFile(e.dataTransfer.files[0]);
+            });
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            extractBtn.addEventListener('click', performOCR);
+
+            clearBtn.addEventListener('click', () => {
+                currentImageFile = null;
+                lastExtractedText = '';
+                preview.style.display = 'none';
+                preview.src = '';
+                resultDiv.textContent = 'Extracted text will appear here…';
+                setStatus('Ready. Select an image to begin.');
+                setProgress(null);
+                enableUI(false);
+                copyBtn.disabled = true;
+                isProcessing = false;
+                copyFeedback.classList.remove('show');
+            });
+
+            langSelect.addEventListener('change', () => {
+                if (currentImageFile) {
+                    const label = langSelect.options[langSelect.selectedIndex].text;
+                    setStatus(`Language set to ${label}. Click "Extract" to re-run.`);
+                }
+            });
+
+            copyBtn.addEventListener('click', copyExtractedText);
+
+            // Paste support
+            document.addEventListener('paste', (e) => {
+                const items = e.clipboardData?.items;
+                if (!items) return;
+                for (const item of items) {
+                    if (item.type.startsWith('image/')) {
+                        const file = item.getAsFile();
+                        if (file) { loadImageFile(file); break; }
+                    }
+                }
+            });
+
+            // --- Init ---
+            enableUI(false);
+            setProgress(null);
+            copyBtn.disabled = true;
+            console.log('📸 Image to Text ready (with language fallback handling).');
+        })();
+    </script>
+@ Jamal 0598.
+</body>
+</html>
