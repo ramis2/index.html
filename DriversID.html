@@ -392,17 +392,6 @@
             word-break: break-word;
         }
 
-        /* driver's 4 numbers — specific styling */
-        .id-number .field-value {
-            font-size: 20px;
-            letter-spacing: 2px;
-            font-family: 'Courier New', monospace;
-            background: #f2f6fd;
-            padding: 4px 12px;
-            border-radius: 10px;
-            display: inline-block;
-        }
-
         /* big font placeholders */
         .id-name .field-value {
             font-size: 28px;
@@ -424,6 +413,27 @@
             height: 1.5px;
             background: linear-gradient(to right, #e0e8f2, #b8c9e0, #e0e8f2);
             margin: 4px 0 6px;
+        }
+
+        /* ── LEFT PANEL COPYRIGHT (footer) ── */
+        .left-copyright {
+            margin-top: 6px;
+            padding-top: 14px;
+            border-top: 1.5px solid #e6ecf5;
+            font-size: 13px;
+            color: #7b8aa8;
+            text-align: center;
+            letter-spacing: 0.3px;
+            font-weight: 500;
+        }
+        .left-copyright .field-value {
+            font-size: 13px;
+            font-weight: 500;
+            color: #6b7b9a;
+        }
+        .left-copyright i {
+            color: #2a7de1;
+            margin-right: 4px;
         }
 
         /* ── RESPONSIVE ── */
@@ -588,13 +598,6 @@
                     <div class="hint-big"><i class="fas fa-info-circle"></i> Driver's portrait (rectangle)</div>
                 </div>
 
-                <!-- DRIVER'S 4 NUMBERS -->
-                <div class="form-group">
-                    <label><i class="fas fa-hashtag"></i> Driver's 4 Numbers</label>
-                    <input type="text" id="driverNumber" placeholder="e.g. 4821" maxlength="4" value="4821" />
-                    <div class="hint-big"><i class="fas fa-info-circle"></i> Exactly 4 digits</div>
-                </div>
-
                 <!-- DRIVER'S NAME -->
                 <div class="form-group">
                     <label><i class="fas fa-user"></i> Driver's Name</label>
@@ -629,11 +632,12 @@
                     </button>
                 </div>
 
-                <div style="font-size:13px; color:#7b8aa8; margin-top:4px; display:flex; gap:18px; flex-wrap:wrap;">
-                    <span><i class="fas fa-check-circle" style="color:#1d9b5e;"></i> Logo + Photo: file &amp; camera</span>
-                    <span><i class="fas fa-square" style="color:#2a7de1;"></i> Rectangle images</span>
-                    <span><i class="fas fa-print"></i> Preview &amp; Download</span>
+                <!-- COPYRIGHT — only in left panel, not on ID card -->
+                <div class="left-copyright">
+                    <i class="fas fa-copyright"></i>
+                    <span class="field-value" id="leftCopyrightDisplay">© 2026 Jamal 0598</span>
                 </div>
+
             </div>
 
             <!-- ===== RIGHT: PREVIEW ===== -->
@@ -656,14 +660,6 @@
                             <i class="fas fa-user-circle no-photo" id="idPhotoPlaceholder"></i>
                             <img id="idPhotoImg" style="display:none;" alt="Driver photo" />
                         </div>
-
-                        <!-- DRIVER'S 4 NUMBERS -->
-                        <div class="id-field id-number">
-                            <span class="field-label">Driver ID</span>
-                            <span class="field-value" id="idNumberDisplay">4821</span>
-                        </div>
-
-                        <div class="id-divider"></div>
 
                         <!-- DRIVER'S NAME (big) -->
                         <div class="id-field id-name">
@@ -699,15 +695,16 @@
             'use strict';
 
             // ── DOM refs ──
-            const driverNumber = document.getElementById('driverNumber');
             const driverName = document.getElementById('driverName');
             const companyName = document.getElementById('companyName');
             const expiryDate = document.getElementById('expiryDate');
 
-            const idNumberDisplay = document.getElementById('idNumberDisplay');
             const idNameDisplay = document.getElementById('idNameDisplay');
             const idCompanyDisplay = document.getElementById('idCompanyDisplay');
             const idExpiryDisplay = document.getElementById('idExpiryDisplay');
+
+            // ── Left panel copyright (not on card) ──
+            const leftCopyrightDisplay = document.getElementById('leftCopyrightDisplay');
 
             // ── Logo refs ──
             const logoFileInput = document.getElementById('logoFileInput');
@@ -762,12 +759,11 @@
 
             // update all preview fields from form values
             function updatePreviewFields() {
-                const num = driverNumber.value.trim().slice(0, 4) || '____';
-                idNumberDisplay.textContent = num.padEnd(4, '_');
-
                 idNameDisplay.textContent = driverName.value.trim() || '(Name)';
                 idCompanyDisplay.textContent = companyName.value.trim() || '(Company)';
                 idExpiryDisplay.textContent = expiryDate.value.trim() || 'MM/YYYY';
+                // Left copyright – static, not on card
+                leftCopyrightDisplay.textContent = '© 2026 Transit Logistics';
             }
 
             // ── Logo UI ──
@@ -907,7 +903,7 @@
             });
 
             // ── EVENT: form fields → live preview ──
-            [driverNumber, driverName, companyName, expiryDate].forEach(field => {
+            [driverName, companyName, expiryDate].forEach(field => {
                 field.addEventListener('input', updatePreviewFields);
                 field.addEventListener('change', updatePreviewFields);
             });
@@ -916,7 +912,6 @@
             saveBtn.addEventListener('click', () => {
                 try {
                     const data = {
-                        number: driverNumber.value,
                         name: driverName.value,
                         company: companyName.value,
                         expiry: expiryDate.value,
@@ -987,7 +982,6 @@
                     const raw = localStorage.getItem('idCardData');
                     if (!raw) return;
                     const data = JSON.parse(raw);
-                    if (data.number) driverNumber.value = data.number;
                     if (data.name) driverName.value = data.name;
                     if (data.company) companyName.value = data.company;
                     if (data.expiry) expiryDate.value = data.expiry;
@@ -1010,13 +1004,13 @@
             if (!currentLogoDataURL) updateLogoUI(null);
             if (!currentPhotoDataURL) updatePhotoUI(null);
 
-            console.log('ID Card ready. Company logo + driver photo, both rectangle, insertable from file or camera.@ Copyright by Jamal Ahmed');
+            console.log('ID Card ready. Copyright appears only in left panel (not on card).');
         })();
     </script>
 
     <!-- html2canvas for download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer>
     </script>
-Copyright @ by Jamal Ahmed 0598
+
 </body>
 </html>
