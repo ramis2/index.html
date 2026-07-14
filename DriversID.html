@@ -619,6 +619,13 @@
                     <div class="hint-big"><i class="fas fa-arrow-up"></i> Big font on card</div>
                 </div>
 
+                <!-- COPYRIGHT — editable, only in left panel -->
+                <div class="form-group">
+                    <label><i class="fas fa-copyright"></i> Copyright Text (left panel only)</label>
+                    <input type="text" id="copyrightText" placeholder="e.g. © 2026 Your Company" value="© 2026 Transit Logistics" />
+                    <div class="hint-big"><i class="fas fa-info-circle"></i> This appears only here, not on the ID card</div>
+                </div>
+
                 <!-- ACTION BUTTONS -->
                 <div class="action-bar">
                     <button class="btn-action save" id="saveBtn">
@@ -632,10 +639,10 @@
                     </button>
                 </div>
 
-                <!-- COPYRIGHT — only in left panel, not on ID card -->
+                <!-- COPYRIGHT DISPLAY (editable via the input above) -->
                 <div class="left-copyright">
                     <i class="fas fa-copyright"></i>
-                    <span class="field-value" id="leftCopyrightDisplay">© 2026 Jamal 0598 </span>
+                    <span class="field-value" id="leftCopyrightDisplay">© 2026 Jamal 0598. </span>
                 </div>
 
             </div>
@@ -698,12 +705,13 @@
             const driverName = document.getElementById('driverName');
             const companyName = document.getElementById('companyName');
             const expiryDate = document.getElementById('expiryDate');
+            const copyrightText = document.getElementById('copyrightText');
 
             const idNameDisplay = document.getElementById('idNameDisplay');
             const idCompanyDisplay = document.getElementById('idCompanyDisplay');
             const idExpiryDisplay = document.getElementById('idExpiryDisplay');
 
-            // ── Left panel copyright (not on card) ──
+            // ── Left panel copyright display ──
             const leftCopyrightDisplay = document.getElementById('leftCopyrightDisplay');
 
             // ── Logo refs ──
@@ -762,8 +770,9 @@
                 idNameDisplay.textContent = driverName.value.trim() || '(Name)';
                 idCompanyDisplay.textContent = companyName.value.trim() || '(Company)';
                 idExpiryDisplay.textContent = expiryDate.value.trim() || 'MM/YYYY';
-                // Left copyright – static, not on card
-                leftCopyrightDisplay.textContent = '© 2026 Transit Logistics';
+                
+                // Update copyright in left panel (not on card)
+                leftCopyrightDisplay.textContent = copyrightText.value.trim() || '© 2026 Your Company';
             }
 
             // ── Logo UI ──
@@ -903,7 +912,7 @@
             });
 
             // ── EVENT: form fields → live preview ──
-            [driverName, companyName, expiryDate].forEach(field => {
+            [driverName, companyName, expiryDate, copyrightText].forEach(field => {
                 field.addEventListener('input', updatePreviewFields);
                 field.addEventListener('change', updatePreviewFields);
             });
@@ -915,6 +924,7 @@
                         name: driverName.value,
                         company: companyName.value,
                         expiry: expiryDate.value,
+                        copyright: copyrightText.value,
                         logo: currentLogoDataURL,
                         photo: currentPhotoDataURL,
                     };
@@ -985,6 +995,7 @@
                     if (data.name) driverName.value = data.name;
                     if (data.company) companyName.value = data.company;
                     if (data.expiry) expiryDate.value = data.expiry;
+                    if (data.copyright) copyrightText.value = data.copyright;
                     if (data.logo) {
                         currentLogoDataURL = data.logo;
                         updateLogoUI(currentLogoDataURL);
@@ -1001,16 +1012,4 @@
             updatePreviewFields();
             loadFromStorage();
 
-            if (!currentLogoDataURL) updateLogoUI(null);
-            if (!currentPhotoDataURL) updatePhotoUI(null);
-
-            console.log('ID Card ready. Copyright appears only in left panel (not on card).');
-        })();
-    </script>
-
-    <!-- html2canvas for download -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer>
-    </script>
-
-</body>
-</html>
+            if (!currentLogoDataURL) updateLogoUI
