@@ -105,6 +105,13 @@
             font-weight: 400;
         }
 
+        /* two columns for first/last name */
+        .name-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
         .hint-big {
             font-size: 12px;
             color: #7b8aa8;
@@ -415,6 +422,18 @@
             margin: 4px 0 6px;
         }
 
+        /* ── FIRST NAME & LAST NAME (separate lines on card) ── */
+        .id-first-name .field-value {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .id-last-name .field-value {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
         /* ── LEFT PANEL COPYRIGHT (static footer) ── */
         .left-copyright {
             margin-top: 6px;
@@ -429,6 +448,11 @@
         .left-copyright i {
             color: #2a7de1;
             margin-right: 6px;
+        }
+
+        /* ── PRINT CARD GRID (6 per page) ── */
+        .print-grid {
+            display: none;
         }
 
         /* ── RESPONSIVE ── */
@@ -469,7 +493,8 @@
             .id-card {
                 padding: 18px 16px 20px;
             }
-            .id-name .field-value {
+            .id-first-name .field-value,
+            .id-last-name .field-value {
                 font-size: 22px;
             }
             .id-company .field-value {
@@ -480,6 +505,10 @@
             }
             .id-logo {
                 height: 50px;
+            }
+            .name-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
             }
         }
 
@@ -515,6 +544,136 @@
         /* hidden file inputs */
         .hidden-input {
             display: none;
+        }
+
+        /* ── PRINT STYLES: 6 IDs per page ── */
+        @media print {
+            /* Hide everything except the print grid */
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                min-height: 100vh;
+                display: block !important;
+            }
+
+            .app-container {
+                max-width: 100% !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+            }
+
+            /* Hide the left panel (form) */
+            .form-panel {
+                display: none !important;
+            }
+
+            /* Hide the preview label and other text */
+            .preview-label,
+            .preview-panel > div:last-child {
+                display: none !important;
+            }
+
+            /* Hide the single preview card wrapper */
+            .id-card-wrapper {
+                display: none !important;
+            }
+
+            /* Show the print grid */
+            .print-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                padding: 12px;
+                max-width: 100%;
+                margin: 0 auto;
+            }
+
+            .print-grid .id-card {
+                width: 100%;
+                padding: 14px 16px 16px !important;
+                border: 1.5px solid #ccc !important;
+                border-radius: 12px !important;
+                box-shadow: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                background: white !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 8px !important;
+                margin: 0 !important;
+            }
+
+            /* Smaller card elements for print */
+            .print-grid .id-logo {
+                height: 40px !important;
+                border-radius: 8px !important;
+                margin-bottom: 2px !important;
+            }
+            .print-grid .id-photo {
+                aspect-ratio: 4 / 5 !important;
+                border-radius: 8px !important;
+                margin-bottom: 2px !important;
+                min-height: 60px !important;
+            }
+            .print-grid .id-field .field-label {
+                font-size: 7px !important;
+            }
+            .print-grid .id-first-name .field-value,
+            .print-grid .id-last-name .field-value {
+                font-size: 16px !important;
+                line-height: 1.1 !important;
+            }
+            .print-grid .id-company .field-value {
+                font-size: 14px !important;
+            }
+            .print-grid .id-expiry .field-value {
+                font-size: 14px !important;
+            }
+            .print-grid .id-divider {
+                margin: 2px 0 4px !important;
+            }
+
+            /* Ensure images print */
+            .print-grid img {
+                print-color-adjust: exact !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* Keep background colors */
+            .print-grid .id-logo,
+            .print-grid .id-photo,
+            .print-grid .id-card {
+                print-color-adjust: exact !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* Page setup */
+            @page {
+                margin: 10mm !important;
+                size: A4 portrait !important;
+            }
+
+            /* Hide the two-col layout */
+            .two-col {
+                display: block !important;
+            }
+
+            /* Force print grid to show */
+            .preview-panel {
+                display: block !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Remove extra spacing from the container */
+            .app-container {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
         }
     </style>
 </head>
@@ -593,11 +752,14 @@
                     <div class="hint-big"><i class="fas fa-info-circle"></i> Driver's portrait (rectangle)</div>
                 </div>
 
-                <!-- DRIVER'S NAME -->
+                <!-- FIRST NAME & LAST NAME (side by side) -->
                 <div class="form-group">
-                    <label><i class="fas fa-user"></i> Driver's Name</label>
-                    <input type="text" id="driverName" placeholder="Full name" value="JAMES R. CARTER" />
-                    <div class="hint-big"><i class="fas fa-arrow-up"></i> Big font on card</div>
+                    <label><i class="fas fa-user"></i> Driver Name</label>
+                    <div class="name-row">
+                        <input type="text" id="firstName" placeholder="First Name" value="JAMES" />
+                        <input type="text" id="lastName" placeholder="Last Name" value="CARTER" />
+                    </div>
+                    <div class="hint-big"><i class="fas fa-arrow-up"></i> First and last name appear separately on card</div>
                 </div>
 
                 <!-- COMPANY NAME (text) -->
@@ -629,7 +791,7 @@
 
                 <!-- STATIC COPYRIGHT — left aligned, no input -->
                 <div class="left-copyright">
-                    <i class="fas fa-copyright"></i> 2026 Jamal 0598. All rights reserved.
+                    <i class="fas fa-copyright"></i> 2026 Jamal Ahmed 0598. All rights reserved.
                 </div>
 
             </div>
@@ -655,11 +817,19 @@
                             <img id="idPhotoImg" style="display:none;" alt="Driver photo" />
                         </div>
 
-                        <!-- DRIVER'S NAME (big) -->
-                        <div class="id-field id-name">
-                            <span class="field-label">Name</span>
-                            <span class="field-value" id="idNameDisplay">JAMES R. CARTER</span>
+                        <!-- FIRST NAME (separate line) -->
+                        <div class="id-field id-first-name">
+                            <span class="field-label">First Name</span>
+                            <span class="field-value" id="idFirstNameDisplay">JAMES</span>
                         </div>
+
+                        <!-- LAST NAME (separate line) -->
+                        <div class="id-field id-last-name">
+                            <span class="field-label">Last Name</span>
+                            <span class="field-value" id="idLastNameDisplay">CARTER</span>
+                        </div>
+
+                        <div class="id-divider"></div>
 
                         <!-- COMPANY NAME (big text) -->
                         <div class="id-field id-company">
@@ -682,6 +852,12 @@
             </div>
 
         </div><!-- /two-col -->
+
+        <!-- ─── PRINT GRID: 6 copies of the ID card ─── -->
+        <div class="print-grid" id="printGrid">
+            <!-- 6 copies will be inserted here by JavaScript -->
+        </div>
+
     </div><!-- /app-container -->
 
     <script>
@@ -689,11 +865,13 @@
             'use strict';
 
             // ── DOM refs ──
-            const driverName = document.getElementById('driverName');
+            const firstName = document.getElementById('firstName');
+            const lastName = document.getElementById('lastName');
             const companyName = document.getElementById('companyName');
             const expiryDate = document.getElementById('expiryDate');
 
-            const idNameDisplay = document.getElementById('idNameDisplay');
+            const idFirstNameDisplay = document.getElementById('idFirstNameDisplay');
+            const idLastNameDisplay = document.getElementById('idLastNameDisplay');
             const idCompanyDisplay = document.getElementById('idCompanyDisplay');
             const idExpiryDisplay = document.getElementById('idExpiryDisplay');
 
@@ -727,6 +905,9 @@
             const idPhotoImg = document.getElementById('idPhotoImg');
             const idPhotoPlaceholder = document.getElementById('idPhotoPlaceholder');
 
+            // ── Print grid ──
+            const printGrid = document.getElementById('printGrid');
+
             // ── Buttons ──
             const saveBtn = document.getElementById('saveBtn');
             const previewBtn = document.getElementById('previewBtn');
@@ -750,9 +931,55 @@
 
             // update all preview fields from form values
             function updatePreviewFields() {
-                idNameDisplay.textContent = driverName.value.trim() || '(Name)';
+                idFirstNameDisplay.textContent = firstName.value.trim() || '(First)';
+                idLastNameDisplay.textContent = lastName.value.trim() || '(Last)';
                 idCompanyDisplay.textContent = companyName.value.trim() || '(Company)';
                 idExpiryDisplay.textContent = expiryDate.value.trim() || 'MM/YYYY';
+            }
+
+            // ── Build print grid with 6 copies ──
+            function buildPrintGrid() {
+                // Get the current card HTML structure (without the wrapper)
+                const cardElement = document.getElementById('idCard');
+                const cardHTML = cardElement.outerHTML;
+
+                // Clear the grid
+                printGrid.innerHTML = '';
+
+                // Add 6 copies
+                for (let i = 0; i < 6; i++) {
+                    const wrapper = document.createElement('div');
+                    wrapper.innerHTML = cardHTML;
+                    const card = wrapper.firstElementChild;
+                    // Clone the card and add to grid
+                    const clone = cardElement.cloneNode(true);
+                    // Ensure images are properly referenced
+                    const cloneLogoImg = clone.querySelector('#idLogoImg');
+                    const clonePhotoImg = clone.querySelector('#idPhotoImg');
+                    if (currentLogoDataURL) {
+                        cloneLogoImg.src = currentLogoDataURL;
+                        cloneLogoImg.style.display = 'block';
+                        clone.querySelector('#idLogoPlaceholder').style.display = 'none';
+                    } else {
+                        cloneLogoImg.style.display = 'none';
+                        clone.querySelector('#idLogoPlaceholder').style.display = 'block';
+                    }
+                    if (currentPhotoDataURL) {
+                        clonePhotoImg.src = currentPhotoDataURL;
+                        clonePhotoImg.style.display = 'block';
+                        clone.querySelector('#idPhotoPlaceholder').style.display = 'none';
+                    } else {
+                        clonePhotoImg.style.display = 'none';
+                        clone.querySelector('#idPhotoPlaceholder').style.display = 'block';
+                    }
+                    // Update text fields
+                    clone.querySelector('#idFirstNameDisplay').textContent = idFirstNameDisplay.textContent;
+                    clone.querySelector('#idLastNameDisplay').textContent = idLastNameDisplay.textContent;
+                    clone.querySelector('#idCompanyDisplay').textContent = idCompanyDisplay.textContent;
+                    clone.querySelector('#idExpiryDisplay').textContent = idExpiryDisplay.textContent;
+
+                    printGrid.appendChild(clone);
+                }
             }
 
             // ── Logo UI ──
@@ -774,6 +1001,8 @@
                     idLogoImg.style.display = 'none';
                     idLogoPlaceholder.style.display = 'block';
                 }
+                // Rebuild print grid after logo change
+                buildPrintGrid();
             }
 
             function setLogoFromFile(file) {
@@ -813,6 +1042,8 @@
                     idPhotoImg.style.display = 'none';
                     idPhotoPlaceholder.style.display = 'block';
                 }
+                // Rebuild print grid after photo change
+                buildPrintGrid();
             }
 
             function setPhotoFromFile(file) {
@@ -892,16 +1123,23 @@
             });
 
             // ── EVENT: form fields → live preview ──
-            [driverName, companyName, expiryDate].forEach(field => {
-                field.addEventListener('input', updatePreviewFields);
-                field.addEventListener('change', updatePreviewFields);
+            [firstName, lastName, companyName, expiryDate].forEach(field => {
+                field.addEventListener('input', function() {
+                    updatePreviewFields();
+                    buildPrintGrid();
+                });
+                field.addEventListener('change', function() {
+                    updatePreviewFields();
+                    buildPrintGrid();
+                });
             });
 
             // ── SAVE ──
             saveBtn.addEventListener('click', () => {
                 try {
                     const data = {
-                        name: driverName.value,
+                        firstName: firstName.value,
+                        lastName: lastName.value,
                         company: companyName.value,
                         expiry: expiryDate.value,
                         logo: currentLogoDataURL,
@@ -921,6 +1159,7 @@
                 else updateLogoUI(null);
                 if (currentPhotoDataURL) updatePhotoUI(currentPhotoDataURL);
                 else updatePhotoUI(null);
+                buildPrintGrid();
                 showToast('Preview updated.', 'fa-eye');
             });
 
@@ -971,7 +1210,8 @@
                     const raw = localStorage.getItem('idCardData');
                     if (!raw) return;
                     const data = JSON.parse(raw);
-                    if (data.name) driverName.value = data.name;
+                    if (data.firstName) firstName.value = data.firstName;
+                    if (data.lastName) lastName.value = data.lastName;
                     if (data.company) companyName.value = data.company;
                     if (data.expiry) expiryDate.value = data.expiry;
                     if (data.logo) {
@@ -983,6 +1223,7 @@
                         updatePhotoUI(currentPhotoDataURL);
                     }
                     updatePreviewFields();
+                    buildPrintGrid();
                 } catch (_) { /* ignore */ }
             }
 
@@ -993,7 +1234,10 @@
             if (!currentLogoDataURL) updateLogoUI(null);
             if (!currentPhotoDataURL) updatePhotoUI(null);
 
-            console.log('ID Card ready. Static copyright at bottom left.');
+            // Build print grid initially
+            buildPrintGrid();
+
+            console.log('ID Card ready. First name and Last name appear separately on card!');
         })();
     </script>
 
