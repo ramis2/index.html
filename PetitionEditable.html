@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <title>Digital Petition · Full Name · CPNC · Signature</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f5fa 0%, #dce6ef 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .petition-card {
+            max-width: 920px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 2.5rem;
+            box-shadow: 0 30px 60px -15px rgba(0, 20, 40, 0.35);
+            padding: 2.5rem 3rem;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        @media (max-width: 640px) {
+            .petition-card {
+                padding: 1.8rem 1.2rem;
+                border-radius: 1.8rem;
+            }
+        }
+
+        /* ===== HEADER ===== */
+        .petition-header {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #eaf0f6;
+            padding-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .logo-placeholder {
+            width: 70px;
+            height: 70px;
+            background: #e8f0f8;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: #1a4b6d;
+            border: 2px dashed #b0c8db;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .logo-placeholder:hover {
+            background: #dce8f2;
+            border-color: #1a4b6d;
+        }
+        .logo-placeholder i {
+            font-size: 2.4rem;
+        }
+        .logo-placeholder img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+
+        .header-text {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .header-text .petition-name-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .header-text .petition-name-wrapper i {
+            font-size: 1.4rem;
+            color: #1a4b6d;
+            opacity: 0.6;
+        }
+
+        .header-text h1 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: -0.02em;
+            color: #0a2a3f;
+            line-height: 1.2;
+            border: none;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        .header-text h1:empty::before {
+            content: "Petition Name";
+            color: #a5bccf;
+            font-weight: 400;
+        }
+
+        .header-text h1[contenteditable="true"] {
+            outline: none;
+            border-bottom: 2px dotted transparent;
+            transition: border-color 0.2s;
+        }
+        .header-text h1[contenteditable="true"]:hover {
+            border-bottom-color: #b0c8db;
+        }
+        .header-text h1[contenteditable="true"]:focus {
+            border-bottom-color: #1f6e9e;
+        }
+
+        /* ===== PETITION REASON ===== */
+        .petition-reason-wrapper {
+            margin-top: 0.4rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+
+        .petition-reason-wrapper i {
+            font-size: 1rem;
+            color: #2a6b8f;
+            opacity: 0.7;
+            margin-top: 0.2rem;
+        }
+
+        .petition-reason-wrapper .reason-label {
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: #4b6d88;
+            white-space: nowrap;
+            margin-top: 0.2rem;
+        }
+
+        .petition-reason-wrapper .reason-text {
+            flex: 1;
+            font-weight: 400;
+            font-size: 1rem;
+            color: #1a3d55;
+            padding: 0.2rem 0.4rem;
+            border: none;
+            border-bottom: 2px dotted transparent;
+            background: transparent;
+            transition: border-color 0.2s;
+            min-width: 120px;
+            outline: none;
+            line-height: 1.4;
+        }
+
+        .petition-reason-wrapper .reason-text:empty::before {
+            content: "Click here to state the petition reason…";
+            color: #a5bccf;
+            font-style: italic;
+        }
+
+        .petition-reason-wrapper .reason-text:hover {
+            border-bottom-color: #b0c8db;
+        }
+
+        .petition-reason-wrapper .reason-text:focus {
+            border-bottom-color: #1f6e9e;
+        }
+
+        .header-text .petition-sub {
+            font-weight: 400;
+            color: #4b6d88;
+            font-size: 0.8rem;
+            margin-top: 0.15rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .header-text .petition-sub .badge {
+            background: #eef5fa;
+            padding: 0.15rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #d4e2ed;
+            font-size: 0.75rem;
+            color: #2c5779;
+        }
+
+        /* ===== SEARCH BAR ===== */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: #f6faff;
+            padding: 0.4rem 1rem 0.4rem 1.2rem;
+            border-radius: 3rem;
+            border: 2px solid #dce6ef;
+            transition: 0.2s;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .search-bar:focus-within {
+            border-color: #1f6e9e;
+            box-shadow: 0 0 0 4px rgba(26, 85, 130, 0.08);
+        }
+        .search-bar i {
+            color: #6a8aa3;
+            font-size: 1rem;
+        }
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 0.6rem 0;
+            font-size: 0.95rem;
+            outline: none;
+            min-width: 120px;
+            color: #0b2b40;
+        }
+        .search-bar input::placeholder {
+            color: #a5bccf;
+        }
+        .search-bar .search-clear {
+            cursor: pointer;
+            color: #8aa3b8;
+            padding: 0.2rem 0.4rem;
+            border-radius: 50%;
+            transition: 0.15s;
+        }
+        .search-bar .search-clear:hover {
+            background: #e8eff6;
+            color: #1a3d55;
+        }
+        .search-bar .search-count {
+            font-size: 0.75rem;
+            color: #6a8aa3;
+            background: #eef5fa;
+            padding: 0.15rem 0.7rem;
+            border-radius: 40px;
+            white-space: nowrap;
+        }
+
+        /* ===== FORM ===== */
+        .petition-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .field-group label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1a3d55;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .field-group label i {
+            color: #2a6b8f;
+            width: 1.4rem;
+            opacity: 0.8;
+        }
+
+        .field-group .required-star {
+            color: #b22234;
+            font-size: 1.2rem;
+            margin-left: 0.1rem;
+        }
+
+        .field-group input,
+        .field-group textarea {
+            width: 100%;
+            padding: 0.85rem 1.2rem;
+            font-size: 1rem;
+            background: #fafcfe;
+            border: 2px solid #dce6ef;
+            border-radius: 1.4rem;
+            transition: 0.2s;
+            color: #0b2b40;
+        }
+
+        .field-group input:focus,
+        .field-group textarea:focus {
+            outline: none;
+            border-color: #1f6e9e;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(26, 85, 130, 0.10);
+        }
+
+        .field-group input::placeholder,
+        .field-group textarea::placeholder {
+            color: #a5bccf;
+            font-weight: 350;
+        }
+
+        /* ===== DRAWING CANVAS ===== */
+        .signature-area {
+            background: #f4f9ff;
+            border-radius: 1.8rem;
+            padding: 1.5rem 1.8rem 1.8rem 1.8rem;
+            border: 1px solid #e3edf5;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            background: white;
+            border-radius: 1.2rem;
+            border: 2px solid #d0dde9;
+            touch-action: none;
+            overflow: hidden;
+        }
+
+        .canvas-wrapper canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            touch-action: none;
+            cursor: crosshair;
+            background: white;
+        }
+
+        .canvas-controls {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 0.6rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .canvas-controls .btn-sm {
+            padding: 0.35rem 1rem;
+            border: none;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .canvas-controls .btn-clear-canvas {
+            background: #dce6ef;
+            color: #1a3d55;
+        }
+        .canvas-controls .btn-clear-canvas:hover {
+            background: #c8d4df;
+        }
+
+        .canvas-controls .btn-undo-canvas {
+            background: #e8f0f8;
+            color: #1a4b6d;
+        }
+        .canvas-controls .btn-undo-canvas:hover {
+            background: #d4e2ed;
+        }
+
+        .canvas-controls .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+            color: #4b6d88;
+        }
+        .canvas-controls .color-picker-wrapper input[type="color"] {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #dce6ef;
+            border-radius: 50%;
+            padding: 2px;
+            cursor: pointer;
+            background: white;
+        }
+
+        .canvas-controls .color-picker-wrapper input[type="range"] {
+            width: 80px;
+        }
+
+        .signature-hint {
+            display: flex;
+            justify-content: flex-end;
+            font-size: 0.75rem;
+            color: #4b6d88;
+            margin-top: 0.3rem;
+            padding-right: 0.4rem;
+            opacity: 0.8;
+        }
+
+        .signature-type-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .signature-type-toggle .toggle-btn {
+            padding: 0.3rem 1.2rem;
+            border: 2px solid #dce6ef;
+            border-radius: 2rem;
+            background: transparent;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: 0.15s;
+            color: #4b6d88;
+        }
+        .signature-type-toggle .toggle-btn.active {
+            background: #1f6e9e;
+            color: white;
+            border-color: #1f6e9e;
+        }
+        .signature-type-toggle .toggle-btn:hover:not(.active) {
+            background: #eef5fa;
+        }
+
+        .signature-text-input {
+            display: none;
+        }
+        .signature-text-input.show {
+            display: block;
+        }
+
+        .signature-text-input input {
+            width: 100%;
+            padding: 0.85rem 1.2rem;
+            font-size: 1.2rem;
+            border: 2px solid #dce6ef;
+            border-radius: 1.2rem;
+            font-family: 'Brush Script MT', cursive;
+            background: white;
+        }
+
+        .name-cpnc-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .name-cpnc-row .field-group {
+            flex: 1 1 0;
+            min-width: 180px;
+        }
+
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+            margin-top: 0.6rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 3rem;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            transition: 0.15s ease;
+            letter-spacing: 0.3px;
+            background: #eef4fa;
+            color: #1f4b69;
+            border: 1.5px solid transparent;
+        }
+
+        .btn i {
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: #0f3d5c;
+            color: white;
+            box-shadow: 0 6px 16px -6px rgba(14, 60, 94, 0.35);
+        }
+
+        .btn-primary:hover {
+            background: #0e3450;
+            transform: scale(1.01);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: #b8cedf;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: #7b9bb9;
+        }
+
+        .btn-success {
+            background: #1a7a5c;
+            color: white;
+            box-shadow: 0 6px 16px -6px rgba(26, 122, 92, 0.35);
+        }
+
+        .btn-success:hover {
+            background: #156a4f;
+        }
+
+        .btn-warning {
+            background: #b8860b;
+            color: white;
+            box-shadow: 0 6px 16px -6px rgba(184, 134, 11, 0.35);
+        }
+
+        .btn-warning:hover {
+            background: #a0750a;
+        }
+
+        .btn-danger {
+            background: #b22234;
+            color: white;
+            box-shadow: 0 6px 16px -6px rgba(178, 34, 52, 0.35);
+        }
+        .btn-danger:hover {
+            background: #9a1a2a;
+        }
+
+        .demo-feedback {
+            margin-top: 1.2rem;
+            padding: 0.8rem 1.4rem;
+            background: #d8ecf5;
+            border-radius: 3rem;
+            color: #004466;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            border-left: 5px solid #1f6e9e;
+            font-weight: 450;
+        }
+
+        .demo-feedback i {
+            font-size: 1.2rem;
+            color: #006699;
+        }
+
+        /* ===== SIGNATURE LIST ===== */
+        .signature-list {
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 2px solid #eaf0f6;
+        }
+
+        .signature-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .signature-list-header h3 {
+            font-size: 1rem;
+            color: #1a3d55;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .signature-list-header h3 span {
+            background: #0f3d5c;
+            color: white;
+            border-radius: 40px;
+            padding: 0.1rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .signature-entry {
+            background: #f6faff;
+            padding: 0.7rem 1rem;
+            border-radius: 0.8rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid #2c6b8f;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            transition: 0.15s;
+        }
+        .signature-entry:hover {
+            background: #edf4fc;
+        }
+        .signature-entry .entry-info {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        .signature-entry .entry-info strong {
+            color: #0a2a3f;
+        }
+        .signature-entry .sig-preview {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 1.2rem;
+            color: #1a4b6d;
+        }
+        .signature-entry .sig-preview img {
+            max-height: 30px;
+            vertical-align: middle;
+            border: 1px solid #dce6ef;
+            border-radius: 4px;
+        }
+        .signature-entry .timestamp {
+            font-size: 0.7rem;
+            color: #6a8aa3;
+        }
+        .signature-entry .entry-actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-shrink: 0;
+        }
+        .signature-entry .entry-actions button {
+            padding: 0.2rem 0.7rem;
+            font-size: 0.7rem;
+            border: none;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .signature-entry .entry-actions .edit-btn {
+            background: #2c6b8f;
+            color: white;
+        }
+        .signature-entry .entry-actions .edit-btn:hover {
+            background: #1f5a7a;
+        }
+        .signature-entry .entry-actions .delete-btn {
+            background: #b22234;
+            color: white;
+        }
+        .signature-entry .entry-actions .delete-btn:hover {
+            background: #9a1a2a;
+        }
+
+        .no-results {
+            color: #8aa3b8;
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+        }
+
+        .footnote {
+            font-size: 0.75rem;
+            color: #5f7e98;
+            margin-top: 1rem;
+            text-align: right;
+            border-top: 1px solid #eaf0f6;
+            padding-top: 1rem;
+        }
+
+        .edit-inline {
+            background: #fffbe6;
+            border: 2px solid #b8860b;
+            border-radius: 0.8rem;
+            padding: 0.6rem 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .edit-inline input {
+            flex: 1;
+            min-width: 100px;
+            padding: 0.4rem 0.7rem;
+            border: 1px solid #dce6ef;
+            border-radius: 0.6rem;
+            font-size: 0.9rem;
+        }
+        .edit-inline .edit-actions {
+            display: flex;
+            gap: 0.4rem;
+        }
+        .edit-inline .edit-actions button {
+            padding: 0.3rem 0.9rem;
+            border: none;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .edit-inline .edit-actions .save-edit {
+            background: #1a7a5c;
+            color: white;
+        }
+        .edit-inline .edit-actions .save-edit:hover {
+            background: #156a4f;
+        }
+        .edit-inline .edit-actions .cancel-edit {
+            background: #dce6ef;
+            color: #1a3d55;
+        }
+        .edit-inline .edit-actions .cancel-edit:hover {
+            background: #c8d4df;
+        }
+
+        @media (max-width: 480px) {
+            .petition-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .logo-placeholder {
+                width: 60px;
+                height: 60px;
+            }
+            .header-text h1 {
+                font-size: 1.5rem;
+            }
+            .petition-reason-wrapper {
+                flex-wrap: wrap;
+            }
+            .petition-reason-wrapper .reason-label {
+                white-space: normal;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .btn-group {
+                width: 100%;
+            }
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .signature-entry {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .signature-entry .entry-actions {
+                justify-content: flex-end;
+            }
+            .edit-inline {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .edit-inline .edit-actions {
+                justify-content: flex-end;
+            }
+            .canvas-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .canvas-controls .color-picker-wrapper {
+                justify-content: center;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0.3in;
+            }
+            .petition-card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                padding: 1.5rem;
+            }
+            .btn, .action-bar .btn-group, .search-bar, .entry-actions, .canvas-controls {
+                display: none !important;
+            }
+            .demo-feedback {
+                display: none !important;
+            }
+            .signature-area textarea {
+                min-height: 70px;
+            }
+            .logo-placeholder {
+                border: 1px solid #ccc;
+            }
+            .edit-inline {
+                display: none !important;
+            }
+            .signature-type-toggle {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="petition-card" role="main" aria-label="Digital petition form">
+    <!-- ===== HEADER ===== -->
+    <div class="petition-header">
+        <div class="logo-placeholder" id="logoPlaceholder" title="Click to upload logo">
+            <i class="fas fa-image" id="logoIcon"></i>
+            <img id="logoImage" style="display:none;" alt="Logo" />
+        </div>
+        <input type="file" id="logoInput" accept="image/*" style="display:none;" />
+
+        <div class="header-text">
+            <div class="petition-name-wrapper">
+                <i class="fas fa-pen-fancy" aria-hidden="true"></i>
+                <h1 contenteditable="true" id="petitionName" spellcheck="true">
+                    Petition Name
+                </h1>
+            </div>
+
+            <!-- ===== PETITION REASON (EDITABLE) ===== -->
+            <div class="petition-reason-wrapper">
+                <i class="fas fa-bullhorn" aria-hidden="true"></i>
+                <span class="reason-label">Reason:</span>
+                <div class="reason-text" contenteditable="true" id="petitionReason" spellcheck="true">
+                    Click here to state the petition reason…
+                </div>
+            </div>
+
+            <div class="petition-sub">
+                <span><i class="far fa-calendar-alt" aria-hidden="true"></i> 2026</span>
+                <span class="badge"><i class="fas fa-hashtag" aria-hidden="true"></i> CPNC Verified</span>
+                <span style="font-size:0.7rem; color:#8aa3b8; margin-left:auto;">
+                    <i class="fas fa-edit" aria-hidden="true"></i> click name or reason to edit
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SEARCH BAR ===== -->
+    <div class="search-bar">
+        <i class="fas fa-search" aria-hidden="true"></i>
+        <input type="text" id="searchInput" placeholder="Search by name or CPNC #..." />
+        <span class="search-clear" id="searchClear" title="Clear search"><i class="fas fa-times-circle"></i></span>
+        <span class="search-count" id="searchCount">0 shown</span>
+    </div>
+
+    <!-- ===== FORM ===== -->
+    <form class="petition-form" id="petitionForm" novalidate>
+        <div class="name-cpnc-row">
+            <div class="field-group">
+                <label for="fullName">
+                    <i class="fas fa-user-circle" aria-hidden="true"></i> Full Name
+                    <span class="required-star">*</span>
+                </label>
+                <input type="text" id="fullName" placeholder="e.g. Dr. Jane M. Rivera"
+                       autocomplete="name" required aria-required="true">
+            </div>
+            <div class="field-group">
+                <label for="cpncNumber">
+                    <i class="fas fa-hashtag" aria-hidden="true"></i> CPNC #
+                    <span class="required-star">*</span>
+                </label>
+                <input type="text" id="cpncNumber" placeholder="e.g. CPNC-2026-089"
+                       autocomplete="off" required aria-required="true">
+            </div>
+        </div>
+
+        <!-- ===== SIGNATURE WITH DRAWING ===== -->
+        <div class="signature-area">
+            <div class="field-group">
+                <label>
+                    <i class="fas fa-pen-fancy" aria-hidden="true"></i> Signature
+                    <span class="required-star">*</span>
+                </label>
+
+                <div class="signature-type-toggle">
+                    <button type="button" class="toggle-btn active" data-mode="draw">
+                        <i class="fas fa-paint-brush"></i> Draw
+                    </button>
+                    <button type="button" class="toggle-btn" data-mode="type">
+                        <i class="fas fa-keyboard"></i> Type
+                    </button>
+                </div>
+
+                <div class="canvas-wrapper" id="canvasWrapper">
+                    <canvas id="signatureCanvas" width="600" height="200"></canvas>
+                </div>
+
+                <div class="signature-text-input" id="textSignatureInput">
+                    <input type="text" id="signatureText" placeholder="Type your signature …"
+                           style="font-family:'Brush Script MT', cursive; font-size:1.4rem;">
+                </div>
+
+                <div class="canvas-controls">
+                    <button type="button" class="btn-sm btn-clear-canvas" id="clearCanvasBtn">
+                        <i class="fas fa-eraser"></i> Clear
+                    </button>
+                    <button type="button" class="btn-sm btn-undo-canvas" id="undoCanvasBtn">
+                        <i class="fas fa-undo-alt"></i> Undo
+                    </button>
+                    <div class="color-picker-wrapper">
+                        <span>Color:</span>
+                        <input type="color" id="penColor" value="#0a2a3f" />
+                    </div>
+                    <div class="color-picker-wrapper">
+                        <span>Size:</span>
+                        <input type="range" id="penSize" min="1" max="10" value="3" />
+                    </div>
+                </div>
+
+                <div class="signature-hint">
+                    <i class="fas fa-edit" aria-hidden="true"></i> Draw or type your signature
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <div class="btn-group">
+                <button type="reset" class="btn btn-outline" id="resetBtn">
+                    <i class="fas fa-undo-alt" aria-hidden="true"></i> Clear
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-check-circle" aria-hidden="true"></i> Sign
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success" id="savePdfBtn">
+                    <i class="fas fa-file-pdf" aria-hidden="true"></i> Save as PDF
+                </button>
+                <button type="button" class="btn btn-warning" id="saveLibreBtn">
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Save for LibreOffice
+                </button>
+            </div>
+        </div>
+
+        <div id="feedbackMessage" class="demo-feedback" style="display: none;">
+            <i class="fas fa-check-circle" aria-hidden="true"></i>
+            <span id="feedbackText">Petition signed successfully.</span>
+        </div>
+    </form>
+
+    <!-- ===== SIGNATURE LIST ===== -->
+    <div class="signature-list" id="signatureList">
+        <div class="signature-list-header">
+            <h3><i class="fas fa-list-ul" aria-hidden="true"></i> Signatures <span id="signatureCount">0</span></h3>
+            <button type="button" class="btn btn-danger" id="clearAllBtn" style="padding:0.3rem 1rem; font-size:0.8rem;">
+                <i class="fas fa-trash-alt" aria-hidden="true"></i> Clear All
+            </button>
+        </div>
+        <div id="signatureEntries"></div>
+    </div>
+
+    <div class="footnote">
+        <i class="fas fa-shield-alt" aria-hidden="true"></i> Your digital signature is verified with CPNC
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ===== DOM refs =====
+        const form = document.getElementById('petitionForm');
+        const fullNameInput = document.getElementById('fullName');
+        const cpncInput = document.getElementById('cpncNumber');
+        const signatureText = document.getElementById('signatureText');
+        const feedbackDiv = document.getElementById('feedbackMessage');
+        const feedbackSpan = document.getElementById('feedbackText');
+        const signatureEntries = document.getElementById('signatureEntries');
+        const signatureCount = document.getElementById('signatureCount');
+        const searchInput = document.getElementById('searchInput');
+        const searchClear = document.getElementById('searchClear');
+        const searchCount = document.getElementById('searchCount');
+
+        // ===== PETITION REASON =====
+        const petitionReason = document.getElementById('petitionReason');
+        // Restore saved reason
+        try {
+            const savedReason = localStorage.getItem('petitionReason');
+            if (savedReason && savedReason.trim() !== '') {
+                petitionReason.textContent = savedReason;
+            }
+        } catch (e) {}
+
+        petitionReason.addEventListener('blur', function() {
+            const text = this.textContent.trim();
+            if (text === '' || text === 'Click here to state the petition reason…') {
+                this.textContent = 'Click here to state the petition reason…';
+            }
+            try {
+                localStorage.setItem('petitionReason', this.textContent);
+            } catch (e) {}
+        });
+
+        petitionReason.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.execCommand('insertLineBreak');
+            }
+        });
+
+        // ===== CANVAS =====
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        const canvasWrapper = document.getElementById('canvasWrapper');
+
+        function resizeCanvas() {
+            const rect = canvasWrapper.getBoundingClientRect();
+            const width = rect.width - 4;
+            const ratio = 200 / 600;
+            canvas.width = width;
+            canvas.height = width * ratio;
+            if (savedCanvasData) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+                img.src = savedCanvasData;
+            } else {
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let penColor = '#0a2a3f';
+        let penSize = 3;
+        let savedCanvasData = null;
+        let undoStack = [];
+
+        function getCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+            const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+            return { x: x * (canvas.width / rect.width), y: y * (canvas.height / rect.height) };
+        }
+
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const coords = getCoords(e);
+            lastX = coords.x;
+            lastY = coords.y;
+            undoStack.push(canvas.toDataURL());
+            if (undoStack.length > 30) undoStack.shift();
+        }
+
+        function draw(e) {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const coords = getCoords(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(coords.x, coords.y);
+            ctx.strokeStyle = penColor;
+            ctx.lineWidth = penSize;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+            lastX = coords.x;
+            lastY = coords.y;
+            savedCanvasData = canvas.toDataURL();
+        }
+
+        function stopDrawing(e) {
+            e.preventDefault();
+            isDrawing = false;
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchcancel', stopDrawing);
+
+        document.getElementById('penColor').addEventListener('input', function() {
+            penColor = this.value;
+        });
+        document.getElementById('penSize').addEventListener('input', function() {
+            penSize = parseInt(this.value);
+        });
+
+        document.getElementById('clearCanvasBtn').addEventListener('click', function() {
+            if (confirm('Clear your drawing?')) {
+                undoStack.push(canvas.toDataURL());
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                savedCanvasData = canvas.toDataURL();
+                signatureText.value = '';
+            }
+        });
+
+        document.getElementById('undoCanvasBtn').addEventListener('click', function() {
+            if (undoStack.length === 0) return;
+            const prev = undoStack.pop();
+            const img = new Image();
+            img.onload = function() {
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                savedCanvasData = canvas.toDataURL();
+            };
+            img.src = prev;
+        });
+
+        // ===== SIGNATURE TYPE TOGGLE =====
+        let signatureMode = 'draw';
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        const textInputWrapper = document.getElementById('textSignatureInput');
+
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                toggleBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                signatureMode = this.dataset.mode;
+
+                if (signatureMode === 'draw') {
+                    canvasWrapper.style.display = 'block';
+                    textInputWrapper.classList.remove('show');
+                    textInputWrapper.style.display = 'none';
+                    document.querySelector('.canvas-controls').style.display = 'flex';
+                } else {
+                    canvasWrapper.style.display = 'none';
+                    textInputWrapper.classList.add('show');
+                    textInputWrapper.style.display = 'block';
+                    document.querySelector('.canvas-controls').style.display = 'none';
+                }
+            });
+        });
+
+        // ===== GET SIGNATURE DATA =====
+        function getSignatureData() {
+            if (signatureMode === 'draw') {
+                const dataUrl = canvas.toDataURL('image/png');
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const pixels = imageData.data;
+                let hasDrawing = false;
+                for (let i = 0; i < pixels.length; i += 4) {
+                    if (pixels[i] < 255 || pixels[i+1] < 255 || pixels[i+2] < 255) {
+                        hasDrawing = true;
+                        break;
+                    }
+                }
+                if (!hasDrawing) return null;
+                return { type: 'draw', data: dataUrl };
+            } else {
+                const text = signatureText.value.trim();
+                if (text === '') return null;
+                return { type: 'text', data: text };
+            }
+        }
+
+        // ===== LOGO =====
+        const logoPlaceholder = document.getElementById('logoPlaceholder');
+        const logoInput = document.getElementById('logoInput');
+        const logoIcon = document.getElementById('logoIcon');
+        const logoImage = document.getElementById('logoImage');
+
+        logoPlaceholder.addEventListener('click', () => logoInput.click());
+        logoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    logoIcon.style.display = 'none';
+                    logoImage.style.display = 'block';
+                    logoImage.src = ev.target.result;
+                    try { localStorage.setItem('petitionLogo', ev.target.result); } catch (err) {}
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        try {
+            const savedLogo = localStorage.getItem('petitionLogo');
+            if (savedLogo) {
+                logoIcon.style.display = 'none';
+                logoImage.style.display = 'block';
+                logoImage.src = savedLogo;
+            }
+        } catch (e) {}
+
+        // ===== PETITION NAME =====
+        const petitionName = document.getElementById('petitionName');
+        try {
+            const savedName = localStorage.getItem('petitionName');
+            if (savedName && savedName.trim() !== '') {
+                petitionName.textContent = savedName;
+            }
+        } catch (e) {}
+        petitionName.addEventListener('blur', function() {
+            if (this.textContent.trim() === '') this.textContent = 'Petition Name';
+            try { localStorage.setItem('petitionName', this.textContent); } catch (e) {}
+        });
+        petitionName.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); this.blur(); }
+        });
+
+        // ===== SIGNATURES DATA =====
+        let signatures = [];
+        let searchQuery = '';
+        let editingIndex = null;
+
+        try {
+            const saved = localStorage.getItem('petitionSignatures');
+            if (saved) {
+                signatures = JSON.parse(saved);
+            }
+        } catch (e) {}
+
+        // ===== HELPERS =====
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showFeedback(message, isSuccess = true) {
+            feedbackSpan.textContent = message;
+            feedbackDiv.style.display = 'flex';
+            feedbackDiv.style.background = isSuccess ? '#d8ecf5' : '#fce9e6';
+            feedbackDiv.style.borderLeftColor = isSuccess ? '#1f6e9e' : '#b22234';
+            feedbackDiv.style.color = isSuccess ? '#004466' : '#5f1a1a';
+            const icon = feedbackDiv.querySelector('i');
+            if (icon) {
+                icon.className = isSuccess ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+                icon.style.color = isSuccess ? '#006699' : '#a52a2a';
+            }
+            clearTimeout(window.feedbackTimeout);
+            window.feedbackTimeout = setTimeout(() => {
+                feedbackDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function clearFormForNext() {
+            form.reset();
+            fullNameInput.focus();
+            [fullNameInput, cpncInput].forEach(inp => {
+                inp.style.borderColor = '#dce6ef';
+                inp.style.boxShadow = 'none';
+                inp.value = '';
+            });
+            signatureText.value = '';
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            savedCanvasData = canvas.toDataURL();
+            undoStack = [];
+        }
+
+        function saveSignatures() {
+            try {
+                localStorage.setItem('petitionSignatures', JSON.stringify(signatures));
+            } catch (e) {}
+            renderSignatures();
+        }
+
+        // ===== RENDER =====
+        function renderSignatures() {
+            const query = searchQuery.toLowerCase().trim();
+            let filtered = signatures;
+            if (query) {
+                filtered = signatures.filter(sig =>
+                    sig.fullName.toLowerCase().includes(query) ||
+                    sig.cpnc.toLowerCase().includes(query)
+                );
+            }
+
+            signatureEntries.innerHTML = '';
+            if (filtered.length === 0) {
+                const msg = signatures.length === 0
+                    ? 'No signatures yet. Be the first to sign!'
+                    : 'No signatures match your search.';
+                signatureEntries.innerHTML = `<p class="no-results">${msg}</p>`;
+                signatureCount.textContent = signatures.length;
+                searchCount.textContent = '0 shown';
+                return;
+            }
+
+            signatureCount.textContent = signatures.length;
+            searchCount.textContent = `${filtered.length} shown`;
+
+            const reversed = [...filtered].reverse();
+            reversed.forEach((sig) => {
+                const originalIndex = signatures.indexOf(sig);
+
+                if (editingIndex === originalIndex) {
+                    const editDiv = document.createElement('div');
+                    editDiv.className = 'edit-inline';
+                    editDiv.innerHTML = `
+                        <input type="text" id="editName" value="${escapeHtml(sig.fullName)}" placeholder="Full Name" />
+                        <input type="text" id="editCpnc" value="${escapeHtml(sig.cpnc)}" placeholder="CPNC #" />
+                        <input type="text" id="editSignature" value="${sig.signatureData && sig.signatureData.type === 'text' ? escapeHtml(sig.signatureData.data) : ''}" placeholder="Signature text" />
+                        <div class="edit-actions">
+                            <button class="save-edit" data-index="${originalIndex}"><i class="fas fa-save"></i> Save</button>
+                            <button class="cancel-edit" data-index="${originalIndex}"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    `;
+                    signatureEntries.appendChild(editDiv);
+
+                    editDiv.querySelector('.save-edit').addEventListener('click', function() {
+                        const idx = parseInt(this.dataset.index);
+                        const nameInput = document.getElementById('editName');
+                        const cpncInput2 = document.getElementById('editCpnc');
+                        const sigInput = document.getElementById('editSignature');
+                        const newName = nameInput.value.trim();
+                        const newCpnc = cpncInput2.value.trim();
+                        const newSig = sigInput.value.trim();
+
+                        if (newName === '' || newCpnc === '' || newSig === '') {
+                            showFeedback('All fields are required for editing.', false);
+                            return;
+                        }
+
+                        signatures[idx] = {
+                            ...signatures[idx],
+                            fullName: newName,
+                            cpnc: newCpnc,
+                            signatureData: { type: 'text', data: newSig }
+                        };
+                        editingIndex = null;
+                        saveSignatures();
+                        showFeedback('✅ Signature updated successfully!', true);
+                    });
+
+                    editDiv.querySelector('.cancel-edit').addEventListener('click', function() {
+                        editingIndex = null;
+                        renderSignatures();
+                    });
+                    return;
+                }
+
+                const div = document.createElement('div');
+                div.className = 'signature-entry';
+
+                let sigDisplay = '';
+                if (sig.signatureData && sig.signatureData.type === 'draw') {
+                    sigDisplay = `<img src="${sig.signatureData.data}" alt="Signature" style="max-height:30px; border:1px solid #dce6ef; border-radius:4px;" />`;
+                } else if (sig.signatureData && sig.signatureData.type === 'text') {
+                    sigDisplay = `<span class="sig-preview">${escapeHtml(sig.signatureData.data)}</span>`;
+                } else {
+                    sigDisplay = `<span style="color:#8aa3b8;">(no signature)</span>`;
+                }
+
+                div.innerHTML = `
+                    <div class="entry-info">
+                        <strong>${escapeHtml(sig.fullName)}</strong>
+                        <span style="color:#4b6d88;">·</span>
+                        <span style="color:#2c5779;">CPNC: ${escapeHtml(sig.cpnc)}</span>
+                        ${sigDisplay}
+                        <span class="timestamp"><i class="far fa-clock" aria-hidden="true"></i> ${escapeHtml(sig.timestamp)}</span>
+                    </div>
+                    <div class="entry-actions">
+                        <button class="edit-btn" data-index="${originalIndex}"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="delete-btn" data-index="${originalIndex}"><i class="fas fa-trash-alt"></i> Delete</button>
+                    </div>
+                `;
+                signatureEntries.appendChild(div);
+
+                div.querySelector('.edit-btn').addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index);
+                    editingIndex = idx;
+                    renderSignatures();
+                });
+
+                div.querySelector('.delete-btn').addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index);
+                    if (confirm(`Delete signature for "${signatures[idx].fullName}"?`)) {
+                        signatures.splice(idx, 1);
+                        if (editingIndex === idx) editingIndex = null;
+                        saveSignatures();
+                        showFeedback(`🗑️ Signature deleted.`, true);
+                    }
+                });
+            });
+        }
+
+        // ===== SEARCH =====
+        searchInput.addEventListener('input', function() {
+            searchQuery = this.value;
+            renderSignatures();
+        });
+
+        searchClear.addEventListener('click', function() {
+            searchInput.value = '';
+            searchQuery = '';
+            renderSignatures();
+            searchInput.focus();
+        });
+
+        // ===== SUBMIT =====
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const fullName = fullNameInput.value.trim();
+            const cpnc = cpncInput.value.trim();
+            const signatureData = getSignatureData();
+
+            [fullNameInput, cpncInput].forEach(inp => {
+                inp.style.borderColor = '#dce6ef';
+                inp.style.boxShadow = 'none';
+            });
+
+            let isValid = true;
+            let errorMsg = '';
+
+            if (fullName === '') {
+                fullNameInput.style.borderColor = '#b22234';
+                fullNameInput.style.boxShadow = '0 0 0 4px rgba(178,34,52,0.12)';
+                isValid = false;
+                errorMsg = 'Full Name is required.';
+            } else if (cpnc === '') {
+                cpncInput.style.borderColor = '#b22234';
+                cpncInput.style.boxShadow = '0 0 0 4px rgba(178,34,52,0.12)';
+                isValid = false;
+                errorMsg = 'CPNC # is required.';
+            } else if (!signatureData) {
+                isValid = false;
+                errorMsg = signatureMode === 'draw' ? 'Please draw your signature.' : 'Please type your signature.';
+            }
+
+            if (!isValid) {
+                showFeedback(errorMsg, false);
+                return;
+            }
+
+            const timestamp = new Date().toLocaleString();
+            signatures.push({
+                fullName: fullName,
+                cpnc: cpnc,
+                signatureData: signatureData,
+                timestamp: timestamp
+            });
+            saveSignatures();
+
+            showFeedback(`✅ ${fullName} signed successfully! Form cleared for next person.`, true);
+
+            setTimeout(() => {
+                clearFormForNext();
+                const entries = signatureEntries.querySelectorAll('.signature-entry');
+                if (entries.length > 0) {
+                    entries[0].style.background = '#d8ecf5';
+                    setTimeout(() => { entries[0].style.background = ''; }, 1500);
+                }
+            }, 800);
+        });
+
+        // ===== RESET =====
+        document.getElementById('resetBtn').addEventListener('click', function(e) {
+            setTimeout(() => {
+                feedbackDiv.style.display = 'none';
+                clearFormForNext();
+            }, 5);
+        });
+
+        // ===== CLEAR ALL =====
+        document.getElementById('clearAllBtn').addEventListener('click', function() {
+            if (signatures.length === 0) {
+                showFeedback('No signatures to clear.', false);
+                return;
+            }
+            if (confirm('⚠️ Delete ALL signatures? This cannot be undone.')) {
+                signatures = [];
+                editingIndex = null;
+                saveSignatures();
+                showFeedback('🗑️ All signatures cleared.', true);
+            }
+        });
+
+        // ===== SAVE PDF =====
+        document.getElementById('savePdfBtn').addEventListener('click', function() {
+            window.print();
+        });
+
+        // ===== SAVE LIBREOFFICE =====
+        document.getElementById('saveLibreBtn').addEventListener('click', function() {
+            const now = new Date().toLocaleString();
+            const petitionTitle = petitionName.textContent.trim() || 'Petition';
+            const reason = petitionReason.textContent.trim() || 'No reason stated';
+            let htmlContent = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>${escapeHtml(petitionTitle)} - Signatures</title>
+<style>
+body{font-family:'Segoe UI',sans-serif;max-width:800px;margin:2rem auto;padding:1.5rem;background:#fafafa;border:1px solid #ccc;border-radius:12px;}
+h1{color:#0a2a3f;border-bottom:2px solid #1f6e9e;padding-bottom:0.5rem;}
+.reason-box{background:#f0f5fa;padding:0.8rem 1.2rem;border-radius:0.8rem;margin:0.5rem 0 1.5rem 0;border-left:4px solid #1f6e9e;}
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;}
+th{background:#1a4b6d;color:white;padding:0.6rem;text-align:left;}
+td{padding:0.6rem;border-bottom:1px solid #ddd;}
+tr:nth-child(even){background:#f6faff;}
+.sig{font-family:'Brush Script MT',cursive;font-size:1.3rem;}
+.sig img{max-height:40px;vertical-align:middle;border:1px solid #ddd;border-radius:4px;}
+.footer{margin-top:2rem;color:#5f7e98;font-size:0.85rem;border-top:1px solid #ddd;padding-top:1rem;}
+</style>
+</head>
+<body>
+<h1>📄 ${escapeHtml(petitionTitle)}</h1>
+<div class="reason-box"><strong>📢 Reason:</strong> ${escapeHtml(reason)}</div>
+<p><strong>Total Signatures:</strong> ${signatures.length}</p>
+<p><strong>Exported on:</strong> ${now}</p>`;
+
+            if (signatures.length === 0) {
+                htmlContent += `<p style="color:#8aa3b8;">No signatures recorded yet.</p>`;
+            } else {
+                htmlContent += `<table>
+<thead><tr><th>#</th><th>Full Name</th><th>CPNC #</th><th>Signature</th><th>Timestamp</th></tr></thead>
+<tbody>`;
+                signatures.forEach((sig, index) => {
+                    let sigDisplay = '';
+                    if (sig.signatureData && sig.signatureData.type === 'draw') {
+                        sigDisplay = `<img src="${sig.signatureData.data}" alt="Signature" />`;
+                    } else if (sig.signatureData && sig.signatureData.type === 'text') {
+                        sigDisplay = `<span class="sig">${escapeHtml(sig.signatureData.data)}</span>`;
+                    } else {
+                        sigDisplay = `<span style="color:#8aa3b8;">(no signature)</span>`;
+                    }
+                    htmlContent += `<tr>
+<td>${index + 1}</td>
+<td>${escapeHtml(sig.fullName)}</td>
+<td>${escapeHtml(sig.cpnc)}</td>
+<td>${sigDisplay}</td>
+<td>${escapeHtml(sig.timestamp)}</td>
+</tr>`;
+                });
+                htmlContent += `</tbody></table>`;
+            }
+
+            htmlContent += `<div class="footer"><i class="fas fa-shield-alt" aria-hidden="true"></i> Verified with CPNC · Digital Petition System</div>
+</body>
+</html>`;
+
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Petition_${petitionTitle.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.html`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            showFeedback(`📄 Exported ${signatures.length} signatures for LibreOffice`, true);
+        });
+
+        // ===== Remove highlights on input =====
+        [fullNameInput, cpncInput].forEach(inp => {
+            inp.addEventListener('input', function() {
+                this.style.borderColor = '#dce6ef';
+                this.style.boxShadow = 'none';
+            });
+        });
+
+        // ===== INIT =====
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        renderSignatures();
+
+        console.log('📝 Digital Petition ready · Petition Reason + Drawing + Search + Edit/Delete');
+    })();
+</script>
+By JA 0598
+</body>
+</html>
