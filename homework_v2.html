@@ -8,6 +8,542 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 15px; }
         .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; font-size: 26px; margin: 0; }
+        
+        .header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .header img { height: 80px; width: auto; }
+        
+        .subject-select { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .subject-select label { font-size: 16px; font-weight: bold; color: #34495e; }
+        .subject-select select { padding: 12px; font-size: 16px; border: 2px solid #bdc3c7; border-radius: 8px; flex: 1; min-width: 200px; }
+        
+        .buttons { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .buttons button { padding: 12px 20px; font-size: 14px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; color: white; flex: 1; min-width: 100px; }
+        .btn-save { background: #27ae60; }
+        .btn-export { background: #2980b9; }
+        .btn-pdf { background: #e74c3c; }
+        .btn-clear { background: #e67e22; }
+        
+        .tabs { display: flex; gap: 5px; margin: 15px 0; flex-wrap: wrap; }
+        .tabs button { padding: 10px 15px; font-size: 14px; background: #ecf0f1; border: none; border-radius: 8px; cursor: pointer; flex: 1; min-width: 80px; }
+        .tabs button.active { background: #3498db; color: white; font-weight: bold; }
+        
+        .tab-content { display: none; padding: 15px; background: #f8f9fa; border-radius: 8px; min-height: 250px; }
+        .tab-content.active { display: block; }
+        
+        textarea { width: 100%; height: 250px; font-size: 16px; padding: 15px; border: 2px solid #bdc3c7; border-radius: 8px; font-family: Arial, sans-serif; resize: vertical; }
+        
+        .formula-box { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 13px; white-space: pre-wrap; line-height: 1.5; max-height: 500px; overflow-y: auto; }
+        
+        .draw-controls { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; }
+        .color-btn { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ccc; cursor: pointer; }
+        .size-btn, .action-btn { padding: 6px 12px; font-size: 13px; border: none; border-radius: 5px; cursor: pointer; background: #ecf0f1; font-weight: bold; }
+        .action-btn.clear { background: #e74c3c; color: white; }
+        .action-btn.save { background: #27ae60; color: white; }
+        
+        #drawCanvas { border: 2px solid #bdc3c7; border-radius: 8px; width: 100%; background: white; cursor: crosshair; touch-action: none; display: block; }
+        
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 15px; }
+        .calendar-grid .header { font-weight: bold; text-align: center; padding: 8px 3px; background: #34495e; color: white; font-size: 11px; border-radius: 4px; }
+        .calendar-grid .day { text-align: center; padding: 12px 3px; background: #ecf0f1; border-radius: 5px; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+        .calendar-grid .day:hover { background: #d5dbdb; }
+        .calendar-grid .today { background: #3498db !important; color: white; font-weight: bold; }
+        .calendar-grid .has-events { background: #f39c12 !important; color: white; font-weight: bold; }
+        .calendar-grid .empty { background: transparent; }
+        
+        .footer { text-align: center; color: #7f8c8d; font-size: 12px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ecf0f1; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- LOGO + TITLE -->
+    <div class="header">
+        <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+        <h1>📚 HOMEWORK ORGANIZER</h1>
+    </div>
+    
+    <div class="subject-select">
+        <label>Subject:</label>
+        <select id="subjectSelect">
+            <option>Math</option><option>English</option><option>Chemistry</option>
+            <option>Science</option><option>History</option><option>Biology</option>
+            <option>Sociology</option><option>Physics</option><option>Art</option>
+            <option>Music</option><option>Geography</option><option>Economics</option>
+            <option>Psychology</option><option>Computer Science</option>
+            <option>Foreign Language</option><option>Philosophy</option>
+            <option>Political Science</option>
+        </select>
+    </div>
+    
+    <div class="buttons">
+        <button class="btn-save" onclick="saveHomework()">💾 Save</button>
+        <button class="btn-export" onclick="exportHomework()">📄 Export</button>
+        <button class="btn-pdf" onclick="openPDF()">📖 PDF</button>
+        <button class="btn-clear" onclick="clearHomework()">🗑️ Clear</button>
+    </div>
+    
+    <div class="tabs">
+        <button class="active" onclick="showTab(this, 'homework')">📝 Homework</button>
+        <button onclick="showTab(this, 'formulas')">📐 Formulas</button>
+        <button onclick="showTab(this, 'art')">🎨 Art</button>
+        <button onclick="showTab(this, 'calendar')">📅 Calendar</button>
+    </div>
+    
+    <!-- HOMEWORK TAB -->
+    <div id="tab-homework" class="tab-content active">
+        <textarea id="homeworkText" placeholder="Type your homework here..."></textarea>
+    </div>
+    
+    <!-- FORMULAS TAB -->
+    <div id="tab-formulas" class="tab-content">
+        <div class="formula-box" id="formulaBox">Select a subject to see formulas.</div>
+    </div>
+    
+    <!-- ART TAB -->
+    <div id="tab-art" class="tab-content">
+        <div class="draw-controls">
+            <button class="color-btn" onclick="setColor('black')" style="background:black;"></button>
+            <button class="color-btn" onclick="setColor('red')" style="background:red;"></button>
+            <button class="color-btn" onclick="setColor('blue')" style="background:blue;"></button>
+            <button class="color-btn" onclick="setColor('green')" style="background:green;"></button>
+            <button class="color-btn" onclick="setColor('orange')" style="background:orange;"></button>
+            <button class="color-btn" onclick="setColor('purple')" style="background:purple;"></button>
+            <button class="color-btn" onclick="setColor('white')" style="background:white;">🧽</button>
+            <button class="size-btn" onclick="changeSize(2)">Thin</button>
+            <button class="size-btn" onclick="changeSize(5)">Med</button>
+            <button class="size-btn" onclick="changeSize(12)">Thick</button>
+            <button class="action-btn clear" onclick="clearCanvas()">🗑️ Clear</button>
+            <button class="action-btn save" onclick="saveDrawing()">💾 Save PNG</button>
+        </div>
+        <canvas id="drawCanvas" width="1000" height="400"></canvas>
+    </div>
+    
+    <!-- CALENDAR TAB -->
+    <div id="tab-calendar" class="tab-content">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; flex-wrap:wrap;">
+            <button onclick="prevMonth()" style="padding:8px 15px; background:#3498db; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">&lt;&lt; Prev</button>
+            <h2 id="calendarTitle" style="color:#2c3e50; font-size:20px; margin:0; text-align:center; flex:1;"></h2>
+            <button onclick="nextMonth()" style="padding:8px 15px; background:#3498db; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">Next &gt;&gt;</button>
+        </div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+        
+        <div style="margin-top:15px; padding:15px; background:#ecf0f1; border-radius:8px;">
+            <h3 id="selectedDateLabel" style="color:#2c3e50; margin-bottom:10px;">Click a date to add event</h3>
+            <div id="eventsList" style="background:white; padding:10px; border-radius:5px; min-height:80px; max-height:150px; overflow-y:auto; margin-bottom:10px;"></div>
+            
+            <input type="text" id="eventInput" placeholder="Type event here..." style="width:100%; padding:10px; font-size:14px; border:2px solid #bdc3c7; border-radius:5px; margin-bottom:8px;">
+            
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <select id="eventType" style="padding:8px; border:2px solid #bdc3c7; border-radius:5px; flex:1;">
+                    <option>Homework</option>
+                    <option>Test</option>
+                    <option>Project</option>
+                    <option>Quiz</option>
+                    <option>Other</option>
+                </select>
+                <button onclick="addEvent()" style="padding:8px 15px; background:#27ae60; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">+ Add</button>
+                <button onclick="deleteEvent()" style="padding:8px 15px; background:#e74c3c; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- COPYRIGHT FOOTER -->
+    <div class="footer">
+        © 2026 Jamal Adeeroo. All rights reserved.<br>
+        Generated by Homework Organizer Pro
+    </div>
+</div>
+
+<script>
+    // ===== GLOBAL STATE =====
+    let homeworkData = {};
+    let currentSubject = 'Math';
+    
+    // ===== FORMULAS DATABASE =====
+    const formulasDB = {
+        "Math": "📐 MATH FORMULAS\n═══════════════════════════════════════\n\n🔢 FRACTIONS\n─────────────────\nAddition:     a/b + c/d = (ad + bc) / bd\nSubtraction:  a/b - c/d = (ad - bc) / bd\nMultiplication: a/b × c/d = ac / bd\nDivision:     a/b ÷ c/d = ad / bc\n\n📏 GEOMETRY\n─────────────────\nCircle: Area = πr², Circumference = 2πr\nTriangle: Area = ½ × base × height\nPythagorean: a² + b² = c²\nRectangle: Area = length × width\nSphere: Volume = (4/3)πr³\n\n📊 ALGEBRA\n─────────────────\nQuadratic: x = (-b ± √(b² - 4ac)) / 2a\nSlope: m = (y₂ - y₁) / (x₂ - x₁)\nSlope-Intercept: y = mx + b\nDistance: d = √((x₂-x₁)² + (y₂-y₁)²)\n\n📐 TRIGONOMETRY\n─────────────────\nSOH-CAH-TOA:\n  sin θ = Opposite / Hypotenuse\n  cos θ = Adjacent / Hypotenuse\n  tan θ = Opposite / Adjacent\nsin²θ + cos²θ = 1\n\n📈 CALCULUS\n─────────────────\nPower Rule: d/dx(xⁿ) = n·xⁿ⁻¹\nProduct Rule: (uv)' = u'v + uv'\nQuotient Rule: (u/v)' = (u'v - uv') / v²\nIntegral: ∫xⁿ dx = xⁿ⁺¹/(n+1) + C",
+        
+        "Chemistry": "⚗️ CHEMISTRY FORMULAS\n═══════════════════════════════════════\n\nMoles = Mass / Molar Mass\nMolarity (M) = Moles / Liters of solution\nIdeal Gas: PV = nRT\npH = -log[H⁺]\npOH = -log[OH⁻]\npH + pOH = 14\n\nBoyle's Law: P₁V₁ = P₂V₂\nCharles's Law: V₁/T₁ = V₂/T₂\nCombined Gas: P₁V₁/T₁ = P₂V₂/T₂\n\nDilution: M₁V₁ = M₂V₂\nPercent Yield = (Actual / Theoretical) × 100",
+        
+        "Physics": "⚡ PHYSICS FORMULAS\n═══════════════════════════════════════\n\nVelocity: v = d/t\nAcceleration: a = (v_f - v_i) / t\nNewton's Second Law: F = ma\nWeight: W = mg (g = 9.8 m/s²)\n\nKinetic Energy: KE = ½mv²\nPotential Energy: PE = mgh\nWork: W = Fd·cosθ\nPower: P = W/t = Fv\n\nCentripetal Force: F = mv²/r\nWave Speed: v = fλ\nOhm's Law: V = IR\nPower: P = VI = I²R = V²/R\n\nCoulomb's Law: F = kq₁q₂/r²\nHeat: Q = mcΔT",
+        
+        "Biology": "🧬 BIOLOGY FORMULAS\n═══════════════════════════════════════\n\nHardy-Weinberg:\n  p + q = 1\n  p² + 2pq + q² = 1\n\nChi-Square: χ² = Σ((O - E)² / E)\n\nMagnification = Image size / Actual size\nPopulation Density = Population / Area\n\nExponential Growth: N(t) = N₀e^(rt)\nLogistic Growth: N(t) = K / (1 + ((K-N₀)/N₀)e^(-rt))\n\nWater Potential: Ψ = Ψs + Ψp",
+        
+        "Science": "🔬 SCIENCE FORMULAS\n═══════════════════════════════════════\n\nDensity: D = m/V\nSpecific Gravity = Density / Density of water\n\n°F = (°C × 9/5) + 32\n°C = (°F - 32) × 5/9\nK = °C + 273.15\n\nWork: W = F × d\nPower: P = W / t\nKinetic Energy: KE = ½mv²\nPotential Energy: PE = mgh\nEfficiency = (Useful output / Total input) × 100%",
+        
+        "History": "📜 HISTORY FORMULAS\n═══════════════════════════════════════\n\nCentury = (Year ÷ 100) rounded up\nDecade = Year rounded down to nearest 10\n\nBC/AD Timeline:\n  500 BC → 100 BC → 1 BC → 1 AD → 100 AD\nYears Between (BC to AD): Add years - 1\n\nPERSIA Framework:\n  P - Political, E - Economic, R - Religious\n  S - Social, I - Intellectual, A - Artistic\n\nPEEL Essay Structure:\n  P - Point, E - Evidence, E - Explanation, L - Link",
+        
+        "English": "📝 ENGLISH FORMULAS\n═══════════════════════════════════════\n\nPEEL Paragraph:\n  P - Point, E - Evidence, E - Explanation, L - Link\n\nLiterary Devices:\n  Simile, Metaphor, Personification\n  Alliteration, Onomatopoeia, Hyperbole\n\nGrammar:\n  Their / There / They're\n  Your / You're\n  Its / It's\n  Then / Than\n\nMLA Citation:\n  Author Last, First. Title. Publisher, Year.",
+        
+        "Geography": "🌍 GEOGRAPHY FORMULAS\n═══════════════════════════════════════\n\nScale = Map Distance / Actual Distance\nPopulation Density = Population / Area\nBirth Rate = (Births / Population) × 1000\nDeath Rate = (Deaths / Population) × 1000\n\nNatural Increase = Birth Rate - Death Rate\nDoubling Time = 70 / Growth Rate\n\nTemperature Range = Max Temp - Min Temp\nGradient = Vertical Rise / Horizontal Run\n\nLatitude: 0° to 90° N or S\nLongitude: 0° to 180° E or W",
+        
+        "Economics": "💰 ECONOMICS FORMULAS\n═══════════════════════════════════════\n\nGDP = C + I + G + (X - M)\nGDP per capita = GDP / Population\nGrowth Rate = ((GDP₂ - GDP₁) / GDP₁) × 100\n\nInflation Rate = ((CPI₂ - CPI₁) / CPI₁) × 100\nUnemployment Rate = (Unemployed / Labor Force) × 100\n\nPED = (%Δ Quantity) / (%Δ Price)\nMoney Multiplier = 1 / Reserve Ratio\n\nProfit = Total Revenue - Total Cost\nBreak-even: TR = TC",
+        
+        "Psychology": "🧠 PSYCHOLOGY FORMULAS\n═══════════════════════════════════════\n\nMean = ΣX / N\nMedian = Middle value\nMode = Most frequent value\nRange = Highest - Lowest\n\nVariance = Σ(X - μ)² / N\nStandard Deviation = √Variance\nZ-score = (X - μ) / σ\n\nIQ = (Mental Age / Chronological Age) × 100\nNormal Distribution:\n  Mean = 100, SD = 15\n  68% between 85-115\n  95% between 70-130",
+        
+        "Computer Science": "💻 COMPUTER SCIENCE FORMULAS\n═══════════════════════════════════════\n\nBinary to Decimal:\n  1010₂ = 1×2³ + 0×2² + 1×2¹ + 0×2⁰ = 10\n\n1 byte = 8 bits\n1 KB = 1024 bytes\n1 MB = 1024 KB\n1 GB = 1024 MB\n\nBig O Notation:\n  O(1) - Constant\n  O(log n) - Logarithmic\n  O(n) - Linear\n  O(n²) - Quadratic\n\nLogic Gates:\n  AND: A·B, OR: A+B, NOT: Ā\n  NAND: NOT(A·B), NOR: NOT(A+B), XOR: A⊕B",
+        
+        "Sociology": "👥 SOCIOLOGY FORMULAS\n═══════════════════════════════════════\n\nPopulation Density = Population / Area\nBirth Rate = (Births / Population) × 1000\nCrime Rate = (Crimes / Population) × 100,000\n\nGini Coefficient: 0 (equal) to 1 (unequal)\nDependency Ratio = (Young + Old) / Working Age × 100\n\nDivorce Rate = (Divorces / Marriages) × 1000\nAverage Household Size = Population / Households",
+        
+        "Political Science": "🏛️ POLITICAL SCIENCE FORMULAS\n═══════════════════════════════════════\n\nVoter Turnout = (Votes Cast / Eligible Voters) × 100\nMargin of Error = 1 / √n × 100\nApproval Rating = (Approve / Total) × 100\nNet Approval = Approve% - Disapprove%\n\nGDP Growth = ((GDP₂ - GDP₁) / GDP₁) × 100\nInflation = ((CPI₂ - CPI₁) / CPI₁) × 100\nUnemployment = (Unemployed / Labor Force) × 100\n\nTrade Balance = Exports - Imports",
+        
+        "Philosophy": "🤔 PHILOSOPHY FORMULAS\n═══════════════════════════════════════\n\nModus Ponens:\n  If P then Q, P, Therefore Q\n\nModus Tollens:\n  If P then Q, Not Q, Therefore Not P\n\nSyllogism:\n  All A are B, All B are C, Therefore All A are C\n\nKnowledge = Justified True Belief\n\nFallacies:\n  Ad Hominem, Straw Man, False Dilemma\n  Slippery Slope, Circular Reasoning",
+        
+        "Art": "🎨 ART FORMULAS\n═══════════════════════════════════════\n\nGolden Ratio: 1.618\n  φ = (1 + √5) / 2\n\nFibonacci: 1, 1, 2, 3, 5, 8, 13, 21...\n\nRule of Thirds:\n  Divide into 3×3 grid\n  Place subject at intersections\n\nColor Theory:\n  Primary: Red, Blue, Yellow\n  Secondary: Green, Orange, Purple\n  Complementary: Opposite on wheel\n\nHuman Proportions:\n  Head = 1/8 of total height",
+        
+        "Music": "🎵 MUSIC FORMULAS\n═══════════════════════════════════════\n\nNote Values:\n  Whole = 4 beats\n  Half = 2 beats\n  Quarter = 1 beat\n  Eighth = ½ beat\n\nMajor Scale: W-W-H-W-W-W-H\nMinor Scale: W-H-W-W-H-W-W\n\nIntervals:\n  Half Step = 1 semitone\n  Whole Step = 2 semitones\n\nA4 = 440 Hz\nOctave = Double frequency\n  A3 = 220 Hz, A5 = 880 Hz",
+        
+        "Foreign Language": "🌍 FOREIGN LANGUAGE FORMULAS\n═══════════════════════════════════════\n\nSentence Structure:\n  SVO: Subject + Verb + Object (English)\n  SOV: Subject + Object + Verb (Japanese)\n  VSO: Verb + Subject + Object (Arabic)\n\nSpanish -AR Verbs:\n  Yo: -o, Tú: -as, Él: -a\n  Nosotros: -amos, Ellos: -an\n\nFrench -ER Verbs:\n  Je: -e, Tu: -es, Il: -e\n  Nous: -ons, Vous: -ez, Ils: -ent\n\nGender:\n  Spanish: -o (masc), -a (fem)\n  French: le (masc), la (fem)"
+    };
+    
+    // ===== INITIALIZE DATA =====
+    if (localStorage.getItem('homeworkData')) {
+        homeworkData = JSON.parse(localStorage.getItem('homeworkData'));
+    }
+    
+    // ===== HOMEWORK FUNCTIONS =====
+    function updateFormulas() {
+        const subject = document.getElementById('subjectSelect').value;
+        const box = document.getElementById('formulaBox');
+        box.textContent = formulasDB[subject] || "No formulas found for " + subject;
+    }
+    
+    document.getElementById('subjectSelect').addEventListener('change', function() {
+        currentSubject = this.value;
+        document.getElementById('homeworkText').value = homeworkData[currentSubject] || '';
+        updateFormulas();
+    });
+    
+    function saveHomework() {
+        homeworkData[currentSubject] = document.getElementById('homeworkText').value;
+        localStorage.setItem('homeworkData', JSON.stringify(homeworkData));
+        alert('✅ Homework saved!');
+    }
+    
+    function exportHomework() {
+        const content = document.getElementById('homeworkText').value;
+        if (!content) { alert('⚠️ No homework to export!'); return; }
+        const text = `HOMEWORK ORGANIZER - EXPORT\n${'='.repeat(50)}\nSubject: ${currentSubject}\nDate: ${new Date().toLocaleDateString()}\n${'='.repeat(50)}\n\n${content}\n\n${'='.repeat(50)}\n© 2026 [Your Name/Company]. All rights reserved.`;
+        const blob = new Blob([text], {type: 'text/plain'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `Homework_${currentSubject}_${new Date().toISOString().slice(0,10)}.txt`;
+        a.click();
+        alert('✅ Exported successfully!');
+    }
+    
+    function openPDF() {
+        const content = document.getElementById('homeworkText').value;
+        if (!content) { alert('⚠️ No homework to open!'); return; }
+        const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Homework - ${currentSubject}</title>
+        <style>body{font-family:Arial;margin:50px;}h1{color:#2c3e50;text-align:center;}
+        .subject{font-size:24px;font-weight:bold;color:#2980b9;text-align:center;}
+        .content{font-size:18px;line-height:1.6;white-space:pre-wrap;}
+        hr{border:2px solid #3498db;}.footer{text-align:center;color:#7f8c8d;font-size:12px;margin-top:50px;}</style>
+        </head><body><h1>📚 HOMEWORK ORGANIZER</h1><hr>
+        <div class="subject">Subject: ${currentSubject}</div>
+        <div style="text-align:center;color:#7f8c8d;">Date: ${new Date().toLocaleDateString()}</div><hr>
+        <div class="content">${content}</div><hr>
+        <div class="footer">© 2026 [Your Name/Company]. All rights reserved.<br>Generated by Homework Organizer Pro</div>
+        </body></html>`;
+        const win = window.open('', '_blank');
+        win.document.write(html);
+        win.document.close();
+    }
+    
+    function clearHomework() {
+        if (confirm('⚠️ Clear homework?')) {
+            document.getElementById('homeworkText').value = '';
+            homeworkData[currentSubject] = '';
+            localStorage.setItem('homeworkData', JSON.stringify(homeworkData));
+            alert('✅ Cleared!');
+        }
+    }
+    
+    // ===== TAB SWITCHING =====
+    function showTab(btn, tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tabs button').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tabName).classList.add('active');
+        btn.classList.add('active');
+        
+        if (tabName === 'formulas') updateFormulas();
+        if (tabName === 'calendar') generateCalendar();
+    }
+    
+    // ===== DRAWING CANVAS =====
+    const canvas = document.getElementById('drawCanvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let currentColor = 'black';
+    let currentSize = 3;
+    let startX = 0, startY = 0;
+    
+    const savedDrawing = localStorage.getItem('savedDrawing');
+    if (savedDrawing) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0);
+        img.src = savedDrawing;
+    }
+    
+    function setColor(color) { currentColor = color; }
+    function changeSize(size) { currentSize = size; }
+    
+    function clearCanvas() {
+        if (confirm('Clear drawing?')) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            localStorage.removeItem('savedDrawing');
+        }
+    }
+    
+    function saveDrawing() {
+        const dataURL = canvas.toDataURL('image/png');
+        localStorage.setItem('savedDrawing', dataURL);
+        alert('✅ Drawing saved!');
+    }
+    
+    canvas.addEventListener('mousedown', (e) => {
+        drawing = true;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        startX = (e.clientX - rect.left) * scaleX;
+        startY = (e.clientY - rect.top) * scaleY;
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+        if (!drawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+        ctx.strokeStyle = currentColor;
+        ctx.lineWidth = currentSize;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        startX = x;
+        startY = y;
+    });
+    
+    canvas.addEventListener('mouseup', () => { drawing = false; });
+    canvas.addEventListener('mouseleave', () => { drawing = false; });
+    
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        startX = (touch.clientX - rect.left) * scaleX;
+        startY = (touch.clientY - rect.top) * scaleY;
+        drawing = true;
+    }, { passive: false });
+    
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (!drawing) return;
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (touch.clientX - rect.left) * scaleX;
+        const y = (touch.clientY - rect.top) * scaleY;
+        ctx.strokeStyle = currentColor;
+        ctx.lineWidth = currentSize;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        startX = x;
+        startY = y;
+    }, { passive: false });
+    
+    canvas.addEventListener('touchend', () => { drawing = false; });
+    
+    // ===== CALENDAR WITH EVENTS =====
+    let viewYear = new Date().getFullYear();
+    let viewMonth = new Date().getMonth() + 1;
+    let selectedDate = null;
+    let calendarEvents = {};
+    
+    if (localStorage.getItem('calendarEvents')) {
+        calendarEvents = JSON.parse(localStorage.getItem('calendarEvents'));
+    }
+    
+    function prevMonth() {
+        if (viewMonth === 1) { viewMonth = 12; viewYear--; }
+        else { viewMonth--; }
+        generateCalendar();
+    }
+    
+    function nextMonth() {
+        if (viewMonth === 12) { viewMonth = 1; viewYear++; }
+        else { viewMonth++; }
+        generateCalendar();
+    }
+    
+    function generateCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = '';
+        
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                            'July', 'August', 'September', 'October', 'November', 'December'];
+        document.getElementById('calendarTitle').textContent = `📅 ${monthNames[viewMonth - 1]} ${viewYear}`;
+        
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        days.forEach(day => {
+            const div = document.createElement('div');
+            div.className = 'header';
+            div.textContent = day;
+            grid.appendChild(div);
+        });
+        
+        const firstDay = new Date(viewYear, viewMonth - 1, 1).getDay();
+        const daysInMonth = new Date(viewYear, viewMonth, 0).getDate();
+        let startDay = firstDay === 0 ? 6 : firstDay - 1;
+        
+        for (let i = 0; i < startDay; i++) {
+            const div = document.createElement('div');
+            div.className = 'empty';
+            grid.appendChild(div);
+        }
+        
+        const today = new Date();
+        const isCurrentMonth = today.getFullYear() === viewYear && (today.getMonth() + 1) === viewMonth;
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateKey = `${viewYear}-${String(viewMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const hasEvents = calendarEvents[dateKey] && calendarEvents[dateKey].length > 0;
+            
+            const div = document.createElement('div');
+            div.className = 'day';
+            
+            if (isCurrentMonth && day === today.getDate()) {
+                div.classList.add('today');
+            } else if (hasEvents) {
+                div.classList.add('has-events');
+            }
+            
+            div.textContent = hasEvents ? `${day} (${calendarEvents[dateKey].length})` : day;
+            div.onclick = () => selectDate(day);
+            grid.appendChild(div);
+        }
+    }
+    
+    function selectDate(day) {
+        selectedDate = `${viewYear}-${String(viewMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dateObj = new Date(viewYear, viewMonth - 1, day);
+        const displayDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('selectedDateLabel').textContent = `📅 ${displayDate}`;
+        refreshEventsList();
+    }
+    
+    function refreshEventsList() {
+        const list = document.getElementById('eventsList');
+        list.innerHTML = '';
+        
+        if (!selectedDate || !calendarEvents[selectedDate] || calendarEvents[selectedDate].length === 0) {
+            list.innerHTML = '<p style="color:#7f8c8d; text-align:center; font-style:italic;">No events for this date</p>';
+            return;
+        }
+        
+        calendarEvents[selectedDate].forEach((event, index) => {
+            const div = document.createElement('div');
+            div.style.padding = '6px';
+            div.style.marginBottom = '4px';
+            div.style.background = '#f8f9fa';
+            div.style.borderRadius = '4px';
+            div.style.cursor = 'pointer';
+            div.innerHTML = `<b>[${event.type}]</b> ${event.text}`;
+            div.onclick = () => {
+                document.querySelectorAll('#eventsList div').forEach(d => {
+                    d.style.background = '#f8f9fa';
+                    d.style.color = '#2c3e50';
+                });
+                div.style.background = '#3498db';
+                div.style.color = 'white';
+                div.dataset.selected = index;
+            };
+            list.appendChild(div);
+        });
+    }
+    
+    function addEvent() {
+        if (!selectedDate) {
+            alert('⚠️ Click a date first!');
+            return;
+        }
+        const input = document.getElementById('eventInput');
+        const text = input.value.trim();
+        if (!text) {
+            alert('⚠️ Enter event text!');
+            return;
+        }
+        
+        if (!calendarEvents[selectedDate]) {
+            calendarEvents[selectedDate] = [];
+        }
+        
+        calendarEvents[selectedDate].push({
+            text: text,
+            type: document.getElementById('eventType').value
+        });
+        
+        localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents));
+        input.value = '';
+        refreshEventsList();
+        generateCalendar();
+        alert('✅ Event added!');
+    }
+    
+    function deleteEvent() {
+        if (!selectedDate) {
+            alert('⚠️ Click a date first!');
+            return;
+        }
+        
+        const selectedDiv = document.querySelector('#eventsList div[data-selected]');
+        if (!selectedDiv) {
+            alert('⚠️ Click an event in the list to select it first!');
+            return;
+        }
+        
+        const index = parseInt(selectedDiv.dataset.selected);
+        calendarEvents[selectedDate].splice(index, 1);
+        if (calendarEvents[selectedDate].length === 0) {
+            delete calendarEvents[selectedDate];
+        }
+        
+        localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents));
+        refreshEventsList();
+        generateCalendar();
+        alert('✅ Event deleted!');
+    }
+    
+    // ===== INITIALIZE APP =====
+    document.getElementById('homeworkText').value = homeworkData[currentSubject] || '';
+    updateFormulas();
+    generateCalendar();
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Homework Organizer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 15px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         h1 { color: #2c3e50; text-align: center; font-size: 26px; margin-bottom: 20px; }
         
         .subject-select { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
