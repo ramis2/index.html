@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Memory match</title>
+
+<style>
+:root {
+  --kimi-font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --kimi-color-text-primary: #1f2329;
+  --kimi-color-text-secondary: #646a73;
+  --kimi-color-text-quaternary: #a9aeb8;
+  --kimi-color-surface: #ffffff;
+  --kimi-color-surface-muted: #f2f3f5;
+  --kimi-color-surface-raised: #ffffff;
+  --kimi-color-border: #dee0e3;
+  --kimi-color-danger: #d83931;
+  --kimi-color-positive: #2ea44f;
+  --kimi-color-warning: #cf8a12;
+  --t-fast: 120ms;
+  --t-normal: 200ms;
+  --ease-out: ease-out;
+  --ease-standard: ease;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --kimi-color-text-primary: #e8e9eb;
+    --kimi-color-text-secondary: #9aa0a6;
+    --kimi-color-text-quaternary: #6b7075;
+    --kimi-color-surface: #17181a;
+    --kimi-color-surface-muted: #232527;
+    --kimi-color-surface-raised: #1e2023;
+    --kimi-color-border: #383b40;
+  }
+  body { background: #141517; }
+}
+body.dark {
+  --kimi-color-text-primary: #e8e9eb;
+  --kimi-color-text-secondary: #9aa0a6;
+  --kimi-color-text-quaternary: #6b7075;
+  --kimi-color-surface: #17181a;
+  --kimi-color-surface-muted: #232527;
+  --kimi-color-surface-raised: #1e2023;
+  --kimi-color-border: #383b40;
+  background: #141517;
+}
+#mm-theme { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--kimi-color-border); background: transparent; color: var(--kimi-color-text-secondary); cursor: pointer; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div id="mm-root" style="font-family: var(--kimi-font-sans, sans-serif); max-width: 560px;">
+<style>
+#mm-root button { font: inherit; }
+#mm-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+#mm-title { font-size: 17px; font-weight: 500; }
+#mm-stats { display: flex; gap: 12px; font-size: 14px; color: var(--kimi-color-text-secondary); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+#mm-stats b { color: var(--kimi-color-text-primary); font-weight: 500; }
+#mm-diff { display: flex; gap: 8px; margin-bottom: 12px; }
+#mm-diff button { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--kimi-color-border); background: transparent; color: var(--kimi-color-text-secondary); cursor: pointer; transition: all var(--t-fast) var(--ease-out); }
+#mm-diff button.on { border-color: var(--kimi-color-text-primary); color: var(--kimi-color-text-primary); }
+#mm-grid { display: grid; gap: 8px; }
+#mm-grid.c3 { grid-template-columns: repeat(4, 1fr); }
+#mm-grid.c4 { grid-template-columns: repeat(4, 1fr); }
+#mm-grid.c5 { grid-template-columns: repeat(5, 1fr); }
+.mm-card { aspect-ratio: 3/4; perspective: 600px; cursor: pointer; border: none; background: transparent; padding: 0; }
+.mm-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform var(--t-normal) var(--ease-standard); }
+.mm-card.up .mm-inner { transform: rotateY(180deg); }
+.mm-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+.mm-back { background: var(--kimi-color-surface-muted); border: 1px solid var(--kimi-color-border); color: var(--kimi-color-text-quaternary); font-size: 18px; }
+.mm-front { background: var(--kimi-color-surface-raised); border: 1px solid var(--kimi-color-border); transform: rotateY(180deg); }
+.mm-card.done .mm-front { border-color: var(--kimi-color-positive); background: color-mix(in srgb, var(--kimi-color-positive) 12%, transparent); }
+.mm-card.done { cursor: default; }
+#mm-win { display: none; text-align: center; padding: 16px 0 4px; font-size: 15px; }
+#mm-win b { font-weight: 500; }
+#mm-restart { margin-top: 12px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--kimi-color-text-primary); background: var(--kimi-color-text-primary); color: var(--kimi-color-surface); cursor: pointer; }
+</style>
+
+<div id="mm-top">
+  <div id="mm-title">Memory match</div>
+  <div id="mm-stats"><span>Moves <b id="mm-moves">0</b></span><span>Time <b id="mm-time">0:00</b></span><span>Pairs <b id="mm-pairs">0/0</b></span><button id="mm-theme">Dark mode</button></div>
+</div>
+<div id="mm-diff">
+  <button data-p="6">Easy</button>
+  <button data-p="8" class="on">Medium</button>
+  <button data-p="10">Hard</button>
+</div>
+<div style="font-size:13px;color:var(--kimi-color-text-secondary);margin-bottom:12px;max-width:520px;">How to play: click any card to flip it over, then click a second card. If the two pictures match, they stay face-up; if not, they flip back. Find all the pairs in as few moves as you can.</div>
+<div id="mm-grid" class="c4"></div>
+<div id="mm-win"><b>You matched them all!</b><br><span id="mm-winline"></span><br><button id="mm-restart">Play again</button></div>
+
+<script>
+(function(){
+  var EMO = ["🐶","🐱","🦊","🐼","🐸","🦁","🐵","🦄","🐙","🦖","🍕","🚀","🌈","⭐","⚽","🎸","🍦","🐝"];
+  var pairs = 8, first = null, lock = false, moves = 0, found = 0, secs = 0, timer = null, started = false;
+  var grid = document.getElementById("mm-grid");
+
+  function fmt(s){ return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
+  function tick(){ secs++; document.getElementById("mm-time").textContent = fmt(secs); }
+  function startTimer(){ if(!started){ started = true; timer = setInterval(tick, 1000); } }
+  function stopTimer(){ clearInterval(timer); }
+
+  function build(){
+    stopTimer(); first = null; lock = false; moves = 0; found = 0; secs = 0; started = false;
+    document.getElementById("mm-moves").textContent = "0";
+    document.getElementById("mm-time").textContent = "0:00";
+    document.getElementById("mm-pairs").textContent = "0/" + pairs;
+    document.getElementById("mm-win").style.display = "none";
+    grid.className = pairs <= 6 ? "c3" : (pairs <= 8 ? "c4" : "c5");
+    var deck = EMO.slice(0, pairs).concat(EMO.slice(0, pairs));
+    for (var i = deck.length - 1; i > 0; i--){ var j = Math.floor(Math.random()*(i+1)); var t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
+    grid.innerHTML = "";
+    deck.forEach(function(e){
+      var c = document.createElement("button");
+      c.className = "mm-card";
+      c.dataset.e = e;
+      c.innerHTML = '<div class="mm-inner"><div class="mm-face mm-back">?</div><div class="mm-face mm-front" style="font-size: 26px;">'+e+'</div></div>';
+      c.addEventListener("click", flip);
+      grid.appendChild(c);
+    });
+  }
+
+  function flip(){
+    if (lock || this.classList.contains("up")) return;
+    startTimer();
+    this.classList.add("up");
+    if (!first){ first = this; return; }
+    moves++; document.getElementById("mm-moves").textContent = moves;
+    if (first.dataset.e === this.dataset.e){
+      first.classList.add("done"); this.classList.add("done");
+      first = null; found++;
+      document.getElementById("mm-pairs").textContent = found + "/" + pairs;
+      if (found === pairs){
+        stopTimer();
+        document.getElementById("mm-winline").textContent = "Finished in " + moves + " moves and " + fmt(secs) + ".";
+        document.getElementById("mm-win").style.display = "block";
+      }
+    } else {
+      lock = true;
+      var a = first, b = this; first = null;
+      setTimeout(function(){ a.classList.remove("up"); b.classList.remove("up"); lock = false; }, 700);
+    }
+  }
+
+  document.querySelectorAll("#mm-diff button").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      document.querySelectorAll("#mm-diff button").forEach(function(x){ x.classList.remove("on"); });
+      btn.classList.add("on");
+      pairs = parseInt(btn.dataset.p, 10);
+      build();
+    });
+  });
+  document.getElementById("mm-restart").addEventListener("click", build);
+  var th = document.getElementById("mm-theme");
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) document.body.classList.add("dark");
+  th.addEventListener("click", function(){
+    document.body.classList.toggle("dark");
+    th.textContent = document.body.classList.contains("dark") ? "Light mode" : "Dark mode";
+  });
+  if (document.body.classList.contains("dark")) th.textContent = "Light mode";
+  build();
+})();
+</script>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Kids game arcade 2 — reaction, hangman, connect four</title>
+
+<style>
+:root {
+  --kimi-font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --kimi-color-text-primary: #1f2329;
+  --kimi-color-text-secondary: #646a73;
+  --kimi-color-text-quaternary: #a9aeb8;
+  --kimi-color-surface: #ffffff;
+  --kimi-color-surface-muted: #f2f3f5;
+  --kimi-color-surface-raised: #ffffff;
+  --kimi-color-border: #dee0e3;
+  --kimi-color-danger: #d83931;
+  --kimi-color-positive: #2ea44f;
+  --kimi-color-warning: #cf8a12;
+  --t-fast: 120ms;
+  --t-normal: 200ms;
+  --ease-out: ease-out;
+  --ease-standard: ease;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --kimi-color-text-primary: #e8e9eb;
+    --kimi-color-text-secondary: #9aa0a6;
+    --kimi-color-text-quaternary: #6b7075;
+    --kimi-color-surface: #17181a;
+    --kimi-color-surface-muted: #232527;
+    --kimi-color-surface-raised: #1e2023;
+    --kimi-color-border: #383b40;
+  }
+  body { background: #141517; }
+}
+</style>
+</head>
+<body>
+
+<div id="arc2" style="font-family: var(--kimi-font-sans, sans-serif); max-width: 560px;">
+<style>
+#arc2 button, #arc2 input { font: inherit; }
+#arc2-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+#arc2-tabs button { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--kimi-color-border); background: transparent; color: var(--kimi-color-text-secondary); cursor: pointer; transition: all var(--t-fast) var(--ease-out); }
+#arc2-tabs button.on { border-color: var(--kimi-color-text-primary); color: var(--kimi-color-text-primary); }
+#arc2 .row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+#arc2 .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--kimi-color-text-primary); background: var(--kimi-color-text-primary); color: var(--kimi-color-surface); cursor: pointer; }
+#arc2 .msg { min-height: 22px; font-size: 14px; margin-top: 8px; }
+#r-box { border: 1px solid var(--kimi-color-border); border-radius: 10px; height: 160px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 500; cursor: pointer; user-select: none; text-align: center; padding: 12px; transition: background var(--t-fast) var(--ease-out); }
+#r-box small { display: block; font-size: 14px; font-weight: 400; color: var(--kimi-color-text-secondary); margin-top: 4px; }
+#h-word { font-size: 24px; letter-spacing: 6px; font-weight: 500; margin-bottom: 12px; min-height: 32px; }
+#h-letters { display: flex; flex-wrap: wrap; gap: 4px; max-width: 420px; margin-bottom: 4px; }
+#h-letters button { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--kimi-color-border); background: transparent; color: var(--kimi-color-text-primary); cursor: pointer; }
+#h-letters button:disabled { opacity: 0.35; cursor: default; }
+#c-grid { display: grid; grid-template-columns: repeat(7, 40px); gap: 4px; background: var(--kimi-color-surface-muted); border: 1px solid var(--kimi-color-border); border-radius: 10px; padding: 8px; width: max-content; }
+#c-grid div { width: 40px; height: 40px; border-radius: 50%; background: var(--kimi-color-surface); border: 1px solid var(--kimi-color-border); cursor: pointer; }
+#c-grid.full div { cursor: default; }
+#c-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; background: var(--kimi-color-text-primary); }
+#arc2 .mode { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--kimi-color-border); background: transparent; color: var(--kimi-color-text-secondary); cursor: pointer; }
+#arc2 .mode.on { border-color: var(--kimi-color-text-primary); color: var(--kimi-color-text-primary); }
+#arc2 svg text { font-family: var(--kimi-font-sans, sans-serif); }
+</style>
+
+<div id="arc2-tabs">
+  <button data-g="react" class="on">Reaction timer</button>
+  <button data-g="hang">Hangman</button>
+  <button data-g="c4">Connect four</button>
+</div>
+
+<section id="g-react">
+  <div id="r-box">Click to start<small>Wait for green, then click as fast as you can</small></div>
+  <div id="r-msg" class="msg"></div>
+</section>
+
+<section id="g-hang" hidden>
+  <div class="row" style="align-items: flex-start;">
+    <svg width="110" height="130" viewBox="0 0 100 120" fill="none" stroke="var(--kimi-color-text-primary)" stroke-width="2" stroke-linecap="round">
+      <line x1="10" y1="115" x2="90" y2="115"/><line x1="25" y1="115" x2="25" y2="10"/>
+      <line x1="25" y1="10" x2="70" y2="10"/><line x1="70" y1="10" x2="70" y2="22"/>
+      <g id="h-parts" hidden><circle cx="70" cy="32" r="10"/></g>
+      <g id="h-p2" hidden><line x1="70" y1="42" x2="70" y2="74"/></g>
+      <g id="h-p3" hidden><line x1="70" y1="50" x2="56" y2="60"/></g>
+      <g id="h-p4" hidden><line x1="70" y1="50" x2="84" y2="60"/></g>
+      <g id="h-p5" hidden><line x1="70" y1="74" x2="58" y2="92"/></g>
+      <g id="h-p6" hidden><line x1="70" y1="74" x2="82" y2="92"/></g>
+    </svg>
+    <div>
+      <div id="h-word"></div>
+      <div id="h-letters"></div>
+      <div id="h-msg" class="msg"></div>
+      <button id="h-new" class="btn">New word</button>
+    </div>
+  </div>
+</section>
+
+<section id="g-c4" hidden>
+  <div class="row">
+    <button id="c-2p" class="mode on">2 players</button>
+    <button id="c-ai" class="mode">Vs computer</button>
+    <button id="c-reset" class="btn">Reset</button>
+  </div>
+  <div class="row"><span id="c-dot"></span><span id="c-status" class="msg" style="margin-top:0; min-height:0;">Black goes first</span></div>
+  <div id="c-grid"></div>
+</section>
+
+<script>
+(function(){
+  var tabs = document.querySelectorAll("#arc2-tabs button");
+  var panels = { react: document.getElementById("g-react"), hang: document.getElementById("g-hang"), c4: document.getElementById("g-c4") };
+  tabs.forEach(function(b){
+    b.addEventListener("click", function(){
+      tabs.forEach(function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      Object.keys(panels).forEach(function(k){ panels[k].hidden = k !== b.dataset.g; });
+    });
+  });
+  function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+  var box = document.getElementById("r-box"), rMsg = document.getElementById("r-msg");
+  var rState = "idle", rTO = null, rT0 = 0;
+  function rSet(t, sub, bg, fg){
+    box.innerHTML = t + (sub ? "<small>" + sub + "</small>" : "");
+    box.style.background = bg || "transparent";
+    box.style.color = fg || "inherit";
+  }
+  box.addEventListener("click", function(){
+    if (rState === "idle" || rState === "result" || rState === "soon"){
+      rState = "wait";
+      rSet("Wait for green...", "Click when the box turns green", "color-mix(in srgb, var(--kimi-color-danger) 14%, transparent)", "inherit");
+      rMsg.textContent = "";
+      var delay = 1500 + Math.random()*3500;
+      rTO = setTimeout(function(){
+        rState = "go"; rT0 = performance.now();
+        rSet("Click now!", "", "color-mix(in srgb, var(--kimi-color-positive) 20%, transparent)", "inherit");
+      }, delay);
+    }
+    else if (rState === "wait"){
+      clearTimeout(rTO); rState = "soon";
+      rSet("Too soon!", "Click to try again", "transparent", "var(--kimi-color-danger)");
+    }
+    else if (rState === "go"){
+      var ms = Math.round(performance.now() - rT0);
+      rState = "result";
+      rSet(ms + " ms", "Click to go again", "transparent", "var(--kimi-color-text-primary)");
+      rMsg.textContent = ms < 200 ? "Lightning fast!" : ms < 280 ? "Nice reflexes." : ms < 400 ? "Pretty good — keep practicing." : "You blinked! Try again.";
+    }
+  });
+  rSet("Click to start", "Wait for green, then click as fast as you can", "transparent", "inherit");
+
+  var HWORDS = ["ELEPHANT","PIRATE","CASTLE","ROBOT","GALAXY","DIAMOND","ADVENTURE","WHALE","THUNDER","LIBRARY","PENGUIN","MOUNTAIN"];
+  var hWord = "", hGuessed = {}, hWrong = 0, hOver = false;
+  var hWordEl = document.getElementById("h-word"), hMsg = document.getElementById("h-msg");
+  var hParts = ["h-parts","h-p2","h-p3","h-p4","h-p5","h-p6"].map(function(id){ return document.getElementById(id); });
+  function hNew(){
+    hWord = HWORDS[Math.floor(Math.random()*HWORDS.length)];
+    hGuessed = {}; hWrong = 0; hOver = false; hMsg.textContent = "";
+    hParts.forEach(function(g){ g.hidden = true; });
+    var lz = document.getElementById("h-letters"); lz.innerHTML = "";
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(function(ch){
+      var b = document.createElement("button"); b.textContent = ch;
+      b.addEventListener("click", function(){ hGuess(ch, b); });
+      lz.appendChild(b);
+    });
+    hShow();
+  }
+  function hShow(){
+    hWordEl.textContent = hWord.split("").map(function(ch){ return hGuessed[ch] ? ch : "_"; }).join(" ");
+  }
+  function hGuess(ch, btn){
+    if (hOver || hGuessed[ch]) return;
+    hGuessed[ch] = true; btn.disabled = true;
+    if (hWord.indexOf(ch) >= 0){
+      hShow();
+      if (hWord.split("").every(function(c){ return hGuessed[c]; })){
+        hOver = true; hMsg.style.color = cssVar("--kimi-color-positive");
+        hMsg.textContent = "You saved them! The word was " + hWord + ". Press new word to play again.";
+      }
+    } else {
+      hWrong++; hParts[hWrong - 1].hidden = false;
+      if (hWrong >= 6){
+        hOver = true;
+        hWordEl.textContent = hWord.split("").join(" ");
+        hMsg.style.color = cssVar("--kimi-color-danger");
+        hMsg.textContent = "Out of guesses — the word was " + hWord + ".";
+      }
+    }
+  }
+  document.getElementById("h-new").addEventListener("click", hNew);
+  hNew();
+
+  var ROWS = 6, COLS = 7;
+  var board, cur, mode = "2p", cOver;
+  var grid = document.getElementById("c-grid"), cStatus = document.getElementById("c-status"), cDot = document.getElementById("c-dot");
+  function cInit(){
+    board = Array.from({ length: ROWS }, function(){ return Array(COLS).fill(0); });
+    cur = 1; cOver = false;
+    cStatus.textContent = "Black goes first"; cStatus.style.color = "";
+    cDot.style.background = "var(--kimi-color-text-primary)";
+    cRender();
+  }
+  function cRender(){
+    grid.innerHTML = "";
+    for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++){
+      (function(cc){
+        var d = document.createElement("div");
+        var v = board[r][cc];
+        if (v === 1) d.style.background = "var(--kimi-color-text-primary)";
+        if (v === 2) d.style.background = "var(--kimi-color-danger)";
+        d.addEventListener("click", function(){ cDrop(cc); });
+        grid.appendChild(d);
+      })(c);
+    }
+  }
+  function cDrop(c){
+    if (cOver) return;
+    if (mode === "ai" && cur === 2) return;
+    var r = cRow(c);
+    if (r < 0) return;
+    board[r][c] = cur; cRender();
+    if (cEnd(r, c)) return;
+    cur = 3 - cur; cTurn();
+    if (mode === "ai" && cur === 2) setTimeout(cAi, 450);
+  }
+  function cRow(c){
+    for (var r = ROWS - 1; r >= 0; r--) if (board[r][c] === 0) return r;
+    return -1;
+  }
+  function cWins(r, c, p){
+    var dirs = [[0,1],[1,0],[1,1],[1,-1]];
+    for (var d = 0; d < 4; d++){
+      var count = 1;
+      for (var s = -1; s <= 1; s += 2){
+        var rr = r + dirs[d][0]*s, cc = c + dirs[d][1]*s;
+        while (rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS && board[rr][cc] === p){
+          count++; rr += dirs[d][0]*s; cc += dirs[d][1]*s;
+        }
+      }
+      if (count >= 4) return true;
+    }
+    return false;
+  }
+  function cEnd(r, c){
+    if (cWins(r, c, cur)){
+      cOver = true;
+      var name = cur === 1 ? "Black" : (mode === "ai" ? "Computer" : "Red");
+      cStatus.textContent = name + " wins! Press reset to play again.";
+      cStatus.style.color = "var(--kimi-color-positive)";
+      return true;
+    }
+    if (board.every(function(row){ return row.every(function(v){ return v !== 0; }); })){
+      cOver = true; cStatus.textContent = "It's a draw!"; return true;
+    }
+    return false;
+  }
+  function cTurn(){
+    if (cur === 1){ cStatus.textContent = "Black's turn"; cDot.style.background = "var(--kimi-color-text-primary)"; }
+    else { cStatus.textContent = mode === "ai" ? "Computer is thinking..." : "Red's turn"; cDot.style.background = "var(--kimi-color-danger)"; }
+  }
+  function cAi(){
+    if (cOver) return;
+    var pick = -1, c, r;
+    var open = [];
+    for (c = 0; c < COLS; c++){ r = cRow(c); if (r >= 0) open.push([c, r]); }
+    function tryWin(p){
+      for (var i = 0; i < open.length; i++){
+        board[open[i][1]][open[i][0]] = p;
+        var w = cWins(open[i][1], open[i][0], p);
+        board[open[i][1]][open[i][0]] = 0;
+        if (w) return open[i][0];
+      }
+      return -1;
+    }
+    pick = tryWin(2);
+    if (pick < 0) pick = tryWin(1);
+    if (pick < 0){
+      open.sort(function(a, b){ return Math.abs(a[0] - 3) - Math.abs(b[0] - 3); });
+      var near = open.filter(function(o){ return Math.abs(o[0] - 3) <= 1; });
+      var pool = near.length ? near : open;
+      pick = pool[Math.floor(Math.random()*pool.length)][0];
+    }
+    r = cRow(pick);
+    board[r][pick] = 2; cRender();
+    if (cEnd(r, pick)) return;
+    cur = 1; cTurn();
+  }
+  document.getElementById("c-reset").addEventListener("click", cInit);
+  document.getElementById("c-2p").addEventListener("click", function(){
+    mode = "2p"; this.classList.add("on"); document.getElementById("c-ai").classList.remove("on"); cInit();
+  });
+  document.getElementById("c-ai").addEventListener("click", function(){
+    mode = "ai"; this.classList.add("on"); document.getElementById("c-2p").classList.remove("on"); cInit();
+  });
+  cInit();
+})();
+</script>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Kids game arcade — math, words, trivia, snake</title>
+
+<style>
+:root {
+  --kimi-font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --kimi-color-text-primary: #1f2329;
+  --kimi-color-text-secondary: #646a73;
+  --kimi-color-text-quaternary: #a9aeb8;
+  --kimi-color-surface: #ffffff;
+  --kimi-color-surface-muted: #f2f3f5;
+  --kimi-color-surface-raised: #ffffff;
+  --kimi-color-border: #dee0e3;
+  --kimi-color-danger: #d83931;
+  --kimi-color-positive: #2ea44f;
+  --kimi-color-warning: #cf8a12;
+  --t-fast: 120ms;
+  --t-normal: 200ms;
+  --ease-out: ease-out;
+  --ease-standard: ease;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --kimi-color-text-primary: #e8e9eb;
+    --kimi-color-text-secondary: #9aa0a6;
+    --kimi-color-text-quaternary: #6b7075;
+    --kimi-color-surface: #17181a;
+    --kimi-color-surface-muted: #232527;
+    --kimi-color-surface-raised: #1e2023;
+    --kimi-color-border: #383b40;
+  }
+  body { background: #141517; }
+}
+</style>
+</head>
+<body>
+
+<div id="arc" style="font-family: var(--kimi-font-sans, sans-serif); max-width: 560px;">
+<style>
+#arc button, #arc input { font: inherit; }
+#arc-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+#arc-tabs button { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--kimi-color-border); background: transparent; color: var(--kimi-color-text-secondary); cursor: pointer; transition: all var(--t-fast) var(--ease-out); }
+#arc-tabs button.on { border-color: var(--kimi-color-text-primary); color: var(--kimi-color-text-primary); }
+#arc .row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+#arc .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--kimi-color-text-primary); background: var(--kimi-color-text-primary); color: var(--kimi-color-surface); cursor: pointer; }
+#arc .btn:disabled { opacity: 0.4; cursor: default; }
+#arc .stat { font-size: 14px; color: var(--kimi-color-text-secondary); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+#arc .stat b { color: var(--kimi-color-text-primary); font-weight: 500; }
+#arc .q { font-size: 24px; font-weight: 500; margin-bottom: 12px; min-height: 32px; }
+#arc .q.big { font-size: 30px; letter-spacing: 4px; }
+#arc input { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--kimi-color-border); background: transparent; color: var(--kimi-color-text-primary); width: 140px; }
+#arc input:focus { outline: 1px solid var(--kimi-color-text-primary); }
+#arc .msg { min-height: 22px; font-size: 14px; margin-top: 8px; }
+#arc .link { border: none; background: none; color: var(--kimi-color-text-secondary); cursor: pointer; text-decoration: underline; padding: 0; margin-top: 8px; }
+#arc .opt { display: block; width: 100%; text-align: left; padding: 10px 12px; margin-bottom: 8px; border-radius: 8px; border: 1px solid var(--kimi-color-border); background: transparent; color: var(--kimi-color-text-primary); cursor: pointer; transition: all var(--t-fast) var(--ease-out); }
+#arc .opt:hover:not(:disabled) { border-color: var(--kimi-color-text-primary); }
+#arc .opt:disabled { cursor: default; }
+#arc .opt.ok { border-color: var(--kimi-color-positive); background: color-mix(in srgb, var(--kimi-color-positive) 12%, transparent); }
+#arc .opt.bad { border-color: var(--kimi-color-danger); background: color-mix(in srgb, var(--kimi-color-danger) 12%, transparent); }
+#arc canvas { border: 1px solid var(--kimi-color-border); border-radius: 10px; display: block; margin-bottom: 12px; }
+#arc .pad { display: grid; grid-template-columns: repeat(3, 44px); gap: 4px; }
+#arc .pad button { height: 40px; border-radius: 8px; border: 1px solid var(--kimi-color-border); background: var(--kimi-color-surface-muted); color: var(--kimi-color-text-primary); cursor: pointer; font-size: 16px; }
+</style>
+
+<div id="arc-tabs">
+  <button data-g="math" class="on">Math sprint</button>
+  <button data-g="word">Word scramble</button>
+  <button data-g="trivia">Trivia</button>
+  <button data-g="snake">Snake</button>
+</div>
+
+<section id="g-math">
+  <div class="row">
+    <button id="m-start" class="btn">Start 60s sprint</button>
+    <span class="stat">Score <b id="m-score">0</b></span>
+    <span class="stat">Time <b id="m-time">60</b>s</span>
+  </div>
+  <div id="m-q" class="q">Press start when ready</div>
+  <div class="row">
+    <input id="m-in" type="number" inputmode="numeric" placeholder="Answer">
+    <button id="m-go" class="btn" disabled>Check</button>
+  </div>
+  <div id="m-msg" class="msg"></div>
+</section>
+
+<section id="g-word" hidden>
+  <div class="row"><span class="stat">Solved <b id="w-score">0</b></span></div>
+  <div id="w-scr" class="q big"></div>
+  <div class="row">
+    <input id="w-in" placeholder="Unscramble it">
+    <button id="w-go" class="btn">Check</button>
+  </div>
+  <div id="w-msg" class="msg"></div>
+  <button id="w-new" class="link">Skip to a new word</button>
+</section>
+
+<section id="g-trivia" hidden>
+  <div class="row"><span class="stat">Question <b id="t-n">1</b>/10</span><span class="stat">Score <b id="t-score">0</b></span></div>
+  <div id="t-q" class="q"></div>
+  <div id="t-opts"></div>
+  <div id="t-msg" class="msg"></div>
+  <button id="t-re" class="link" hidden>Play again</button>
+</section>
+
+<section id="g-snake" hidden>
+  <div class="row">
+    <button id="s-start" class="btn">Start</button>
+    <span class="stat">Score <b id="s-score">0</b></span>
+  </div>
+  <canvas id="s-cv" width="300" height="300"></canvas>
+  <div class="pad">
+    <span></span><button data-d="up">▲</button><span></span>
+    <button data-d="left">◀</button><button data-d="down">▼</button><button data-d="right">▶</button>
+  </div>
+  <div id="s-msg" class="msg">Arrow keys or the pad to steer.</div>
+</section>
+
+<script>
+(function(){
+  var tabs = document.querySelectorAll("#arc-tabs button");
+  var panels = { math: document.getElementById("g-math"), word: document.getElementById("g-word"), trivia: document.getElementById("g-trivia"), snake: document.getElementById("g-snake") };
+  var active = "math";
+  tabs.forEach(function(b){
+    b.addEventListener("click", function(){
+      tabs.forEach(function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      active = b.dataset.g;
+      Object.keys(panels).forEach(function(k){ panels[k].hidden = k !== active; });
+      if (active !== "snake") snakeStop();
+    });
+  });
+  function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+  var mTimer = null, mLeft = 60, mScore = 0, mAns = 0, mLive = false;
+  var mQ = document.getElementById("m-q"), mIn = document.getElementById("m-in"), mMsg = document.getElementById("m-msg");
+  function mNext(){
+    var t = Math.random();
+    var a, b, s;
+    if (t < 0.4){ a = 2 + Math.floor(Math.random()*48); b = 2 + Math.floor(Math.random()*48); s = a + " + " + b; mAns = a + b; }
+    else if (t < 0.7){ a = 10 + Math.floor(Math.random()*40); b = 1 + Math.floor(Math.random()*a); s = a + " − " + b; mAns = a - b; }
+    else { a = 2 + Math.floor(Math.random()*11); b = 2 + Math.floor(Math.random()*11); s = a + " × " + b; mAns = a * b; }
+    mQ.textContent = s + " =";
+  }
+  function mCheck(){
+    if (!mLive || mIn.value === "") return;
+    if (parseInt(mIn.value, 10) === mAns){ mScore++; mMsg.style.color = cssVar("--kimi-color-positive"); mMsg.textContent = "Correct!"; }
+    else { mMsg.style.color = cssVar("--kimi-color-danger"); mMsg.textContent = "Not quite — it was " + mAns + "."; }
+    document.getElementById("m-score").textContent = mScore;
+    mIn.value = ""; mIn.focus(); mNext();
+  }
+  document.getElementById("m-start").addEventListener("click", function(){
+    clearInterval(mTimer); mLeft = 60; mScore = 0; mLive = true;
+    document.getElementById("m-time").textContent = mLeft;
+    document.getElementById("m-score").textContent = 0;
+    document.getElementById("m-go").disabled = false;
+    mMsg.textContent = ""; mNext(); mIn.focus();
+    mTimer = setInterval(function(){
+      mLeft--; document.getElementById("m-time").textContent = mLeft;
+      if (mLeft <= 0){ clearInterval(mTimer); mLive = false; document.getElementById("m-go").disabled = true;
+        mQ.textContent = "Time!"; mMsg.style.color = ""; mMsg.textContent = "Final score: " + mScore + ". Press start to play again."; }
+    }, 1000);
+  });
+  document.getElementById("m-go").addEventListener("click", mCheck);
+  mIn.addEventListener("keydown", function(e){ if (e.key === "Enter") mCheck(); });
+
+  var WORDS = ["PLANET","ROCKET","TIGER","GUITAR","PIZZA","BRIDGE","CAMERA","JUNGLE","WIZARD","LANTERN","MYSTERY","VOLCANO","KEYBOARD","DOLPHIN","PYRAMID","TREASURE"];
+  var wScore = 0, wCur = "";
+  var wScr = document.getElementById("w-scr"), wIn = document.getElementById("w-in"), wMsg = document.getElementById("w-msg");
+  function wNext(){
+    wCur = WORDS[Math.floor(Math.random()*WORDS.length)];
+    var arr = wCur.split(""), tries = 0;
+    do {
+      for (var i = arr.length - 1; i > 0; i--){ var j = Math.floor(Math.random()*(i+1)); var t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+      tries++;
+    } while (arr.join("") === wCur && tries < 10);
+    wScr.textContent = arr.join(" ");
+    wIn.value = ""; wMsg.textContent = ""; wIn.focus();
+  }
+  function wCheck(){
+    var g = wIn.value.trim().toUpperCase();
+    if (g === wCur){ wScore++; document.getElementById("w-score").textContent = wScore;
+      wMsg.style.color = cssVar("--kimi-color-positive"); wMsg.textContent = "Solved it! Next one..."; setTimeout(wNext, 700); }
+    else if (g){ wMsg.style.color = cssVar("--kimi-color-danger"); wMsg.textContent = "Not that word — try again."; }
+  }
+  document.getElementById("w-go").addEventListener("click", wCheck);
+  document.getElementById("w-new").addEventListener("click", wNext);
+  wIn.addEventListener("keydown", function(e){ if (e.key === "Enter") wCheck(); });
+  wNext();
+
+  var TRIVIA = [
+    ["Which planet is known as the Red Planet?", ["Mars","Venus","Jupiter","Mercury"], 0],
+    ["How many legs does a spider have?", ["6","8","10","12"], 1],
+    ["What is the largest ocean on Earth?", ["Atlantic","Indian","Pacific","Arctic"], 2],
+    ["What is the chemical symbol for gold?", ["Ag","Fe","Au","Pb"], 2],
+    ["Which shape has exactly three sides?", ["Square","Triangle","Pentagon","Hexagon"], 1],
+    ["Who wrote the play Romeo and Juliet?", ["Dickens","Shakespeare","Austen","Twain"], 1],
+    ["What gas do plants absorb from the air?", ["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"], 2],
+    ["How many continents are there on Earth?", ["5","6","7","8"], 2],
+    ["What is the fastest land animal?", ["Lion","Horse","Greyhound","Cheetah"], 3],
+    ["Which force keeps us on the ground?", ["Magnetism","Gravity","Friction","Electricity"], 1]
+  ];
+  var tI = 0, tScore = 0, tLock = false;
+  var tQ = document.getElementById("t-q"), tOpts = document.getElementById("t-opts"), tMsg = document.getElementById("t-msg");
+  function tRender(){
+    tLock = false; tMsg.textContent = "";
+    var item = TRIVIA[tI];
+    tQ.textContent = item[0];
+    document.getElementById("t-n").textContent = tI + 1;
+    tOpts.innerHTML = "";
+    item[1].forEach(function(opt, i){
+      var b = document.createElement("button");
+      b.className = "opt"; b.textContent = opt;
+      b.addEventListener("click", function(){ tPick(i, b); });
+      tOpts.appendChild(b);
+    });
+  }
+  function tPick(i, btn){
+    if (tLock) return; tLock = true;
+    var item = TRIVIA[tI];
+    var buttons = tOpts.querySelectorAll("button");
+    buttons[item[2]].classList.add("ok");
+    if (i === item[2]){ tScore++; tMsg.style.color = cssVar("--kimi-color-positive"); tMsg.textContent = "Correct!"; }
+    else { btn.classList.add("bad"); tMsg.style.color = cssVar("--kimi-color-danger"); tMsg.textContent = "The answer was: " + item[1][item[2]]; }
+    document.getElementById("t-score").textContent = tScore;
+    buttons.forEach(function(x){ x.disabled = true; });
+    setTimeout(function(){
+      tI++;
+      if (tI < TRIVIA.length) tRender();
+      else { tQ.textContent = "Quiz complete!"; tOpts.innerHTML = "";
+        tMsg.style.color = ""; tMsg.textContent = "You scored " + tScore + " out of " + TRIVIA.length + ".";
+        document.getElementById("t-re").hidden = false; }
+    }, 1100);
+  }
+  document.getElementById("t-re").addEventListener("click", function(){ tI = 0; tScore = 0; document.getElementById("t-score").textContent = 0; this.hidden = true; tRender(); });
+  tRender();
+
+  var cv = document.getElementById("s-cv"), ctx = cv.getContext("2d");
+  var C = 20, CELL = 15, snake, dir, ndir, food, sScore, loop = null, sLive = false;
+  function sDraw(){
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.fillStyle = cssVar("--kimi-color-danger");
+    ctx.fillRect(food.x*CELL + 3, food.y*CELL + 3, CELL - 6, CELL - 6);
+    ctx.fillStyle = cssVar("--kimi-color-text-primary");
+    snake.forEach(function(p){ ctx.fillRect(p.x*CELL + 1, p.y*CELL + 1, CELL - 2, CELL - 2); });
+  }
+  function sPlace(){
+    do { food = { x: Math.floor(Math.random()*C), y: Math.floor(Math.random()*C) }; }
+    while (snake.some(function(p){ return p.x === food.x && p.y === food.y; }));
+  }
+  function sStep(){
+    dir = ndir;
+    var h = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+    if (h.x < 0 || h.y < 0 || h.x >= C || h.y >= C || snake.some(function(p){ return p.x === h.x && p.y === h.y; })){
+      snakeStop(); sLive = false;
+      document.getElementById("s-msg").textContent = "Game over — score " + sScore + ". Press start to retry.";
+      return;
+    }
+    snake.unshift(h);
+    if (h.x === food.x && h.y === food.y){ sScore++; document.getElementById("s-score").textContent = sScore; sPlace(); }
+    else snake.pop();
+    sDraw();
+  }
+  function snakeStop(){ if (loop){ clearInterval(loop); loop = null; } }
+  function sStart(){
+    snakeStop(); sLive = true;
+    snake = [{x:9,y:10},{x:8,y:10},{x:7,y:10}]; dir = {x:1,y:0}; ndir = dir; sScore = 0;
+    document.getElementById("s-score").textContent = 0;
+    document.getElementById("s-msg").textContent = "Arrow keys or the pad to steer.";
+    sPlace(); sDraw();
+    loop = setInterval(sStep, 130);
+  }
+  function sTurn(x, y){ if (dir.x !== -x || dir.y !== -y) ndir = { x: x, y: y }; }
+  document.getElementById("s-start").addEventListener("click", sStart);
+  document.querySelectorAll("#arc .pad button").forEach(function(b){
+    var d = b.dataset.d;
+    b.addEventListener("click", function(){
+      if (d === "up") sTurn(0,-1); if (d === "down") sTurn(0,1);
+      if (d === "left") sTurn(-1,0); if (d === "right") sTurn(1,0);
+    });
+  });
+  document.addEventListener("keydown", function(e){
+    if (active !== "snake") return;
+    var k = e.key;
+    if (k === "ArrowUp"){ sTurn(0,-1); e.preventDefault(); }
+    else if (k === "ArrowDown"){ sTurn(0,1); e.preventDefault(); }
+    else if (k === "ArrowLeft"){ sTurn(-1,0); e.preventDefault(); }
+    else if (k === "ArrowRight"){ sTurn(1,0); e.preventDefault(); }
+  });
+  sDraw();
+})();
+</script>
+</div>
+
+</body>
+</html>
+
