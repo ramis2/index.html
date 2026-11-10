@@ -1,163 +1,432 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#4CAF50">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>My Homework</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Scan QR · Appointment queue</title>
+  <!-- QRCode.js (lightweight) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: #f4f7fc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .page {
+      max-width: 900px;
+      width: 100%;
+      background: white;
+      border-radius: 36px;
+      padding: 32px 28px 36px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 20, 40, 0.06);
+      transition: all 0.2s;
+    }
+    .title-section {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .title-section h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0b2b4f;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .title-section h1 span {
+      background: #e8f0fe;
+      border-radius: 60px;
+      padding: 6px 16px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #1a5a9c;
+    }
+    .subhead {
+      font-size: 1.1rem;
+      color: #3a5e7a;
+      margin-top: 8px;
+      font-weight: 400;
+      border-bottom: 2px dashed #cddfed;
+      padding-bottom: 16px;
+    }
+    .qr-area {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      margin: 24px 0 28px;
+    }
+    .qr-wrapper {
+      background: white;
+      padding: 18px;
+      border-radius: 28px;
+      box-shadow: 0 10px 24px rgba(0, 40, 80, 0.12);
+      border: 2px solid #d9e6f2;
+      display: inline-block;
+    }
+    #qrcode {
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #qrcode img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .queue-status {
+      background: #ecf3fa;
+      border-radius: 48px;
+      padding: 18px 26px;
+      min-width: 220px;
+      box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(0, 0, 0, 0.02);
+    }
+    .queue-status .label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      color: #3e6a8c;
+    }
+    .queue-status .turn {
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #0b2b4f;
+    }
+    .queue-status .waiting {
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: #26648b;
+      background: white;
+      padding: 6px 16px;
+      border-radius: 40px;
+      display: inline-block;
+      margin-top: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .queue-status .waiting i {
+      font-style: normal;
+      font-weight: 700;
+      background: #d4e7fb;
+      padding: 0 8px;
+      border-radius: 20px;
+    }
+    .instructions {
+      background: #f9fcff;
+      border-radius: 28px;
+      padding: 22px 24px;
+      border: 1px solid #d0e2f0;
+      margin: 28px 0 22px;
+    }
+    .instructions h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #183b56;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .instructions h2 span {
+      background: #183b56;
+      color: white;
+      border-radius: 30px;
+      padding: 4px 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: white;
+      padding: 14px 20px;
+      border-radius: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      border: 1px solid #e2edf7;
+    }
+    .step-num {
+      background: #1e5f8e;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 8px rgba(0, 80, 140, 0.15);
+    }
+    .step-text {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      color: #1c3c54;
+    }
+    .step-text strong {
+      color: #0b2b4f;
+    }
+    .translations {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+    .lang-card {
+      background: #f0f7fe;
+      border-radius: 20px;
+      padding: 18px 18px 14px;
+      border-left: 6px solid #3b7cab;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+    .lang-card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #0b2b4f;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lang-card p {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #1c3c54;
+      margin-bottom: 8px;
+    }
+    .lang-card p:last-child {
+      margin-bottom: 0;
+    }
+    .lang-card .small-note {
+      font-size: 0.85rem;
+      color: #3e6a8c;
+      background: rgba(255,255,255,0.7);
+      padding: 6px 10px;
+      border-radius: 50px;
+      display: inline-block;
+      margin-top: 6px;
+    }
+    .footer-note {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 0.95rem;
+      color: #4f6f8f;
+      border-top: 1px solid #cde0ee;
+      padding-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px 24px;
+    }
+    .footer-note .badge {
+      background: #e9f2fa;
+      padding: 6px 18px;
+      border-radius: 100px;
+      font-weight: 500;
+    }
+    .refresh-btn {
+      background: white;
+      border: 1.5px solid #b9d2e7;
+      border-radius: 40px;
+      padding: 8px 18px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #1a5a9c;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .refresh-btn:hover {
+      background: #e3effa;
+      border-color: #6d9dc9;
+    }
+    .copyright {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 0.85rem;
+      color: #6a8aa8;
+      letter-spacing: 0.2px;
+      width: 100%;
+    }
+    .copyright span {
+      font-weight: 500;
+    }
+    @media (max-width: 600px) {
+      .page { padding: 22px 16px; }
+      .title-section h1 { font-size: 1.6rem; }
+      .qr-area { gap: 20px; }
+      .step-item { padding: 12px 14px; }
+      .step-text { font-size: 1rem; }
+      .queue-status { padding: 14px 22px; }
+    }
+  </style>
 </head>
 <body>
-
-<!-- FOCUS BANNER -->
-<div id="focus-banner" class="hidden">🔒 FOCUS MODE ON — Social media blocked</div>
-
-<!-- INSTALL BANNER -->
-<div id="install-banner" class="hidden">
-  <span>📲 Add to Home Screen</span>
-  <button id="install-btn">Install</button>
-  <button id="dismiss-install">✕</button>
-</div>
-
-<!-- PARENT LOCK -->
-<div id="lock-screen" class="hidden">
-  <div class="lock-box">
-    <h2>🔒 Parent Mode</h2>
-    <p>Enter PIN</p>
-    <input type="password" id="parent-pin" maxlength="4" placeholder="0000">
-    <button id="unlock-btn">Unlock</button>
-    <button id="back-to-app" class="secondary">Back</button>
-  </div>
-</div>
-
-<!-- FOCUS EXIT LOCK -->
-<div id="focus-exit-lock" class="hidden">
-  <div class="lock-box">
-    <h2>🔒 Focus Mode Active</h2>
-    <p>Enter PIN to turn off</p>
-    <input type="password" id="focus-exit-pin" maxlength="4" placeholder="0000">
-    <button id="focus-exit-confirm">Turn Off Focus</button>
-    <button id="focus-exit-cancel" class="secondary">Keep Focus On</button>
-  </div>
-</div>
-
-<!-- MAIN APP -->
-<div id="app">
-  <header>
-    <div class="header-left">
-      <h1>📚 My Homework</h1>
-      <span id="date-display"></span>
-    </div>
-    <div class="header-right">
-      <div id="timer" title="Tap to start focus timer">⏱️ 25:00</div>
-      <button id="focus-toggle" title="Focus Mode">🔓 Focus</button>
-      <button id="parent-toggle" title="Parent Settings">⚙️</button>
-    </div>
-  </header>
-
-  <div id="stats-bar">
-    <div class="stat"><span id="completed-count">0</span><small>Done</small></div>
-    <div class="stat"><span id="pending-count">0</span><small>To Do</small></div>
-    <div class="stat"><span id="streak-count">🔥 0</span><small>Streak</small></div>
-    <div class="stat"><span id="time-used">0h 0m</span><small>Today</small></div>
-  </div>
-
-  <nav id="subjects">
-    <button class="subject-btn active" data-subject="math">🔢 Math</button>
-    <button class="subject-btn" data-subject="science">🔬 Science</button>
-    <button class="subject-btn" data-subject="english">📖 English</button>
-    <button class="subject-btn" data-subject="history">🏛️ History</button>
-    <button class="subject-btn" data-subject="other">📌 Other</button>
-  </nav>
-
-  <main id="task-list">
-    <div class="empty-state">
-      <div class="empty-icon">📝</div>
-      <p>No homework yet!</p>
-      <p class="empty-hint">Add your first task below</p>
-    </div>
-  </main>
-</div>
-
-<!-- ADD TASK BAR -->
-<div id="add-task-bar">
-  <input type="text" id="new-task-text" placeholder="What homework do you have?">
-  <input type="date" id="new-task-due">
-  <button id="add-btn">➕</button>
-</div>
-
-<!-- PARENT DASHBOARD -->
-<div id="parent-dashboard" class="hidden">
-  <header>
-    <h1>👨‍👩‍👧 Parent Dashboard</h1>
-    <button id="close-parent">✕ Close</button>
-  </header>
-
-  <div class="parent-section">
-    <h3>⏰ Daily Time Limit</h3>
-    <div class="setting-row">
-      <label>Limit (hours):</label>
-      <input type="number" id="time-limit" min="0.5" max="8" step="0.5" value="2">
-    </div>
-    <div class="setting-row">
-      <label>Used today:</label>
-      <span id="parent-time-used">0h 0m</span>
+<div class="page">
+  <!-- header -->
+  <div class="title-section">
+    <h1>
+      📋 Scan & wait
+      <span>Queue</span>
+    </h1>
+    <div class="subhead">
+      Scan the QR code to join the queue · ተራዎን ለመቀላቀል QR ኮዱን ይቃኙ · ተርእዮም ቁረጽ
     </div>
   </div>
 
-  <div class="parent-section">
-    <h3>🔒 Focus Mode</h3>
-    <p class="setting-hint">Blocks: Instagram, TikTok, YouTube, Snapchat, Twitter, Discord, Reddit, Twitch, Roblox, Pinterest, WhatsApp, Telegram</p>
-    <p class="setting-hint">Kid needs PIN to turn off. Also blocks all external links.</p>
+  <!-- QR + status -->
+  <div class="qr-area">
+    <div class="qr-wrapper">
+      <div id="qrcode"></div>
+    </div>
+    <div class="queue-status">
+      <div class="label">YOUR TICKET</div>
+      <div class="turn" id="ticketNumber">A-042</div>
+      <div class="waiting">⏳ <span id="waitingCount">4</span> ahead</div>
+    </div>
   </div>
 
-  <div class="parent-section">
-    <h3>📊 This Week</h3>
-    <div id="weekly-chart"></div>
+  <!-- 5-point instructions (print ready) -->
+  <div class="instructions">
+    <h2>📌 5 steps <span>scan · wait · see</span></h2>
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>Scan the QR code</strong> with your phone camera.</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Get your ticket number</strong> — it appears on screen.</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Wait in queue</strong> – check the "ahead" count.</div></div>
+      <div class="step-item"><div class="step-num">4</div><div class="step-text"><strong>When it's your turn</strong> you'll be called / notified.</div></div>
+      <div class="step-item"><div class="step-num">5</div><div class="step-text"><strong>See the service desk</strong> with your ticket.</div></div>
+    </div>
   </div>
 
-  <div class="parent-section">
-    <h3>✅ Completed Tasks</h3>
-    <div id="parent-task-list"></div>
+  <!-- translations: Amharic, Tigrinya, Oromo -->
+  <div class="translations">
+    <div class="lang-card">
+      <h3>🇪🇹 አማርኛ <span style="font-size:0.8rem; font-weight:400;">(Amharic)</span></h3>
+      <p>1. QR ኮዱን በስልክዎ ይቃኙ።</p>
+      <p>2. የቲኬት ቁጥርዎን ይያዙ።</p>
+      <p>3. በሰልፍ ይጠብቁ — ከፊትዎ ያሉትን ይመልከቱ።</p>
+      <p>4. ተራዎ ሲደርስ ይጠራሉ።</p>
+      <p>5. ከቲኬትዎ ጋር ወደ አገልግሎት ይሂዱ።</p>
+      <div class="small-note">የ5 ነጥብ መመሪያ</div>
+    </div>
+    <div class="lang-card">
+      <h3>🇪🇹 ትግርኛ <span style="font-size:0.8rem; font-weight:400;">(Tigrinya)</span></h3>
+      <p>1. QR ኮድ ብስልክኻ ስካን ግበር።</p>
+      <p>2. ቁጽሪ ቲኬትካ ሓዝ።</p>
+      <p>3. ኣብ መስርዕ ተጸበ — ኣብ ቅድሚኻ ዘለዉ ተመልከት።</p>
+      <p>4. ተርእኻ ምስ በጽሐ ክጽውዑኻ እዮም።</p>
+      <p>5. ምስ ቲኬትካ ናብ ኣገልግሎት ኪድ።</p>
+      <div class="small-note">ትሕዝቶ 5 ነጥቢ</div>
+    </div>
+    <div class="lang-card">
+      <h3>🇪🇹 ኦሮሚፋ <span style="font-size:0.8rem; font-weight:400;">(Oromo)</span></h3>
+      <p>1. Koodii QR bilbila keetiin scan godhi.</p>
+      <p>2. Lakkoofsa tikkeetii kee qabadhu.</p>
+      <p>3. Tarree keessa eegi — warra si dura jiran ilaali.</p>
+      <p>4. Yeroo kee yoo ga'e ni waamama.</p>
+      <p>5. Tikkeetii kee waliin gara tajaajilaa deemi.</p>
+      <div class="small-note">Qajeelfama tuqaa 5</div>
+    </div>
   </div>
 
-  <div class="parent-section">
-    <h3>🔐 Change PIN</h3>
-    <input type="password" id="new-pin" maxlength="4" placeholder="New 4-digit PIN">
-    <button id="save-pin">Save PIN</button>
+  <!-- footer / refresh + copyright -->
+  <div class="footer-note">
+    <span class="badge">🔔 Live queue</span>
+    <button class="refresh-btn" id="refreshQueueBtn">
+      🔄 Refresh queue
+    </button>
+    <span class="badge">📄 Print this page</span>
   </div>
-
-  <div class="parent-section danger">
-    <h3>⚠️ Reset All Data</h3>
-    <button id="reset-data" class="danger-btn">Clear Everything</button>
+  <div class="copyright"> JA
+    © <span id="year"></span> Queue Appointment System. All rights reserved.
   </div>
 </div>
 
-<!-- TIME LIMIT SCREEN -->
-<div id="time-limit-screen" class="hidden">
-  <div class="limit-box">
-    <div class="limit-icon">⏰</div>
-    <h2>Daily Limit Reached!</h2>
-    <p>You've used your screen time for today.</p>
-    <p class="limit-sub">Great job! Come back tomorrow.</p>
-    <button id="override-limit">Parent Override</button>
-  </div>
-</div>
-
-<!-- NOTIFICATION -->
-<div id="notification" class="hidden"></div>
-
-<script src="app.js"></script>
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
-    .then(() => console.log('SW registered'))
-    .catch(err => console.log('SW failed', err));
-}
+  (function() {
+    // ----- set copyright year dynamically -----
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ----- generate QR code -----
+    const qrTarget = window.location.href.split('?')[0];
+    const finalQrContent = (qrTarget && qrTarget.startsWith('http')) 
+      ? qrTarget 
+      : 'https://example.com/queue';
+
+    const qrContainer = document.getElementById('qrcode');
+    qrContainer.innerHTML = '';
+    new QRCode(qrContainer, {
+      text: finalQrContent,
+      width: 200,
+      height: 200,
+      colorDark: "#0b2b4f",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    // ----- queue simulation -----
+    const ticketEl = document.getElementById('ticketNumber');
+    const waitingSpan = document.getElementById('waitingCount');
+
+    function generateTicket() {
+      const letters = 'ABCD';
+      const letter = letters[Math.floor(Math.random() * letters.length)];
+      const num = Math.floor(Math.random() * 180) + 10;
+      return letter + '-' + (num < 100 ? '0' + num : num);
+    }
+
+    function updateQueueDisplay() {
+      ticketEl.textContent = generateTicket();
+      const waiting = Math.floor(Math.random() * 12) + 1;
+      waitingSpan.textContent = waiting;
+    }
+
+    updateQueueDisplay();
+
+    document.getElementById('refreshQueueBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      updateQueueDisplay();
+      this.style.transform = 'scale(0.96)';
+      setTimeout(() => { this.style.transform = 'scale(1)'; }, 100);
+    });
+
+    setInterval(updateQueueDisplay, 30000);
+  })();
 </script>
+
+<!-- print styles -->
+<style media="print">
+  body { background: white; padding: 0; }
+  .page { box-shadow: none; border-radius: 0; padding: 1.2cm; }
+  .refresh-btn { display: none; }
+  .footer-note .badge:last-child { display: none; }
+  .qr-wrapper { box-shadow: none; border: 1px solid #ccc; }
+  .queue-status { box-shadow: none; background: #f2f6fa; }
+  .copyright { color: #444; }
+</style>
 </body>
 </html>
