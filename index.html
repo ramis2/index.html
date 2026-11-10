@@ -61,6 +61,44 @@
       border-bottom: 2px dashed #cddfed;
       padding-bottom: 16px;
     }
+
+    /* ---- Large kiosk print button (top) ---- */
+    .kiosk-print-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #0b2b4f;
+      color: white;
+      border: none;
+      border-radius: 60px;
+      padding: 16px 34px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(11, 43, 79, 0.25);
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+      margin-top: 20px;
+      font-family: inherit;
+    }
+    .kiosk-print-btn:hover {
+      background: #123f6e;
+      box-shadow: 0 10px 26px rgba(11, 43, 79, 0.32);
+    }
+    .kiosk-print-btn:active {
+      transform: scale(0.97);
+    }
+    .print-hint {
+      font-size: 0.9rem;
+      color: #4f6f8f;
+      margin-top: 12px;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .print-hint strong {
+      color: #0b2b4f;
+    }
+
     .qr-area {
       display: flex;
       flex-wrap: wrap;
@@ -259,6 +297,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      font-family: inherit;
     }
     .refresh-btn:hover {
       background: #e3effa;
@@ -282,6 +321,7 @@
       .step-item { padding: 12px 14px; }
       .step-text { font-size: 1rem; }
       .queue-status { padding: 14px 22px; }
+      .kiosk-print-btn { width: 100%; padding: 16px 20px; font-size: 1.05rem; }
     }
   </style>
 </head>
@@ -296,6 +336,14 @@
     <div class="subhead">
       Scan the QR code to join the queue · ተራዎን ለመቀላቀል QR ኮዱን ይቃኙ · ተርእዮም ቁረጽ
     </div>
+
+    <!-- ✅ Large kiosk print button + PDF hint -->
+    <button class="kiosk-print-btn" id="printBtnTop">
+      🖨️ Print / Save as PDF
+    </button>
+    <p class="print-hint">
+      Tip: In the print dialog, choose <strong>“Save as PDF”</strong> to download or share a copy.
+    </p>
   </div>
 
   <!-- QR + status -->
@@ -353,28 +401,32 @@
     </div>
   </div>
 
-  <!-- footer / refresh + copyright -->
+  <!-- footer / refresh + secondary print -->
   <div class="footer-note">
     <span class="badge">🔔 Live queue</span>
     <button class="refresh-btn" id="refreshQueueBtn">
       🔄 Refresh queue
     </button>
-    <span class="badge">📄 Print this page</span>
+    <button class="refresh-btn" id="printBtn">
+      📄 Print this page
+    </button>
   </div>
-  <div class="copyright"> JA
-    © <span id="year"></span> Queue Appointment System. All rights reserved.
+
+  <!-- copyright -->
+  <div class="copyright">
+    © <span id="year"></span> JA Queue Appointment System. All rights reserved.
   </div>
 </div>
 
 <script>
   (function() {
-    // ----- set copyright year dynamically -----
+    // ----- dynamic copyright year -----
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // ----- generate QR code -----
     const qrTarget = window.location.href.split('?')[0];
-    const finalQrContent = (qrTarget && qrTarget.startsWith('http')) 
-      ? qrTarget 
+    const finalQrContent = (qrTarget && qrTarget.startsWith('http'))
+      ? qrTarget
       : 'https://example.com/queue';
 
     const qrContainer = document.getElementById('qrcode');
@@ -407,6 +459,7 @@
 
     updateQueueDisplay();
 
+    // ----- refresh button -----
     document.getElementById('refreshQueueBtn').addEventListener('click', function(e) {
       e.preventDefault();
       updateQueueDisplay();
@@ -414,19 +467,49 @@
       setTimeout(() => { this.style.transform = 'scale(1)'; }, 100);
     });
 
+    // ----- print buttons (top + bottom) -----
+    function doPrint(e) {
+      if (e) e.preventDefault();
+      window.print();
+    }
+    document.getElementById('printBtnTop').addEventListener('click', doPrint);
+    document.getElementById('printBtn').addEventListener('click', doPrint);
+
+    // auto-refresh every 30 seconds
     setInterval(updateQueueDisplay, 30000);
   })();
 </script>
 
-<!-- print styles -->
+<!-- print-only styles -->
 <style media="print">
-  body { background: white; padding: 0; }
-  .page { box-shadow: none; border-radius: 0; padding: 1.2cm; }
-  .refresh-btn { display: none; }
-  .footer-note .badge:last-child { display: none; }
-  .qr-wrapper { box-shadow: none; border: 1px solid #ccc; }
-  .queue-status { box-shadow: none; background: #f2f6fa; }
-  .copyright { color: #444; }
+  body {
+    background: white;
+    padding: 0;
+  }
+  .page {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 1.2cm;
+    max-width: 100%;
+  }
+  /* Hide all interactive UI when printing */
+  .kiosk-print-btn,
+  .print-hint,
+  .refresh-btn,
+  .footer-note {
+    display: none !important;
+  }
+  .qr-wrapper {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  .queue-status {
+    box-shadow: none;
+    background: #f2f6fa;
+  }
+  .copyright {
+    color: #444;
+  }
 </style>
 </body>
 </html>
