@@ -4,512 +4,538 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>Scan QR · Appointment queue</title>
-  <!-- QRCode.js (lightweight) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: #f4f7fc;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+      background: #f4f7fc; min-height: 100vh; display: flex;
+      align-items: center; justify-content: center; padding: 16px;
     }
     .page {
-      max-width: 900px;
-      width: 100%;
-      background: white;
-      border-radius: 36px;
+      max-width: 900px; width: 100%; background: white; border-radius: 36px;
       padding: 32px 28px 36px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 20, 40, 0.06);
-      transition: all 0.2s;
+      box-shadow: 0 20px 40px rgba(0,0,0,.08), 0 8px 20px rgba(0,20,40,.06);
     }
-    .title-section {
-      text-align: center;
-      margin-bottom: 24px;
-    }
+    .title-section { text-align: center; margin-bottom: 24px; }
     .title-section h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: #0b2b4f;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
+      font-size: 2.2rem; font-weight: 700; color: #0b2b4f; letter-spacing: -0.02em;
+      display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
     }
     .title-section h1 span {
-      background: #e8f0fe;
-      border-radius: 60px;
-      padding: 6px 16px;
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: #1a5a9c;
+      background: #e8f0fe; border-radius: 60px; padding: 6px 16px;
+      font-size: 1.1rem; font-weight: 500; color: #1a5a9c;
     }
     .subhead {
-      font-size: 1.1rem;
-      color: #3a5e7a;
-      margin-top: 8px;
-      font-weight: 400;
-      border-bottom: 2px dashed #cddfed;
-      padding-bottom: 16px;
+      font-size: 1.1rem; color: #3a5e7a; margin-top: 8px;
+      border-bottom: 2px dashed #cddfed; padding-bottom: 16px;
     }
-
-    /* ---- Large kiosk print button (top) ---- */
     .kiosk-print-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: #0b2b4f;
-      color: white;
-      border: none;
-      border-radius: 60px;
-      padding: 16px 34px;
-      font-size: 1.15rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(11, 43, 79, 0.25);
-      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
-      margin-top: 20px;
-      font-family: inherit;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      background: #0b2b4f; color: white; border: none; border-radius: 60px;
+      padding: 16px 34px; font-size: 1.15rem; font-weight: 600; cursor: pointer;
+      box-shadow: 0 8px 20px rgba(11,43,79,.25);
+      transition: transform .15s, box-shadow .15s, background .15s;
+      margin-top: 20px; font-family: inherit;
     }
-    .kiosk-print-btn:hover {
-      background: #123f6e;
-      box-shadow: 0 10px 26px rgba(11, 43, 79, 0.32);
-    }
-    .kiosk-print-btn:active {
-      transform: scale(0.97);
-    }
-    .print-hint {
-      font-size: 0.9rem;
-      color: #4f6f8f;
-      margin-top: 12px;
-      text-align: center;
-      line-height: 1.5;
-    }
-    .print-hint strong {
-      color: #0b2b4f;
-    }
+    .kiosk-print-btn:hover { background: #123f6e; box-shadow: 0 10px 26px rgba(11,43,79,.32); }
+    .kiosk-print-btn:active { transform: scale(.97); }
+    .print-hint { font-size: .9rem; color: #4f6f8f; margin-top: 12px; line-height: 1.5; }
+    .print-hint strong { color: #0b2b4f; }
 
     .qr-area {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 36px;
-      margin: 24px 0 28px;
+      display: flex; flex-wrap: wrap; align-items: flex-start;
+      justify-content: center; gap: 36px; margin: 24px 0 28px;
     }
     .qr-wrapper {
-      background: white;
-      padding: 18px;
-      border-radius: 28px;
-      box-shadow: 0 10px 24px rgba(0, 40, 80, 0.12);
-      border: 2px solid #d9e6f2;
-      display: inline-block;
+      background: white; padding: 18px; border-radius: 28px;
+      box-shadow: 0 10px 24px rgba(0,40,80,.12);
+      border: 2px solid #d9e6f2; display: inline-block;
     }
     #qrcode {
-      width: 200px;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 200px; height: 200px; display: flex;
+      align-items: center; justify-content: center;
     }
-    #qrcode img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+    #qrcode img { width: 100%; height: 100%; object-fit: contain; }
+
+    .status-card {
+      background: #ecf3fa; border-radius: 28px; padding: 20px 22px;
+      min-width: 280px; max-width: 400px; flex: 1 1 280px;
+      box-shadow: inset 0 1px 4px rgba(255,255,255,.8), 0 4px 10px rgba(0,0,0,.02);
     }
-    .queue-status {
-      background: #ecf3fa;
-      border-radius: 48px;
-      padding: 18px 26px;
-      min-width: 220px;
-      box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(0, 0, 0, 0.02);
+    .label {
+      font-size: .85rem; text-transform: uppercase; letter-spacing: .5px;
+      font-weight: 600; color: #3e6a8c; margin-bottom: 10px;
     }
-    .queue-status .label {
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 600;
-      color: #3e6a8c;
+    .form-row { margin-bottom: 12px; }
+    .form-row label {
+      display: block; font-size: .8rem; font-weight: 600;
+      color: #3e6a8c; margin-bottom: 4px;
     }
-    .queue-status .turn {
-      font-size: 2.6rem;
-      font-weight: 800;
-      line-height: 1.2;
-      color: #0b2b4f;
+    .form-row input {
+      width: 100%; padding: 12px 14px; border: 1.5px solid #b9d2e7;
+      border-radius: 14px; font-size: 16px; font-family: inherit;
+      color: #0b2b4f; background: white;
     }
-    .queue-status .waiting {
-      font-size: 1.15rem;
-      font-weight: 500;
-      color: #26648b;
-      background: white;
-      padding: 6px 16px;
-      border-radius: 40px;
-      display: inline-block;
-      margin-top: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    .form-row input:focus {
+      outline: none; border-color: #3b7cab;
+      box-shadow: 0 0 0 3px rgba(59,124,171,.15);
     }
-    .queue-status .waiting i {
-      font-style: normal;
-      font-weight: 700;
-      background: #d4e7fb;
-      padding: 0 8px;
-      border-radius: 20px;
+    .form-row input::placeholder { color: #93b0c9; }
+    .input-hint { font-size: .75rem; color: #5e82a4; margin-top: 4px; }
+    .submit-btn {
+      width: 100%; padding: 14px 20px; background: #1e5f8e; color: white;
+      border: none; border-radius: 16px; font-size: 1rem; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+      transition: background .15s, transform .1s; margin-top: 4px;
     }
+    .submit-btn:hover { background: #164a6e; }
+    .submit-btn:active { transform: scale(.98); }
+
+    .turn {
+      font-size: 2.6rem; font-weight: 800; line-height: 1.2; color: #0b2b4f;
+    }
+    .waiting {
+      font-size: 1.1rem; font-weight: 500; color: #26648b;
+      background: white; padding: 6px 16px; border-radius: 40px;
+      display: inline-block; margin-top: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.04);
+    }
+    .countdown {
+      font-size: 2rem; font-weight: 800; color: #1e5f8e; margin-top: 14px;
+      font-variant-numeric: tabular-nums; letter-spacing: .04em;
+    }
+    .countdown-label {
+      font-size: .8rem; text-transform: uppercase; color: #3e6a8c;
+      font-weight: 600; letter-spacing: .5px;
+    }
+    .ticket-meta {
+      margin-top: 12px; font-size: .9rem; color: #2d5373; background: white;
+      padding: 10px 14px; border-radius: 12px; line-height: 1.5;
+    }
+    .ticket-meta strong { color: #0b2b4f; }
+    .turn-msg {
+      margin-top: 12px; padding: 14px 16px; background: #e8f7ea;
+      color: #1b5e20; border-radius: 14px; font-weight: 600;
+      text-align: center; font-size: 1rem; display: none;
+    }
+    .turn-msg.show { display: block; }
+    .countdown.done { display: none; }
+
     .instructions {
-      background: #f9fcff;
-      border-radius: 28px;
-      padding: 22px 24px;
-      border: 1px solid #d0e2f0;
-      margin: 28px 0 22px;
+      background: #f9fcff; border-radius: 28px; padding: 22px 24px;
+      border: 1px solid #d0e2f0; margin: 28px 0 22px;
     }
     .instructions h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #183b56;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
+      font-size: 1.5rem; font-weight: 600; color: #183b56;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
     }
     .instructions h2 span {
-      background: #183b56;
-      color: white;
-      border-radius: 30px;
-      padding: 4px 12px;
-      font-size: 0.9rem;
-      font-weight: 500;
+      background: #183b56; color: white; border-radius: 30px;
+      padding: 4px 12px; font-size: .9rem; font-weight: 500;
     }
-    .step-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+    .step-list { display: flex; flex-direction: column; gap: 14px; }
     .step-item {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      background: white;
-      padding: 14px 20px;
-      border-radius: 18px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-      border: 1px solid #e2edf7;
+      display: flex; gap: 16px; align-items: flex-start; background: white;
+      padding: 14px 20px; border-radius: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.02); border: 1px solid #e2edf7;
     }
     .step-num {
-      background: #1e5f8e;
-      color: white;
-      width: 30px;
-      height: 30px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-      box-shadow: 0 4px 8px rgba(0, 80, 140, 0.15);
+      background: #1e5f8e; color: white; width: 30px; height: 30px;
+      border-radius: 12px; display: flex; align-items: center;
+      justify-content: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0;
     }
-    .step-text {
-      font-size: 1.1rem;
-      line-height: 1.5;
-      color: #1c3c54;
-    }
-    .step-text strong {
-      color: #0b2b4f;
-    }
+    .step-text { font-size: 1.1rem; line-height: 1.5; color: #1c3c54; }
+    .step-text strong { color: #0b2b4f; }
+
     .translations {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 18px;
-      margin-top: 20px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px; margin-top: 20px;
     }
     .lang-card {
-      background: #f0f7fe;
-      border-radius: 20px;
-      padding: 18px 18px 14px;
-      border-left: 6px solid #3b7cab;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      background: #f0f7fe; border-radius: 20px; padding: 18px 18px 14px;
+      border-left: 6px solid #3b7cab; box-shadow: 0 2px 8px rgba(0,0,0,.02);
     }
     .lang-card h3 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: #0b2b4f;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; color: #0b2b4f;
+      display: flex; align-items: center; gap: 8px;
     }
-    .lang-card p {
-      font-size: 1rem;
-      line-height: 1.5;
-      color: #1c3c54;
-      margin-bottom: 8px;
-    }
-    .lang-card p:last-child {
-      margin-bottom: 0;
-    }
+    .lang-card p { font-size: 1rem; line-height: 1.5; color: #1c3c54; margin-bottom: 8px; }
+    .lang-card p:last-child { margin-bottom: 0; }
     .lang-card .small-note {
-      font-size: 0.85rem;
-      color: #3e6a8c;
-      background: rgba(255,255,255,0.7);
-      padding: 6px 10px;
-      border-radius: 50px;
-      display: inline-block;
-      margin-top: 6px;
+      font-size: .85rem; color: #3e6a8c; background: rgba(255,255,255,.7);
+      padding: 6px 10px; border-radius: 50px; display: inline-block; margin-top: 6px;
     }
+
     .footer-note {
-      text-align: center;
-      margin-top: 28px;
-      font-size: 0.95rem;
-      color: #4f6f8f;
-      border-top: 1px solid #cde0ee;
-      padding-top: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px 24px;
+      text-align: center; margin-top: 28px; font-size: .95rem; color: #4f6f8f;
+      border-top: 1px solid #cde0ee; padding-top: 20px;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 24px;
     }
     .footer-note .badge {
-      background: #e9f2fa;
-      padding: 6px 18px;
-      border-radius: 100px;
-      font-weight: 500;
+      background: #e9f2fa; padding: 6px 18px; border-radius: 100px; font-weight: 500;
     }
     .refresh-btn {
-      background: white;
-      border: 1.5px solid #b9d2e7;
-      border-radius: 40px;
-      padding: 8px 18px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #1a5a9c;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: inherit;
+      background: white; border: 1.5px solid #b9d2e7; border-radius: 40px;
+      padding: 8px 18px; font-size: .95rem; font-weight: 500; color: #1a5a9c;
+      cursor: pointer; transition: all .15s;
+      display: inline-flex; align-items: center; gap: 6px; font-family: inherit;
     }
-    .refresh-btn:hover {
-      background: #e3effa;
-      border-color: #6d9dc9;
-    }
+    .refresh-btn:hover { background: #e3effa; border-color: #6d9dc9; }
     .copyright {
-      text-align: center;
-      margin-top: 14px;
-      font-size: 0.85rem;
-      color: #6a8aa8;
-      letter-spacing: 0.2px;
-      width: 100%;
+      text-align: center; margin-top: 14px; font-size: .85rem;
+      color: #6a8aa8; width: 100%;
     }
-    .copyright span {
-      font-weight: 500;
-    }
+    .copyright span { font-weight: 500; }
+
     @media (max-width: 600px) {
       .page { padding: 22px 16px; }
       .title-section h1 { font-size: 1.6rem; }
       .qr-area { gap: 20px; }
       .step-item { padding: 12px 14px; }
       .step-text { font-size: 1rem; }
-      .queue-status { padding: 14px 22px; }
+      .status-card { padding: 18px 18px; }
       .kiosk-print-btn { width: 100%; padding: 16px 20px; font-size: 1.05rem; }
     }
   </style>
 </head>
 <body>
 <div class="page">
-  <!-- header -->
+
+  <!-- HEADER -->
   <div class="title-section">
-    <h1>
-      📋 Scan & wait
-      <span>Queue</span>
-    </h1>
+    <h1>📋 Scan & wait <span>Queue</span></h1>
     <div class="subhead">
       Scan the QR code to join the queue · ተራዎን ለመቀላቀል QR ኮዱን ይቃኙ · ተርእዮም ቁረጽ
     </div>
-
-    <!-- ✅ Large kiosk print button + PDF hint -->
-    <button class="kiosk-print-btn" id="printBtnTop">
-      🖨️ Print / Save as PDF
-    </button>
+    <button class="kiosk-print-btn" id="printBtnTop">🖨️ Print / Save as PDF</button>
     <p class="print-hint">
       Tip: In the print dialog, choose <strong>“Save as PDF”</strong> to download or share a copy.
     </p>
   </div>
 
-  <!-- QR + status -->
+  <!-- QR + STATUS CARD (form OR ticket) -->
   <div class="qr-area">
-    <div class="qr-wrapper">
-      <div id="qrcode"></div>
-    </div>
-    <div class="queue-status">
-      <div class="label">YOUR TICKET</div>
-      <div class="turn" id="ticketNumber">A-042</div>
-      <div class="waiting">⏳ <span id="waitingCount">4</span> ahead</div>
+    <div class="qr-wrapper"><div id="qrcode"></div></div>
+
+    <div class="status-card" id="statusCard">
+
+      <!-- FORM VIEW -->
+      <div id="formView">
+        <div class="label">Join the queue</div>
+        <div class="form-row">
+          <label for="customerName">Full name</label>
+          <input id="customerName" type="text" placeholder="Enter your full name" autocomplete="name" />
+          <div class="input-hint">ሙሉ ስም · ምሉእ ስም · Maqaa guutuu</div>
+        </div>
+        <div class="form-row">
+          <label for="reason">Reason for visit</label>
+          <input id="reason" type="text" placeholder="e.g. Check-up, follow-up, consultation" />
+          <div class="input-hint">የጉብኝት ምክንያት · ምኽንያት ምብጻሕ · Sababa daawwannaa</div>
+        </div>
+        <button class="submit-btn" id="submitBtn">Join queue →</button>
+        <div class="input-hint" style="text-align:center; margin-top:8px;">
+          ተራውን ይቀላቀሉ · ተርእዮም ተጸምበር · Tarree seeni
+        </div>
+      </div>
+
+      <!-- TICKET VIEW (shown after submit) -->
+      <div id="ticketView" style="display:none;">
+        <div class="label">Your ticket</div>
+        <div class="turn" id="ticketNumber">A-042</div>
+        <div class="waiting">⏳ <span id="waitingCount">4</span> ahead</div>
+        <div class="countdown" id="countdown">00:00</div>
+        <div class="countdown-label" id="countdownLabel">Estimated wait</div>
+        <div class="turn-msg" id="turnMsg">🎉 It's your turn! Please proceed to the service desk.</div>
+        <div class="ticket-meta" id="ticketMeta"></div>
+      </div>
+
     </div>
   </div>
 
-  <!-- 5-point instructions (print ready) -->
+  <!-- 5 STEPS -->
   <div class="instructions">
     <h2>📌 5 steps <span>scan · wait · see</span></h2>
     <div class="step-list">
       <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>Scan the QR code</strong> with your phone camera.</div></div>
-      <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Get your ticket number</strong> — it appears on screen.</div></div>
-      <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Wait in queue</strong> – check the "ahead" count.</div></div>
-      <div class="step-item"><div class="step-num">4</div><div class="step-text"><strong>When it's your turn</strong> you'll be called / notified.</div></div>
-      <div class="step-item"><div class="step-num">5</div><div class="step-text"><strong>See the service desk</strong> with your ticket.</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Enter your name and reason</strong>, then tap “Join queue”.</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Watch the countdown</strong> — it shows your estimated wait.</div></div>
+      <div class="step-item"><div class="step-num">4</div><div class="step-text"><strong>When it's your turn</strong> the screen says “It's your turn!”</div></div>
+      <div class="step-item"><div class="step-num">5</div><div class="step-text"><strong>Go to the service desk</strong> with your ticket number.</div></div>
     </div>
   </div>
 
-  <!-- translations: Amharic, Tigrinya, Oromo -->
+  <!-- TRANSLATIONS -->
   <div class="translations">
     <div class="lang-card">
-      <h3>🇪🇹 አማርኛ <span style="font-size:0.8rem; font-weight:400;">(Amharic)</span></h3>
+      <h3>🇪🇹 አማርኛ <span style="font-size:.8rem; font-weight:400;">(Amharic)</span></h3>
       <p>1. QR ኮዱን በስልክዎ ይቃኙ።</p>
-      <p>2. የቲኬት ቁጥርዎን ይያዙ።</p>
-      <p>3. በሰልፍ ይጠብቁ — ከፊትዎ ያሉትን ይመልከቱ።</p>
-      <p>4. ተራዎ ሲደርስ ይጠራሉ።</p>
+      <p>2. ስምዎን እና የጉብኝት ምክንያትዎን ያስገቡ፣ “ተራውን ይቀላቀሉ” ይጫኑ።</p>
+      <p>3. የጊዜ ቆጣሪውን ይከታተሉ — የመጠበቂያ ጊዜዎን ያሳያል።</p>
+      <p>4. ተራዎ ሲደርስ “ተራዎ ደርሷል!” ይላል።</p>
       <p>5. ከቲኬትዎ ጋር ወደ አገልግሎት ይሂዱ።</p>
       <div class="small-note">የ5 ነጥብ መመሪያ</div>
     </div>
     <div class="lang-card">
-      <h3>🇪🇹 ትግርኛ <span style="font-size:0.8rem; font-weight:400;">(Tigrinya)</span></h3>
+      <h3>🇪🇹 ትግርኛ <span style="font-size:.8rem; font-weight:400;">(Tigrinya)</span></h3>
       <p>1. QR ኮድ ብስልክኻ ስካን ግበር።</p>
-      <p>2. ቁጽሪ ቲኬትካ ሓዝ።</p>
-      <p>3. ኣብ መስርዕ ተጸበ — ኣብ ቅድሚኻ ዘለዉ ተመልከት።</p>
-      <p>4. ተርእኻ ምስ በጽሐ ክጽውዑኻ እዮም።</p>
+      <p>2. ስምካን ምኽንያት ምብጻሕካን ኣእቱ፣ “ተርእዮም ተጸምበር” ጠውቕ።</p>
+      <p>3. እቲ ገደብ ግዜ ተኸታተል — ናይ ምጽባይ ግዜኻ ይሕብር።</p>
+      <p>4. ተርእኻ ምስ በጽሐ “ተርእኻ በጺሑ!” ይብል።</p>
       <p>5. ምስ ቲኬትካ ናብ ኣገልግሎት ኪድ።</p>
       <div class="small-note">ትሕዝቶ 5 ነጥቢ</div>
     </div>
     <div class="lang-card">
-      <h3>🇪🇹 ኦሮሚፋ <span style="font-size:0.8rem; font-weight:400;">(Oromo)</span></h3>
+      <h3>🇪🇹 ኦሮሚፋ <span style="font-size:.8rem; font-weight:400;">(Oromo)</span></h3>
       <p>1. Koodii QR bilbila keetiin scan godhi.</p>
-      <p>2. Lakkoofsa tikkeetii kee qabadhu.</p>
-      <p>3. Tarree keessa eegi — warra si dura jiran ilaali.</p>
-      <p>4. Yeroo kee yoo ga'e ni waamama.</p>
+      <p>2. Maqaa fi sababa daawwannaa kee galchi, “Tarree seeni” tuqi.</p>
+      <p>3. Lakkooftuu yeroo hordofi — yeroo eeggachuu kee agarsiisa.</p>
+      <p>4. Yeroon kee yoo ga'e “Yeroon kee ga'e!” jedha.</p>
       <p>5. Tikkeetii kee waliin gara tajaajilaa deemi.</p>
       <div class="small-note">Qajeelfama tuqaa 5</div>
     </div>
   </div>
 
-  <!-- footer / refresh + secondary print -->
+  <!-- FOOTER -->
   <div class="footer-note">
     <span class="badge">🔔 Live queue</span>
-    <button class="refresh-btn" id="refreshQueueBtn">
-      🔄 Refresh queue
-    </button>
-    <button class="refresh-btn" id="printBtn">
-      📄 Print this page
-    </button>
+    <button class="refresh-btn" id="leaveBtn" style="display:none;">❌ Leave queue</button>
+    <button class="refresh-btn" id="printBtn">📄 Print this page</button>
   </div>
 
-  <!-- copyright -->
   <div class="copyright">
     © <span id="year"></span> JA Queue Appointment System. All rights reserved.
   </div>
 </div>
 
 <script>
-  (function() {
-    // ----- dynamic copyright year -----
-    document.getElementById('year').textContent = new Date().getFullYear();
+(function () {
+  /* ======================================================
+     CONFIG
+     ====================================================== */
+  // Demo speed: seconds per customer ahead.
+  // Real clinics often use 120–300s (2–5 min). 15s = snappy demo.
+  const SECONDS_PER_CUSTOMER = 15;
+  const STORAGE_KEY = 'queueAppointmentState_v1';
 
-    // ----- generate QR code -----
-    const qrTarget = window.location.href.split('?')[0];
-    const finalQrContent = (qrTarget && qrTarget.startsWith('http'))
-      ? qrTarget
-      : 'https://example.com/queue';
+  /* ======================================================
+     DOM REFS
+     ====================================================== */
+  const formView     = document.getElementById('formView');
+  const ticketView   = document.getElementById('ticketView');
+  const leaveBtn     = document.getElementById('leaveBtn');
+  const countdownEl  = document.getElementById('countdown');
+  const countdownLbl = document.getElementById('countdownLabel');
+  const turnMsg      = document.getElementById('turnMsg');
+  const ticketNumEl  = document.getElementById('ticketNumber');
+  const waitingEl    = document.getElementById('waitingCount');
+  const metaEl       = document.getElementById('ticketMeta');
+  const nameInput    = document.getElementById('customerName');
+  const reasonInput  = document.getElementById('reason');
 
-    const qrContainer = document.getElementById('qrcode');
-    qrContainer.innerHTML = '';
-    new QRCode(qrContainer, {
-      text: finalQrContent,
-      width: 200,
-      height: 200,
-      colorDark: "#0b2b4f",
-      colorLight: "#ffffff",
-      correctLevel: QRCode.CorrectLevel.H
-    });
+  /* ======================================================
+     STATE
+     ====================================================== */
+  let state = loadState() || {
+    ticket: null, name: '', reason: '',
+    totalSeconds: 0, expectedTurnAt: 0, done: false
+  };
+  let tickInterval = null;
 
-    // ----- queue simulation -----
-    const ticketEl = document.getElementById('ticketNumber');
-    const waitingSpan = document.getElementById('waitingCount');
+  /* ======================================================
+     HELPERS
+     ====================================================== */
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  function clearStored() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function fmt(sec) {
+    if (sec < 0) sec = 0;
+    return pad(Math.floor(sec / 60)) + ':' + pad(sec % 60);
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function generateTicket() {
+    const letters = 'ABCD';
+    const letter = letters[Math.floor(Math.random() * letters.length)];
+    const num = Math.floor(Math.random() * 180) + 10;
+    return letter + '-' + (num < 100 ? '0' + num : num);
+  }
 
-    function generateTicket() {
-      const letters = 'ABCD';
-      const letter = letters[Math.floor(Math.random() * letters.length)];
-      const num = Math.floor(Math.random() * 180) + 10;
-      return letter + '-' + (num < 100 ? '0' + num : num);
+  /* ======================================================
+     RENDER
+     ====================================================== */
+  function renderForm() {
+    formView.style.display = 'block';
+    ticketView.style.display = 'none';
+    leaveBtn.style.display = 'none';
+    nameInput.value = '';
+    reasonInput.value = '';
+  }
+
+  function renderTicket() {
+    formView.style.display = 'none';
+    ticketView.style.display = 'block';
+    leaveBtn.style.display = 'inline-flex';
+    ticketNumEl.textContent = state.ticket || '—';
+    metaEl.innerHTML =
+      '<strong>' + escapeHtml(state.name) + '</strong><br>' +
+      escapeHtml(state.reason);
+    updateCountdown();
+  }
+
+  /* ======================================================
+     COUNTDOWN
+     ====================================================== */
+  function updateCountdown() {
+    if (!state.expectedTurnAt) return;
+    const remainingMs = state.expectedTurnAt - Date.now();
+    const remainingSec = Math.max(0, Math.ceil(remainingMs / 1000));
+
+    countdownEl.textContent = fmt(remainingSec);
+
+    const ahead = Math.max(0, Math.ceil(remainingSec / SECONDS_PER_CUSTOMER));
+    waitingEl.textContent = ahead;
+
+    if (remainingSec <= 0) {
+      state.done = true;
+      saveState();
+      countdownEl.classList.add('done');
+      countdownLbl.style.display = 'none';
+      turnMsg.classList.add('show');
+      if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
+    } else {
+      state.done = false;
+      countdownEl.classList.remove('done');
+      countdownLbl.style.display = 'block';
+      turnMsg.classList.remove('show');
+    }
+    saveState();
+  }
+
+  function startTick() {
+    if (tickInterval) clearInterval(tickInterval);
+    updateCountdown();
+    tickInterval = setInterval(updateCountdown, 1000);
+  }
+
+  /* ======================================================
+     ACTIONS
+     ====================================================== */
+  function submitQueue() {
+    const nameVal = nameInput.value.trim();
+    const reasonVal = reasonInput.value.trim();
+
+    if (!nameVal) {
+      alert('Please enter your name.');
+      nameInput.focus();
+      return;
+    }
+    if (!reasonVal) {
+      alert('Please enter the reason for your visit.');
+      reasonInput.focus();
+      return;
     }
 
-    function updateQueueDisplay() {
-      ticketEl.textContent = generateTicket();
-      const waiting = Math.floor(Math.random() * 12) + 1;
-      waitingSpan.textContent = waiting;
+    const ahead = Math.floor(Math.random() * 6) + 2;      // 2–7 ahead
+    const totalSec = ahead * SECONDS_PER_CUSTOMER;
+
+    state.ticket = generateTicket();
+    state.name = nameVal;
+    state.reason = reasonVal;
+    state.totalSeconds = totalSec;
+    state.expectedTurnAt = Date.now() + totalSec * 1000;
+    state.done = false;
+
+    saveState();
+    renderTicket();
+    startTick();
+
+    document.getElementById('statusCard')
+      .scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function leaveQueue() {
+    if (!confirm('Leave the queue? You will lose your ticket.')) return;
+    if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
+    clearStored();
+    state = { ticket: null, name: '', reason: '', totalSeconds: 0, expectedTurnAt: 0, done: false };
+    renderForm();
+  }
+
+  /* ======================================================
+     INIT
+     ====================================================== */
+  document.getElementById('submitBtn').addEventListener('click', submitQueue);
+  leaveBtn.addEventListener('click', leaveQueue);
+
+  // resume state across page reloads
+  if (state.ticket && state.expectedTurnAt) {
+    if (state.done || state.expectedTurnAt > Date.now()) {
+      renderTicket();
+      if (!state.done && state.expectedTurnAt > Date.now()) startTick();
+    } else {
+      // expired ticket — treat as done
+      renderTicket();
     }
+  } else {
+    renderForm();
+  }
 
-    updateQueueDisplay();
+  /* ======================================================
+     PRINT
+     ====================================================== */
+  function doPrint(e) { if (e) e.preventDefault(); window.print(); }
+  document.getElementById('printBtnTop').addEventListener('click', doPrint);
+  document.getElementById('printBtn').addEventListener('click', doPrint);
 
-    // ----- refresh button -----
-    document.getElementById('refreshQueueBtn').addEventListener('click', function(e) {
-      e.preventDefault();
-      updateQueueDisplay();
-      this.style.transform = 'scale(0.96)';
-      setTimeout(() => { this.style.transform = 'scale(1)'; }, 100);
-    });
+  /* ======================================================
+     COPYRIGHT YEAR
+     ====================================================== */
+  document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ----- print buttons (top + bottom) -----
-    function doPrint(e) {
-      if (e) e.preventDefault();
-      window.print();
-    }
-    document.getElementById('printBtnTop').addEventListener('click', doPrint);
-    document.getElementById('printBtn').addEventListener('click', doPrint);
+  /* ======================================================
+     QR CODE
+     ====================================================== */
+  const qrTarget = window.location.href.split('?')[0].split('#')[0];
+  const finalQrContent = (qrTarget && qrTarget.startsWith('http'))
+    ? qrTarget
+    : 'https://example.com/queue';
 
-    // auto-refresh every 30 seconds
-    setInterval(updateQueueDisplay, 30000);
-  })();
+  const qrContainer = document.getElementById('qrcode');
+  qrContainer.innerHTML = '';
+  new QRCode(qrContainer, {
+    text: finalQrContent,
+    width: 200,
+    height: 200,
+    colorDark: "#0b2b4f",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+})();
 </script>
 
-<!-- print-only styles -->
+<!-- Print-only styles -->
 <style media="print">
-  body {
-    background: white;
-    padding: 0;
-  }
-  .page {
-    box-shadow: none;
-    border-radius: 0;
-    padding: 1.2cm;
-    max-width: 100%;
-  }
-  /* Hide all interactive UI when printing */
+  body { background: white; padding: 0; }
+  .page { box-shadow: none; border-radius: 0; padding: 1.2cm; max-width: 100%; }
   .kiosk-print-btn,
   .print-hint,
   .refresh-btn,
-  .footer-note {
-    display: none !important;
-  }
-  .qr-wrapper {
-    box-shadow: none;
-    border: 1px solid #ccc;
-  }
-  .queue-status {
-    box-shadow: none;
-    background: #f2f6fa;
-  }
-  .copyright {
-    color: #444;
-  }
+  .footer-note { display: none !important; }
+  .qr-wrapper { box-shadow: none; border: 1px solid #ccc; }
+  .status-card { box-shadow: none; background: #f2f6fa; }
+  .copyright { color: #444; }
 </style>
 </body>
 </html>
